@@ -251,6 +251,8 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
     </div>
 </section>
 
+<!-- ===== RANKING HIDDEN – odkomentuj gdy gotowy ===== -->
+<!-- HIDDEN_RANKING_START
 <h2 id="ranking" style="margin-bottom:16px;padding-top:8px;font-size:1rem;color:var(--orange);" data-t="ranking_h2">Polecane Maszyny (Marzec 2026)</h2>
 <div class="grid">
     <div class="card">
@@ -285,6 +287,7 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
     </div>
     <p style="text-align:center;margin-top:16px;font-size:.75rem;font-style:italic;color:var(--muted);" data-t="airassist_tip">💡 Pamiętaj o Air Assist!</p>
 </section>
+HIDDEN_RANKING_END -->
 
 <section id="kalkulator" class="calc-section">
     <h2 data-t="calc_h2">🎯 Laser Price Studio</h2>
@@ -370,6 +373,7 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
         <p id="shipDisplay">➤ <span data-t="ship_display">Koszt wysyłki</span>: 14,99 <span class="csym">zł</span></p>
     </div>
     <button onclick="calculate()" class="btn" style="width:100%;margin-top:20px;font-size:.86rem;letter-spacing:1.5px;padding:13px;background:var(--navy);color:#fff;" data-t="btn_calculate">▶ OBLICZ ZYSK I CENĘ</button>
+    <button onclick="document.getElementById('fbModal').classList.add('open')" class="btn" style="width:100%;margin-top:8px;font-size:.76rem;padding:9px;background:transparent;border:1px solid var(--orange);color:var(--orange);" data-t="btn_feedback">💬 Zgłoś problem / Zaproponuj ulepszenie</button>
     <div id="expertResult">
         <div class="result-top"><span id="bruttoLbl" data-t="result_gross">Cena dla klienta (Brutto):</span><span id="priceBrutto">0.00 zł</span></div>
         <div class="profit-box"><p class="pb-lbl" id="profitLbl" data-t="result_profit_lbl">TWÓJ PRZEWIDYWANY ZYSK NA RĘKĘ:</p><h2 id="netProfit">0.00 zł</h2></div>
