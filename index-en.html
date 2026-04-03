@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="alternate" hreflang="pl" href="https://www.laserprofit.eu/index.html" />
-<link rel="alternate" hreflang="en" href="https://www.laserprofit.eu/index-en.html" />
-<link rel="alternate" hreflang="x-default" href="https://www.laserprofit.eu/index-en.html" />
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LaserProfit.eu – Free Laser Engraving Price Calculator 2026</title>
@@ -200,7 +197,7 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
         </div>
 
         <!-- ── Inline translator (report language TXT/PDF) ── -->
-        <div class="lang-wrap" id="langWrap" title="Report language (TXT/PDF)">
+        <div class="lang-wrap" id="langWrap" title="Report language for TXT/PDF only (PL/EN/DE have dedicated pages ↑)">
             <div class="main-flags" id="mainFlags"></div>
             <button class="more-btn" id="moreBtn">＋ more</button>
             <div class="lang-dd" id="langDd"></div>
@@ -271,7 +268,7 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
     <p class="calc-sub">Set your rates and see your real profit.</p>
     <div class="settings-bar">
         <div class="cs-grp"><span class="cs-lbl">💱 Report currency</span><div class="chips" id="curChips"></div></div>
-        <div class="cs-grp"><span class="cs-lbl">🌍 Report language (TXT/PDF)</span><div class="chips" id="langChips"></div></div>
+        <div class="cs-grp"><span class="cs-lbl">🌍 Raport język / Report language</span><div class="chips" id="langChips"></div></div>
     </div>
     <div class="box-muted">
         <div class="form-2">
@@ -474,6 +471,24 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
 
 <script>
 // ============================================================
+// AUTO-REDIRECT based on browser language
+// ============================================================
+(function(){
+    const path=window.location.pathname;
+    const isDE=path.startsWith('/de');
+    const isEN=path.startsWith('/en');
+    const isPL=!isDE&&!isEN;
+    if(document.cookie.indexOf('lp_redirect=1')!==-1)return;
+    document.cookie='lp_redirect=1;max-age=3600;path=/';
+    const lang=(navigator.language||navigator.userLanguage||'en').toLowerCase();
+    const isDEb=lang.startsWith('de');
+    const isENb=lang.startsWith('en');
+    if(isDEb&&!isDE){window.location.href='https://www.laserprofit.eu/de/';}
+    else if(isENb&&!isEN){window.location.href='https://www.laserprofit.eu/en/';}
+    else if(!isDEb&&!isENb&&!isPL){window.location.href='https://www.laserprofit.eu/';}
+})();
+
+// ============================================================
 // CURRENCIES & LANGUAGES (for report TXT/PDF translator)
 // ============================================================
 const CURRENCIES=[
@@ -485,9 +500,8 @@ const CURRENCIES=[
     {code:'HUF',sym:'Ft',flag:'🇭🇺'},{code:'RON',sym:'lei',flag:'🇷🇴'},
 ];
 const LANGUAGES=[
-    {code:'en',flag:'https://flagcdn.com/w40/gb.png',label:'🇬🇧 EN'},
-    {code:'pl',flag:'https://flagcdn.com/w40/pl.png',label:'🇵🇱 PL'},
-    {code:'de',flag:'https://flagcdn.com/w40/de.png',label:'🇩🇪 DE'},
+    // FR, IT, ES, NL, CS, UK, NO, SV, DA, HU, RO – raport TXT/PDF
+    // PL/EN/DE mają własne strony – są w navbarze jako linki
     {code:'fr',flag:'https://flagcdn.com/w40/fr.png',label:'🇫🇷 FR'},
     {code:'it',flag:'https://flagcdn.com/w40/it.png',label:'🇮🇹 IT'},
     {code:'es',flag:'https://flagcdn.com/w40/es.png',label:'🇪🇸 ES'},
