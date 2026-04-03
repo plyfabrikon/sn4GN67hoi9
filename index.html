@@ -9,7 +9,6 @@
 <meta name="author" content="LaserProfit.eu">
 <meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large">
 <meta name="google-site-verification" content="HGtiv1o5Zh2URMz7O5Dxean6mWRR7Ac9hlp3GZSHdH8"/>
-<meta name="google-site-verification" content="5Nwn999MbIZk3IpYyC0gfXdTVEyr2dbTOLcRiN75S0U" />
 <link rel="canonical" href="https://www.laserprofit.eu/"/>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
 <meta name="theme-color" content="#ff6b2b">
@@ -17,7 +16,6 @@
 <meta property="og:url" content="https://laserprofit.eu/">
 <meta property="og:title" content="STOP GUESSTIMATE. Free Laser Engraving Calculator">
 <meta property="og:description" content="Calculate your laser cutting costs in seconds. Supports 12 currencies. xTool, Creality and more.">
-<meta property="og:image" content="https://laserprofit.eu/og-image.png">
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:url" content="https://laserprofit.eu/">
@@ -30,7 +28,6 @@
 <meta property="og:title" content="LaserProfit.eu – Free Laser Engraving Price Calculator 2026">
 <meta property="og:description" content="Calculate exact laser engraving & cutting costs. 12 currencies, 14 languages. xTool, Creality, Atomstack.">
 <meta property="og:site_name" content="LaserProfit.eu">
-<meta name="twitter:card" content="summary_large_image">
 <link rel="alternate" hreflang="x-default" href="https://www.laserprofit.eu/"/>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"LaserProfit.eu – Laser Engraving Price Calculator","url":"https://www.laserprofit.eu/","applicationCategory":"BusinessApplication","operatingSystem":"All","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -486,27 +483,42 @@ HIDDEN_RANKING_END -->
 
 <div class="modal-bg" id="fbModal">
     <div class="modal-box">
-        <button class="modal-close" onclick="document.getElementById('fbModal').classList.remove('open')">✕</button>
+        <button type="button" class="modal-close" onclick="document.getElementById('fbModal').classList.remove('open')">✕</button>
+        
         <h3 style="color:var(--orange);margin-bottom:6px;font-size:.95rem;" data-t="fb_title">💬 Zgłoś problem</h3>
         <p style="color:var(--muted);font-size:.78rem;margin-bottom:18px;" data-t="fb_sub">Twoja opinia pomaga nam rozwijać LaserProfit.eu</p>
-        <div class="field" style="margin-bottom:12px;"><label data-t="fb_type_lbl">Rodzaj zgłoszenia</label>
-            <select id="fbType" class="calc-input">
-                <option data-t="fb_bug">🐛 Błąd / Coś nie działa</option>
-                <option data-t="fb_idea">💡 Pomysł na ulepszenie</option>
-                <option data-t="fb_trans">🌍 Błąd w tłumaczeniu</option>
-                <option data-t="fb_laser">⚡ Brakuje lasera w rankingu</option>
-                <option data-t="fb_other">📋 Inne</option>
-            </select></div>
-        <div class="field" style="margin-bottom:12px;"><label data-t="fb_msg_lbl">Opis</label><textarea id="fbMsg" rows="4" class="calc-input" style="height:auto;resize:vertical;" data-placeholder="fb_placeholder" placeholder="Opisz problem lub pomysł..."></textarea></div>
-        <div class="field" style="margin-bottom:18px;"><label data-t="fb_email_lbl">E-mail (opcjonalnie)</label><input type="email" id="fbEmail" class="calc-input" placeholder="twoj@email.com"></div>
-        <div style="display:flex;gap:10px;">
-            <button onclick="sendFeedback()" class="btn" style="flex:1;" data-t="fb_send">📤 Wyślij zgłoszenie</button>
-            <button onclick="document.getElementById('fbModal').classList.remove('open')" class="btn" style="background:#334155;flex:1;" data-t="fb_cancel">Anuluj</button>
-        </div>
-        <div id="fbThanks" style="display:none;text-align:center;padding:14px;color:#34d399;font-size:.85rem;" data-t="fb_thanks">✅ Dziękujemy! Odezwiemy się wkrótce.</div>
-    </div>
-</div>
 
+        <form action="https://formspree.io/f/xzdkjevg" method="POST">
+            
+            <div class="field" style="margin-bottom:12px;">
+                <label data-t="fb_type_lbl">Rodzaj zgłoszenia</label>
+                <select name="typ_zgloszenia" class="calc-input">
+                    <option value="Blad">🐛 Błąd / Coś nie działa</option>
+                    <option value="Pomysl">💡 Pomysł na ulepszenie</option>
+                    <option value="Tlumaczenie">🌍 Błąd w tłumaczeniu</option>
+                    <option value="Ranking">⚡ Brakuje lasera w rankingu</option>
+                    <option value="Inne">📋 Inne</option>
+                </select>
+            </div>
+
+            <div class="field" style="margin-bottom:12px;">
+                <label data-t="fb_msg_lbl">Opis</label>
+                <textarea name="wiadomosc" rows="4" class="calc-input" style="height:auto;resize:vertical;" required placeholder="Opisz problem lub pomysł..."></textarea>
+            </div>
+
+            <div class="field" style="margin-bottom:18px;">
+                <label data-t="fb_email_lbl">E-mail (opcjonalnie)</label>
+                <input type="email" name="email" class="calc-input" placeholder="twoj@email.com">
+            </div>
+
+            <div style="display:flex;gap:10px;">
+                <button type="submit" class="btn" style="flex:1;" data-t="fb_send">📤 Wyślij zgłoszenie</button>
+                <button type="button" onclick="document.getElementById('fbModal').classList.remove('open')" class="btn" style="background:#334155;flex:1;" data-t="fb_cancel">Anuluj</button>
+            </div>
+            
+        </form>
+        </div>
+</div>
 <script>
 const UI = {
 pl:{
