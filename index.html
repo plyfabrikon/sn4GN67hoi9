@@ -263,8 +263,8 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
     </div>
     <div class="box-muted">
         <div class="form-2">
-            <div class="field"><label data-t="lbl_hourly">Twoja stawka godzinowa ({s}/h)</label><input type="number" id="hourlyRate" value="80" class="calc-input"></div>
-            <div class="field"><label data-t="lbl_machine">Koszt prądu i amortyzacji ({s}/h)</label><input type="number" id="machineRate" value="15" class="calc-input"></div>
+            <div class="field"><label data-t="lbl_hourly">Twoja stawka godzinowa ({s}/h)</label><input type="number" id="hourlyRate" value="80" min="0" max="9999" class="calc-input"></div>
+            <div class="field"><label data-t="lbl_machine">Koszt prądu i amortyzacji ({s}/h)</label><input type="number" id="machineRate" value="15" min="0" max="9999" class="calc-input"></div>
         </div>
     </div>
     <div class="form-4">
@@ -276,9 +276,9 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
                 <option value="2.0" data-t="mat_laminate">Laminaty (×2.0)</option>
             </select>
         </div>
-        <div class="field"><label data-t="lbl_lasermin">Czas lasera (min)</label><input type="number" id="laserMinutes" value="20" class="calc-input"></div>
-        <div class="field"><label data-t="lbl_prep">Przygotowanie projektu (min)</label><input type="number" id="vectorPrep" value="10" class="calc-input"></div>
-        <div class="field"><label data-t="lbl_matprice">Cena arkusza materiału ({s})</label><input type="number" id="rawMaterial" value="25" class="calc-input" oninput="calcMat()"></div>
+        <div class="field"><label data-t="lbl_lasermin">Czas lasera (min)</label><input type="number" id="laserMinutes" value="20" min="0" max="9999" class="calc-input"></div>
+        <div class="field"><label data-t="lbl_prep">Przygotowanie projektu (min)</label><input type="number" id="vectorPrep" value="10" min="0" max="9999" class="calc-input"></div>
+        <div class="field"><label data-t="lbl_matprice">Cena arkusza materiału ({s})</label><input type="number" id="rawMaterial" value="25" min="0" max="99999" class="calc-input" oninput="calcMat()"></div>
     </div>
     <div class="form-2" style="margin-top:12px;">
         <div class="field"><label data-t="lbl_vat">Stawka VAT (%)</label><input type="number" id="vatRate" value="23" min="0" max="100" step="1" class="calc-input"></div>
@@ -306,11 +306,11 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
         <h4 data-t="mat_h4">📐 Kalkulator zużycia materiału</h4>
         <p class="desc" data-t="mat_desc">Podaj wymiary arkusza i projektu – kalkulator wyliczy proporcjonalny koszt materiału dla zlecenia.</p>
         <div class="form-5">
-            <div class="field"><label data-t="lbl_sheetw">Arkusz – szer. (mm)</label><input type="number" id="sheetW" value="600" class="calc-input" oninput="calcMat()"></div>
-            <div class="field"><label data-t="lbl_sheeth">Arkusz – wys. (mm)</label><input type="number" id="sheetH" value="400" class="calc-input" oninput="calcMat()"></div>
-            <div class="field"><label data-t="lbl_cutw">Projekt – szer. (mm)</label><input type="number" id="cutW" value="20" class="calc-input" oninput="calcMat()"></div>
-            <div class="field"><label data-t="lbl_cuth">Projekt – wys. (mm)</label><input type="number" id="cutH" value="20" class="calc-input" oninput="calcMat()"></div>
-            <div class="field"><label data-t="lbl_qty">Liczba sztuk</label><input type="number" id="cutQty" value="1" min="1" class="calc-input" oninput="calcMat()"></div>
+            <div class="field"><label data-t="lbl_sheetw">Arkusz – szer. (mm)</label><input type="number" id="sheetW" value="600" min="1" max="9999" class="calc-input" oninput="calcMat()"></div>
+            <div class="field"><label data-t="lbl_sheeth">Arkusz – wys. (mm)</label><input type="number" id="sheetH" value="400" min="1" max="9999" class="calc-input" oninput="calcMat()"></div>
+            <div class="field"><label data-t="lbl_cutw">Projekt – szer. (mm)</label><input type="number" id="cutW" value="20" min="1" max="9999" class="calc-input" oninput="calcMat()"></div>
+            <div class="field"><label data-t="lbl_cuth">Projekt – wys. (mm)</label><input type="number" id="cutH" value="20" min="1" max="9999" class="calc-input" oninput="calcMat()"></div>
+            <div class="field"><label data-t="lbl_qty">Liczba sztuk</label><input type="number" id="cutQty" value="1" min="1" max="9999" class="calc-input" oninput="calcMat()"></div>
         </div>
         <div id="matResult"><p class="mat-ph" data-t="mat_placeholder">Wypełnij wymiary powyżej, aby zobaczyć wynik.</p></div>
         <p class="hint" data-t="mat_hint">💡 Wyliczony koszt materiału jest automatycznie uwzględniany w kalkulacji zysku poniżej.</p>
@@ -971,11 +971,12 @@ function getShipVal(){
 // ============================================================
 // KALKULACJA
 // ============================================================
+function clamp(val,min,max){return Math.min(Math.max(val,min),max);}
 function calculate(){
-    const hourly=parseFloat(document.getElementById('hourlyRate').value)||0;
-    const mach=parseFloat(document.getElementById('machineRate').value)||0;
-    const lMin=parseFloat(document.getElementById('laserMinutes').value)||0;
-    const pMin=parseFloat(document.getElementById('vectorPrep').value)||0;
+    const hourly=clamp(parseFloat(document.getElementById('hourlyRate').value)||0,0,9999);
+    const mach=clamp(parseFloat(document.getElementById('machineRate').value)||0,0,9999);
+    const lMin=clamp(parseFloat(document.getElementById('laserMinutes').value)||0,0,9999);
+    const pMin=clamp(parseFloat(document.getElementById('vectorPrep').value)||0,0,9999);
     const mult=parseFloat(document.getElementById('materialType').value);
     const mf=parseFloat(document.getElementById('rawMaterial').value)||0;
     const vatPct=(parseFloat(document.getElementById('vatRate')?.value)||23)/100;
