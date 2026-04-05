@@ -2,11 +2,6 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-    <meta property="og:image" content="https://www.laserprofit.eu/niemiecki.png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta property="og:locale" content="pl_PL">
-<meta property="og:locale:alternate" content="en_US">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LaserProfit.eu – Kostenloser Lasergravur Preisrechner 2026</title>
 <meta name="description" content="LaserProfit.eu – Kostenloser Lasergravur & Laserschnitt Preisrechner. 14 Sprachen, 12 Währungen. Kalkulator für xTool, Creality, Atomstack und mehr.">
@@ -846,7 +841,7 @@ function calculate(){
     const pMin=parseFloat(document.getElementById('vectorPrep').value)||0;
     const mult=parseFloat(document.getElementById('materialType').value);
     const mf=parseFloat(document.getElementById('rawMaterial').value)||0;
-    const vatPct=(parseFloat(document.getElementById('vatRate')?.value)||19)/100;
+    const vatPct=(val=>isNaN(val)?19:val)(parseFloat(document.getElementById('vatRate')?.value))/100;
     const sW=parseFloat(document.getElementById('sheetW').value)||0;
     const sH=parseFloat(document.getElementById('sheetH').value)||0;
     const cW=parseFloat(document.getElementById('cutW').value)||0;
@@ -890,7 +885,7 @@ function calculate(){
     }
     h+=rrow(T.txt_mat,matCost);h+=rrow(T.txt_mach,macCost);h+=rrow(T.txt_labor,design+work/mult);
     if(ship>0)h+=rrow(T.txt_ship,ship);
-    h+=sep;h+=rrow(T.txt_netto,netto);h+=rrow(T.txt_vat+' ('+(vatPct*100).toFixed(0)+'%)',netto*vatPct);
+    h+=sep;h+=rrow(T.txt_netto,netto);if(vatPct>0)h+=rrow(T.txt_vat+' ('+(vatPct*100).toFixed(0)+'%)',netto*vatPct);
     if(ship>0)h+=rrow('+ '+T.txt_ship,ship);
     h+=rrow(T.txt_brutto,brutto,'tot');h+=sep;
     h+=`<div class="rpt-row prow"><span class="rl">${T.txt_zysk}</span><span class="rv">${profit.toFixed(2)} ${sym}</span></div>`;
@@ -919,7 +914,7 @@ function saveTXT(){
     txt+=line(T.txt_mat,c.matCost);txt+=line(T.txt_mach,c.macCost);txt+=line(T.txt_labor,c.design+c.work/c.mult);
     if(c.ship>0)txt+=line(T.txt_ship,c.ship);
     txt+=s2+'\n';txt+=line(T.txt_netto,c.netto);
-    txt+=T.txt_vat+' ('+(c.vatPct*100).toFixed(0)+'%): '+(c.netto*c.vatPct).toFixed(2)+' '+sym+'\n';
+    if(c.vatPct>0)txt+=T.txt_vat+' ('+(c.vatPct*100).toFixed(0)+'%): '+(c.netto*c.vatPct).toFixed(2)+' '+sym+'\n';
     if(c.ship>0)txt+='+ '+T.txt_ship+': '+c.ship.toFixed(2)+' '+sym+'\n';
     txt+=T.txt_brutto+': '+c.brutto.toFixed(2)+' '+sym+'\n'+s2+'\n';
     txt+=T.txt_zysk+': '+c.profit.toFixed(2)+' '+sym+'\n';
