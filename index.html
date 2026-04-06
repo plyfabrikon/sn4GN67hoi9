@@ -291,7 +291,7 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
     <div class="form-2" style="margin-top:12px;">
         <div class="field"><label data-t="lbl_vat">Stawka VAT (%)</label><input type="number" id="vatRate" value="23" min="0" max="100" step="1" class="calc-input"></div>
         <div class="field"><label data-t="lbl_vatcountry">Kraj / Region</label>
-            <select id="vatPreset" class="calc-input" onchange="document.getElementById('vatRate').value=this.value">
+            <select id="vatPreset" class="calc-input" onchange="var v=this.value;var panel=document.getElementById('vatCustomPanel');if(v==='custom'){if(panel)panel.style.display='block';}else{if(panel)panel.style.display='none';if(v!=='')document.getElementById('vatRate').value=v;}">
                 <option value="23">🇵🇱 Polska – 23%</option>
                 <option value="19">🇩🇪 Niemcy – 19%</option>
                 <option value="20">🇫🇷 Francja – 20%</option>
@@ -306,8 +306,28 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
                 <option value="27">🇭🇺 Węgry – 27%</option>
                 <option value="19">🇷🇴 Rumunia – 19%</option>
                 <option value="0">🇺🇸 USA – 0%</option>
-                <option value="0" data-t="vat_custom">Własna stawka</option>
+                <optgroup label="🇨🇦 Kanada">
+                <option value="5">🇨🇦 Kanada – GST 5% (federalny)</option>
+                <option value="13">🇨🇦 Ontario – HST 13%</option>
+                <option value="15">🇨🇦 Nova Scotia / NB / NL / PEI – HST 15%</option>
+                <option value="14.975">🇨🇦 Quebec – QST+GST 14,975%</option>
+                <option value="12">🇨🇦 Kolumbia Brytyjska – GST+PST 12%</option>
+                <option value="11">🇨🇦 Manitoba – GST+PST 11%</option>
+                <option value="11">🇨🇦 Saskatchewan – GST+PST 11%</option>
+                <option value="5">🇨🇦 Alberta – GST 5% (brak PST)</option>
+                </optgroup>
+                <option value="custom">✏️ Własny wybór: wpisz Państwo</option>
             </select>
+                <div id="vatCustomPanel" style="display:none;margin-top:8px;background:rgba(255,107,43,.06);border:1px solid var(--orange);border-radius:8px;padding:12px;gap:8px;display:none;">
+                    <div class="form-2">
+                        <div class="field"><label style="font-size:.62rem;color:var(--orange);">Nazwa Państwa</label>
+                            <input type="text" id="vatCountryName" class="calc-input" placeholder="np. Australia, Nowa Zelandia..." oninput="updateCustomVat()">
+                        </div>
+                        <div class="field"><label style="font-size:.62rem;color:var(--orange);">Stawka VAT (%)</label>
+                            <input type="number" id="vatCustomRate" class="calc-input" placeholder="np. 10" min="0" max="100" step="0.1" oninput="updateCustomVat()">
+                        </div>
+                    </div>
+                </div>
         </div>
     </div>
     <div class="mat-box">
@@ -974,6 +994,12 @@ function getShipVal(){
 // KALKULACJA
 // ============================================================
 function clamp(val,min,max){return Math.min(Math.max(val,min),max);}
+
+function updateCustomVat(){
+    const rate=parseFloat(document.getElementById('vatCustomRate')?.value);
+    if(!isNaN(rate)){document.getElementById('vatRate').value=rate;}
+}
+
 function calculate(){
     const hourly=clamp(parseFloat(document.getElementById('hourlyRate').value)||0,0,9999);
     const mach=clamp(parseFloat(document.getElementById('machineRate').value)||0,0,9999);
@@ -1025,7 +1051,19 @@ function calculate(){
     }
     h+=rrow(T.txt_mat,matCost);h+=rrow(T.txt_mach,macCost);h+=rrow(T.txt_labor,design+work/mult);
     if(ship>0)h+=rrow(T.txt_ship,ship);
-    h+=sep;h+=rrow(T.txt_netto,netto);if(vatPct>0)h+=rrow(T.txt_vat+' ('+(vatPct*100).toFixed(0)+'%)',netto*vatPct);
+    h+=sep;h+=rrow(T.txt_netto,netto);if(vatPct>0){
+        const vatPreset=document.getElementById('vatPreset');
+        const vatCountryName=document.getElementById('vatCountryName');
+        let vatCountryLabel='';
+        if(vatPreset&&vatPreset.value==='custom'){
+            vatCountryLabel=vatCountryName&&vatCountryName.value.trim()?' – '+vatCountryName.value.trim():'';
+        } else if(vatPreset){
+            const selTxt=vatPreset.options[vatPreset.selectedIndex]?.text||'';
+            // Wyciągnij nazwę kraju bez emoji i stawki
+            vatCountryLabel=' – '+selTxt.replace(/^[^\w\s]*\s*/,'').replace(/\s*[–-]\s*\d.*$/,'').trim();
+        }
+        h+=rrow(T.txt_vat+' ('+(vatPct*100).toFixed(0)+'%)'+vatCountryLabel,netto*vatPct);
+    }
     if(ship>0)h+=rrow('+ '+T.txt_ship,ship);
     h+=rrow(T.txt_brutto,brutto,'tot');h+=sep;
     h+=`<div class="rpt-row prow"><span class="rl">${T.txt_zysk}</span><span class="rv">${profit.toFixed(2)} ${sym}</span></div>`;
@@ -1054,7 +1092,18 @@ function saveTXT(){
     txt+=line(T.txt_mat,c.matCost);txt+=line(T.txt_mach,c.macCost);txt+=line(T.txt_labor,c.design+c.work/c.mult);
     if(c.ship>0)txt+=line(T.txt_ship,c.ship);
     txt+=s2+'\n';txt+=line(T.txt_netto,c.netto);
-    if(c.vatPct>0)txt+=T.txt_vat+' ('+(c.vatPct*100).toFixed(0)+'%): '+(c.netto*c.vatPct).toFixed(2)+' '+sym+'\n';
+    if(c.vatPct>0){
+        const vatPreset=document.getElementById('vatPreset');
+        const vatCountryName=document.getElementById('vatCountryName');
+        let vatCountryLabel='';
+        if(vatPreset&&vatPreset.value==='custom'){
+            vatCountryLabel=vatCountryName&&vatCountryName.value.trim()?' – '+vatCountryName.value.trim():'';
+        } else if(vatPreset){
+            const selTxt=vatPreset.options[vatPreset.selectedIndex]?.text||'';
+            vatCountryLabel=' – '+selTxt.replace(/^[^\w\s]*\s*/,'').replace(/\s*[–-]\s*\d.*$/,'').trim();
+        }
+        txt+=T.txt_vat+' ('+(c.vatPct*100).toFixed(0)+'%)'+vatCountryLabel+': '+(c.netto*c.vatPct).toFixed(2)+' '+sym+'\n';
+    }
     if(c.ship>0)txt+='+ '+T.txt_ship+': '+c.ship.toFixed(2)+' '+sym+'\n';
     txt+=T.txt_brutto+': '+c.brutto.toFixed(2)+' '+sym+'\n'+s2+'\n';
     txt+=T.txt_zysk+': '+c.profit.toFixed(2)+' '+sym+'\n';
@@ -1073,11 +1122,32 @@ function sendFeedback(){
     if(!msg.trim()){alert('Proszę wpisać opis.');return;}
     const type=document.getElementById('fbType')?.options[document.getElementById('fbType').selectedIndex]?.text||'';
     const email=document.getElementById('fbEmail')?.value||'';
-    const sub=encodeURIComponent('[LaserProfit] '+type+' – PL');
-    const body=encodeURIComponent('Typ: '+type+'\nJęzyk: '+activeLang+'\nWaluta: '+activeCur+'\n\n'+msg+'\n\nE-mail: '+(email||'brak'));
-    window.open('mailto:kontakt@laserprofit.eu?subject='+sub+'&body='+body);
-    document.getElementById('fbThanks').style.display='block';
-    setTimeout(()=>document.getElementById('fbModal').classList.remove('open'),2500);
+    const btn=document.querySelector('#fbModal .btn');
+    if(btn){btn.textContent='⏳ Wysyłanie...';btn.disabled=true;}
+    fetch('https://formspree.io/f/xykbnepw',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','Accept':'application/json'},
+        body:JSON.stringify({
+            typ:type,
+            jezyk:activeLang,
+            waluta:activeCur,
+            wiadomosc:msg,
+            email:email||'brak',
+            strona:'laserprofit.eu – PL'
+        })
+    }).then(r=>{
+        if(r.ok){
+            document.getElementById('fbThanks').style.display='block';
+            if(btn){btn.textContent='📤 Wyślij zgłoszenie';btn.disabled=false;}
+            setTimeout(()=>document.getElementById('fbModal').classList.remove('open'),2500);
+        } else {
+            alert('Błąd wysyłania. Spróbuj ponownie.');
+            if(btn){btn.textContent='📤 Wyślij zgłoszenie';btn.disabled=false;}
+        }
+    }).catch(()=>{
+        alert('Błąd połączenia. Spróbuj ponownie.');
+        if(btn){btn.textContent='📤 Wyślij zgłoszenie';btn.disabled=false;}
+    });
 }
 
 // ============================================================
