@@ -261,11 +261,12 @@ tbody tr.in-compare td{background:rgba(255,107,43,.05);border-left:3px solid var
 
 <!-- COMPARE POPUP -->
 <div class="popup-bg" id="popupBg" onclick="if(event.target===this)closeCompare()">
-<div class="popup">
-  <button class="popup-close" onclick="closeCompare()">✕</button>
-  <h2>⚖️ Porównanie laserów</h2>
-  <div style="overflow-x:auto"><table class="cmp-table" id="cmpTable"></table></div>
-</div>
+  <div class="popup">
+    <button class="popup-close" onclick="closeCompare()">✕</button>
+    <h2>⚖️ Porównanie laserów</h2>
+    <div id="cmpContent" style="overflow-x:auto">
+        </div>
+  </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
