@@ -425,7 +425,18 @@ function applyFilters() {
     }
 }
 
-// Funkcja pomocnicza do porównywarki
+function toggleCompare(id) {
+    if(compareSet.has(id)) {
+        compareSet.delete(id);
+    } else {
+        if(compareSet.size >= 4) { 
+            alert('Możesz porównać maksymalnie 4 lasery.'); 
+            return; 
+        }
+        compareSet.add(id);
+    }
+    applyFilters();
+}
 
 function openCompare() {
     const table = document.getElementById('cmpTable');
