@@ -439,51 +439,83 @@ function toggleCompare(id) {
 }
 
 function openCompare() {
-    const table = document.getElementById('cmpTable');
+    const tableContainer = document.getElementById('cmpContent');
+    
     if (compareSet.size === 0) {
-        alert("Wybierz co najmniej jeden laser do porównania!");
+        alert("Wybierz lasery do porównania klikając ikonę ⊕ przy modelu.");
         return;
     }
-    
+
     const items = LASERS.filter(l => compareSet.has(l.id));
     
-    let html = `<tr><th class="row-label">Cecha</th>`;
+    let html = `
+    <table style="width:100%; border-collapse: collapse; color: var(--text); font-size: 12px; min-width: 600px;">
+        <thead>
+            <tr style="background: var(--navy);">
+                <th style="padding: 12px; border: 1px solid var(--border); color: var(--orange); text-align: left; width: 150px;">PARAMETR</th>`;
+    
     items.forEach(l => {
-        html += `<th>${l.brand} ${l.name} <br> <button class="cmp-remove" onclick="toggleCompare(${l.id});openCompare()">Usuń</button></th>`;
+        html += `
+                <th style="padding: 12px; border: 1px solid var(--border); text-align: center; background: var(--card2);">
+                    <div style="font-weight: 700; color: #fff;">${l.brand}</div>
+                    <div style="font-size: 11px; color: var(--orange);">${l.name}</div>
+                    <button onclick="toggleCompare(${l.id}); openCompare();" style="background:rgba(248,113,113,0.1); border:1px solid var(--red); color:var(--red); font-size:9px; cursor:pointer; margin-top:8px; border-radius:4px; padding: 2px 6px;">Usuń</button>
+                </th>`;
     });
-    html += `</tr>`;
+    html += `</tr></thead><tbody>`;
 
+    // LISTA WSZYSTKICH PARAMETRÓW Z ARKUSZA
     const rows = [
-        ['Moc', 'power', ' W'],
-        ['Obszar', 'areaW', 'x', 'areaH', ' mm'],
-        ['Cena', 'priceEur', ' €'],
-        ['Air Assist', 'airAssist'],
-        ['Obudowa', 'enclosed']
+        ['TYP LASERA', 'type'],
+        ['MOC LASERA', 'power', ' W'],
+        ['OBSZAR ROBOCZY', 'areaW', ' x ', 'areaH', ' mm'],
+        ['MAX PRĘDKOŚĆ', 'speed', ' mm/min'],
+        ['GR. CIĘCIA', 'cutDepth', ' mm'],
+        ['AIR ASSIST', 'airAssist'],
+        ['OBUDOWA', 'enclosed'],
+        ['DREWNO', 'wood'],
+        ['SKÓRA', 'leather'],
+        ['MOŻNA POWIĘKSZYĆ', 'expandable'],
+        ['POŁĄCZENIE', 'conn'],
+        ['WYSYŁKA Z', 'shipFrom'],
+        ['MAGAZYN EU', 'shipEU'],
+        ['GWARANCJA', 'warranty', ' m-cy'],
+        ['CENA (€)', 'priceEur', ' €'],
+        ['CENA (PLN)', 'pricePln'] // Obliczymy to w locie
     ];
 
     rows.forEach(row => {
-        html += `<tr><td class="row-label">${row[0]}</td>`;
+        html += `<tr style="border-bottom: 1px solid var(--border);">
+                    <td style="padding: 10px; background: rgba(30,58,95,0.3); font-weight: 600; color: var(--muted); text-transform: uppercase; font-size: 10px;">${row[0]}</td>`;
+        
         items.forEach(l => {
-            let val = l[row[1]];
-            if(row[1] === 'areaW') val = `${l.areaW}x${l.areaH}`;
-            if(row[1] === 'enclosed') val = l.enclosed ? 'Tak' : 'Nie';
-            html += `<td>${val}${row[2] || ''}</td>`;
+            let val = "";
+            
+            // Logika wyświetlania danych zależnie od typu
+            if (row[1] === 'areaW') {
+                val = `${l.areaW}${row[2]}${l.areaH}${row[4]}`;
+            } else if (row[1] === 'pricePln') {
+                val = `~ ${Math.round(l.priceEur * rateEUR).toLocaleString()} zł`;
+            } else if (typeof l[row[1]] === 'boolean' || String(l[row[1]]).toLowerCase() === 'true') {
+                val = "✅ Tak";
+            } else if (String(l[row[1]]).toLowerCase() === 'false') {
+                val = "❌ Nie";
+            } else if (row[1] === 'airAssist') {
+                val = l.airAssist === 'builtin' ? "✅ Zintegrowany" : (l.airAssist === 'option' ? "🟡 Opcja" : "❌ Brak");
+            } else {
+                val = (l[row[1]] || '-') + (row[2] || '');
+            }
+            
+            html += `<td style="padding: 10px; border-left: 1px solid var(--border); text-align: center;">${val}</td>`;
         });
         html += `</tr>`;
     });
 
-    table.innerHTML = html;
+    html += `</tbody></table>`;
+
+    // Wyświetlenie w kontenerze
+    tableContainer.innerHTML = html;
     document.getElementById('popupBg').classList.add('open');
-}
-
-function closeCompare() {
-    document.getElementById('popupBg').classList.remove('open');
-}
-
-function clearCompare() {
-    compareSet.clear();
-    document.getElementById('compareBar').classList.remove('show');
-    applyFilters();
 }
 // --- KONIEC DODAWANIA ---
 
