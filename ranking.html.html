@@ -414,10 +414,19 @@ function applyFilters() {
     
     const resCount = document.getElementById('resCount');
     if(resCount) resCount.textContent = `Znaleziono: ${data.length} laserów`;
+	// Zarządzanie paskiem porównywania
+    const bar = document.getElementById('compareBar');
+    const count = document.getElementById('compareCount');
+    if (compareSet.size > 0) {
+        bar.classList.add('show');
+        count.textContent = compareSet.size;
+    } else {
+        bar.classList.remove('show');
+    }
 }
 
 // Funkcja pomocnicza do porównywarki
-// --- DODAJ TO TUTAJ ---
+
 function openCompare() {
     const table = document.getElementById('cmpTable');
     if (compareSet.size === 0) {
