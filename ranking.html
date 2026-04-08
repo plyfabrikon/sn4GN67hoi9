@@ -343,7 +343,6 @@ function renderRow(l) {
     const isOrtur = (l.brand && l.brand.toLowerCase() === 'ortur');
     const finalLink = isOrtur ? 'https://ortur.net/?ref=nskubuaw' : l.affLink;
 
-    // Ikony połączenia
     const connIcons = l.conn && l.conn.length > 0 
         ? l.conn.map(c => `<span class="conn-chip on">${c}</span>`).join(' ') 
         : '<span class="na-lbl">-</span>';
@@ -358,7 +357,9 @@ function renderRow(l) {
                 </span>
             </div>
         </td>
+
         <td class="power-cell">${l.power} W</td>
+
         <td class="area-cell">
             ${l.areaW}×${l.areaH} mm<br>
             ${l.expandable ? `<span class="area-exp yes">⚡ Można powiększyć</span>` : '<span class="cross">❌</span>'}
@@ -379,32 +380,39 @@ function renderRow(l) {
         </td>
 
         <td style="font-size:.7rem; font-weight:600">${l.cutDepth || '-'} mm</td>
+
         <td>
             <div class="mat-chips">
                 <span class="mat-chip ${l.wood ? 'mc-yes' : 'mc-no'}">Drewno</span>
                 <span class="mat-chip ${l.leather ? 'mc-yes' : 'mc-no'}">Skóra</span>
             </div>
         </td>
+
         <td><div class="conn-chips">${connIcons}</div></td>
+
         <td>
             ${l.airAssist === 'builtin' ? '<span class="check">✅ Tak</span>' : (l.airAssist === 'option' ? '<span class="opt-lbl">◎ Opcja</span>' : '<span class="cross">❌</span>')}
         </td>
+
         <td>
             ${l.enclosed ? '🔒 Tak' : '<span class="na-lbl">Otwarta</span>'}
         </td>
+
         <td>
             <div class="ship-cell">
                 <span class="ship-from">📍 ${l.shipFrom || 'CN'}</span><br>
                 <span class="warranty">🛡️ ${l.warranty || '12'} m-cy</span>
             </div>
         </td>
+
         <td>
             <div class="price-cell">
                 <span class="price-eur">${l.priceEur} €</span><br>
                 <span class="price-pln">≈ ${pln(l.priceEur)} zł</span><br>
-                ${l.shipEU ? '<span class="ship-eu">🇪🇺 Magazyn EU</span>' : ''}
+                ${l.shipEU ? '<span class="ship-eu"> Magazyn EU</span>' : ''}
             </div>
         </td>
+
         <td>
             <div class="action-cell">
                 <a href="${finalLink}" target="_blank" class="btn-aff">KUP TERAZ</a>
