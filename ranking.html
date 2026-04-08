@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Porównywarka Laserów 2026 | LaserProfit.eu</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+.brand-header {
+  max-width: 1300px;
+  margin: 0 auto 20px;
+  padding: 0 16px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+
+.brand-badge {
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 8px 20px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+  cursor: default;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.brand-badge:hover {
+  border-color: var(--orange);
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(255, 107, 43, 0.1);
+}
+
+/* Wyróżnienie dla Ortura - Twojej głównej afiliacji */
+.brand-badge.highlight {
+  border-color: var(--orange);
+  color: var(--orange);
+  background: rgba(255, 107, 43, 0.05);
+}
+:root{--bg:#0d1b2e;--card:#132237;--card2:#1a2f47;--orange:#ff6b2b;--navy:#1e3a5f;--text:#e8f0fe;--muted:#7a91b0;--border:#1e3352;--input-bg:#0a1624;--font:'Poppins',sans-serif;--green:#34d399;--red:#f87171;--blue:#38bdf8;--purple:#a855f7}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;font-size:13px}
+nav{background:rgba(13,27,46,.97);padding:12px 0;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:300;backdrop-filter:blur(12px)}
+.nav-content{max-width:1300px;margin:0 auto;padding:0 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.logo{font-weight:700;font-size:.9rem;color:var(--orange);text-decoration:none;letter-spacing:1.5px;white-space:nowrap}
+.back{font-size:.7rem;color:var(--muted);text-decoration:none;border:1px solid var(--border);padding:5px 12px;border-radius:20px;transition:.2s;white-space:nowrap}
+.back:hover{border-color:var(--orange);color:var(--orange)}
+.compare-bar{display:none;align-items:center;gap:10px;background:rgba(255,107,43,.12);border:1px solid var(--orange);padding:6px 14px;border-radius:8px;font-size:.72rem}
+.compare-bar.show{display:flex}
+.compare-bar strong{color:var(--orange)}
+.btn-compare-show{background:var(--orange);color:#fff;border:none;padding:5px 12px;border-radius:6px;font-size:.7rem;font-weight:700;cursor:pointer;font-family:var(--font)}
+.btn-compare-clear{background:none;border:1px solid var(--border);color:var(--muted);padding:5px 10px;border-radius:6px;font-size:.7rem;cursor:pointer;font-family:var(--font)}
+.hero{max-width:1300px;margin:0 auto;padding:32px 16px 20px;text-align:center}
+.hero h1{font-size:clamp(1.2rem,2.5vw,1.8rem);color:var(--orange);margin-bottom:6px}
+.hero p{color:var(--muted);font-size:.8rem;max-width:600px;margin:0 auto}
+.rate-info{font-size:.68rem;color:var(--muted);margin-top:6px}
+.rate-info span{color:var(--green)}
+
+/* FILTERS */
+.filters{max-width:1300px;margin:0 auto;padding:0 16px 18px;display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end}
+.fg{display:flex;flex-direction:column;gap:3px}
+.fg label{font-size:.6rem;color:var(--orange);text-transform:uppercase;letter-spacing:.9px;font-weight:700}
+.fg select,.fg input[type=text]{background:var(--card);border:1px solid var(--border);color:var(--text);padding:6px 9px;border-radius:7px;font-family:var(--font);font-size:.72rem;cursor:pointer;min-width:130px}
+.fg input[type=text]{min-width:180px}
+.fg select:focus,.fg input:focus{outline:none;border-color:var(--orange)}
+.results-count{font-size:.7rem;color:var(--muted);margin-left:auto;align-self:center}
+
+/* TABLE */
+.table-wrap{max-width:1300px;margin:0 auto;padding:0 16px 60px;overflow-x:auto}
+table{width:100%;border-collapse:collapse;background:var(--card);border-radius:12px;overflow:hidden;min-width:1500px}
+thead tr{background:var(--navy);border-bottom:2px solid var(--orange)}
+th{padding:10px 8px;text-align:left;font-size:.58rem;color:var(--orange);text-transform:uppercase;letter-spacing:.6px;font-weight:700;cursor:pointer;white-space:nowrap;user-select:none}
+th:hover{color:#fff}
+th .si{margin-left:3px;opacity:.4;font-size:.55rem}
+th.sorted .si{opacity:1}
+td{padding:9px 8px;border-bottom:1px solid var(--border);vertical-align:top;font-size:.72rem;line-height:1.45}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:rgba(255,107,43,.03)}
+tbody tr.hidden{display:none}
+tbody tr.in-compare td{background:rgba(255,107,43,.05);border-left:3px solid var(--orange)}
+
+.model-cell{display:flex;flex-direction:column;gap:2px;min-width:150px}
+.model-name{font-weight:700;font-size:.78rem;color:var(--text);line-height:1.2}
+.model-brand{font-size:.62rem;color:var(--muted)}
+.cat-badge{display:inline-block;padding:1px 6px;border-radius:8px;font-size:.55rem;font-weight:700;letter-spacing:.5px;margin-top:2px;width:fit-content}
+.cat-diode{background:rgba(56,189,248,.12);color:var(--blue);border:1px solid rgba(56,189,248,.2)}
+.cat-fiber{background:rgba(168,85,247,.12);color:var(--purple);border:1px solid rgba(168,85,247,.2)}
+
+.power-cell{font-weight:700;color:var(--orange);font-size:.82rem}
+.area-cell{font-size:.7rem;line-height:1.5}
+.area-exp{font-size:.6rem;color:var(--muted);margin-top:2px;line-height:1.3}
+.area-exp.yes{color:var(--green)}
+
+.speed-cell{font-size:.7rem;line-height:1.5}
+.speed-ms{font-weight:600}
+.speed-mm{color:var(--muted);font-size:.62rem}
+
+.mat-chips{display:flex;flex-wrap:wrap;gap:2px;min-width:130px}
+.mat-chip{border-radius:4px;padding:2px 5px;font-size:.58rem;line-height:1.3}
+.mc-yes{background:rgba(52,211,153,.08);color:var(--green);border:1px solid rgba(52,211,153,.2)}
+.mc-partial{background:rgba(251,191,36,.06);color:#fbbf24;border:1px solid rgba(251,191,36,.2)}
+.mc-no{background:rgba(248,113,113,.05);color:var(--red);border:1px solid rgba(248,113,113,.15);opacity:.6}
+
+.conn-chips{display:flex;gap:2px;flex-wrap:wrap}
+.conn-chip{padding:2px 5px;border-radius:4px;font-size:.58rem;font-weight:600;background:rgba(255,255,255,.05);color:var(--muted);border:1px solid var(--border)}
+.conn-chip.on{background:rgba(56,189,248,.1);color:var(--blue);border-color:rgba(56,189,248,.25)}
+
+.check{color:var(--green);font-size:.82rem}
+.cross{color:var(--red);font-size:.82rem}
+.opt-lbl{color:#fbbf24;font-size:.7rem}
+.na-lbl{color:var(--muted);font-size:.65rem}
+
+.price-cell{min-width:130px}
+.price-eur{font-weight:700;font-size:.82rem;color:var(--orange)}
+.price-pln{font-size:.65rem;color:var(--muted)}
+.price-orig{font-size:.62rem;color:var(--muted);margin-top:1px}
+
+.ship-cell{font-size:.68rem;line-height:1.5;min-width:130px}
+.ship-from{font-weight:600;color:var(--text)}
+.ship-eu{color:var(--green);font-size:.62rem}
+.ship-free{color:var(--green);font-size:.62rem}
+.ship-nofree{color:var(--muted);font-size:.62rem}
+.warranty{font-size:.62rem;color:var(--blue);margin-top:2px}
+
+.action-cell{display:flex;flex-direction:column;gap:4px;min-width:110px}
+.btn-aff{display:inline-block;background:var(--orange);color:#fff;text-decoration:none;padding:5px 10px;border-radius:6px;font-size:.64rem;font-weight:700;font-family:var(--font);transition:.2s;border:none;cursor:pointer;text-align:center}
+.btn-aff:hover{opacity:.85}
+.btn-aff.soon{background:var(--card2);color:var(--muted);border:1px solid var(--border);cursor:default}
+.btn-aff.soon:hover{opacity:1}
+.btn-add-compare{background:none;border:1px solid var(--border);color:var(--muted);padding:4px 8px;border-radius:5px;font-size:.6rem;cursor:pointer;font-family:var(--font);transition:.2s;text-align:center}
+.btn-add-compare:hover{border-color:var(--orange);color:var(--orange)}
+.btn-add-compare.added{border-color:var(--orange);background:rgba(255,107,43,.12);color:var(--orange)}
+
+.expand-btn{background:none;border:1px solid var(--border);color:var(--muted);padding:3px 7px;border-radius:4px;font-size:.58rem;cursor:pointer;font-family:var(--font);transition:.2s;margin-top:3px}
+.expand-btn:hover{border-color:var(--orange);color:var(--orange)}
+
+/* DETAIL ROW */
+.detail-row td{background:rgba(14,30,52,.6);padding:14px 16px;border-top:1px solid var(--border)}
+.detail-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+.di{background:var(--card2);border-radius:8px;padding:10px 12px;border:1px solid var(--border)}
+.di-lbl{font-size:.58rem;color:var(--orange);text-transform:uppercase;letter-spacing:.7px;margin-bottom:3px}
+.di-val{font-size:.76rem;color:var(--text);font-weight:600}
+.di-note{font-size:.62rem;color:var(--muted);margin-top:2px}
+
+/* COMPARE POPUP */
+.popup-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1000;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto}
+.popup-bg.open{display:flex}
+.popup{background:var(--card);border-radius:14px;border:1px solid var(--orange);max-width:1200px;width:100%;padding:24px;position:relative}
+.popup-close{position:absolute;top:12px;right:14px;background:none;border:none;color:var(--muted);font-size:1.2rem;cursor:pointer}
+.popup h2{color:var(--orange);font-size:.95rem;margin-bottom:18px;font-weight:700}
+.cmp-table{width:100%;border-collapse:collapse;overflow-x:auto;display:block}
+.cmp-table th{background:var(--navy);padding:8px 10px;font-size:.6rem;color:var(--orange);text-transform:uppercase;letter-spacing:.6px;text-align:left;white-space:nowrap}
+.cmp-table td{padding:7px 10px;border-bottom:1px solid var(--border);font-size:.72rem;vertical-align:top}
+.cmp-table .row-label{color:var(--muted);font-size:.62rem;font-weight:700;background:rgba(30,58,95,.2);white-space:nowrap}
+.cmp-table .best{color:var(--green);font-weight:700}
+.cmp-remove{background:none;border:1px solid var(--border);color:var(--red);padding:3px 7px;border-radius:4px;font-size:.58rem;cursor:pointer;font-family:var(--font);margin-top:4px}
+
+.no-results{text-align:center;padding:50px 20px;color:var(--muted);font-size:.82rem}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-content">
+    <a href="https://laserprofit.eu" class="logo">⚡ LASERPROFIT.EU</a>
+    <div class="compare-bar" id="compareBar">
+      <strong id="compareCount">0</strong> lasery do porównania
+      <button class="btn-compare-show" onclick="openCompare()">⚖️ Porównaj</button>
+      <button class="btn-compare-clear" onclick="clearCompare()">✕ Wyczyść</button>
+    </div>
+    <a href="https://laserprofit.eu" class="back">← Kalkulator</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <h1>🔬 Porównywarka Laserów 2026</h1>
+  <p>Lasery diodowe i fiber — moc, obszar, materiały, ceny, wysyłka i gwarancja. Dane aktualizowane na bieżąco.</p>
+  <p class="rate-info" id="rateInfo">Kursy walut: ładowanie...</p>
+</div>
+<div class="brand-header">
+  <div class="brand-badge">xTool</div>
+  <div class="brand-badge">Creality</div>
+  <div class="brand-badge">Sculpfun</div>
+  <div class="brand-badge highlight">Ortur</div>
+  <div class="brand-badge">Atomstack</div>
+  <div class="brand-badge">Two Trees</div>
+  <div class="brand-badge">Acmer</div>
+  <div class="brand-badge">Longer</div>
+  <div class="brand-badge">ComMarker</div>
+</div>
+<div class="filters">
+  <div class="fg"><label>🔍 Szukaj</label><input type="text" id="search" placeholder="xTool, D1 Pro, Atomstack..." oninput="applyFilters()"></div>
+  <div class="fg"><label>⚡ Typ</label>
+    <select id="fType" onchange="applyFilters()">
+      <option value="">Wszystkie</option><option value="diode">Diodowy</option><option value="fiber">Fiber</option>
+    </select>
+  </div>
+  <div class="fg"><label>💰 Maks. cena</label>
+    <select id="fPrice" onchange="applyFilters()">
+      <option value="">Każda</option><option value="300">do 300 €</option><option value="600">do 600 €</option><option value="1000">do 1000 €</option><option value="2000">do 2000 €</option><option value="5000">do 5000 €</option>
+    </select>
+  </div>
+  <div class="fg"><label>🔋 Min. moc (W)</label>
+    <select id="fPower" onchange="applyFilters()">
+      <option value="">Każda</option><option value="5">5W+</option><option value="10">10W+</option><option value="20">20W+</option><option value="40">40W+</option><option value="60">60W+</option>
+    </select>
+  </div>
+  <div class="fg"><label>🪵 Materiał</label>
+    <select id="fMat" onchange="applyFilters()">
+      <option value="">Każdy</option><option value="wood">Drewno</option><option value="acrylic_all">Akryl (wszystkie)</option><option value="metal_all">Metal (cięcie)</option><option value="leather">Skóra</option>
+    </select>
+  </div>
+  <div class="fg"><label>📦 Wysyłka z EU</label>
+    <select id="fEU" onchange="applyFilters()">
+      <option value="">Nieważne</option><option value="yes">Tylko z EU</option>
+    </select>
+  </div>
+  <div class="fg"><label>🔌 Rozszerzalność</label>
+    <select id="fExp" onchange="applyFilters()">
+      <option value="">Nieważne</option><option value="yes">Można powiększyć</option>
+    </select>
+  </div>
+  <div class="fg"><label>↕️ Sortuj</label>
+    <select id="fSort" onchange="applyFilters()">
+      <option value="price_asc">Cena ↑</option><option value="price_desc">Cena ↓</option><option value="power_desc">Moc ↓</option><option value="power_asc">Moc ↑</option><option value="area_desc">Obszar ↓</option><option value="speed_desc">Prędkość ↓</option>
+    </select>
+  </div>
+  <span class="results-count" id="resCount"></span>
+</div>
+
+<div class="table-wrap">
+<table id="laserTable">
+<thead>
+  <tr>
+    <th>MODEL</th>
+    <th>MOC LASERA</th>
+    <th>OBSZAR ROBOCZY</th>
+	<th>BUDOWA</th>
+	<th>OPTYKA</th>
+    <th>GR. CIĘCIA</th>
+    <th>MATERIAŁY</th>
+    <th>POŁĄCZENIE</th>
+    <th>AIR ASSIST</th>
+    <th>OBUDOWA</th>
+    <th>WYSYŁKA / GWA</th>
+    <th>CENA</th>
+    <th>AKCJA</th>
+  </tr>
+</thead>
+<tbody id="tbody"></tbody>
+</table>
+<div class="no-results" id="noResults" style="display:none">Brak laserów spełniających kryteria.</div>
+</div>
+
+<!-- COMPARE POPUP -->
+<div class="popup-bg" id="popupBg" onclick="if(event.target===this)closeCompare()">
+  <div class="popup">
+    <button class="popup-close" onclick="closeCompare()">✕</button>
+    <h2>⚖️ Porównanie laserów</h2>
+    <div id="cmpContent" style="overflow-x:auto">
+        </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+<script>
+// ═══════════════════════════════════════════════════════════
+// KONFIGURACJA I LINK DO ARKUSZA
+// ═══════════════════════════════════════════════════════════
+const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTPmn9gQumk_QDGRqfBdl1gSPKJ2wP8kRARb5UZc0NdQglJA-Y3e1Wpv96YvcpJkonVNJk9RXKbXboM/pub?output=csv';
+const MY_PROMO_CODE = "LASERPROFIT";
+
+let LASERS = []; 
+let rateEUR = 4.28; 
+let compareSet = new Set();
+
+// 1. POBIERANIE DANYCH Z GOOGLE SHEETS
+async function loadData() {
+    // Najpierw pobierz kursy walut
+    await fetchRates();
+
+    // Potem pobierz dane laserów
+    Papa.parse(SHEET_URL, {
+        download: true,
+        header: true,
+        dynamicTyping: true,
+        skipEmptyLines: true,
+        complete: function(results) {
+            // Konwersja danych z CSV na format czytelny dla skryptu
+            LASERS = results.data.map(l => ({
+                ...l,
+                wood: String(l.wood).toUpperCase().includes('TRUE') || String(l.wood).includes('PRAWDA'),
+                leather: String(l.leather).toUpperCase().includes('TRUE') || String(l.leather).includes('PRAWDA'),
+                enclosed: String(l.enclosed).toUpperCase().includes('TRUE') || String(l.enclosed).includes('PRAWDA'),
+                shipEU: String(l.shipEU).toUpperCase().includes('TRUE') || String(l.shipEU).includes('PRAWDA'),
+                expandable: String(l.expandable).toUpperCase().includes('TRUE') || String(l.expandable).includes('PRAWDA'),
+                inStock: String(l.inStock).toUpperCase().includes('TRUE') || String(l.inStock).includes('PRAWDA'),
+                // NOWE PARAMETRY:
+                linearRails: String(l.linearRails).toUpperCase().includes('TRUE') || String(l.linearRails).includes('PRAWDA'),
+                camera: String(l.builtInCamera).toUpperCase().includes('TRUE') || String(l.builtInCamera).includes('PRAWDA'),
+                spotSize: l.spotSize || '-',
+                wavelength: l.wavelength || '455nm',
+                safety: l.safetySensors || '-',
+                conn: l.conn ? String(l.conn).split(';') : []
+            }));
+            
+            console.log("Załadowano laserów:", LASERS.length);
+            applyFilters(); // Pierwsze wyświetlenie tabeli
+        },
+        error: function(err) {
+            console.error("Błąd ładowania arkusza:", err);
+            document.getElementById('noResults').innerHTML = "Błąd ładowania danych z Arkusza Google.";
+            document.getElementById('noResults').style.display = 'block';
+        }
+    });
+}
+
+// 2. KURSY WALUT
+async function fetchRates() {
+    try {
+        const r = await fetch('https://api.exchangerate-api.com/v4/latest/EUR');
+        const d = await r.json();
+        rateEUR = d.rates.PLN;
+        document.getElementById('rateInfo').innerHTML = `Kursy walut (live): <span>1 EUR = ${rateEUR.toFixed(2)} zł</span>`;
+    } catch(e) {
+        document.getElementById('rateInfo').innerHTML = `Kursy walut (szacowane): <span>1 EUR ≈ ${rateEUR.toFixed(2)} zł</span>`;
+    }
+}
+
+function pln(eur) { return Math.round(eur * rateEUR).toLocaleString('pl-PL'); }
+
+// 3. RENDEROWANIE WIERSZA (Widok Polski)
+function renderRow(l) {
+    const inCmp = compareSet.has(l.id);
+    const isOrtur = (l.brand && l.brand.toLowerCase() === 'ortur');
+    const finalLink = isOrtur ? 'https://ortur.net/?ref=nskubuaw' : l.affLink;
+
+    // Ikony połączenia
+    const connIcons = l.conn && l.conn.length > 0 
+        ? l.conn.map(c => `<span class="conn-chip on">${c}</span>`).join(' ') 
+        : '<span class="na-lbl">-</span>';
+
+    return `
+    <tr class="laser-row ${inCmp ? 'in-compare' : ''}" data-id="${l.id}">
+        <td>
+            <div class="model-cell">
+                <span class="model-name">${l.brand} ${l.name}</span>
+                <span class="cat-badge ${l.type === 'fiber' ? 'cat-fiber' : 'cat-diode'}">
+                    ${l.type === 'fiber' ? 'FIBER' : 'DIODOWY'}
+                </span>
+            </div>
+        </td>
+        <td class="power-cell">${l.power} W</td>
+        <td class="area-cell">
+            ${l.areaW}×${l.areaH} mm<br>
+            ${l.expandable ? `<span class="area-exp yes">⚡ Można powiększyć</span>` : '<span class="cross">❌</span>'}
+        </td>
+		<td style="font-size:.7rem">🎯 ${l.spotSize}</td>
+        
+        <td style="font-size:.7rem">🌈 ${l.wavelength}</td>
+        
+        <td>${l.linearRails ? '<span class="check">✅</span>' : '<span class="na-lbl">Rolki</span>'}</td>
+        
+        <td>${l.camera ? '📷 Tak' : '<span class="na-lbl">Brak</span>'}</td>
+        <td style="font-size:.7rem; font-weight:600">${l.cutDepth || '-'} mm</td>
+        <td>
+            <div class="mat-chips">
+                <span class="mat-chip ${l.wood ? 'mc-yes' : 'mc-no'}">Drewno</span>
+                <span class="mat-chip ${l.leather ? 'mc-yes' : 'mc-no'}">Skóra</span>
+            </div>
+        </td>
+        <td><div class="conn-chips">${connIcons}</div></td>
+        <td>
+            ${l.airAssist === 'builtin' ? '<span class="check">✅ Tak</span>' : (l.airAssist === 'option' ? '<span class="opt-lbl">◎ Opcja</span>' : '<span class="cross">❌</span>')}
+        </td>
+        <td>
+            ${l.enclosed ? '🔒 Tak' : '<span class="na-lbl">Otwarta</span>'}
+        </td>
+        <td>
+            <div class="ship-cell">
+                <span class="ship-from">📍 ${l.shipFrom || 'CN'}</span><br>
+                <span class="warranty">🛡️ ${l.warranty || '12'} m-cy</span>
+            </div>
+        </td>
+        <td>
+            <div class="price-cell">
+                <span class="price-eur">${l.priceEur} €</span><br>
+                <span class="price-pln">≈ ${pln(l.priceEur)} zł</span><br>
+                ${l.shipEU ? '<span class="ship-eu">🇪🇺 Magazyn EU</span>' : ''}
+            </div>
+        </td>
+        <td>
+            <div class="action-cell">
+                <a href="${finalLink}" target="_blank" class="btn-aff">KUP TERAZ</a>
+                ${isOrtur ? `<div style="font-size:10px; color:var(--orange); font-weight:700; text-align:center; border:1px dashed var(--orange); border-radius:4px; padding:2px;">KOD: ${MY_PROMO_CODE}</div>` : ''}
+                <button class="btn-add-compare ${inCmp ? 'added' : ''}" onclick="toggleCompare(${l.id})">
+                    ${inCmp ? '✔ W liście' : '⊕ Porównaj'}
+                </button>
+            </div>
+        </td>
+    </tr>`;
+}
+function applyFilters() {
+    const search = document.getElementById('search').value.toLowerCase();
+    const fType = document.getElementById('fType').value;
+    const fPrice = parseFloat(document.getElementById('fPrice').value) || Infinity;
+
+    let data = LASERS.filter(l => {
+        if(search && !(l.brand + ' ' + l.name).toLowerCase().includes(search)) return false;
+        if(fType && l.type !== fType) return false;
+        if(l.priceEur > fPrice) return false;
+        return true;
+    });
+
+    const tbody = document.getElementById('tbody');
+    if(tbody) {
+        tbody.innerHTML = data.map(renderRow).join('');
+    }
+    
+    const resCount = document.getElementById('resCount');
+    if(resCount) resCount.textContent = `Znaleziono: ${data.length} laserów`;
+	// Zarządzanie paskiem porównywania
+    const bar = document.getElementById('compareBar');
+    const count = document.getElementById('compareCount');
+    if (compareSet.size > 0) {
+        bar.classList.add('show');
+        count.textContent = compareSet.size;
+    } else {
+        bar.classList.remove('show');
+    }
+}
+
+function toggleCompare(id) {
+    if(compareSet.has(id)) {
+        compareSet.delete(id);
+    } else {
+        if(compareSet.size >= 4) { 
+            alert('Możesz porównać maksymalnie 4 lasery.'); 
+            return; 
+        }
+        compareSet.add(id);
+    }
+    applyFilters();
+}
+
+function openCompare() {
+    // SZUKAMY TEGO ID W HTML
+    const tableContainer = document.getElementById('cmpContent');
+    const popup = document.getElementById('popupBg');
+    
+    if (compareSet.size === 0) {
+        alert("Wybierz lasery do porównania klikając ikonę ⊕ przy modelu.");
+        return;
+    }
+
+    const items = LASERS.filter(l => compareSet.has(l.id));
+    
+    let html = `
+    <table style="width:100%; border-collapse: collapse; color: var(--text); font-size: 12px; min-width: 600px;">
+        <thead>
+            <tr style="background: var(--navy);">
+                <th style="padding: 12px; border: 1px solid var(--border); color: var(--orange); text-align: left; width: 150px;">PARAMETR</th>`;
+    
+    items.forEach(l => {
+        html += `
+                <th style="padding: 12px; border: 1px solid var(--border); text-align: center; background: var(--card2);">
+                    <div style="font-weight: 700; color: #fff;">${l.brand}</div>
+                    <div style="font-size: 11px; color: var(--orange);">${l.name}</div>
+                    <button onclick="toggleCompare(${l.id}); openCompare();" style="background:rgba(248,113,113,0.1); border:1px solid var(--red); color:var(--red); font-size:9px; cursor:pointer; margin-top:8px; border-radius:4px; padding: 2px 6px;">Usuń</button>
+                </th>`;
+    });
+    html += `</tr></thead><tbody>`;
+
+    const rows = [
+        ['TYP LASERA', 'type'],
+        ['MOC LASERA', 'power', ' W'],
+        ['OBSZAR ROBOCZY', 'areaW', ' x ', 'areaH', ' mm'],
+        ['MAX PRĘDKOŚĆ', 'speed', ' mm/min'],
+		['ROZMIAR PLAMKI', 'spotSize'],
+		['DŁUGOŚĆ FALI', 'wavelength'],
+		['SZYNY LINIOWE', 'linearRails'],
+		['KAMERA', 'camera'],
+        ['GR. CIĘCIA', 'cutDepth', ' mm'],
+        ['AIR ASSIST', 'airAssist'],
+        ['OBUDOWA', 'enclosed'],
+        ['DREWNO', 'wood'],
+        ['SKÓRA', 'leather'],
+        ['MOŻNA POWIĘKSZYĆ', 'expandable'],
+        ['POŁĄCZENIE', 'conn'],
+        ['WYSYŁKA Z', 'shipFrom'],
+        ['MAGAZYN EU', 'shipEU'],
+        ['GWARANCJA', 'warranty', ' m-cy'],
+        ['CENA (€)', 'priceEur', ' €'],
+        ['CENA (PLN)', 'pricePln']
+    ];
+
+    rows.forEach(row => {
+        html += `<tr style="border-bottom: 1px solid var(--border);">
+                    <td style="padding: 10px; background: rgba(30,58,95,0.3); font-weight: 600; color: var(--muted); text-transform: uppercase; font-size: 10px;">${row[0]}</td>`;
+        
+        items.forEach(l => {
+            let val = "";
+            if (row[1] === 'areaW') {
+                val = `${l.areaW}${row[2]}${l.areaH}${row[4]}`;
+            } else if (row[1] === 'pricePln') {
+                val = `~ ${Math.round(l.priceEur * rateEUR).toLocaleString()} zł`;
+            } else if (typeof l[row[1]] === 'boolean' || String(l[row[1]]).toLowerCase() === 'true') {
+                val = "✅ Tak";
+            } else if (String(l[row[1]]).toLowerCase() === 'false') {
+                val = "❌ Nie";
+            } else if (row[1] === 'airAssist') {
+                val = l.airAssist === 'builtin' ? "✅ Zintegrowany" : (l.airAssist === 'option' ? "🟡 Opcja" : "❌ Brak");
+            } else {
+                val = (l[row[1]] || '-') + (row[2] || '');
+            }
+            html += `<td style="padding: 10px; border-left: 1px solid var(--border); text-align: center;">${val}</td>`;
+        });
+        html += `</tr>`;
+    });
+
+    html += `</tbody></table>`;
+
+    tableContainer.innerHTML = html;
+    popup.classList.add('open');
+}
+
+// FUNKCJA ZAMYKANIA
+function closeCompare() {
+    document.getElementById('popupBg').classList.remove('open');
+}
+
+// FUNKCJA CZYSZCZENIA LISTY
+function clearCompare() {
+    compareSet.clear();
+    applyFilters();
+}
+// --- KONIEC DODAWANIA ---
+
+// START
+loadData();
+</script>
+</body>
+</html>
