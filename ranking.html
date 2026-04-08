@@ -337,6 +337,7 @@ async function fetchRates() {
 function pln(eur) { return Math.round(eur * rateEUR).toLocaleString('pl-PL'); }
 
 // 3. RENDEROWANIE WIERSZA (Widok Polski)
+// 3. RENDEROWANIE WIERSZA (Widok Polski)
 function renderRow(l) {
     const inCmp = compareSet.has(l.id);
     const isOrtur = (l.brand && l.brand.toLowerCase() === 'ortur');
@@ -361,7 +362,9 @@ function renderRow(l) {
         <td class="area-cell">
             ${l.areaW}×${l.areaH} mm<br>
             ${l.expandable ? `<span class="area-exp yes">⚡ Można powiększyć</span>` : '<span class="cross">❌</span>'}
-			<td>
+        </td>
+
+        <td>
             <div style="font-size: 0.65rem;">
                 ${l.linearRails ? '✅ Szyny liniowe' : '⚪ Rolki V-Slot'}<br>
                 ${l.camera ? '📷 Kamera' : '⚪ Brak kamery'}
@@ -370,18 +373,11 @@ function renderRow(l) {
 
         <td>
             <div style="font-size: 0.65rem;">
-                🎯 <strong>${l.spotSize}</strong><br>
-                🌈 <strong>${l.wavelength}</strong>
+                🎯 Plamka: <strong>${l.spotSize}</strong><br>
+                🌈 Fala: <strong>${l.wavelength}</strong>
             </div>
         </td>
-        </td>
-		<td style="font-size:.7rem">🎯 ${l.spotSize}</td>
-        
-        <td style="font-size:.7rem">🌈 ${l.wavelength}</td>
-        
-        <td>${l.linearRails ? '<span class="check">✅</span>' : '<span class="na-lbl">Rolki</span>'}</td>
-        
-        <td>${l.camera ? '📷 Tak' : '<span class="na-lbl">Brak</span>'}</td>
+
         <td style="font-size:.7rem; font-weight:600">${l.cutDepth || '-'} mm</td>
         <td>
             <div class="mat-chips">
