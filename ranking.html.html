@@ -296,14 +296,18 @@ async function loadData() {
             // Konwersja danych z CSV na format czytelny dla skryptu
             LASERS = results.data.map(l => ({
                 ...l,
-                // Naprawa wartości logicznych (Google Sheets zwraca je różnie)
                 wood: String(l.wood).toUpperCase().includes('TRUE') || String(l.wood).includes('PRAWDA'),
                 leather: String(l.leather).toUpperCase().includes('TRUE') || String(l.leather).includes('PRAWDA'),
                 enclosed: String(l.enclosed).toUpperCase().includes('TRUE') || String(l.enclosed).includes('PRAWDA'),
                 shipEU: String(l.shipEU).toUpperCase().includes('TRUE') || String(l.shipEU).includes('PRAWDA'),
                 expandable: String(l.expandable).toUpperCase().includes('TRUE') || String(l.expandable).includes('PRAWDA'),
                 inStock: String(l.inStock).toUpperCase().includes('TRUE') || String(l.inStock).includes('PRAWDA'),
-                // Konwersja połączeń ze średnika na tablicę
+                // NOWE PARAMETRY:
+                linearRails: String(l.linearRails).toUpperCase().includes('TRUE') || String(l.linearRails).includes('PRAWDA'),
+                camera: String(l.builtInCamera).toUpperCase().includes('TRUE') || String(l.builtInCamera).includes('PRAWDA'),
+                spotSize: l.spotSize || '-',
+                wavelength: l.wavelength || '455nm',
+                safety: l.safetySensors || '-',
                 conn: l.conn ? String(l.conn).split(';') : []
             }));
             
