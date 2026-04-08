@@ -244,6 +244,8 @@ tbody tr.in-compare td{background:rgba(255,107,43,.05);border-left:3px solid var
     <th>MODEL</th>
     <th>MOC LASERA</th>
     <th>OBSZAR ROBOCZY</th>
+	<th>BUDOWA</th>
+	<th>OPTYKA</th>
     <th>GR. CIĘCIA</th>
     <th>MATERIAŁY</th>
     <th>POŁĄCZENIE</th>
@@ -362,6 +364,13 @@ function renderRow(l) {
             ${l.areaW}×${l.areaH} mm<br>
             ${l.expandable ? `<span class="area-exp yes">⚡ Można powiększyć</span>` : '<span class="cross">❌</span>'}
         </td>
+		<td style="font-size:.7rem">🎯 ${l.spotSize}</td>
+        
+        <td style="font-size:.7rem">🌈 ${l.wavelength}</td>
+        
+        <td>${l.linearRails ? '<span class="check">✅</span>' : '<span class="na-lbl">Rolki</span>'}</td>
+        
+        <td>${l.camera ? '📷 Tak' : '<span class="na-lbl">Brak</span>'}</td>
         <td style="font-size:.7rem; font-weight:600">${l.cutDepth || '-'} mm</td>
         <td>
             <div class="mat-chips">
@@ -476,6 +485,10 @@ function openCompare() {
         ['MOC LASERA', 'power', ' W'],
         ['OBSZAR ROBOCZY', 'areaW', ' x ', 'areaH', ' mm'],
         ['MAX PRĘDKOŚĆ', 'speed', ' mm/min'],
+		['ROZMIAR PLAMKI', 'spotSize'],
+		['DŁUGOŚĆ FALI', 'wavelength'],
+		['SZYNY LINIOWE', 'linearRails'],
+		['KAMERA', 'camera'],
         ['GR. CIĘCIA', 'cutDepth', ' mm'],
         ['AIR ASSIST', 'airAssist'],
         ['OBUDOWA', 'enclosed'],
