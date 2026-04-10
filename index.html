@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="en">
 <head>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-XGHFMYDPM7"></script>
@@ -12,26 +12,25 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LaserProfit.eu – Free Laser Engraving Price Calculator 2026</title>
-<meta name="description" content="LaserProfit.eu – Free laser engraving & cutting price calculator. 14 languages, 12 currencies. Kalkulator wyceny grawerowania laserem 2026.">
-<meta name="keywords" content="laser engraving price calculator, laser cutting cost calculator, kalkulator grawerowania, Lasergravur Preisrechner, calculadora grabado laser">
+<meta name="description" content="LaserProfit.eu – Free laser engraving & cutting price calculator. 14 languages, 12 currencies. Calculate exact costs for xTool, Creality, Atomstack and more.">
+<meta name="keywords" content="laser engraving price calculator, laser cutting cost calculator, laser engraving pricing tool, xTool calculator, Creality laser cost">
 <meta name="author" content="LaserProfit.eu">
 <meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large">
 <meta name="google-site-verification" content="HGtiv1o5Zh2URMz7O5Dxean6mWRR7Ac9hlp3GZSHdH8"/>
 <meta name="google-site-verification" content="5Nwn999MbIZk3IpYyC0gfXdTVEyr2dbTOLcRiN75S0U" />
-<link rel="canonical" href="https://www.laserprofit.eu/"/>
-<link rel="alternate" hreflang="x-default" href="https://www.laserprofit.eu/"/>
-<link rel="alternate" hreflang="pl" href="https://www.laserprofit.eu/"/>
-<link rel="alternate" hreflang="en" href="https://www.laserprofit.eu/en/"/>
-<link rel="alternate" hreflang="de" href="https://www.laserprofit.eu/de/"/>
+<link rel="canonical" href="https://www.laserprofit.eu/en/"/>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
 <meta name="theme-color" content="#ff6b2b">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://www.laserprofit.eu/">
+<meta property="og:url" content="https://www.laserprofit.eu/en/">
 <meta property="og:title" content="LaserProfit.eu – Free Laser Engraving Price Calculator 2026">
 <meta property="og:description" content="Calculate exact laser engraving & cutting costs. 12 currencies, 14 languages. xTool, Creality, Atomstack.">
 <meta property="og:site_name" content="LaserProfit.eu">
+<meta property="og:image" content="https://laserprofit.eu/polski.png">
 <meta name="twitter:card" content="summary_large_image">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"LaserProfit.eu – Laser Engraving Price Calculator","url":"https://www.laserprofit.eu/","applicationCategory":"BusinessApplication","operatingSystem":"All","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+<link rel="alternate" hreflang="en" href="https://www.laserprofit.eu/en/"/>
+<link rel="alternate" hreflang="pl" href="https://www.laserprofit.eu/"/>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"LaserProfit.eu – Laser Engraving Price Calculator","url":"https://www.laserprofit.eu/en/","applicationCategory":"BusinessApplication","operatingSystem":"All","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
@@ -48,13 +47,15 @@ nav{background:var(--nav-bg);padding:12px 0;position:sticky;top:0;border-bottom:
 .nav-link.danger{color:#f87171}.nav-link.danger:hover{border-color:#f87171}
 .theme-btn{background:var(--card2);border:1px solid var(--border);color:var(--text);padding:5px 11px;border-radius:20px;cursor:pointer;font-size:.7rem;font-weight:700;font-family:var(--font);white-space:nowrap}
 .theme-btn:hover{border-color:var(--orange);color:var(--orange)}
-/* ── Linki do wersji językowych strony ── */
+
+/* ── Lang switcher nav links (flags as page links) ── */
 .lang-nav{display:flex;gap:4px;align-items:center;border-left:1px solid var(--border);padding-left:10px;margin-left:4px}
 .lang-nav-btn{display:flex;align-items:center;gap:4px;padding:3px 7px;border-radius:6px;text-decoration:none;font-size:.65rem;font-weight:700;color:var(--muted);border:1.5px solid transparent;font-family:var(--font);transition:.2s;background:none;cursor:pointer}
 .lang-nav-btn:hover{border-color:var(--orange);color:var(--orange)}
 .lang-nav-btn.active-lang{border-color:var(--orange);background:rgba(255,107,43,.12);color:var(--orange)}
 .lang-nav-btn img{width:20px;height:auto;display:block}
-/* ── Translator raportu (TXT/PDF) ── */
+
+/* ── Inline translator (for report language TXT/PDF) ── */
 .lang-wrap{position:relative;display:inline-flex;align-items:center;gap:5px}
 .main-flags{display:flex;gap:4px;align-items:center}
 .flag-btn{cursor:pointer;opacity:.6;border:2px solid transparent;border-radius:5px;padding:2px;display:flex;align-items:center;background:none;transition:.2s}
@@ -67,8 +68,10 @@ nav{background:var(--nav-bg);padding:12px 0;position:sticky;top:0;border-bottom:
 .dd-btn{display:flex;align-items:center;gap:6px;padding:5px 8px;border-radius:6px;cursor:pointer;font-size:.68rem;font-weight:600;border:1.5px solid transparent;background:none;color:var(--text);font-family:var(--font);white-space:nowrap}
 .dd-btn:hover{background:rgba(255,107,43,.08);border-color:var(--orange)}
 .dd-btn.active{background:rgba(255,107,43,.15);border-color:var(--orange);color:var(--orange)}
+
 /* layout */
 .container{max-width:1060px;margin:0 auto;padding:34px 20px}
+/* hero */
 .hero{display:grid;grid-template-columns:1fr 1fr;border-radius:18px;margin-bottom:44px;border:1px solid var(--border);overflow:hidden;min-height:300px}
 .hero-left{padding:44px 32px 36px;background:linear-gradient(135deg,var(--navy),#0d1b2e);display:flex;flex-direction:column;justify-content:center}
 body.light-mode .hero-left{background:linear-gradient(135deg,var(--navy),#1a3358)}
@@ -80,6 +83,7 @@ body.light-mode .hero-left{background:linear-gradient(135deg,var(--navy),#1a3358
 @keyframes glow-pulse{0%,100%{opacity:.4}50%{opacity:.9}}
 .laser-beam{animation:beam-pulse 1.8s ease-in-out infinite}
 .laser-glow{animation:glow-pulse 1.8s ease-in-out infinite}
+/* cards */
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-top:32px}
 .card{background:var(--card);border-radius:12px;padding:20px;border:1px solid var(--border);transition:.25s}
 .card:hover{border-color:var(--orange);transform:translateY(-3px);box-shadow:0 8px 24px rgba(255,107,43,.1)}
@@ -87,12 +91,14 @@ body.light-mode .hero-left{background:linear-gradient(135deg,var(--navy),#1a3358
 .price-tag{font-size:1.25rem;font-weight:700;margin:11px 0}
 .btn{display:block;text-align:center;background:var(--orange);color:#fff;text-decoration:none;padding:10px 14px;border-radius:7px;font-weight:700;transition:.25s;border:none;cursor:pointer;font-family:var(--font);font-size:.78rem}
 .btn:hover{opacity:.88;box-shadow:0 0 18px rgba(255,107,43,.35)}
+/* res cards */
 .res-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:14px;margin-top:14px}
 .res-card{background:rgba(30,58,95,.1);border:1px dashed var(--orange);border-radius:11px;padding:16px;display:flex;flex-direction:column;gap:7px}
 .res-card h4{color:var(--orange);font-size:.82rem;font-weight:700}
 .res-card p{font-size:.76rem;color:var(--muted);flex:1}
 .res-card a{color:var(--text);font-weight:700;text-decoration:none;border-bottom:1px solid var(--orange);font-size:.76rem;align-self:flex-start}
 .res-card a:hover{color:var(--orange)}
+/* forms */
 .form-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .form-4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
 .form-5{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
@@ -102,6 +108,7 @@ body.light-mode .hero-left{background:linear-gradient(135deg,var(--navy),#1a3358
 .calc-input{width:100%;padding:8px 10px;border-radius:6px;border:1px solid var(--border);background:var(--input-bg);color:var(--text);font-size:.8rem;font-family:var(--font);height:36px;transition:border .2s}
 .calc-input:focus{outline:none;border-color:var(--orange);box-shadow:0 0 0 3px rgba(255,107,43,.12)}
 select.calc-input{background:var(--select-bg);cursor:pointer}
+/* calc section */
 .calc-section{background:var(--card);padding:32px;border-radius:18px;margin-top:50px;border:2px solid var(--orange);box-shadow:0 10px 36px rgba(0,0,0,.3)}
 .calc-section h2{text-align:center;margin-bottom:4px;font-size:1.1rem}
 .calc-sub{text-align:center;color:var(--muted);margin-bottom:22px;font-size:.78rem}
@@ -155,6 +162,7 @@ body.light-mode .rpt-row{border-bottom:1px solid rgba(0,0,0,.05)}
 .rpt-row.tot .rl{color:var(--text);font-weight:700}.rpt-row.tot .rv{color:var(--orange);font-weight:700;font-size:.86rem}
 .rpt-row.prow .rl{color:#6ee7b7;font-weight:700}.rpt-row.prow .rv{color:#34d399;font-weight:700;font-size:.88rem}
 body.light-mode .rpt-row.prow .rl{color:#065f46}body.light-mode .rpt-row.prow .rv{color:#047857}
+/* misc */
 .hint{font-size:.69rem;color:var(--muted);border-left:3px solid var(--orange);padding-left:9px;margin-top:11px}
 table{width:100%;border-collapse:collapse;background:var(--card);border-radius:11px;font-size:.79rem;overflow:hidden}
 thead tr{border-bottom:2px solid var(--orange)}th{padding:12px 13px;text-align:left;font-size:.68rem;color:var(--orange);text-transform:uppercase;letter-spacing:.5px}
@@ -166,6 +174,7 @@ summary::marker{display:none}summary::before{content:'▶  ';font-size:.62rem}
 details[open] summary::before{content:'▼  '}
 details p{margin-top:8px;font-size:.79rem;color:var(--muted)}
 footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-top:2px solid var(--orange);background:var(--card);font-size:.77rem}
+/* modal */
 .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:9999;align-items:center;justify-content:center}
 .modal-bg.open{display:flex}
 .modal-box{background:var(--card);border-radius:14px;padding:28px;max-width:500px;width:90%;border:1px solid var(--orange);position:relative}
@@ -176,8 +185,8 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
     align-items: center;
     justify-content: center;
     gap: 10px;
-    background: #ff5f5f;
-    color: #fff !important; /* !important, żeby wymusić kolor na linku */
+    background: #FFDD00; /* Kolor charakterystyczny dla BuyMeACoffee */
+    color: #000000 !important; /* Czarny tekst lepiej pasuje do żółtego tła */
     text-decoration: none;
     padding: 12px 14px;
     border-radius: 7px;
@@ -191,8 +200,8 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
     width: 100%;
 }
 .btn-coffee-calc:hover {
-    background: #ff4545;
-    box-shadow: 0 0 18px rgba(255, 95, 95, 0.4);
+    background: #ffbe00;
+    box-shadow: 0 0 18px rgba(255, 221, 0, 0.4);
     transform: translateY(-2px);
 }
 .btn-coffee-calc img {
@@ -204,31 +213,30 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
 <body>
 <nav>
 <div class="nav-content">
-    <a href="https://www.laserprofit.eu/" class="logo">⚡ LASERPROFIT.EU</a>
+    <a href="https://www.laserprofit.eu/en/" class="logo">⚡ LASERPROFIT.EU</a>
     <div class="nav-links">
-        <a href="/porowywarka/" class="nav-link" style="opacity:.6;cursor:default;" title="Wkrótce">🏆 RANKING LASERÓW <span style="font-size:.55rem;background:var(--orange);color:#fff;padding:1px 5px;border-radius:8px;margin-left:3px;">wkrótce</span></a>
-        <a href="#kalkulator" class="nav-link" data-t="nav_calc">🧮 KALKULATOR</a>
-        <a href="#zasoby" class="nav-link" data-t="nav_files">📂 DARMOWE PLIKI</a>
-        <a href="#bhp" class="nav-link danger" data-t="nav_bhp">⚠️ BHP</a>
-        <button class="theme-btn" onclick="toggleTheme()" id="themeBtn" data-t="theme_light">☀️ Tryb jasny</button>
+        <a href="#calculator" class="nav-link">🧮 CALCULATOR</a>
+        <a href="#files" class="nav-link">📂 FREE FILES</a>
+        <a href="#safety" class="nav-link danger">⚠️ SAFETY</a>
+        <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">☀️ Light mode</button>
 
-        <!-- ── Linki do wersji językowych (osobne strony) ── -->
-        <div class="lang-nav" title="Wersja językowa strony">
-            <a href="https://www.laserprofit.eu/" class="lang-nav-btn active-lang" title="Wersja polska">
+        <!-- ── Page language switcher (links to separate pages) ── -->
+        <div class="lang-nav" title="Switch page language">
+            <a href="https://www.laserprofit.eu/" class="lang-nav-btn" title="Polish version">
                 <img src="https://flagcdn.com/w40/pl.png" alt="PL"> PL
             </a>
-            <a href="https://www.laserprofit.eu/en/" class="lang-nav-btn" title="English version">
+            <a href="https://www.laserprofit.eu/en/" class="lang-nav-btn active-lang" title="English version">
                 <img src="https://flagcdn.com/w40/gb.png" alt="EN"> EN
             </a>
-            <a href="https://www.laserprofit.eu/de/" class="lang-nav-btn" title="Deutsche Version">
+            <a href="https://www.laserprofit.eu/de/" class="lang-nav-btn" title="German version">
                 <img src="https://flagcdn.com/w40/de.png" alt="DE"> DE
             </a>
         </div>
 
-        <!-- ── Translator raportu TXT/PDF (pozostałe języki) ── -->
-        <div class="lang-wrap" id="langWrap" title="Język raportu TXT/PDF">
+        <!-- ── Inline translator (report language TXT/PDF) ── -->
+        <div class="lang-wrap" id="langWrap" title="Report language for TXT/PDF only (PL/EN/DE have dedicated pages ↑)">
             <div class="main-flags" id="mainFlags"></div>
-            <button class="more-btn" id="moreBtn" data-t="more_langs">więcej</button>
+            <button class="more-btn" id="moreBtn">＋ more</button>
             <div class="lang-dd" id="langDd"></div>
         </div>
     </div>
@@ -237,10 +245,10 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
 <div class="container">
 <section class="hero">
     <div class="hero-left">
-        <span class="hero-badge" data-t="hero_badge">DARMOWE NARZĘDZIE · 2026</span>
-        <h1 data-t="hero_h1">Kalkulator Wyceny Grawerowania Laserem 2026</h1>
-        <p style="margin-top:10px;" data-t="hero_sub1">Darmowe narzędzie do wyceny grawerowania i cięcia laserem</p>
-        <p style="margin-top:6px;font-size:.78rem;" data-t="hero_sub2">Używane przez twórców na całym świecie</p>
+        <span class="hero-badge">FREE TOOL · 2026</span>
+        <h1>Laser Engraving Price Calculator 2026</h1>
+        <p style="margin-top:10px;">Free tool for laser engraving &amp; cutting cost calculation · 12 currencies · 14 languages · xTool · Creality · Atomstack &amp; more</p>
+        <p style="margin-top:6px;font-size:.78rem;">Used by makers in 🇵🇱 Poland · 🇩🇪 Germany · 🇨🇿 Czech Republic · 🇺🇦 Ukraine · 🇬🇧 UK · 🇺🇸 USA and 50+ countries</p>
     </div>
     <div class="hero-right">
         <svg viewBox="0 0 320 260" width="100%" height="100%" style="position:absolute;inset:0;" preserveAspectRatio="xMidYMid meet">
@@ -291,587 +299,270 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
     </div>
 </section>
 
-<section id="kalkulator" class="calc-section">
-    <h2 data-t="calc_h2">🎯 Laser Price Studio</h2>
-    <p class="calc-sub" data-t="calc_sub">Skonfiguruj własne stawki i zobacz swój realny zysk.</p>
+<!-- ===== CALCULATOR ===== -->
+<section id="calculator" class="calc-section">
+    <h2>🎯 Laser Price Studio</h2>
+    <p class="calc-sub">Set your rates and see your real profit.</p>
     <div class="settings-bar">
-        <div class="cs-grp"><span class="cs-lbl" data-t="cur_label">💱 Waluta raportu</span><div class="chips" id="curChips"></div></div>
-        <div class="cs-grp"><span class="cs-lbl" data-t="lang_label">🌍 Język raportu TXT/PDF</span><div class="chips" id="langChips"></div></div>
+        <div class="cs-grp"><span class="cs-lbl">💱 Report currency</span><div class="chips" id="curChips"></div></div>
+        <div class="cs-grp"><span class="cs-lbl">🌍 Raport język / Report language</span><div class="chips" id="langChips"></div></div>
     </div>
     <div class="box-muted">
         <div class="form-2">
-            <div class="field"><label data-t="lbl_hourly">Twoja stawka godzinowa ({s}/h)</label><input type="number" id="hourlyRate" value="80" min="0" max="9999" class="calc-input"></div>
-            <div class="field"><label data-t="lbl_machine">Koszt prądu i amortyzacji ({s}/h)</label><input type="number" id="machineRate" value="15" min="0" max="9999" class="calc-input"></div>
+            <div class="field"><label id="lbl_hourly">Your hourly rate ($/h)</label><input type="number" id="hourlyRate" value="30" class="calc-input"></div>
+            <div class="field"><label id="lbl_machine">Power &amp; depreciation cost ($/h)</label><input type="number" id="machineRate" value="5" class="calc-input"></div>
         </div>
     </div>
     <div class="form-4">
-        <div class="field"><label data-t="lbl_material">Materiał i trudność</label>
+        <div class="field"><label>Material &amp; difficulty</label>
             <select id="materialType" class="calc-input">
-                <option value="1.0" data-t="mat_wood">Sklejka / Drewno (×1.0)</option>
-                <option value="1.4" data-t="mat_acrylic">Akryl / Pleksi (×1.4)</option>
-                <option value="1.8" data-t="mat_metal">Metal / Trawienie (×1.8)</option>
-                <option value="2.0" data-t="mat_laminate">Laminaty (×2.0)</option>
+                <option value="1.0">Plywood / Wood (×1.0)</option>
+                <option value="1.4">Acrylic / Plexiglass (×1.4)</option>
+                <option value="1.8">Metal / Etching (×1.8)</option>
+                <option value="2.0">Engraving laminates (×2.0)</option>
             </select>
         </div>
-        <div class="field"><label data-t="lbl_lasermin">Czas lasera (min)</label><input type="number" id="laserMinutes" value="20" min="0" max="9999" class="calc-input"></div>
-        <div class="field"><label data-t="lbl_prep">Przygotowanie projektu (min)</label><input type="number" id="vectorPrep" value="10" min="0" max="9999" class="calc-input"></div>
-        <div class="field"><label data-t="lbl_matprice">Cena arkusza materiału ({s})</label><input type="number" id="rawMaterial" value="25" min="0" max="99999" class="calc-input" oninput="calcMat()"></div>
+        <div class="field"><label>Laser time (min)</label><input type="number" id="laserMinutes" value="20" class="calc-input"></div>
+        <div class="field"><label>Project preparation (min)</label><input type="number" id="vectorPrep" value="10" class="calc-input"></div>
+        <div class="field"><label id="lbl_matprice">Full sheet price ($)</label><input type="number" id="rawMaterial" value="6" class="calc-input" oninput="calcMat()"></div>
     </div>
+    <!-- VAT -->
     <div class="form-2" style="margin-top:12px;">
-        <div class="field"><label data-t="lbl_vat">Stawka VAT (%)</label><input type="number" id="vatRate" value="23" min="0" max="100" step="1" class="calc-input"></div>
-        <div class="field"><label data-t="lbl_vatcountry">Kraj / Region</label>
+        <div class="field"><label>VAT Rate (%)</label><input type="number" id="vatRate" value="20" min="0" max="100" step="1" class="calc-input"></div>
+        <div class="field"><label>Country / Region</label>
             <select id="vatPreset" class="calc-input" onchange="var v=this.value;var panel=document.getElementById('vatCustomPanel');if(v==='custom'){if(panel)panel.style.display='block';}else{if(panel)panel.style.display='none';if(v!=='')document.getElementById('vatRate').value=v;}">
-                <option value="23">🇵🇱 Polska – 23%</option>
-                <option value="19">🇩🇪 Niemcy – 19%</option>
-                <option value="20">🇫🇷 Francja – 20%</option>
-                <option value="22">🇮🇹 Włochy – 22%</option>
-                <option value="21">🇪🇸 Hiszpania – 21%</option>
-                <option value="21">🇳🇱 Holandia – 21%</option>
-                <option value="21">🇨🇿 Czechy – 21%</option>
-                <option value="20">🇺🇦 Ukraina – 20%</option>
-                <option value="25">🇳🇴 Norwegia – 25%</option>
-                <option value="25">🇸🇪 Szwecja – 25%</option>
-                <option value="25">🇩🇰 Dania – 25%</option>
-                <option value="27">🇭🇺 Węgry – 27%</option>
-                <option value="19">🇷🇴 Rumunia – 19%</option>
+                <option value="23">🇵🇱 Poland – 23%</option>
+                <option value="19">🇩🇪 Germany – 19%</option>
+                <option value="20" selected>🇫🇷 France – 20%</option>
+                <option value="22">🇮🇹 Italy – 22%</option>
+                <option value="21">🇪🇸 Spain – 21%</option>
+                <option value="21">🇳🇱 Netherlands – 21%</option>
+                <option value="21">🇨🇿 Czech Republic – 21%</option>
+                <option value="20">🇺🇦 Ukraine – 20%</option>
+                <option value="25">🇳🇴 Norway – 25%</option>
+                <option value="25">🇸🇪 Sweden – 25%</option>
+                <option value="25">🇩🇰 Denmark – 25%</option>
+                <option value="27">🇭🇺 Hungary – 27%</option>
+                <option value="19">🇷🇴 Romania – 19%</option>
+                <option value="20">🇬🇧 United Kingdom – 20%</option>
                 <option value="0">🇺🇸 USA – 0%</option>
-                <optgroup label="🇨🇦 Kanada">
-                <option value="5">🇨🇦 Kanada – GST 5% (federalny)</option>
+                <optgroup label="🇨🇦 Canada">
+                <option value="5">🇨🇦 Canada – GST 5% (federal)</option>
                 <option value="13">🇨🇦 Ontario – HST 13%</option>
                 <option value="15">🇨🇦 Nova Scotia / NB / NL / PEI – HST 15%</option>
-                <option value="14.975">🇨🇦 Quebec – QST+GST 14,975%</option>
-                <option value="12">🇨🇦 Kolumbia Brytyjska – GST+PST 12%</option>
+                <option value="14.975">🇨🇦 Quebec – QST+GST 14.975%</option>
+                <option value="12">🇨🇦 British Columbia – GST+PST 12%</option>
                 <option value="11">🇨🇦 Manitoba – GST+PST 11%</option>
                 <option value="11">🇨🇦 Saskatchewan – GST+PST 11%</option>
-                <option value="5">🇨🇦 Alberta – GST 5% (brak PST)</option>
+                <option value="5">🇨🇦 Alberta – GST 5% (no PST)</option>
                 </optgroup>
-                <option value="custom">✏️ Własny wybór: wpisz Państwo</option>
+                <option value="custom">✏️ Custom: enter your country</option>
             </select>
                 <div id="vatCustomPanel" style="display:none;margin-top:8px;background:rgba(255,107,43,.06);border:1px solid var(--orange);border-radius:8px;padding:12px;gap:8px;display:none;">
                     <div class="form-2">
-                        <div class="field"><label style="font-size:.62rem;color:var(--orange);">Nazwa Państwa</label>
-                            <input type="text" id="vatCountryName" class="calc-input" placeholder="np. Australia, Nowa Zelandia..." oninput="updateCustomVat()">
+                        <div class="field"><label style="font-size:.62rem;color:var(--orange);">Country name</label>
+                            <input type="text" id="vatCountryName" class="calc-input" placeholder="e.g. Australia, New Zealand..." oninput="updateCustomVat()">
                         </div>
-                        <div class="field"><label style="font-size:.62rem;color:var(--orange);">Stawka VAT (%)</label>
-                            <input type="number" id="vatCustomRate" class="calc-input" placeholder="np. 10" min="0" max="100" step="0.1" oninput="updateCustomVat()">
+                        <div class="field"><label style="font-size:.62rem;color:var(--orange);">VAT Rate (%)</label>
+                            <input type="number" id="vatCustomRate" class="calc-input" placeholder="e.g. 10" min="0" max="100" step="0.1" oninput="updateCustomVat()">
                         </div>
                     </div>
                 </div>
         </div>
     </div>
     <div class="mat-box">
-        <h4 data-t="mat_h4">📐 Kalkulator zużycia materiału</h4>
-        <p class="desc" data-t="mat_desc">Podaj wymiary arkusza i projektu – kalkulator wyliczy proporcjonalny koszt materiału dla zlecenia.</p>
+        <h4>📐 Material Usage Calculator</h4>
+        <p class="desc">Enter sheet and project dimensions – the calculator finds the proportional material cost for your order.</p>
         <div class="form-5">
-            <div class="field"><label data-t="lbl_sheetw">Arkusz – szer. (mm)</label><input type="number" id="sheetW" value="600" min="1" max="9999" class="calc-input" oninput="calcMat()"></div>
-            <div class="field"><label data-t="lbl_sheeth">Arkusz – wys. (mm)</label><input type="number" id="sheetH" value="400" min="1" max="9999" class="calc-input" oninput="calcMat()"></div>
-            <div class="field"><label data-t="lbl_cutw">Projekt – szer. (mm)</label><input type="number" id="cutW" value="20" min="1" max="9999" class="calc-input" oninput="calcMat()"></div>
-            <div class="field"><label data-t="lbl_cuth">Projekt – wys. (mm)</label><input type="number" id="cutH" value="20" min="1" max="9999" class="calc-input" oninput="calcMat()"></div>
-            <div class="field"><label data-t="lbl_qty">Liczba sztuk</label><input type="number" id="cutQty" value="1" min="1" max="9999" class="calc-input" oninput="calcMat()"></div>
+            <div class="field"><label>Sheet – width (mm)</label><input type="number" id="sheetW" value="600" class="calc-input" oninput="calcMat()"></div>
+            <div class="field"><label>Sheet – height (mm)</label><input type="number" id="sheetH" value="400" class="calc-input" oninput="calcMat()"></div>
+            <div class="field"><label>Project – width (mm)</label><input type="number" id="cutW" value="20" class="calc-input" oninput="calcMat()"></div>
+            <div class="field"><label>Project – height (mm)</label><input type="number" id="cutH" value="20" class="calc-input" oninput="calcMat()"></div>
+            <div class="field"><label>Quantity</label><input type="number" id="cutQty" value="1" min="1" class="calc-input" oninput="calcMat()"></div>
         </div>
-        <div id="matResult"><p class="mat-ph" data-t="mat_placeholder">Wypełnij wymiary powyżej, aby zobaczyć wynik.</p></div>
-        <p class="hint" data-t="mat_hint">💡 Wyliczony koszt materiału jest automatycznie uwzględniany w kalkulacji zysku poniżej.</p>
+        <div id="matResult"><p class="mat-ph">Fill in the dimensions above to see the result.</p></div>
+        <p class="hint">💡 The calculated material cost is automatically included in the profit calculation below.</p>
     </div>
-    <div class="hint" data-t="mult_hint">ℹ️ Mnożnik trudności: Akryl, metal i laminaty wymagają częstszej konserwacji.</div>
+    <div class="hint">ℹ️ Difficulty multiplier: Acrylic, metal and laminates require more maintenance. The multiplier adds a risk fee.</div>
     <div class="box-check">
         <div>
-            <p class="check-title" data-t="finish_title">Wykończenie</p>
-            <label class="check-label"><input type="checkbox" id="painting"><span data-t="opt_painting">Malowanie farbą (+15 {s})</span></label>
-            <label class="check-label"><input type="checkbox" id="lacquer"><span data-t="opt_lacquer">Zabezpieczanie lakierem (+10 {s})</span></label>
+            <p class="check-title">Finishing</p>
+            <label class="check-label"><input type="checkbox" id="painting"><span id="opt_painting">Paint coating (+15 $)</span></label>
+            <label class="check-label"><input type="checkbox" id="lacquer"><span id="opt_lacquer">Lacquer finish (+10 $)</span></label>
         </div>
         <div>
-            <p class="check-title" data-t="extra_title">Opcje dodatkowe</p>
-            <label class="check-label"><input type="checkbox" id="doubleSide"><span data-t="opt_double">Grawer dwustronny (+50% czasu)</span></label>
-            <label class="check-label"><input type="checkbox" id="urgent"><span data-t="opt_urgent">Zamówienie Na Cito (+30%)</span></label>
-            <label class="check-label"><input type="checkbox" id="shipping" onchange="toggleShip()"><span data-t="opt_shipping">🚚 Dolicz koszt wysyłki</span></label>
+            <p class="check-title">Extra options</p>
+            <label class="check-label"><input type="checkbox" id="doubleSide"><span>Double-sided engraving (+50% time)</span></label>
+            <label class="check-label"><input type="checkbox" id="urgent"><span>Rush order (+30%)</span></label>
+            <label class="check-label"><input type="checkbox" id="shipping" onchange="toggleShip()"><span>🚚 Add shipping cost</span></label>
         </div>
     </div>
     <div id="shipPanel" class="ship-panel">
-        <p style="color:var(--orange);font-weight:700;font-size:.68rem;margin-bottom:10px;text-transform:uppercase;letter-spacing:.9px;" data-t="ship_title">🚚 Wybierz metodę wysyłki</p>
-        <label class="ship-opt"><input type="radio" name="shipType" value="14.99" checked onchange="updateShip()"><span data-t="ship_inpost">📦 InPost Paczkomat (14,99 {s})</span></label>
-        <label class="ship-opt"><input type="radio" name="shipType" value="19.99" onchange="updateShip()"><span data-t="ship_courier">🚛 Kurier DPD/DHL (19,99 {s})</span></label>
-        <label class="ship-opt"><input type="radio" name="shipType" value="custom" onchange="updateShip()"><span data-t="ship_custom">✏️ Własna kwota:</span><input type="number" id="shipCustom" value="0" class="ship-custom" oninput="updateShip()"></label>
-        <p id="shipDisplay">➤ <span data-t="ship_display">Koszt wysyłki</span>: 14,99 <span class="csym">zł</span></p>
+        <p style="color:var(--orange);font-weight:700;font-size:.68rem;margin-bottom:10px;text-transform:uppercase;letter-spacing:.9px;">🚚 Choose shipping method</p>
+        <label class="ship-opt"><input type="radio" name="shipType" value="14.99" checked onchange="updateShip()"><span>📦 Parcel locker (14.99 <span class="csym">$</span>)</span></label>
+        <label class="ship-opt"><input type="radio" name="shipType" value="19.99" onchange="updateShip()"><span>🚛 Courier DPD/DHL (19.99 <span class="csym">$</span>)</span></label>
+        <label class="ship-opt"><input type="radio" name="shipType" value="custom" onchange="updateShip()"><span>✏️ Custom amount:</span><input type="number" id="shipCustom" value="0" class="ship-custom" oninput="updateShip()"></label>
+        <p id="shipDisplay">➤ Shipping cost: 14.99 <span class="csym">$</span></p>
     </div>
-    <button onclick="calculate()" class="btn" style="width:100%;margin-top:20px;font-size:.86rem;letter-spacing:1.5px;padding:13px;background:var(--navy);color:#fff;" data-t="btn_calculate">▶ OBLICZ ZYSK I CENĘ</button>
-	<a href="https://buycoffee.to/laserprofit" target="_blank" class="btn-coffee-calc">
-    <img src="https://buycoffee.to/img/icons/coffee-cup.svg" alt="Kawa" onerror="this.style.display='none'">
-    <span>Podoba Ci się kalkulator? Postaw mi kawę! ☕</span>
+    <button onclick="calculate()" class="btn" style="width:100%;margin-top:20px;font-size:.86rem;letter-spacing:1.5px;padding:13px;background:var(--navy);color:#fff;">▶ CALCULATE PROFIT &amp; PRICE</button>
+	<a href="https://buymeacoffee.com/laserprofit" target="_blank" class="btn-coffee-calc">
+    <img src="https://cdn.buymeacoffee.com/buttons/bmc-new-btn-logo.svg" alt="Coffee icon">
+    <span>Support the project – Buy me a coffee</span>
 </a>
-    <button onclick="document.getElementById('fbModal').classList.add('open')" class="btn" style="width:100%;margin-top:8px;font-size:.76rem;padding:9px;background:transparent;border:1px solid var(--orange);color:var(--orange);" data-t="btn_feedback">💬 Zgłoś problem / Zaproponuj ulepszenie</button>
+    <button onclick="document.getElementById('fbModal').classList.add('open')" class="btn" style="width:100%;margin-top:8px;font-size:.76rem;padding:9px;background:transparent;border:1px solid var(--orange);color:var(--orange);">💬 Report issue / Suggest improvement</button>
     <div id="expertResult">
-        <div class="result-top"><span id="bruttoLbl" data-t="result_gross">Cena dla klienta (Brutto):</span><span id="priceBrutto">0.00 zł</span></div>
-        <div class="profit-box"><p class="pb-lbl" id="profitLbl" data-t="result_profit_lbl">TWÓJ PRZEWIDYWANY ZYSK NA RĘKĘ:</p><h2 id="netProfit">0.00 zł</h2></div>
+        <div class="result-top"><span id="bruttoLbl">Client price (Gross):</span><span id="priceBrutto">0.00 $</span></div>
+        <div class="profit-box"><p class="pb-lbl" id="profitLbl">YOUR ESTIMATED NET PROFIT:</p><h2 id="netProfit">0.00 $</h2></div>
         <div id="expertBreakdown"></div>
         <div class="btn-group" style="display:flex;gap:9px;margin-top:14px;">
-            <button onclick="saveTXT()" class="btn" style="background:#334155;flex:1;font-size:.72rem;" data-t="btn_txt">💾 ZAPISZ TXT</button>
-            <button onclick="window.print()" class="btn" style="background:#334155;flex:1;font-size:.72rem;" data-t="btn_pdf">🖼️ ZAPISZ PDF</button>
+            <button onclick="saveTXT()" class="btn" style="background:#334155;flex:1;font-size:.72rem;">💾 SAVE TXT</button>
+            <button onclick="window.print()" class="btn" style="background:#334155;flex:1;font-size:.72rem;">🖼️ SAVE PDF</button>
         </div>
     </div>
-</section>
-
-<section style="margin-top:40px;line-height:1.85;padding:30px;border-radius:16px;background:rgba(255,255,255,.02);border:1px solid var(--border);font-size:.82rem;">
-    <h2 style="color:var(--orange);margin-bottom:14px;font-size:.95rem;">Jak wycenić grawerowanie i cięcie laserem? Kalkulator 2026</h2>
-    <p>Zastanawiasz się <strong>ile brać za grawerowanie laserem</strong> albo jak poprawnie wycenić projekt w LightBurn? Nasz <strong>kalkulator laserowy</strong> pozwoli Ci w kilka sekund obliczyć zysk, koszt materiału i robocizny — bez Excela i zgadywania. To darmowy <strong>kalkulator grawerowania</strong> i <strong>kalkulator wyceny cięcia laserem</strong> stworzony z myślą o polskich twórcach.</p>
-    <p style="margin-top:14px;">Nasz <strong>generator wyceny laserowej</strong> obsługuje najpopularniejsze lasery diodowe dostępne w Polsce: <strong>xTool</strong> (D1 Pro, S1, F1), <strong>Creality</strong> (Falcon 2), <strong>Sculpfun</strong> (S30 Pro, S30 Ultra), <strong>Atomstack</strong> (A24 Pro, A40 Pro V2, Kraft Dual), <strong>Ortur</strong>, <strong>Two Trees</strong>, <strong>Acmer</strong>, <strong>Longer</strong>, <strong>ComMarker</strong> oraz <strong>Snapmaker</strong>. Wpisz czas pracy lasera, stawkę roboczogodziny i koszt materiału — a narzędzie automatycznie wyliczy <strong>cenę za minutę pracy lasera 2026</strong>, amortyzację urządzenia i Twój rzeczywisty zysk netto.</p>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0;">
-        <div style="background:var(--card2);border-radius:8px;padding:12px 14px;">
-            <p style="font-size:.68rem;font-weight:700;color:var(--orange);margin:0 0 5px;text-transform:uppercase;letter-spacing:.5px;">Oblicz wycenę projektu</p>
-            <p style="color:var(--muted);margin:0;line-height:1.65;">Wycena cięcia laserem, wycena grawerowania, wycena projektów SVG i DXF — wszystko w jednym miejscu. Oblicz wycenę i oblicz zysk z cięcia i grawerowania.</p>
-        </div>
-        <div style="background:var(--card2);border-radius:8px;padding:12px 14px;">
-            <p style="font-size:.68rem;font-weight:700;color:var(--orange);margin:0 0 5px;text-transform:uppercase;letter-spacing:.5px;">Kalkulator zysku laser</p>
-            <p style="color:var(--muted);margin:0;line-height:1.65;">Kalkulator zysku laser uwzględnia marżę, kalkulator zużycia prądu lasera i kalkulator amortyzacji lasera — realny wynik dla Twojej pracowni.</p>
-        </div>
-        <div style="background:var(--card2);border-radius:8px;padding:12px 14px;">
-            <p style="font-size:.68rem;font-weight:700;color:var(--orange);margin:0 0 5px;text-transform:uppercase;letter-spacing:.5px;">Program do wyceny cięcia</p>
-            <p style="color:var(--muted);margin:0;line-height:1.65;">Działa jak cennik usług laserowych — zapisz raport do PDF lub TXT i wyślij klientowi gotową ofertę. Wycena projektów LightBurn nigdy nie była tak prosta.</p>
-        </div>
-        <div style="background:var(--card2);border-radius:8px;padding:12px 14px;">
-            <p style="font-size:.68rem;font-weight:700;color:var(--orange);margin:0 0 5px;text-transform:uppercase;letter-spacing:.5px;">Zarabianie na laserze diodowym</p>
-            <p style="color:var(--muted);margin:0;line-height:1.65;">Sprawdź rentowność pracowni laserowej, optymalizację kosztów cięcia CO2 i ile kosztuje grawer na drewnie. Darmowy kalkulator dla plotera i lasera.</p>
-        </div>
-    </div>
-    <h3 style="color:var(--orange);margin:18px 0 10px;font-size:.86rem;">Top lasery diodowe 2026 — ranking i wycena projektów</h3>
-    <p>Planujesz zakup lasera i zastanawiasz się, <strong>który laser diodowy wybrać w 2026 roku</strong>? Nasz ranking laserów obejmuje modele od topowych producentów: <strong>xTool D1 Pro 20W</strong>, <strong>Creality Falcon 2 22W</strong>, <strong>Sculpfun S30 Ultra 33W</strong>, <strong>Atomstack A40 Pro V2 48W</strong>, <strong>Ortur LM3</strong>, <strong>Two Trees TTS-55 Pro</strong>, <strong>Acmer P2</strong>, <strong>Longer Ray5 Pro</strong>, <strong>ComMarker B4 Fiber</strong> i <strong>Snapmaker</strong>. Parametry cięcia a cena — to klucz do dobrego wyboru maszyny i rentownej pracowni laserowej.</p>
-    <p style="margin-top:14px;"><strong>Kalkulator amortyzacji lasera</strong> wbudowany w nasze narzędzie pomaga obliczyć koszty prowadzenia firmy laserowej — marżę na usługach laserowych, koszt prądu, zużycie materiałów i stawkę roboczogodziny. To kompletny <strong>program do wyceny cięcia</strong> i grawerowania — zarówno dla hobbyistów jak i małych firm.</p>
-    <div style="background:var(--card2);border-left:4px solid var(--orange);padding:14px;margin-top:18px;border-radius:0 7px 7px 0;">⚡ <strong>LaserProfit.eu</strong> — darmowy kalkulator wyceny laserowej 2026. Oblicz zysk z cięcia i grawerowania w sekundy. Dostępny w wersji polskiej, angielskiej i niemieckiej. Sprawdź też naszą porównywarkę laserów i ranking najlepszych modeli 2026.</div>
 </section>
 
 <section style="margin-top:46px;overflow-x:auto;">
-    <h3 style="color:var(--orange);text-align:center;margin-bottom:16px;font-size:.9rem;" data-t="compare_h3">Laser Diodowy czy CO2? Porównanie 2026</h3>
-    <table><thead><tr><th data-t="tbl_feature">Cecha</th><th data-t="tbl_diode">Laser Diodowy (np. xTool)</th><th data-t="tbl_co2">Laser CO2</th></tr></thead>
+    <h3 style="color:var(--orange);text-align:center;margin-bottom:16px;font-size:.9rem;">Diode Laser vs CO2? Comparison 2026</h3>
+    <table><thead><tr><th>Feature</th><th>Diode Laser (e.g. xTool)</th><th>CO2 Laser</th></tr></thead>
     <tbody>
-        <tr><td style="font-weight:700;" data-t="tbl_price">Cena na start</td><td data-t="tbl_price_d">Niska (od 1500 zł)</td><td data-t="tbl_price_c">Wysoka (od 8000 zł)</td></tr>
-        <tr><td style="font-weight:700;" data-t="tbl_acrylic">Cięcie Akrylu</td><td data-t="tbl_acrylic_d">Tylko ciemne kolory</td><td data-t="tbl_acrylic_c">Wszystkie (również przezroczysty)</td></tr>
-        <tr><td style="font-weight:700;" data-t="tbl_space">Miejsce</td><td data-t="tbl_space_d">Biurkowe, kompaktowe</td><td data-t="tbl_space_c">Wymaga dużego warsztatu</td></tr>
+        <tr><td style="font-weight:700;">Starting price</td><td>Low (from €300)</td><td>High (from €2000)</td></tr>
+        <tr><td style="font-weight:700;">Acrylic cutting</td><td>Dark colors only</td><td>All colors (incl. transparent)</td></tr>
+        <tr><td style="font-weight:700;">Space needed</td><td>Desktop, compact</td><td>Requires large workshop</td></tr>
     </tbody></table>
 </section>
 
 <section style="margin-top:50px;background:rgba(255,255,255,.02);padding:26px;border-radius:13px;border:1px solid var(--border);">
-    <h2 style="color:var(--orange);margin-bottom:18px;text-align:center;font-size:.95rem;" data-t="faq_h2">💡 Najczęstsze Pytania (FAQ)</h2>
-    <div style="margin-bottom:14px;"><p style="font-weight:700;font-size:.82rem;" data-t="faq1_q">1. Czy laser diodowy przetnie metal?</p><p style="color:var(--muted);font-size:.79rem;margin-top:4px;" data-t="faq1_a">Większość laserów diodowych graweruje stal nierdzewną, ale jej nie przecina.</p></div>
-    <div style="margin-bottom:14px;"><p style="font-weight:700;font-size:.82rem;" data-t="faq2_q">2. Jak wycenić grawerowanie u klienta?</p><p style="color:var(--muted);font-size:.79rem;margin-top:4px;" data-t="faq2_a">Skorzystaj z naszego kalkulatora powyżej!</p></div>
-    <div><p style="font-weight:700;font-size:.82rem;" data-t="faq3_q">3. Jaki program do lasera wybrać?</p><p style="color:var(--muted);font-size:.79rem;margin-top:4px;" data-t="faq3_a">Standardem rynkowym jest LightBurn.</p></div>
+    <h2 style="color:var(--orange);margin-bottom:18px;text-align:center;font-size:.95rem;">💡 Frequently Asked Questions (FAQ)</h2>
+    <div style="margin-bottom:14px;"><p style="font-weight:700;font-size:.82rem;">1. Can a diode laser cut metal?</p><p style="color:var(--muted);font-size:.79rem;margin-top:4px;">Most diode lasers (20W+) engrave stainless steel but cannot cut through it. To cut metal you need a fiber laser.</p></div>
+    <div style="margin-bottom:14px;"><p style="font-weight:700;font-size:.82rem;">2. How do I price laser engraving for a client?</p><p style="color:var(--muted);font-size:.79rem;margin-top:4px;">Use our calculator above! Always add travel costs and time spent preparing the graphic file.</p></div>
+    <div><p style="font-weight:700;font-size:.82rem;">3. What software should I use for laser engraving?</p><p style="color:var(--muted);font-size:.79rem;margin-top:4px;">LightBurn is the industry standard. For beginners we recommend the free LaserGRBL.</p></div>
 </section>
 
 <section style="margin-top:50px;">
-    <h2 style="text-align:center;margin-bottom:22px;font-size:.95rem;color:var(--orange);" data-t="create_h2">🎨 Co możesz stworzyć swoim laserem?</h2>
+    <h2 style="text-align:center;margin-bottom:22px;font-size:.95rem;color:var(--orange);">🎨 What can you create with your laser?</h2>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(138px,1fr));gap:11px;text-align:center;">
-        <div class="card" style="padding:12px;font-size:.77rem;" data-t="item_box">📦 Pudełka z grawerem</div>
-        <div class="card" style="padding:12px;font-size:.77rem;" data-t="item_key">🔑 Breloki skórzane</div>
-        <div class="card" style="padding:12px;font-size:.77rem;" data-t="item_trophy">🏆 Statuetki z akrylu</div>
-        <div class="card" style="padding:12px;font-size:.77rem;" data-t="item_board">🍳 Deski do serwowania</div>
-        <div class="card" style="padding:12px;font-size:.77rem;" data-t="item_pen">🖋️ Znakowane długopisy</div>
-        <div class="card" style="padding:12px;font-size:.77rem;" data-t="item_toy">🧸 Zabawki drewniane</div>
+        <div class="card" style="padding:12px;font-size:.77rem;">📦 Engraved boxes</div>
+        <div class="card" style="padding:12px;font-size:.77rem;">🔑 Leather keyrings</div>
+        <div class="card" style="padding:12px;font-size:.77rem;">🏆 Acrylic trophies</div>
+        <div class="card" style="padding:12px;font-size:.77rem;">🍳 Serving boards</div>
+        <div class="card" style="padding:12px;font-size:.77rem;">🖋️ Branded pens</div>
+        <div class="card" style="padding:12px;font-size:.77rem;">🧸 Wooden toys</div>
     </div>
 </section>
 
 <section style="margin-top:60px;line-height:1.85;padding:30px;border-radius:16px;background:rgba(255,255,255,.02);border:1px solid var(--border);font-size:.82rem;">
-    <h2 style="color:var(--orange);margin-bottom:14px;font-size:.95rem;" data-t="seo_h2">Jak wycenić grawerowanie laserem w 2026 roku?</h2>
-    <p data-t="seo_p1">Wiele osób zaczynających przygodę z laserem diodowym lub CO2 zadaje sobie pytanie: ile brać za minutę pracy lasera?</p>
-    <h3 style="color:var(--orange);margin-top:22px;font-size:.86rem;" data-t="seo_h3_1">1. Stawka godzinowa to podstawa</h3>
-    <p data-t="seo_p2">Rynkowe stawki za godzinę pracy specjalisty w Polsce wahają się od 60 zł do 150 zł netto.</p>
-    <h3 style="color:var(--orange);margin-top:22px;font-size:.86rem;" data-t="seo_h3_2">2. Proporcjonalny koszt materiału</h3>
-    <p data-t="seo_p3">Jeśli kupujesz arkusz sklejki 600×400mm za 25 zł, a wycinasz projekt 20×20mm – płacisz tylko za 0,17% arkusza.</p>
-    <h3 style="color:var(--orange);margin-top:22px;font-size:.86rem;" data-t="seo_h3_3">3. Amortyzacja maszyny i prąd</h3>
-    <p data-t="seo_p4">Laser diodowy ma żywotność modułu ok. 10 000 godzin. Warto doliczyć 5–15 zł/h na fundusz serwisowy.</p>
-    <div style="background:var(--card2);border-left:4px solid var(--orange);padding:14px;margin-top:22px;border-radius:0 7px 7px 0;font-style:italic;" data-t="seo_tip">Pro tip: Zawsze doliczaj czas na przygotowanie plików wektorowych (SVG/DXF).</div>
+    <h2 style="color:var(--orange);margin-bottom:14px;font-size:.95rem;">How to price laser engraving in 2026?</h2>
+    <p>Many people starting with a diode laser or CO2 laser ask: how much should I charge per minute of laser time?</p>
+    <h3 style="color:var(--orange);margin-top:22px;font-size:.86rem;">1. Hourly rate is the foundation</h3>
+    <p>Professional laser engraving rates in Europe range from €15 to €50/hour depending on country and project complexity.</p>
+    <h3 style="color:var(--orange);margin-top:22px;font-size:.86rem;">2. Proportional material cost</h3>
+    <p>If you buy a 600×400mm plywood sheet for €6 and cut a 20×20mm project, you use just 0.17% of the sheet. Our calculator does this automatically.</p>
+    <h3 style="color:var(--orange);margin-top:22px;font-size:.86rem;">3. Machine depreciation &amp; electricity</h3>
+    <p>A diode laser module has a lifespan of ~10,000 hours. Add €5–15/h as a sinking fund for servicing and electricity.</p>
+    <div style="background:var(--card2);border-left:4px solid var(--orange);padding:14px;margin-top:22px;border-radius:0 7px 7px 0;font-style:italic;">Pro tip: Always charge for file preparation time (SVG/DXF). Fixing a customer's logo often takes longer than the actual engraving!</div>
 </section>
 
-<section id="zasoby" style="margin-top:50px;background:linear-gradient(145deg,var(--card),var(--bg));padding:32px;border-radius:18px;border:1px dotted var(--orange);">
-    <h2 style="color:var(--orange);text-align:center;margin-bottom:22px;font-size:.95rem;" data-t="res_h2">📂 Najlepsze bazy darmowych plików SVG / DXF</h2>
+<section id="files" style="margin-top:50px;background:linear-gradient(145deg,var(--card),var(--bg));padding:32px;border-radius:18px;border:1px dotted var(--orange);">
+    <h2 style="color:var(--orange);text-align:center;margin-bottom:22px;font-size:.95rem;">📂 Best Free SVG / DXF File Databases</h2>
     <div class="res-grid">
-        <div class="res-card"><h4>🗂️ Ameede.net</h4><p data-t="res_ameede">Prawdziwa kopalnia projektów DXF/CDR.</p><a href="https://ameede.net" target="_blank" rel="noopener" data-t="res_visit">Odwiedź stronę →</a></div>
-        <div class="res-card"><h4>🗂️ 3axis.co</h4><p data-t="res_3axis">Tysiące wektorów uporządkowanych kategoriami.</p><a href="https://3axis.co" target="_blank" rel="noopener" data-t="res_visit">Odwiedź stronę →</a></div>
-        <div class="res-card"><h4>🗂️ Flaticon</h4><p data-t="res_flaticon">Najlepsze miejsce na darmowe ikony SVG.</p><a href="https://www.flaticon.com" target="_blank" rel="noopener" data-t="res_icons">Szukaj ikon →</a></div>
-        <div class="res-card"><h4>📦 Boxes.py</h4><p data-t="res_boxes">Najpotężniejszy generator pudełek.</p><a href="https://www.festi.info/boxes.py/" target="_blank" rel="noopener" data-t="res_gen">Otwórz generator →</a></div>
-        <div class="res-card"><h4>🧩 Jigsaw Puzzle Generator</h4><p data-t="res_puzzle">Tworzy idealną siatkę cięcia SVG do puzzli.</p><a href="https://puzzlemaker.org/" target="_blank" rel="noopener" data-t="res_puzzle_lnk">Stwórz puzzle →</a></div>
-        <div class="res-card"><h4>⚙️ Gear Designer</h4><p data-t="res_gear">Generuje koła zębate pasujące do siebie co do milimetra.</p><a href="https://geargenerator.com/" target="_blank" rel="noopener" data-t="res_gear_lnk">Zaprojektuj koła →</a></div>
-        <div class="res-card"><h4>📱 QR Code Vector</h4><p data-t="res_qr">Generuje kody QR w SVG.</p><a href="https://www.qrcode-monkey.com/" target="_blank" rel="noopener" data-t="res_qr_lnk">Generuj QR →</a></div>
+        <div class="res-card"><h4>🗂️ Ameede.net</h4><p>A goldmine of DXF/CDR projects. From simple decorations to complex plywood furniture.</p><a href="https://ameede.net" target="_blank" rel="noopener">Visit site →</a></div>
+        <div class="res-card"><h4>🗂️ 3axis.co</h4><p>Thousands of vectors organized by category. Great for engraving and cutting 3D puzzles.</p><a href="https://3axis.co" target="_blank" rel="noopener">Visit site →</a></div>
+        <div class="res-card"><h4>🗂️ Flaticon</h4><p>Best place for free SVG icons perfect for quick logo engraving and signs.</p><a href="https://www.flaticon.com" target="_blank" rel="noopener">Search icons →</a></div>
+        <div class="res-card"><h4>📦 Boxes.py</h4><p>Most powerful box generator. Automatically accounts for kerf (laser cut width).</p><a href="https://www.festi.info/boxes.py/" target="_blank" rel="noopener">Open generator →</a></div>
+        <div class="res-card"><h4>🧩 Jigsaw Puzzle Generator</h4><p>Creates perfect SVG cutting grid for puzzles. Set number of pieces and tab shape.</p><a href="https://puzzlemaker.org/" target="_blank" rel="noopener">Create puzzle →</a></div>
+        <div class="res-card"><h4>⚙️ Gear Designer</h4><p>Generates interlocking gears to the millimeter. SVG export ready for cutting.</p><a href="https://geargenerator.com/" target="_blank" rel="noopener">Design gears →</a></div>
+        <div class="res-card"><h4>📱 QR Code Vector</h4><p>Generates QR codes in SVG. Perfect for business cards, menus and engraved signs.</p><a href="https://www.qrcode-monkey.com/" target="_blank" rel="noopener">Generate QR →</a></div>
     </div>
-    <div style="margin-top:20px;background:rgba(255,107,43,.07);padding:14px;border-radius:9px;border-left:5px solid var(--orange);font-size:.79rem;" data-t="res_warning">⚠️ Uwaga: Zawsze sprawdzaj licencję pliku! Szukaj licencji Commercial Use.</div>
+    <div style="margin-top:20px;background:rgba(255,107,43,.07);padding:14px;border-radius:9px;border-left:5px solid var(--orange);font-size:.79rem;">⚠️ Note: Always check the file license! If you want to sell cut items, look for Commercial Use licenses.</div>
 </section>
 
-<section id="bhp" style="margin-top:46px;background:rgba(239,68,68,.04);padding:32px;border-radius:18px;border:1px solid #7f1d1d;">
-    <h2 style="color:#f87171;text-align:center;margin-bottom:20px;font-size:.95rem;" data-t="bhp_h2">⚠️ BHP Pracy z Laserem</h2>
+<section id="safety" style="margin-top:46px;background:rgba(239,68,68,.04);padding:32px;border-radius:18px;border:1px solid #7f1d1d;">
+    <h2 style="color:#f87171;text-align:center;margin-bottom:20px;font-size:.95rem;">⚠️ Laser Safety Rules</h2>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;">
-        <div class="card" style="background:rgba(0,0,0,.2);border-color:#7f1d1d;"><h4 style="color:#f87171;margin-bottom:6px;font-size:.82rem;" data-t="bhp1_h">🕶️ Ochrona Wzroku</h4><p style="font-size:.77rem;color:var(--muted);" data-t="bhp1_p">Nigdy nie patrz na wiązkę bez atestowanych okularów (OD5+).</p></div>
-        <div class="card" style="background:rgba(0,0,0,.2);border-color:#7f1d1d;"><h4 style="color:#f87171;margin-bottom:6px;font-size:.82rem;" data-t="bhp2_h">🚫 Materiały Zakazane</h4><p style="font-size:.77rem;color:var(--muted);" data-t="bhp2_p">Nigdy nie tnij PCV / Winylu (wydziela chlor gazowy).</p></div>
-        <div class="card" style="background:rgba(0,0,0,.2);border-color:#7f1d1d;"><h4 style="color:#f87171;margin-bottom:6px;font-size:.82rem;" data-t="bhp3_h">🔥 Nadzór i Ogień</h4><p style="font-size:.77rem;color:var(--muted);" data-t="bhp3_p">Zawsze miej gaśnicę pod ręką. Nigdy nie wychodź podczas pracy lasera.</p></div>
+        <div class="card" style="background:rgba(0,0,0,.2);border-color:#7f1d1d;"><h4 style="color:#f87171;margin-bottom:6px;font-size:.82rem;">🕶️ Eye Protection</h4><p style="font-size:.77rem;color:var(--muted);">Never look at the beam without certified safety glasses (OD5+ for 450nm/1064nm). Even reflected light can permanently damage your eyes.</p></div>
+        <div class="card" style="background:rgba(0,0,0,.2);border-color:#7f1d1d;"><h4 style="color:#f87171;margin-bottom:6px;font-size:.82rem;">🚫 Forbidden Materials</h4><p style="font-size:.77rem;color:var(--muted);">Never cut PVC / vinyl (releases toxic chlorine gas). Avoid chrome-tanned leather and synthetic leather.</p></div>
+        <div class="card" style="background:rgba(0,0,0,.2);border-color:#7f1d1d;"><h4 style="color:#f87171;margin-bottom:6px;font-size:.82rem;">🔥 Supervision &amp; Fire</h4><p style="font-size:.77rem;color:var(--muted);">Always keep a fire extinguisher or fire blanket nearby. Never leave the room while the laser is running.</p></div>
     </div>
 </section>
 
 <section id="faq" style="margin-top:46px;background:var(--card);padding:32px;border-radius:18px;border:1px solid var(--border);">
-    <h2 style="color:var(--orange);text-align:center;margin-bottom:8px;font-size:.95rem;" data-t="faq2_h2">❓ Częste Problemy i Rozwiązania</h2>
-    <p style="text-align:center;color:var(--muted);font-size:.77rem;margin-bottom:22px;" data-t="faq2_sub">Najczęstsze pytania o ceny, materiały i konfigurację lasera</p>
+    <h2 style="color:var(--orange);text-align:center;margin-bottom:8px;font-size:.95rem;">❓ Troubleshooting &amp; Tips</h2>
+    <p style="text-align:center;color:var(--muted);font-size:.77rem;margin-bottom:22px;">Common questions about laser engraving prices, materials and machine setup</p>
     <div style="max-width:820px;margin:0 auto;">
-        <details><summary data-t="faqt1_q">Jak obliczyć cenę grawerowania laserem?</summary><p data-t="faqt1_a">Zsumuj: koszt materiału + czas lasera × stawka godzinowa + przygotowanie + amortyzacja.</p></details>
-        <details><summary data-t="faqt2_q">Ile brać za godzinę grawerowania laserem?</summary><p data-t="faqt2_a">Stawki 2026: Polska ~60–120 zł/h · Niemcy €25–45/h · UK £20–40/h · USA $25–60/h.</p></details>
-        <details><summary data-t="faqt3_q">Który laser diodowy wybrać w 2026?</summary><p data-t="faqt3_a">xTool D1 Pro 10W – najlepsza precyzja. Creality Falcon 2 22W – najszybszy. Atomstack X40 Pro 40W – najsilniejszy.</p></details>
-        <details><summary data-t="faqt4_q">Laser diodowy czy CO2 – który lepszy?</summary><p data-t="faqt4_a">Lasery diodowe: tańsze, kompaktowe, świetne do drewna i skóry. CO2: tną akryl wszystkich kolorów.</p></details>
-        <details><summary data-t="faqt5_q">Czego nie wolno ciąć laserem?</summary><p data-t="faqt5_a">Nigdy: PCV/winylu (trujący chlor), ABS, poliwęglanu, włókna węglowego. Zawsze używaj Air Assist.</p></details>
-        <details><summary data-t="faqt6_q">Dlaczego krawędzie sklejki są czarne/okopcone?</summary><p data-t="faqt6_a">Brak Air Assist lub zbyt wolny posuw. Czyść soczewkę alkoholem izopropylowym.</p></details>
-        <details><summary data-t="faqt7_q">Jaki program do grawerowania laserem?</summary><p data-t="faqt7_a">LightBurn – standard branżowy. Darmowy: LaserGRBL (Windows). xTool: xTool Creative Space.</p></details>
+        <details><summary>How do I calculate laser engraving prices?</summary><p>Add: material cost + laser time × hourly rate + design prep + machine depreciation. Market rates: €0.40–€1.10 per minute.</p></details>
+        <details><summary>How much should I charge per hour?</summary><p>2026 rates: Poland ~60–120 zł/h · Germany €25–45/h · UK £20–40/h · USA $25–60/h. Always add machine depreciation on top.</p></details>
+        <details><summary>Best diode laser in 2026?</summary><p>xTool D1 Pro 10W – best precision. Creality Falcon 2 22W – fastest. Atomstack X40 Pro 40W – most powerful.</p></details>
+        <details><summary>Diode laser vs CO2 laser – which is better?</summary><p>Diode lasers: cheaper (from €300), compact, great for wood and leather. CO2 lasers: cut all acrylic colors, but start at €2000+.</p></details>
+        <details><summary>What materials cannot be cut with a laser?</summary><p>Never cut: PVC/vinyl (toxic chlorine), chrome-tanned leather, ABS plastic, polycarbonate, carbon fiber. Always use Air Assist and ventilation.</p></details>
+        <details><summary>Why are my plywood edges black/charred?</summary><p>Lack of Air Assist or feed rate too slow. Also check the lens – smoke residue reduces laser power by 30–50%. Clean with isopropyl alcohol.</p></details>
+        <details><summary>Best software for laser engraving?</summary><p>LightBurn – industry standard, supports virtually all lasers. Free: LaserGRBL (Windows). For xTool: xTool Creative Space.</p></details>
     </div>
 </section>
 </div>
 
 <footer>
     &copy; 2026 <a href="https://www.laserprofit.eu" style="color:var(--orange);text-decoration:none;">LaserProfit.eu</a>
-    &mdash; <span data-t="footer_aff">Linki afiliacyjne. Dziękujemy za wsparcie!</span>
+    &mdash; All affiliate links. Thank you for supporting us!
     <br><br>
-    <button onclick="document.getElementById('fbModal').classList.add('open')" class="btn" style="display:inline-block;width:auto;padding:8px 20px;font-size:.75rem;background:var(--navy);border:1px solid var(--orange);" data-t="btn_feedback">💬 Zgłoś problem / Zaproponuj ulepszenie</button>
+    <button onclick="document.getElementById('fbModal').classList.add('open')" class="btn" style="display:inline-block;width:auto;padding:8px 20px;font-size:.75rem;background:var(--navy);border:1px solid var(--orange);">💬 Report issue / Suggest improvement</button>
 </footer>
 
 <div class="modal-bg" id="fbModal">
     <div class="modal-box">
         <button class="modal-close" onclick="document.getElementById('fbModal').classList.remove('open')">✕</button>
-        <h3 style="color:var(--orange);margin-bottom:6px;font-size:.95rem;" data-t="fb_title">💬 Zgłoś problem</h3>
-        <p style="color:var(--muted);font-size:.78rem;margin-bottom:18px;" data-t="fb_sub">Twoja opinia pomaga nam rozwijać LaserProfit.eu</p>
-        <div class="field" style="margin-bottom:12px;"><label data-t="fb_type_lbl">Rodzaj zgłoszenia</label>
+        <h3 style="color:var(--orange);margin-bottom:6px;font-size:.95rem;">💬 Report issue / Suggest improvement</h3>
+        <p style="color:var(--muted);font-size:.78rem;margin-bottom:18px;">Your feedback helps us improve LaserProfit.eu</p>
+        <div class="field" style="margin-bottom:12px;"><label>Type of report</label>
             <select id="fbType" class="calc-input">
-                <option data-t="fb_bug">🐛 Błąd / Coś nie działa</option>
-                <option data-t="fb_idea">💡 Pomysł na ulepszenie</option>
-                <option data-t="fb_trans">🌍 Błąd w tłumaczeniu</option>
-                <option data-t="fb_laser">⚡ Brakuje lasera w rankingu</option>
-                <option data-t="fb_other">📋 Inne</option>
+                <option>🐛 Bug / Something broken</option>
+                <option>💡 Improvement idea</option>
+                <option>🌍 Translation error</option>
+                <option>⚡ Missing laser in ranking</option>
+                <option>📋 Other</option>
             </select></div>
-        <div class="field" style="margin-bottom:12px;"><label data-t="fb_msg_lbl">Opis</label><textarea id="fbMsg" rows="4" class="calc-input" style="height:auto;resize:vertical;" data-placeholder="fb_placeholder" placeholder="Opisz problem lub pomysł..."></textarea></div>
-        <div class="field" style="margin-bottom:18px;"><label data-t="fb_email_lbl">E-mail (opcjonalnie)</label><input type="email" id="fbEmail" class="calc-input" placeholder="twoj@email.com"></div>
+        <div class="field" style="margin-bottom:12px;"><label>Description</label><textarea id="fbMsg" rows="4" class="calc-input" style="height:auto;resize:vertical;" placeholder="Describe the issue or idea..."></textarea></div>
+        <div class="field" style="margin-bottom:18px;"><label>E-mail (optional)</label><input type="email" id="fbEmail" class="calc-input" placeholder="your@email.com"></div>
         <div style="display:flex;gap:10px;">
-            <button onclick="sendFeedback()" class="btn" style="flex:1;" data-t="fb_send">📤 Wyślij zgłoszenie</button>
-            <button onclick="document.getElementById('fbModal').classList.remove('open')" class="btn" style="background:#334155;flex:1;" data-t="fb_cancel">Anuluj</button>
+            <button onclick="sendFeedback()" class="btn" style="flex:1;">📤 Send report</button>
+            <button onclick="document.getElementById('fbModal').classList.remove('open')" class="btn" style="background:#334155;flex:1;">Cancel</button>
         </div>
-        <div id="fbThanks" style="display:none;text-align:center;padding:14px;color:#34d399;font-size:.85rem;" data-t="fb_thanks">✅ Dziękujemy! Odezwiemy się wkrótce.</div>
+        <div id="fbThanks" style="display:none;text-align:center;padding:14px;color:#34d399;font-size:.85rem;">✅ Thank you! We will get back to you soon.</div>
     </div>
 </div>
 
 <script>
 // ============================================================
-// AUTO-REDIRECT wg języka przeglądarki
-// Działa tylko raz przy pierwszej wizycie (cookie 1h)
-// DE → /de/ | EN → /en/ | inne → zostają na PL
+// AUTO-REDIRECT based on browser language
 // ============================================================
 (function(){
     const path=window.location.pathname;
     const isDE=path.startsWith('/de');
     const isEN=path.startsWith('/en');
+    const isPL=!isDE&&!isEN;
     if(document.cookie.indexOf('lp_redirect=1')!==-1)return;
     document.cookie='lp_redirect=1;max-age=3600;path=/';
-    const lang=(navigator.language||navigator.userLanguage||'pl').toLowerCase();
-    if(lang.startsWith('de')&&!isDE){window.location.href='https://www.laserprofit.eu/de/';}
-    else if(lang.startsWith('en')&&!isEN){window.location.href='https://www.laserprofit.eu/en/';}
+    const lang=(navigator.language||navigator.userLanguage||'en').toLowerCase();
+    const isDEb=lang.startsWith('de');
+    const isENb=lang.startsWith('en');
+    if(isDEb&&!isDE){window.location.href='https://www.laserprofit.eu/de/';}
+    else if(isENb&&!isEN){window.location.href='https://www.laserprofit.eu/en/';}
+    else if(!isDEb&&!isENb&&!isPL){window.location.href='https://www.laserprofit.eu/';}
 })();
 
 // ============================================================
-// TŁUMACZENIA UI
-// ============================================================
-const UI={
-pl:{
-'nav_calc':'🧮 KALKULATOR','nav_files':'📂 DARMOWE PLIKI','nav_bhp':'⚠️ BHP','theme_light':'☀️ Tryb jasny','theme_dark':'🌙 Tryb ciemny','more_langs':'więcej',
-'hero_badge':'DARMOWE NARZĘDZIE · 2026','hero_h1':'Kalkulator Wyceny Grawerowania Laserem 2026',
-'hero_sub1':'Darmowe narzędzie do wyceny grawerowania i cięcia laserem · 12 walut · 14 języków · xTool · Creality · Atomstack i więcej',
-'hero_sub2':'Używane przez twórców w 🇵🇱 Polsce · 🇩🇪 Niemczech · 🇨🇿 Czechach · 🇺🇦 Ukrainie · 🇬🇧 UK · 🇺🇸 USA i 50+ krajach',
-'calc_h2':'🎯 Laser Price Studio','calc_sub':'Skonfiguruj własne stawki i zobacz swój realny zysk.',
-'cur_label':'💱 Waluta raportu','lang_label':'🌍 Język raportu TXT/PDF',
-'lbl_hourly':'Twoja stawka godzinowa ({s}/h)','lbl_machine':'Koszt prądu i amortyzacji ({s}/h)',
-'lbl_material':'Materiał i trudność','lbl_lasermin':'Czas lasera (min)','lbl_prep':'Przygotowanie projektu (min)','lbl_matprice':'Cena arkusza materiału ({s})',
-'mat_wood':'Sklejka / Drewno (×1.0)','mat_acrylic':'Akryl / Pleksi (×1.4)','mat_metal':'Metal / Trawienie (×1.8)','mat_laminate':'Laminaty (×2.0)',
-'lbl_vat':'Stawka VAT (%)','lbl_vatcountry':'Kraj / Region','vat_custom':'Własna stawka',
-'mat_h4':'📐 Kalkulator zużycia materiału','mat_desc':'Podaj wymiary arkusza i projektu – kalkulator wyliczy proporcjonalny koszt materiału dla zlecenia.',
-'lbl_sheetw':'Arkusz – szer. (mm)','lbl_sheeth':'Arkusz – wys. (mm)','lbl_cutw':'Projekt – szer. (mm)','lbl_cuth':'Projekt – wys. (mm)','lbl_qty':'Liczba sztuk',
-'mat_placeholder':'Wypełnij wymiary powyżej, aby zobaczyć wynik.',
-'mat_hint':'💡 Wyliczony koszt materiału jest automatycznie uwzględniany w kalkulacji zysku poniżej.',
-'mat_exceed':'⚠️ Wymiary projektu są większe niż arkusz!',
-'mat_area':'Pole projektu','mat_perpiece':'Koszt na 1 szt.','mat_total':'Na zlecenie','pcs':'szt.',
-'mult_hint':'ℹ️ Mnożnik trudności: Akryl, metal i laminaty wymagają częstszej konserwacji. Mnożnik dolicza opłatę za ryzyko.',
-'finish_title':'Wykończenie','extra_title':'Opcje dodatkowe',
-'opt_painting':'Malowanie farbą (+15 {s})','opt_lacquer':'Zabezpieczanie lakierem (+10 {s})',
-'opt_double':'Grawer dwustronny (+50% czasu)','opt_urgent':'Zamówienie Na Cito (+30%)','opt_shipping':'🚚 Dolicz koszt wysyłki',
-'ship_title':'🚚 Wybierz metodę wysyłki','ship_inpost':'📦 InPost Paczkomat (14,99 {s})','ship_courier':'🚛 Kurier DPD/DHL (19,99 {s})','ship_custom':'✏️ Własna kwota:','ship_display':'Koszt wysyłki',
-'btn_calculate':'▶ OBLICZ ZYSK I CENĘ',
-'result_gross':'Cena dla klienta (Brutto):','result_profit_lbl':'TWÓJ PRZEWIDYWANY ZYSK NA RĘKĘ:',
-'btn_txt':'💾 ZAPISZ TXT','btn_pdf':'🖼️ ZAPISZ PDF',
-'compare_h3':'Laser Diodowy czy CO2? Porównanie 2026',
-'tbl_feature':'Cecha','tbl_diode':'Laser Diodowy (np. xTool)','tbl_co2':'Laser CO2',
-'tbl_price':'Cena na start','tbl_price_d':'Niska (od 1500 zł)','tbl_price_c':'Wysoka (od 8000 zł)',
-'tbl_acrylic':'Cięcie Akrylu','tbl_acrylic_d':'Tylko ciemne kolory','tbl_acrylic_c':'Wszystkie (również przezroczysty)',
-'tbl_space':'Miejsce','tbl_space_d':'Biurkowe, kompaktowe','tbl_space_c':'Wymaga dużego warsztatu',
-'faq_h2':'💡 Najczęstsze Pytania (FAQ)',
-'faq1_q':'1. Czy laser diodowy przetnie metal?','faq1_a':'Większość laserów diodowych (20W+) graweruje stal nierdzewną, ale jej nie przecina. Do cięcia metalu potrzebujesz lasera Fiber.',
-'faq2_q':'2. Jak wycenić grawerowanie u klienta?','faq2_a':'Skorzystaj z naszego kalkulatora powyżej! Pamiętaj, aby zawsze doliczyć koszt dojazdu oraz czas przygotowania pliku graficznego.',
-'faq3_q':'3. Jaki program do lasera wybrać?','faq3_a':'LightBurn to standard branżowy. Dla początkujących polecamy darmowy LaserGRBL.',
-'create_h2':'🎨 Co możesz stworzyć swoim laserem?',
-'item_box':'📦 Pudełka z grawerem','item_key':'🔑 Breloki skórzane','item_trophy':'🏆 Statuetki z akrylu','item_board':'🍳 Deski do serwowania','item_pen':'🖋️ Znakowane długopisy','item_toy':'🧸 Zabawki drewniane',
-'seo_h2':'Jak wycenić grawerowanie laserem w 2026 roku?',
-'seo_p1':'Wiele osób zaczynających przygodę z laserem diodowym lub CO2 zadaje sobie pytanie: ile brać za minutę pracy lasera?',
-'seo_h3_1':'1. Stawka godzinowa to podstawa','seo_p2':'Rynkowe stawki za godzinę pracy specjalisty w Polsce wahają się od 60 zł do 150 zł netto, zależnie od regionu i skomplikowania projektu.',
-'seo_h3_2':'2. Proporcjonalny koszt materiału','seo_p3':'Jeśli kupujesz arkusz sklejki 600×400mm za 25 zł, a wycinasz projekt 20×20mm – płacisz tylko za 0,17% arkusza. Nasz kalkulator wylicza to automatycznie.',
-'seo_h3_3':'3. Amortyzacja maszyny i prąd','seo_p4':'Laser diodowy ma żywotność modułu ok. 10 000 godzin. Warto doliczyć 5–15 zł/h na fundusz serwisowy i energię.',
-'seo_tip':'Pro tip: Zawsze doliczaj czas na przygotowanie plików wektorowych (SVG/DXF). Często poprawianie projektu klienta trwa dłużej niż samo palenie laserem!',
-'res_h2':'📂 Najlepsze bazy darmowych plików SVG / DXF',
-'res_visit':'Odwiedź stronę →','res_icons':'Szukaj ikon →','res_gen':'Otwórz generator →','res_puzzle_lnk':'Stwórz puzzle →','res_gear_lnk':'Zaprojektuj koła →','res_qr_lnk':'Generuj QR →',
-'res_ameede':'Prawdziwa kopalnia projektów DXF/CDR. Od prostych dekoracji po skomplikowane meble ze sklejki.',
-'res_3axis':'Tysiące wektorów uporządkowanych kategoriami. Świetne pod grawerowanie i wycinanie puzzli 3D.',
-'res_flaticon':'Najlepsze miejsce na darmowe ikony SVG idealne do szybkiego grawerowania logo i tabliczek.',
-'res_boxes':'Najpotężniejszy generator pudełek. Sam dolicza rzaz (grubość cięcia lasera) dla idealnego spasowania.',
-'res_puzzle':'Tworzy idealną siatkę cięcia SVG do puzzli. Ustawiasz liczbę elementów i kształt wypustek.',
-'res_gear':'Generuje koła zębate pasujące do siebie co do milimetra. Eksport do SVG gotowy do cięcia.',
-'res_qr':'Generuje kody QR w SVG. Idealne do wizytówek, menu i grawerowanych tabliczek informacyjnych.',
-'res_warning':'⚠️ Uwaga: Zawsze sprawdzaj licencję pliku! Jeśli chcesz sprzedawać wycięte przedmioty, szukaj licencji Commercial Use.',
-'bhp_h2':'⚠️ BHP Pracy z Laserem',
-'bhp1_h':'🕶️ Ochrona Wzroku','bhp1_p':'Nigdy nie patrz na wiązkę bez atestowanych okularów (OD5+ dla 450nm/1064nm). Nawet odbite światło może trwale uszkodzić wzrok.',
-'bhp2_h':'🚫 Materiały Zakazane','bhp2_p':'Nigdy nie tnij PCV / Winylu (wydziela chlor gazowy). Unikaj materiałów z chromem i sztucznej skóry.',
-'bhp3_h':'🔥 Nadzór i Ogień','bhp3_p':'Zawsze miej gaśnicę lub koc gaśniczy pod ręką. Nigdy nie wychodź z pomieszczenia podczas pracy lasera.',
-'faq2_h2':'❓ Częste Problemy i Rozwiązania','faq2_sub':'Najczęstsze pytania o ceny, materiały i konfigurację lasera',
-'faqt1_q':'Jak obliczyć cenę grawerowania laserem?','faqt1_a':'Zsumuj: koszt materiału + czas lasera × stawka godzinowa + przygotowanie projektu + amortyzacja maszyny. Stawki rynkowe: 1,70–4,50 zł za minutę pracy lasera.',
-'faqt2_q':'Ile brać za godzinę grawerowania laserem?','faqt2_a':'Stawki 2026: Polska ~60–120 zł/h · Niemcy €25–45/h · UK £20–40/h · USA $25–60/h. Do stawki zawsze dolicz amortyzację maszyny.',
-'faqt3_q':'Który laser diodowy wybrać w 2026?','faqt3_a':'xTool D1 Pro 10W – najlepsza precyzja. Creality Falcon 2 22W – najszybszy. Atomstack X40 Pro 40W – najsilniejszy.',
-'faqt4_q':'Laser diodowy czy CO2 – który lepszy?','faqt4_a':'Lasery diodowe: tańsze, kompaktowe, świetne do drewna i skóry. Lasery CO2: tną akryl wszystkich kolorów, ale kosztują od 8000 zł.',
-'faqt5_q':'Czego nie wolno ciąć laserem?','faqt5_a':'Nigdy nie tnij: PCV/winylu (trujący chlor), skóry garbowanej chromem, plastiku ABS, poliwęglanu, włókna węglowego. Zawsze używaj Air Assist i wentylacji.',
-'faqt6_q':'Dlaczego krawędzie sklejki są czarne/okopcone?','faqt6_a':'Brak Air Assist lub zbyt wolny posuw. Sprawdź też soczewkę – osad z dymu zmniejsza moc lasera o 30–50%. Czyść alkoholem izopropylowym.',
-'faqt7_q':'Jaki program do grawerowania laserem?','faqt7_a':'LightBurn – standard branżowy, obsługuje niemal wszystkie lasery. Darmowy: LaserGRBL (Windows). Dla xTool: xTool Creative Space.',
-'footer_aff':'Linki afiliacyjne. Dziękujemy za wsparcie!',
-'btn_feedback':'💬 Zgłoś problem / Zaproponuj ulepszenie',
-'fb_title':'💬 Zgłoś problem / Zaproponuj ulepszenie','fb_sub':'Twoja opinia pomaga nam rozwijać LaserProfit.eu',
-'fb_type_lbl':'Rodzaj zgłoszenia','fb_msg_lbl':'Opis','fb_email_lbl':'E-mail (opcjonalnie)',
-'fb_bug':'🐛 Błąd / Coś nie działa','fb_idea':'💡 Pomysł na ulepszenie','fb_trans':'🌍 Błąd w tłumaczeniu','fb_laser':'⚡ Brakuje lasera w rankingu','fb_other':'📋 Inne',
-'fb_send':'📤 Wyślij zgłoszenie','fb_cancel':'Anuluj','fb_thanks':'✅ Dziękujemy! Odezwiemy się wkrótce.','fb_placeholder':'Opisz problem lub pomysł...',
-'txt_title':'WYCENA GRAWEROWANIA LASEROWEGO – LASERPROFIT.EU 2026','txt_date':'Data','txt_gross':'Cena dla klienta (BRUTTO)','txt_profit':'Twój zysk netto',
-'txt_details':'SZCZEGÓŁY / RAPORT OPERACYJNY','txt_generated':'Wygenerowano przez','txt_sheet':'Arkusz','txt_proj':'Projekt',
-'txt_usage':'Zużycie arkusza','txt_fits':'Zmieści się','txt_mat':'Koszt materiału','txt_mach':'Eksploatacja maszyny',
-'txt_labor':'Robocizna','txt_ship':'Wysyłka','txt_netto':'Cena Netto','txt_vat':'VAT','txt_brutto':'CENA BRUTTO','txt_zysk':'TWÓJ ZYSK NETTO','txt_rpt':'📋 RAPORT OPERACYJNY'
-},
-fr:{
-'nav_calc':'🧮 CALCULATEUR','nav_files':'📂 FICHIERS GRATUITS','nav_bhp':'⚠️ SÉCURITÉ','theme_light':'☀️ Mode clair','theme_dark':'🌙 Mode sombre','more_langs':'plus',
-'hero_badge':'OUTIL GRATUIT · 2026','hero_h1':'Calculateur de Prix Gravure Laser 2026',
-'hero_sub1':'Outil gratuit de calcul des coûts de gravure et découpe laser · 12 devises · 14 langues','hero_sub2':'Utilisé par des makers dans le monde entier',
-'calc_h2':'🎯 Studio de Prix Laser','calc_sub':'Configurez vos tarifs et voyez votre bénéfice réel.',
-'cur_label':'💱 Devise du rapport','lang_label':'🌍 Langue rapport TXT/PDF',
-'lbl_hourly':'Votre taux horaire ({s}/h)','lbl_machine':'Coût énergie & amortissement ({s}/h)',
-'lbl_material':'Matériau & difficulté','lbl_lasermin':'Temps laser (min)','lbl_prep':'Préparation projet (min)','lbl_matprice':'Prix plaque complète ({s})',
-'mat_wood':'Contreplaqué / Bois (×1,0)','mat_acrylic':'Acrylique / Plexiglas (×1,4)','mat_metal':'Métal / Gravure chimique (×1,8)','mat_laminate':'Laminés de gravure (×2,0)',
-'lbl_vat':'Taux TVA (%)','lbl_vatcountry':'Pays / Région','vat_custom':'Taux personnalisé',
-'mat_h4':'📐 Calculateur de consommation matériau','mat_desc':'Entrez les dimensions de la plaque et du projet – le calculateur trouve le coût matériau proportionnel.',
-'lbl_sheetw':'Plaque – largeur (mm)','lbl_sheeth':'Plaque – hauteur (mm)','lbl_cutw':'Projet – largeur (mm)','lbl_cuth':'Projet – hauteur (mm)','lbl_qty':'Quantité',
-'mat_placeholder':'Remplissez les dimensions ci-dessus pour voir le résultat.',
-'mat_hint':'💡 Le coût matériau calculé est automatiquement inclus dans le calcul du bénéfice ci-dessous.',
-'mat_exceed':'⚠️ Les dimensions du projet dépassent la plaque!',
-'mat_area':'Surface projet','mat_perpiece':'Coût par pièce','mat_total':'Total commande','pcs':'pcs.',
-'mult_hint':'ℹ️ Multiplicateur de difficulté: Acrylique, métal et laminés nécessitent plus d\'entretien.',
-'finish_title':'Finition','extra_title':'Options supplémentaires',
-'opt_painting':'Peinture (+15 {s})','opt_lacquer':'Vernis (+10 {s})',
-'opt_double':'Gravure double face (+50% temps)','opt_urgent':'Commande urgente (+30%)','opt_shipping':'🚚 Ajouter frais de livraison',
-'ship_title':'🚚 Choisir méthode de livraison','ship_inpost':'📦 Casier colis (14,99 {s})','ship_courier':'🚛 Coursier DPD/DHL (19,99 {s})','ship_custom':'✏️ Montant personnalisé:','ship_display':'Frais de livraison',
-'btn_calculate':'▶ CALCULER BÉNÉFICE & PRIX',
-'result_gross':'Prix client (TTC):','result_profit_lbl':'VOTRE BÉNÉFICE NET ESTIMÉ:',
-'btn_txt':'💾 SAUVER TXT','btn_pdf':'🖼️ SAUVER PDF',
-'compare_h3':'Laser à diode vs CO2 ? Comparaison 2026',
-'tbl_feature':'Caractéristique','tbl_diode':'Laser à diode (ex. xTool)','tbl_co2':'Laser CO2',
-'tbl_price':'Prix de départ','tbl_price_d':'Bas (dès €300)','tbl_price_c':'Élevé (dès €2000)',
-'tbl_acrylic':'Découpe acrylique','tbl_acrylic_d':'Couleurs foncées seulement','tbl_acrylic_c':'Toutes couleurs (incl. transparent)',
-'tbl_space':'Espace nécessaire','tbl_space_d':'Bureau, compact','tbl_space_c':'Nécessite grand atelier',
-'faq_h2':'💡 Questions fréquentes (FAQ)',
-'faq1_q':'1. Un laser à diode peut-il couper le métal?','faq1_a':'La plupart gravent l\'acier inoxydable mais ne peuvent pas le couper. Vous avez besoin d\'un laser à fibre.',
-'faq2_q':'2. Comment tarifer la gravure laser?','faq2_a':'Utilisez notre calculateur ci-dessus!',
-'faq3_q':'3. Quel logiciel pour la gravure laser?','faq3_a':'LightBurn est le standard du secteur.',
-'create_h2':'🎨 Que pouvez-vous créer avec votre laser?',
-'item_box':'📦 Boîtes gravées','item_key':'🔑 Porte-clés en cuir','item_trophy':'🏆 Trophées en acrylique','item_board':'🍳 Planches de service','item_pen':'🖋️ Stylos marqués','item_toy':'🧸 Jouets en bois',
-'seo_h2':'Comment tarifer la gravure laser en 2026?',
-'seo_p1':'Beaucoup de personnes débutant avec un laser à diode ou CO2 se demandent: combien facturer par minute de temps laser?',
-'seo_h3_1':'1. Le taux horaire est la base','seo_p2':'Les tarifs professionnels en Europe vont de €15 à €50/heure.',
-'seo_h3_2':'2. Coût matériau proportionnel','seo_p3':'Notre calculateur calcule cela automatiquement.',
-'seo_h3_3':'3. Amortissement machine & électricité','seo_p4':'Ajoutez €5–15/h comme fonds de service.',
-'seo_tip':'Conseil pro: Facturez toujours le temps de préparation des fichiers SVG/DXF!',
-'res_h2':'📂 Meilleures bases de fichiers SVG / DXF gratuits',
-'res_visit':'Visiter le site →','res_icons':'Chercher des icônes →','res_gen':'Ouvrir générateur →','res_puzzle_lnk':'Créer puzzle →','res_gear_lnk':'Concevoir engrenages →','res_qr_lnk':'Générer QR →',
-'res_ameede':'Mine d\'or de projets DXF/CDR.','res_3axis':'Des milliers de vecteurs par catégorie.','res_flaticon':'Meilleures icônes SVG gratuites.',
-'res_boxes':'Générateur de boîtes le plus puissant.','res_puzzle':'Grille SVG parfaite pour puzzles.','res_gear':'Générateur d\'engrenages au millimètre.','res_qr':'Codes QR en SVG.',
-'res_warning':'⚠️ Vérifiez toujours la licence du fichier! Cherchez les licences Commercial Use.',
-'bhp_h2':'⚠️ Règles de sécurité laser',
-'bhp1_h':'🕶️ Protection des yeux','bhp1_p':'Ne regardez jamais le faisceau sans lunettes certifiées OD5+.',
-'bhp2_h':'🚫 Matériaux interdits','bhp2_p':'Ne coupez jamais le PVC/vinyl (libère du chlore toxique).',
-'bhp3_h':'🔥 Surveillance & incendie','bhp3_p':'Gardez toujours un extincteur à portée de main.',
-'faq2_h2':'❓ Dépannage & Conseils','faq2_sub':'Questions courantes sur les prix, matériaux et configuration machine',
-'faqt1_q':'Comment calculer les prix?','faqt1_a':'Additionner: matériau + temps laser × taux + préparation + amortissement.',
-'faqt2_q':'Combien facturer par heure?','faqt2_a':'Allemagne €25–45/h · UK £20–40/h · USA $25–60/h.',
-'faqt3_q':'Meilleur laser à diode 2026?','faqt3_a':'xTool D1 Pro 10W, Creality Falcon 2 22W, Atomstack X40 Pro 40W.',
-'faqt4_q':'Laser à diode vs CO2?','faqt4_a':'Diode: moins cher, compact. CO2: découpe tout l\'acrylique.',
-'faqt5_q':'Quels matériaux ne pas couper?','faqt5_a':'Jamais: PVC, ABS, polycarbonate, fibre de carbone.',
-'faqt6_q':'Pourquoi les bords sont carbonisés?','faqt6_a':'Pas d\'Air Assist ou vitesse trop lente. Nettoyez la lentille.',
-'faqt7_q':'Meilleur logiciel?','faqt7_a':'LightBurn. Gratuit: LaserGRBL.',
-'footer_aff':'Tous liens affiliés. Merci pour votre soutien!',
-'btn_feedback':'💬 Signaler problème / Proposer amélioration',
-'fb_title':'💬 Signaler un problème','fb_sub':'Vos commentaires nous aident à améliorer LaserProfit.eu',
-'fb_type_lbl':'Type de signalement','fb_msg_lbl':'Description','fb_email_lbl':'E-mail (optionnel)',
-'fb_bug':'🐛 Bug / Quelque chose ne fonctionne pas','fb_idea':'💡 Idée d\'amélioration','fb_trans':'🌍 Erreur de traduction','fb_laser':'⚡ Laser manquant','fb_other':'📋 Autre',
-'fb_send':'📤 Envoyer','fb_cancel':'Annuler','fb_thanks':'✅ Merci! Nous vous répondrons bientôt.','fb_placeholder':'Décrivez le problème ou l\'idée...',
-'txt_title':'DEVIS GRAVURE LASER – LASERPROFIT.EU 2026','txt_date':'Date','txt_gross':'Prix client (TTC)','txt_profit':'Votre bénéfice net',
-'txt_details':'DÉTAILS / RAPPORT OPÉRATIONNEL','txt_generated':'Généré par','txt_sheet':'Plaque','txt_proj':'Projet',
-'txt_usage':'Utilisation plaque','txt_fits':'Tient sur plaque','txt_mat':'Coût matériau','txt_mach':'Coût machine',
-'txt_labor':'Main-d\'œuvre','txt_ship':'Livraison','txt_netto':'Prix HT','txt_vat':'TVA','txt_brutto':'PRIX TTC','txt_zysk':'VOTRE BÉNÉFICE NET','txt_rpt':'📋 RAPPORT OPÉRATIONNEL'
-},
-it:{
-'nav_calc':'🧮 CALCOLATORE','nav_files':'📂 FILE GRATUITI','nav_bhp':'⚠️ SICUREZZA','theme_light':'☀️ Modalità chiara','theme_dark':'🌙 Modalità scura','more_langs':'altro',
-'hero_badge':'STRUMENTO GRATUITO · 2026','hero_h1':'Calcolatore Prezzi Incisione Laser 2026',
-'hero_sub1':'Strumento gratuito per il calcolo dei costi di incisione e taglio laser','hero_sub2':'Usato dai maker in tutto il mondo',
-'calc_h2':'🎯 Studio Prezzi Laser','calc_sub':'Configura le tue tariffe e vedi il tuo profitto reale.',
-'cur_label':'💱 Valuta report','lang_label':'🌍 Lingua report TXT/PDF',
-'lbl_hourly':'La tua tariffa oraria ({s}/h)','lbl_machine':'Costo energia & ammortamento ({s}/h)',
-'lbl_material':'Materiale & difficoltà','lbl_lasermin':'Tempo laser (min)','lbl_prep':'Preparazione progetto (min)','lbl_matprice':'Prezzo lastra completa ({s})',
-'mat_wood':'Compensato / Legno (×1,0)','mat_acrylic':'Acrilico / Plexiglas (×1,4)','mat_metal':'Metallo / Incisione (×1,8)','mat_laminate':'Laminati incisione (×2,0)',
-'lbl_vat':'Aliquota IVA (%)','lbl_vatcountry':'Paese / Regione','vat_custom':'Aliquota personalizzata',
-'mat_h4':'📐 Calcolatore consumo materiale','mat_desc':'Inserisci le dimensioni della lastra e del progetto per trovare il costo materiale proporzionale.',
-'lbl_sheetw':'Lastra – larghezza (mm)','lbl_sheeth':'Lastra – altezza (mm)','lbl_cutw':'Progetto – larghezza (mm)','lbl_cuth':'Progetto – altezza (mm)','lbl_qty':'Quantità',
-'mat_placeholder':'Compila le dimensioni sopra per vedere il risultato.',
-'mat_hint':'💡 Il costo materiale calcolato è automaticamente incluso nel calcolo del profitto.',
-'mat_exceed':'⚠️ Le dimensioni del progetto superano la lastra!',
-'mat_area':'Area progetto','mat_perpiece':'Costo per pezzo','mat_total':'Totale ordine','pcs':'pz.',
-'mult_hint':'ℹ️ Moltiplicatore difficoltà: Acrilico, metallo e laminati richiedono più manutenzione.',
-'finish_title':'Finitura','extra_title':'Opzioni extra',
-'opt_painting':'Verniciatura (+15 {s})','opt_lacquer':'Laccatura (+10 {s})',
-'opt_double':'Incisione doppia faccia (+50% tempo)','opt_urgent':'Ordine urgente (+30%)','opt_shipping':'🚚 Aggiungi costo spedizione',
-'ship_title':'🚚 Scegli metodo di spedizione','ship_inpost':'📦 Armadietto pacchi (14,99 {s})','ship_courier':'🚛 Corriere DPD/DHL (19,99 {s})','ship_custom':'✏️ Importo personalizzato:','ship_display':'Costo spedizione',
-'btn_calculate':'▶ CALCOLA PROFITTO & PREZZO',
-'result_gross':'Prezzo cliente (Lordo):','result_profit_lbl':'IL TUO PROFITTO NETTO STIMATO:',
-'btn_txt':'💾 SALVA TXT','btn_pdf':'🖼️ SALVA PDF',
-'compare_h3':'Laser a diodo vs CO2? Confronto 2026',
-'tbl_feature':'Caratteristica','tbl_diode':'Laser a diodo (es. xTool)','tbl_co2':'Laser CO2',
-'tbl_price':'Prezzo iniziale','tbl_price_d':'Basso (da €300)','tbl_price_c':'Alto (da €2000)',
-'tbl_acrylic':'Taglio acrilico','tbl_acrylic_d':'Solo colori scuri','tbl_acrylic_c':'Tutti i colori (incl. trasparente)',
-'tbl_space':'Spazio necessario','tbl_space_d':'Desktop, compatto','tbl_space_c':'Richiede grande laboratorio',
-'faq_h2':'💡 Domande frequenti (FAQ)',
-'faq1_q':'1. Un laser a diodo può tagliare il metallo?','faq1_a':'La maggior parte incide l\'acciaio inox ma non riesce a tagliarlo. Serve un laser a fibra.',
-'faq2_q':'2. Come prezzare l\'incisione laser?','faq2_a':'Usa il nostro calcolatore sopra!',
-'faq3_q':'3. Miglior software per il laser?','faq3_a':'LightBurn è lo standard del settore.',
-'create_h2':'🎨 Cosa puoi creare con il tuo laser?',
-'item_box':'📦 Scatole incise','item_key':'🔑 Portachiavi in pelle','item_trophy':'🏆 Trofei in acrilico','item_board':'🍳 Taglieri da servizio','item_pen':'🖋️ Penne marchiate','item_toy':'🧸 Giocattoli in legno',
-'seo_h2':'Come tarare l\'incisione laser nel 2026?','seo_p1':'Molte persone che iniziano con un laser a diodo o CO2 si chiedono: quanto fatturare al minuto?',
-'seo_h3_1':'1. La tariffa oraria è la base','seo_p2':'Le tariffe professionali in Europa vanno da €15 a €50/ora.',
-'seo_h3_2':'2. Costo materiale proporzionale','seo_p3':'Il nostro calcolatore lo calcola automaticamente.',
-'seo_h3_3':'3. Ammortamento macchina & elettricità','seo_p4':'Aggiungi €5–15/h come fondo servizio.',
-'seo_tip':'Consiglio pro: Addebita sempre il tempo di preparazione file SVG/DXF!',
-'res_h2':'📂 Migliori database file SVG / DXF gratuiti',
-'res_visit':'Visita sito →','res_icons':'Cerca icone →','res_gen':'Apri generatore →','res_puzzle_lnk':'Crea puzzle →','res_gear_lnk':'Progetta ingranaggi →','res_qr_lnk':'Genera QR →',
-'res_ameede':'Miniera d\'oro di progetti DXF/CDR.','res_3axis':'Migliaia di vettori per categoria.','res_flaticon':'Migliori icone SVG gratuite.','res_boxes':'Generatore di scatole più potente.',
-'res_puzzle':'Griglia SVG perfetta per puzzle.','res_gear':'Generatore ingranaggi al millimetro.','res_qr':'Codici QR in SVG.',
-'res_warning':'⚠️ Controlla sempre la licenza del file! Cerca licenze Commercial Use.',
-'bhp_h2':'⚠️ Norme di sicurezza laser',
-'bhp1_h':'🕶️ Protezione occhi','bhp1_p':'Non guardare mai il raggio senza occhiali certificati OD5+.',
-'bhp2_h':'🚫 Materiali vietati','bhp2_p':'Non tagliare mai PVC/vinile (rilascia cloro tossico).',
-'bhp3_h':'🔥 Sorveglianza & incendio','bhp3_p':'Tieni sempre un estintore a portata di mano.',
-'faq2_h2':'❓ Risoluzione problemi & Consigli','faq2_sub':'Domande comuni su prezzi, materiali e configurazione macchina',
-'faqt1_q':'Come calcolo i prezzi?','faqt1_a':'Sommare: materiale + tempo laser × tariffa + preparazione + ammortamento.',
-'faqt2_q':'Quanto fatturare all\'ora?','faqt2_a':'Germania €25–45/h · UK £20–40/h · USA $25–60/h.',
-'faqt3_q':'Miglior laser a diodo 2026?','faqt3_a':'xTool D1 Pro 10W, Creality Falcon 2 22W, Atomstack X40 Pro 40W.',
-'faqt4_q':'Laser a diodo vs CO2?','faqt4_a':'Diodo: più economico, compatto. CO2: taglia tutto l\'acrilico.',
-'faqt5_q':'Quali materiali non tagliare?','faqt5_a':'Mai: PVC, ABS, policarbonato, fibra di carbonio.',
-'faqt6_q':'Perché i bordi sono bruciati?','faqt6_a':'Nessun Air Assist o velocità troppo lenta. Pulire la lente.',
-'faqt7_q':'Miglior software?','faqt7_a':'LightBurn. Gratuito: LaserGRBL.',
-'footer_aff':'Tutti i link sono affiliati. Grazie per il supporto!',
-'btn_feedback':'💬 Segnala problema / Suggerisci miglioramento',
-'fb_title':'💬 Segnala problema','fb_sub':'Il tuo feedback ci aiuta a migliorare LaserProfit.eu',
-'fb_type_lbl':'Tipo segnalazione','fb_msg_lbl':'Descrizione','fb_email_lbl':'E-mail (opzionale)',
-'fb_bug':'🐛 Bug / Qualcosa non funziona','fb_idea':'💡 Idea miglioramento','fb_trans':'🌍 Errore traduzione','fb_laser':'⚡ Laser mancante','fb_other':'📋 Altro',
-'fb_send':'📤 Invia','fb_cancel':'Annulla','fb_thanks':'✅ Grazie! Ti risponderemo presto.','fb_placeholder':'Descrivi il problema o l\'idea...',
-'txt_title':'PREVENTIVO INCISIONE LASER – LASERPROFIT.EU 2026','txt_date':'Data','txt_gross':'Prezzo cliente (Lordo)','txt_profit':'Il tuo utile netto',
-'txt_details':'DETTAGLI / RAPPORTO OPERATIVO','txt_generated':'Generato da','txt_sheet':'Lastra','txt_proj':'Progetto',
-'txt_usage':'Utilizzo lastra','txt_fits':'Entra nella lastra','txt_mat':'Costo materiale','txt_mach':'Costo macchina',
-'txt_labor':'Manodopera','txt_ship':'Spedizione','txt_netto':'Prezzo netto','txt_vat':'IVA','txt_brutto':'PREZZO LORDO','txt_zysk':'IL TUO UTILE NETTO','txt_rpt':'📋 RAPPORTO OPERATIVO'
-},
-es:{
-'nav_calc':'🧮 CALCULADORA','nav_files':'📂 ARCHIVOS GRATIS','nav_bhp':'⚠️ SEGURIDAD','theme_light':'☀️ Modo claro','theme_dark':'🌙 Modo oscuro','more_langs':'más',
-'hero_badge':'HERRAMIENTA GRATUITA · 2026','hero_h1':'Calculadora de Precios de Grabado Láser 2026',
-'hero_sub1':'Herramienta gratuita para calcular costos de grabado y corte láser','hero_sub2':'Usada por makers en todo el mundo',
-'calc_h2':'🎯 Studio de Precios Láser','calc_sub':'Configura tus tarifas y ve tu beneficio real.',
-'cur_label':'💱 Divisa del informe','lang_label':'🌍 Idioma informe TXT/PDF',
-'lbl_hourly':'Tu tarifa por hora ({s}/h)','lbl_machine':'Costo energía & depreciación ({s}/h)',
-'lbl_material':'Material & dificultad','lbl_lasermin':'Tiempo láser (min)','lbl_prep':'Preparación proyecto (min)','lbl_matprice':'Precio lámina completa ({s})',
-'mat_wood':'Contrachapado / Madera (×1,0)','mat_acrylic':'Acrílico / Plexiglás (×1,4)','mat_metal':'Metal / Grabado (×1,8)','mat_laminate':'Laminados de grabado (×2,0)',
-'lbl_vat':'Tipo IVA (%)','lbl_vatcountry':'País / Región','vat_custom':'Tipo personalizado',
-'mat_h4':'📐 Calculadora de uso de material','mat_desc':'Introduce dimensiones de lámina y proyecto para encontrar el costo de material proporcional.',
-'lbl_sheetw':'Lámina – ancho (mm)','lbl_sheeth':'Lámina – alto (mm)','lbl_cutw':'Proyecto – ancho (mm)','lbl_cuth':'Proyecto – alto (mm)','lbl_qty':'Cantidad',
-'mat_placeholder':'Rellena las dimensiones arriba para ver el resultado.',
-'mat_hint':'💡 El costo de material calculado se incluye automáticamente en el cálculo de beneficio.',
-'mat_exceed':'⚠️ ¡Las dimensiones del proyecto superan la lámina!',
-'mat_area':'Área proyecto','mat_perpiece':'Costo por pieza','mat_total':'Total pedido','pcs':'uds.',
-'mult_hint':'ℹ️ Multiplicador de dificultad: Acrílico, metal y laminados requieren más mantenimiento.',
-'finish_title':'Acabado','extra_title':'Opciones extra',
-'opt_painting':'Pintura (+15 {s})','opt_lacquer':'Barniz (+10 {s})',
-'opt_double':'Grabado doble cara (+50% tiempo)','opt_urgent':'Pedido urgente (+30%)','opt_shipping':'🚚 Añadir costo de envío',
-'ship_title':'🚚 Elegir método de envío','ship_inpost':'📦 Taquilla paquetes (14,99 {s})','ship_courier':'🚛 Mensajero DPD/DHL (19,99 {s})','ship_custom':'✏️ Importe personalizado:','ship_display':'Costo de envío',
-'btn_calculate':'▶ CALCULAR BENEFICIO Y PRECIO',
-'result_gross':'Precio cliente (Bruto):','result_profit_lbl':'TU BENEFICIO NETO ESTIMADO:',
-'btn_txt':'💾 GUARDAR TXT','btn_pdf':'🖼️ GUARDAR PDF',
-'compare_h3':'¿Láser de diodo vs CO2? Comparación 2026',
-'tbl_feature':'Característica','tbl_diode':'Láser de diodo (ej. xTool)','tbl_co2':'Láser CO2',
-'tbl_price':'Precio inicial','tbl_price_d':'Bajo (desde €300)','tbl_price_c':'Alto (desde €2000)',
-'tbl_acrylic':'Corte acrílico','tbl_acrylic_d':'Solo colores oscuros','tbl_acrylic_c':'Todos los colores (incl. transparente)',
-'tbl_space':'Espacio necesario','tbl_space_d':'Escritorio, compacto','tbl_space_c':'Requiere gran taller',
-'faq_h2':'💡 Preguntas frecuentes (FAQ)',
-'faq1_q':'1. ¿Puede un láser de diodo cortar metal?','faq1_a':'La mayoría graba acero inoxidable pero no puede cortarlo. Necesitas un láser de fibra.',
-'faq2_q':'2. ¿Cómo presupuestar el grabado láser?','faq2_a':'¡Usa nuestra calculadora arriba!',
-'faq3_q':'3. ¿Mejor software para láser?','faq3_a':'LightBurn es el estándar del sector.',
-'create_h2':'🎨 ¿Qué puedes crear con tu láser?',
-'item_box':'📦 Cajas grabadas','item_key':'🔑 Llaveros de cuero','item_trophy':'🏆 Trofeos de acrílico','item_board':'🍳 Tablas de servir','item_pen':'🖋️ Bolígrafos marcados','item_toy':'🧸 Juguetes de madera',
-'seo_h2':'¿Cómo tasar el grabado láser en 2026?','seo_p1':'Muchos makers preguntan: ¿cuánto cobrar por minuto de tiempo láser?',
-'seo_h3_1':'1. La tarifa horaria es la base','seo_p2':'Las tarifas profesionales en Europa van de €15 a €50/hora.',
-'seo_h3_2':'2. Costo de material proporcional','seo_p3':'Nuestra calculadora lo calcula automáticamente.',
-'seo_h3_3':'3. Depreciación máquina & electricidad','seo_p4':'Añade €5–15/h como fondo de servicio.',
-'seo_tip':'Consejo pro: ¡Siempre cobra el tiempo de preparación de archivos SVG/DXF!',
-'res_h2':'📂 Mejores bases de archivos SVG / DXF gratuitos',
-'res_visit':'Visitar sitio →','res_icons':'Buscar iconos →','res_gen':'Abrir generador →','res_puzzle_lnk':'Crear puzzle →','res_gear_lnk':'Diseñar engranajes →','res_qr_lnk':'Generar QR →',
-'res_ameede':'Mina de oro de proyectos DXF/CDR.','res_3axis':'Miles de vectores por categoría.','res_flaticon':'Mejores iconos SVG gratuitos.','res_boxes':'Generador de cajas más potente.',
-'res_puzzle':'Cuadrícula SVG perfecta para puzzles.','res_gear':'Generador de engranajes al milímetro.','res_qr':'Códigos QR en SVG.',
-'res_warning':'⚠️ ¡Comprueba siempre la licencia del archivo! Busca licencias de uso comercial.',
-'bhp_h2':'⚠️ Normas de seguridad láser',
-'bhp1_h':'🕶️ Protección ocular','bhp1_p':'Nunca mires el haz sin gafas certificadas OD5+.',
-'bhp2_h':'🚫 Materiales prohibidos','bhp2_p':'Nunca cortes PVC/vinilo (libera cloro tóxico).',
-'bhp3_h':'🔥 Supervisión & incendio','bhp3_p':'Ten siempre un extintor a mano.',
-'faq2_h2':'❓ Resolución de problemas & Consejos','faq2_sub':'Preguntas comunes sobre precios, materiales y configuración de máquina',
-'faqt1_q':'¿Cómo calculo los precios?','faqt1_a':'Sumar: material + tiempo láser × tarifa + preparación + depreciación.',
-'faqt2_q':'¿Cuánto cobrar por hora?','faqt2_a':'Alemania €25–45/h · UK £20–40/h · USA $25–60/h.',
-'faqt3_q':'¿Mejor láser de diodo 2026?','faqt3_a':'xTool D1 Pro 10W, Creality Falcon 2 22W, Atomstack X40 Pro 40W.',
-'faqt4_q':'¿Láser de diodo vs CO2?','faqt4_a':'Diodo: más barato, compacto. CO2: corta todo el acrílico.',
-'faqt5_q':'¿Qué materiales no cortar?','faqt5_a':'Nunca: PVC, ABS, policarbonato, fibra de carbono.',
-'faqt6_q':'¿Por qué los bordes están chamuscados?','faqt6_a':'Sin Air Assist o velocidad demasiado lenta. Limpia la lente.',
-'faqt7_q':'¿Mejor software?','faqt7_a':'LightBurn. Gratuito: LaserGRBL.',
-'footer_aff':'Todos los enlaces son de afiliados. ¡Gracias por apoyarnos!',
-'btn_feedback':'💬 Reportar problema / Sugerir mejora',
-'fb_title':'💬 Reportar problema','fb_sub':'Tus comentarios nos ayudan a mejorar LaserProfit.eu',
-'fb_type_lbl':'Tipo de reporte','fb_msg_lbl':'Descripción','fb_email_lbl':'E-mail (opcional)',
-'fb_bug':'🐛 Bug / Algo no funciona','fb_idea':'💡 Idea de mejora','fb_trans':'🌍 Error de traducción','fb_laser':'⚡ Láser faltante','fb_other':'📋 Otro',
-'fb_send':'📤 Enviar','fb_cancel':'Cancelar','fb_thanks':'✅ ¡Gracias! Nos pondremos en contacto pronto.','fb_placeholder':'Describe el problema o la idea...',
-'txt_title':'PRESUPUESTO GRABADO LÁSER – LASERPROFIT.EU 2026','txt_date':'Fecha','txt_gross':'Precio cliente (Bruto)','txt_profit':'Tu beneficio neto',
-'txt_details':'DETALLES / INFORME OPERATIVO','txt_generated':'Generado por','txt_sheet':'Lámina','txt_proj':'Proyecto',
-'txt_usage':'Uso lámina','txt_fits':'Cabe en lámina','txt_mat':'Costo material','txt_mach':'Costo máquina',
-'txt_labor':'Mano de obra','txt_ship':'Envío','txt_netto':'Precio neto','txt_vat':'IVA','txt_brutto':'PRECIO BRUTO','txt_zysk':'TU BENEFICIO NETO','txt_rpt':'📋 INFORME OPERATIVO'
-},
-nl:{'nav_calc':'🧮 CALCULATOR','nav_files':'📂 GRATIS BESTANDEN','nav_bhp':'⚠️ VEILIGHEID','theme_light':'☀️ Lichte modus','theme_dark':'🌙 Donkere modus','more_langs':'meer','hero_badge':'GRATIS TOOL · 2026','hero_h1':'Laser Gravure Prijs Calculator 2026','hero_sub1':'Gratis tool voor berekening van laser gravure & snijkosten','hero_sub2':'Gebruikt door makers wereldwijd','calc_h2':'🎯 Laser Prijs Studio','calc_sub':'Stel uw tarieven in en zie uw echte winst.','cur_label':'💱 Rapportvaluta','lang_label':'🌍 Rapporttaal TXT/PDF','lbl_hourly':'Uw uurtarief ({s}/h)','lbl_machine':'Energie & afschrijvingskosten ({s}/h)','lbl_material':'Materiaal & moeilijkheid','lbl_lasermin':'Lasertijd (min)','lbl_prep':'Projectvoorbereiding (min)','lbl_matprice':'Volledige plaatprijs ({s})','mat_wood':'Multiplex / Hout (×1,0)','mat_acrylic':'Acryl / Plexiglas (×1,4)','mat_metal':'Metaal / Etsen (×1,8)','mat_laminate':'Graveerlaminaat (×2,0)','lbl_vat':'BTW-tarief (%)','lbl_vatcountry':'Land / Regio','vat_custom':'Eigen tarief','mat_h4':'📐 Materiaalverbruiksberekening','mat_desc':'Voer plaat- en projectafmetingen in voor proportionele materiaalkosten.','lbl_sheetw':'Plaat – breedte (mm)','lbl_sheeth':'Plaat – hoogte (mm)','lbl_cutw':'Project – breedte (mm)','lbl_cuth':'Project – hoogte (mm)','lbl_qty':'Aantal','mat_placeholder':'Vul de afmetingen in om het resultaat te zien.','mat_hint':'💡 De berekende materiaalkosten worden automatisch meegenomen.','mat_exceed':'⚠️ Projectafmetingen overschrijden de plaat!','mat_area':'Projectoppervlak','mat_perpiece':'Kosten per stuk','mat_total':'Bestelstotaal','pcs':'st.','mult_hint':'ℹ️ Moeilijkheidsmultiplier: Acryl, metaal en laminaten vereisen meer onderhoud.','finish_title':'Afwerking','extra_title':'Extra opties','opt_painting':'Verfcoating (+15 {s})','opt_lacquer':'Lakafwerking (+10 {s})','opt_double':'Dubbelzijdige gravure (+50% tijd)','opt_urgent':'Spoedorder (+30%)','opt_shipping':'🚚 Verzendkosten toevoegen','ship_title':'🚚 Verzendmethode kiezen','ship_inpost':'📦 Pakketkluis (14,99 {s})','ship_courier':'🚛 Koerier DPD/DHL (19,99 {s})','ship_custom':'✏️ Eigen bedrag:','ship_display':'Verzendkosten','btn_calculate':'▶ BEREKEN WINST & PRIJS','result_gross':'Prijs klant (Bruto):','result_profit_lbl':'UW GESCHATTE NETTOWINST:','btn_txt':'💾 OPSLAAN TXT','btn_pdf':'🖼️ OPSLAAN PDF','compare_h3':'Diode laser vs CO2? Vergelijking 2026','tbl_feature':'Kenmerk','tbl_diode':'Diode Laser (bijv. xTool)','tbl_co2':'CO2-Laser','tbl_price':'Startprijs','tbl_price_d':'Laag (vanaf €300)','tbl_price_c':'Hoog (vanaf €2000)','tbl_acrylic':'Acrylsnijden','tbl_acrylic_d':'Alleen donkere kleuren','tbl_acrylic_c':'Alle kleuren (incl. transparant)','tbl_space':'Ruimte nodig','tbl_space_d':'Bureau, compact','tbl_space_c':'Vereist grote werkplaats','faq_h2':'💡 Veelgestelde vragen (FAQ)','faq1_q':'1. Kan een diode laser metaal snijden?','faq1_a':'De meeste graveren roestvrij staal maar kunnen het niet snijden.','faq2_q':'2. Hoe prijs ik lasergravure?','faq2_a':'Gebruik onze calculator hierboven!','faq3_q':'3. Beste software voor laser?','faq3_a':'LightBurn is de industriestandaard.','create_h2':'🎨 Wat kun je maken met jouw laser?','item_box':'📦 Gegraveerde dozen','item_key':'🔑 Leren sleutelhangers','item_trophy':'🏆 Acryl trofeeën','item_board':'🍳 Serveerplanken','item_pen':'🖋️ Gemerkte pennen','item_toy':'🧸 Houten speelgoed','seo_h2':'Hoe prijs je lasergravure in 2026?','seo_p1':'Veel makers vragen: hoeveel rekenen per minuut lasertijd?','seo_h3_1':'1. Uurtarief is de basis','seo_p2':'Professionele tarieven in Europa: €15–€50/uur.','seo_h3_2':'2. Proportionele materiaalkosten','seo_p3':'Onze calculator berekent dit automatisch.','seo_h3_3':'3. Machineafschrijving & elektriciteit','seo_p4':'Voeg €5–15/u toe als servicefonds.','seo_tip':'Pro tip: Reken altijd voor SVG/DXF bestandsvoorbereiding!','res_h2':'📂 Beste gratis SVG / DXF bestanden','res_visit':'Bezoek site →','res_icons':'Zoek iconen →','res_gen':'Open generator →','res_puzzle_lnk':'Maak puzzel →','res_gear_lnk':'Ontwerp tandwielen →','res_qr_lnk':'Genereer QR →','res_ameede':'Goudmijn van DXF/CDR projecten.','res_3axis':'Duizenden vectoren per categorie.','res_flaticon':'Beste gratis SVG iconen.','res_boxes':'Krachtigste dozenmaker.','res_puzzle':'Perfecte SVG snijraster voor puzzels.','res_gear':'Tandwielgenerator op de millimeter.','res_qr':'QR-codes in SVG.','res_warning':'⚠️ Controleer altijd de bestandslicentie!','bhp_h2':'⚠️ Laser veiligheidsregels','bhp1_h':'🕶️ Oogbescherming','bhp1_p':'Kijk nooit in de straal zonder gecertificeerde bril OD5+.','bhp2_h':'🚫 Verboden materialen','bhp2_p':'Snij nooit PVC/vinyl (giftig chloorgas).','bhp3_h':'🔥 Toezicht & brand','bhp3_p':'Houd altijd een brandblusser bij de hand.','faq2_h2':'❓ Probleemoplossing & Tips','faq2_sub':'Veelgestelde vragen over prijzen, materialen en machine-instelling','faqt1_q':'Hoe bereken ik prijzen?','faqt1_a':'Optellen: materiaal + lasertijd × tarief + voorbereiding + afschrijving.','faqt2_q':'Hoeveel per uur rekenen?','faqt2_a':'Duitsland €25–45/h · UK £20–40/h · USA $25–60/h.','faqt3_q':'Beste diode laser 2026?','faqt3_a':'xTool D1 Pro 10W, Creality Falcon 2 22W, Atomstack X40 Pro 40W.','faqt4_q':'Diode vs CO2?','faqt4_a':'Diode: goedkoper, compact. CO2: snijdt al het acryl.','faqt5_q':'Wat niet snijden?','faqt5_a':'Nooit: PVC, ABS, polycarbonaat, koolstofvezel.','faqt6_q':'Waarom zijn randen zwart?','faqt6_a':'Geen Air Assist of voeding te langzaam. Lens reinigen.','faqt7_q':'Beste software?','faqt7_a':'LightBurn. Gratis: LaserGRBL.','footer_aff':'Alle links zijn affiliate links. Bedankt voor uw steun!','btn_feedback':'💬 Probleem melden / Verbetering voorstellen','fb_title':'💬 Probleem melden','fb_sub':'Uw feedback helpt ons LaserProfit.eu te verbeteren','fb_type_lbl':'Type melding','fb_msg_lbl':'Beschrijving','fb_email_lbl':'E-mail (optioneel)','fb_bug':'🐛 Bug / Iets werkt niet','fb_idea':'💡 Verbeteringsidee','fb_trans':'🌍 Vertaalfout','fb_laser':'⚡ Laser ontbreekt','fb_other':'📋 Overige','fb_send':'📤 Versturen','fb_cancel':'Annuleren','fb_thanks':'✅ Dank u! We nemen snel contact op.','fb_placeholder':'Beschrijf het probleem of idee...','txt_title':'OFFERTE LASERGRAVERINGEN – LASERPROFIT.EU 2026','txt_date':'Datum','txt_gross':'Prijs klant (Bruto)','txt_profit':'Uw nettowinst','txt_details':'DETAILS / OPERATIONEEL RAPPORT','txt_generated':'Gegenereerd door','txt_sheet':'Plaat','txt_proj':'Project','txt_usage':'Plaatgebruik','txt_fits':'Past op plaat','txt_mat':'Materiaalkosten','txt_mach':'Machinekosten','txt_labor':'Arbeidskosten','txt_ship':'Verzending','txt_netto':'Nettoprijs','txt_vat':'BTW','txt_brutto':'BRUTOPRIJS','txt_zysk':'UW NETTOWINST','txt_rpt':'📋 OPERATIONEEL RAPPORT'},
-cs:{'nav_calc':'🧮 KALKULAČKA','nav_files':'📂 ZDARMA SOUBORY','nav_bhp':'⚠️ BEZPEČNOST','theme_light':'☀️ Světlý režim','theme_dark':'🌙 Tmavý režim','more_langs':'více','hero_badge':'BEZPLATNÝ NÁSTROJ · 2026','hero_h1':'Kalkulačka cen laserového gravírování 2026','hero_sub1':'Bezplatný nástroj pro výpočet nákladů na gravírování a řezání laserem','hero_sub2':'Používáno výrobci po celém světě','calc_h2':'🎯 Laser Price Studio','calc_sub':'Nastavte sazby a zjistěte svůj skutečný zisk.','cur_label':'💱 Měna zprávy','lang_label':'🌍 Jazyk zprávy TXT/PDF','lbl_hourly':'Vaše hodinová sazba ({s}/h)','lbl_machine':'Energie & odpisy ({s}/h)','lbl_material':'Materiál & obtížnost','lbl_lasermin':'Čas laseru (min)','lbl_prep':'Příprava projektu (min)','lbl_matprice':'Cena celé desky ({s})','mat_wood':'Překližka / Dřevo (×1,0)','mat_acrylic':'Akryl / Plexisklo (×1,4)','mat_metal':'Kov / Leptání (×1,8)','mat_laminate':'Gravírovací laminát (×2,0)','lbl_vat':'Sazba DPH (%)','lbl_vatcountry':'Země / Oblast','vat_custom':'Vlastní sazba','mat_h4':'📐 Kalkulátor spotřeby materiálu','mat_desc':'Zadejte rozměry desky a projektu pro nalezení proporcionálních nákladů na materiál.','lbl_sheetw':'Deska – šířka (mm)','lbl_sheeth':'Deska – výška (mm)','lbl_cutw':'Projekt – šířka (mm)','lbl_cuth':'Projekt – výška (mm)','lbl_qty':'Množství','mat_placeholder':'Vyplňte rozměry výše pro zobrazení výsledku.','mat_hint':'💡 Vypočítané náklady na materiál jsou automaticky zahrnuty do výpočtu zisku.','mat_exceed':'⚠️ Rozměry projektu přesahují desku!','mat_area':'Plocha projektu','mat_perpiece':'Náklady na kus','mat_total':'Celkem za objednávku','pcs':'ks.','mult_hint':'ℹ️ Multiplikátor obtížnosti: Akryl, kov a laminát vyžadují více údržby.','finish_title':'Povrchová úprava','extra_title':'Extra možnosti','opt_painting':'Nátěr barvou (+15 {s})','opt_lacquer':'Lakový nátěr (+10 {s})','opt_double':'Oboustranné gravírování (+50% čas)','opt_urgent':'Spěšná objednávka (+30%)','opt_shipping':'🚚 Přidat náklady na dopravu','ship_title':'🚚 Zvolte způsob dopravy','ship_inpost':'📦 Balíkomat (14,99 {s})','ship_courier':'🚛 Kurýr DPD/DHL (19,99 {s})','ship_custom':'✏️ Vlastní částka:','ship_display':'Náklady na dopravu','btn_calculate':'▶ VYPOČÍTAT ZISK A CENU','result_gross':'Cena pro zákazníka (Brutto):','result_profit_lbl':'VÁŠ ODHADOVANÝ ČISTÝ ZISK:','btn_txt':'💾 ULOŽIT TXT','btn_pdf':'🖼️ ULOŽIT PDF','compare_h3':'Diodový laser vs CO2? Srovnání 2026','tbl_feature':'Vlastnost','tbl_diode':'Diodový laser (např. xTool)','tbl_co2':'CO2 laser','tbl_price':'Počáteční cena','tbl_price_d':'Nízká (od €300)','tbl_price_c':'Vysoká (od €2000)','tbl_acrylic':'Řezání akrylu','tbl_acrylic_d':'Pouze tmavé barvy','tbl_acrylic_c':'Všechny barvy (vč. průhledného)','tbl_space':'Potřebný prostor','tbl_space_d':'Stolní, kompaktní','tbl_space_c':'Vyžaduje velkou dílnu','faq_h2':'💡 Nejčastější otázky (FAQ)','faq1_q':'1. Může diodový laser řezat kov?','faq1_a':'Většina gravíruje nerezavějící ocel, ale nemůže ji řezat.','faq2_q':'2. Jak nacenit laserové gravírování?','faq2_a':'Použijte naši kalkulačku výše!','faq3_q':'3. Nejlepší software pro laser?','faq3_a':'LightBurn je průmyslovým standardem.','create_h2':'🎨 Co můžete vytvořit svým laserem?','item_box':'📦 Gravírované krabičky','item_key':'🔑 Kožené přívěsky','item_trophy':'🏆 Akrylové trofeje','item_board':'🍳 Servírovací prkénka','item_pen':'🖋️ Značkové pera','item_toy':'🧸 Dřevěné hračky','seo_h2':'Jak nacenit laserové gravírování v roce 2026?','seo_p1':'Mnoho výrobců se ptá: kolik účtovat za minutu laserového času?','seo_h3_1':'1. Hodinová sazba je základ','seo_p2':'Profesionální sazby v Evropě: €15–€50/hod.','seo_h3_2':'2. Proporcionální náklady na materiál','seo_p3':'Naše kalkulačka to vypočítá automaticky.','seo_h3_3':'3. Odpisy stroje & elektřina','seo_p4':'Přidejte €5–15/h jako servisní fond.','seo_tip':'Tip: Vždy účtujte čas přípravy SVG/DXF!','res_h2':'📂 Nejlepší bezplatné databáze SVG / DXF','res_visit':'Navštívit web →','res_icons':'Hledat ikony →','res_gen':'Otevřít generátor →','res_puzzle_lnk':'Vytvořit puzzle →','res_gear_lnk':'Navrhnout ozubená kola →','res_qr_lnk':'Generovat QR →','res_ameede':'Zlatý důl projektů DXF/CDR.','res_3axis':'Tisíce vektorů dle kategorie.','res_flaticon':'Nejlepší bezplatné SVG ikony.','res_boxes':'Nejvýkonnější generátor krabic.','res_puzzle':'Dokonalá SVG mřížka pro puzzle.','res_gear':'Generátor ozubených kol na milimetr.','res_qr':'QR kódy v SVG.','res_warning':'⚠️ Vždy zkontrolujte licenci souboru! Hledejte licence Commercial Use.','bhp_h2':'⚠️ Bezpečnostní pravidla pro laser','bhp1_h':'🕶️ Ochrana zraku','bhp1_p':'Nikdy nekoukejte do paprsku bez certifikovaných brýlí OD5+.','bhp2_h':'🚫 Zakázané materiály','bhp2_p':'Nikdy neřežte PVC/vinyl (uvolňuje toxický chlor).','bhp3_h':'🔥 Dozor & požár','bhp3_p':'Vždy mějte po ruce hasicí přístroj.','faq2_h2':'❓ Řešení problémů & Tipy','faq2_sub':'Časté otázky o cenách, materiálech a nastavení stroje','faqt1_q':'Jak vypočítám ceny?','faqt1_a':'Sečtěte: materiál + čas laseru × sazba + příprava + odpisy.','faqt2_q':'Kolik účtovat za hodinu?','faqt2_a':'Německo €25–45/h · UK £20–40/h · USA $25–60/h.','faqt3_q':'Nejlepší diodový laser 2026?','faqt3_a':'xTool D1 Pro 10W, Creality Falcon 2 22W, Atomstack X40 Pro 40W.','faqt4_q':'Diodový vs CO2?','faqt4_a':'Diodový: levnější, kompaktní. CO2: řeže veškerý akryl.','faqt5_q':'Co nelze řezat?','faqt5_a':'Nikdy: PVC, ABS, polykarbonát, uhlíkové vlákno.','faqt6_q':'Proč jsou okraje zuhelnatělé?','faqt6_a':'Žádný Air Assist nebo příliš pomalý posuv. Vyčistěte čočku.','faqt7_q':'Nejlepší software?','faqt7_a':'LightBurn. Zdarma: LaserGRBL.','footer_aff':'Všechny odkazy jsou affiliatní. Děkujeme za podporu!','btn_feedback':'💬 Nahlásit problém / Navrhnout vylepšení','fb_title':'💬 Nahlásit problém','fb_sub':'Vaše zpětná vazba nám pomáhá zlepšovat LaserProfit.eu','fb_type_lbl':'Typ hlášení','fb_msg_lbl':'Popis','fb_email_lbl':'E-mail (nepovinné)','fb_bug':'🐛 Chyba / Něco nefunguje','fb_idea':'💡 Nápad na vylepšení','fb_trans':'🌍 Chyba překladu','fb_laser':'⚡ Chybějící laser','fb_other':'📋 Jiné','fb_send':'📤 Odeslat','fb_cancel':'Zrušit','fb_thanks':'✅ Děkujeme! Ozveme se brzy.','fb_placeholder':'Popište problém nebo nápad...','txt_title':'NABÍDKA LASEROVÉHO GRAVÍROVÁNÍ – LASERPROFIT.EU 2026','txt_date':'Datum','txt_gross':'Cena pro zákazníka (Brutto)','txt_profit':'Váš čistý zisk','txt_details':'PODROBNOSTI / PROVOZNÍ ZPRÁVA','txt_generated':'Vygenerováno','txt_sheet':'Deska','txt_proj':'Projekt','txt_usage':'Využití desky','txt_fits':'Pasuje na desku','txt_mat':'Náklady na materiál','txt_mach':'Náklady na stroj','txt_labor':'Práce','txt_ship':'Doprava','txt_netto':'Cena bez DPH','txt_vat':'DPH','txt_brutto':'CENA BRUTTO','txt_zysk':'VÁŠ ČISTÝ ZISK','txt_rpt':'📋 PROVOZNÍ ZPRÁVA'},
-uk:{'nav_calc':'🧮 КАЛЬКУЛЯТОР','nav_files':'📂 БЕЗКОШТОВНІ ФАЙЛИ','nav_bhp':'⚠️ БЕЗПЕКА','theme_light':'☀️ Світлий режим','theme_dark':'🌙 Темний режим','more_langs':'більше','hero_badge':'БЕЗКОШТОВНИЙ ІНСТРУМЕНТ · 2026','hero_h1':'Калькулятор цін лазерного гравірування 2026','hero_sub1':'Безкоштовний інструмент для розрахунку вартості лазерного гравірування','hero_sub2':'Використовується мейкерами по всьому світу','calc_h2':'🎯 Laser Price Studio','calc_sub':'Налаштуйте ставки та дізнайтесь реальний прибуток.','cur_label':'💱 Валюта звіту','lang_label':'🌍 Мова звіту TXT/PDF','lbl_hourly':'Ваша годинна ставка ({s}/год)','lbl_machine':'Витрати на електроенергію & амортизація ({s}/год)','lbl_material':'Матеріал & складність','lbl_lasermin':'Час лазера (хв)','lbl_prep':'Підготовка проекту (хв)','lbl_matprice':'Ціна повного аркуша ({s})','mat_wood':'Фанера / Дерево (×1,0)','mat_acrylic':'Акрил / Оргскло (×1,4)','mat_metal':'Метал / Травлення (×1,8)','mat_laminate':'Гравювальні ламінати (×2,0)','lbl_vat':'Ставка ПДВ (%)','lbl_vatcountry':'Країна / Регіон','vat_custom':'Власна ставка','mat_h4':'📐 Калькулятор витрати матеріалу','mat_desc':'Введіть розміри аркуша та проекту для розрахунку пропорційної вартості матеріалу.','lbl_sheetw':'Аркуш – ширина (мм)','lbl_sheeth':'Аркуш – висота (мм)','lbl_cutw':'Проект – ширина (мм)','lbl_cuth':'Проект – висота (мм)','lbl_qty':'Кількість','mat_placeholder':'Заповніть розміри вище, щоб побачити результат.','mat_hint':'💡 Розрахована вартість матеріалу автоматично включається в розрахунок прибутку.','mat_exceed':'⚠️ Розміри проекту перевищують аркуш!','mat_area':'Площа проекту','mat_perpiece':'Вартість за одиницю','mat_total':'Сума замовлення','pcs':'шт.','mult_hint':'ℹ️ Множник складності: Акрил, метал та ламінати потребують більшого обслуговування.','finish_title':'Оздоблення','extra_title':'Додаткові опції','opt_painting':'Фарбування (+15 {s})','opt_lacquer':'Лакування (+10 {s})','opt_double':'Двостороннє гравірування (+50% часу)','opt_urgent':'Термінове замовлення (+30%)','opt_shipping':'🚚 Додати вартість доставки','ship_title':'🚚 Оберіть метод доставки','ship_inpost':'📦 Поштомат (14,99 {s})','ship_courier':'🚛 Кур\'єр DPD/DHL (19,99 {s})','ship_custom':'✏️ Власна сума:','ship_display':'Вартість доставки','btn_calculate':'▶ РОЗРАХУВАТИ ПРИБУТОК І ЦІНУ','result_gross':'Ціна для клієнта (Брутто):','result_profit_lbl':'ВАШ ОЧІКУВАНИЙ ЧИСТИЙ ПРИБУТОК:','btn_txt':'💾 ЗБЕРЕГТИ TXT','btn_pdf':'🖼️ ЗБЕРЕГТИ PDF','compare_h3':'Діодний лазер vs CO2? Порівняння 2026','tbl_feature':'Характеристика','tbl_diode':'Діодний лазер (напр. xTool)','tbl_co2':'CO2 лазер','tbl_price':'Початкова ціна','tbl_price_d':'Низька (від €300)','tbl_price_c':'Висока (від €2000)','tbl_acrylic':'Різання акрилу','tbl_acrylic_d':'Лише темні кольори','tbl_acrylic_c':'Всі кольори (вкл. прозорий)','tbl_space':'Необхідний простір','tbl_space_d':'Настільний, компактний','tbl_space_c':'Потребує великої майстерні','faq_h2':'💡 Найпоширеніші запитання (FAQ)','faq1_q':'1. Чи може діодний лазер різати метал?','faq1_a':'Більшість гравірує нержавіючу сталь, але не ріже її.','faq2_q':'2. Як оцінити лазерне гравірування?','faq2_a':'Скористайтесь нашим калькулятором вище!','faq3_q':'3. Найкраще програмне забезпечення для лазера?','faq3_a':'LightBurn – галузевий стандарт.','create_h2':'🎨 Що можна створити своїм лазером?','item_box':'📦 Гравійовані скриньки','item_key':'🔑 Шкіряні брелоки','item_trophy':'🏆 Акрилові трофеї','item_board':'🍳 Сервірувальні дошки','item_pen':'🖋️ Фірмові ручки','item_toy':'🧸 Дерев\'яні іграшки','seo_h2':'Як оцінити лазерне гравірування у 2026 році?','seo_p1':'Багато мейкерів запитують: скільки брати за хвилину роботи лазера?','seo_h3_1':'1. Погодинна ставка – основа','seo_p2':'Професійні ставки в Європі: €15–€50/год.','seo_h3_2':'2. Пропорційна вартість матеріалу','seo_p3':'Наш калькулятор розраховує це автоматично.','seo_h3_3':'3. Амортизація машини та електроенергія','seo_p4':'Додайте €5–15/год як сервісний фонд.','seo_tip':'Порада: Завжди рахуйте час підготовки файлів SVG/DXF!','res_h2':'📂 Найкращі бази безкоштовних SVG / DXF','res_visit':'Відвідати сайт →','res_icons':'Шукати іконки →','res_gen':'Відкрити генератор →','res_puzzle_lnk':'Створити пазл →','res_gear_lnk':'Розробити шестерні →','res_qr_lnk':'Генерувати QR →','res_ameede':'Золота жила проектів DXF/CDR.','res_3axis':'Тисячі векторів за категоріями.','res_flaticon':'Найкращі безкоштовні SVG іконки.','res_boxes':'Найпотужніший генератор коробок.','res_puzzle':'Ідеальна SVG сітка для пазлів.','res_gear':'Генератор шестерень на міліметр.','res_qr':'QR-коди в SVG.','res_warning':'⚠️ Завжди перевіряйте ліцензію файлу!','bhp_h2':'⚠️ Правила безпеки лазера','bhp1_h':'🕶️ Захист очей','bhp1_p':'Ніколи не дивіться на промінь без сертифікованих окулярів OD5+.','bhp2_h':'🚫 Заборонені матеріали','bhp2_p':'Ніколи не ріжте ПВХ/вініл (виділяє токсичний хлор).','bhp3_h':'🔥 Нагляд та пожежа','bhp3_p':'Завжди тримайте вогнегасник під рукою.','faq2_h2':'❓ Вирішення проблем & Поради','faq2_sub':'Поширені запитання про ціни, матеріали та налаштування машини','faqt1_q':'Як розрахувати ціни?','faqt1_a':'Додати: матеріал + час лазера × ставка + підготовка + амортизація.','faqt2_q':'Скільки брати на годину?','faqt2_a':'Німеччина €25–45/год · UK £20–40/год · США $25–60/год.','faqt3_q':'Найкращий діодний лазер 2026?','faqt3_a':'xTool D1 Pro 10W, Creality Falcon 2 22W, Atomstack X40 Pro 40W.','faqt4_q':'Діодний vs CO2?','faqt4_a':'Діодний: дешевший, компактний. CO2: ріже весь акрил.','faqt5_q':'Що не можна різати?','faqt5_a':'Ніколи: ПВХ, ABS, полікарбонат, вуглецеве волокно.','faqt6_q':'Чому краї обвуглені?','faqt6_a':'Немає Air Assist або подача занадто повільна. Очистіть лінзу.','faqt7_q':'Найкраще програмне забезпечення?','faqt7_a':'LightBurn. Безкоштовно: LaserGRBL.','footer_aff':'Всі посилання є партнерськими. Дякуємо за підтримку!','btn_feedback':'💬 Повідомити про проблему / Запропонувати покращення','fb_title':'💬 Повідомити про проблему','fb_sub':'Ваш відгук допомагає нам покращувати LaserProfit.eu','fb_type_lbl':'Тип повідомлення','fb_msg_lbl':'Опис','fb_email_lbl':'E-mail (необов\'язково)','fb_bug':'🐛 Помилка / Щось не працює','fb_idea':'💡 Ідея покращення','fb_trans':'🌍 Помилка перекладу','fb_laser':'⚡ Відсутній лазер','fb_other':'📋 Інше','fb_send':'📤 Надіслати','fb_cancel':'Скасувати','fb_thanks':'✅ Дякуємо! Ми зв\'яжемося з вами незабаром.','fb_placeholder':'Опишіть проблему або ідею...','txt_title':'РОЗРАХУНОК ЛАЗЕРНОГО ГРАВІРУВАННЯ – LASERPROFIT.EU 2026','txt_date':'Дата','txt_gross':'Ціна для клієнта (БРУТТО)','txt_profit':'Ваш чистий прибуток','txt_details':'ДЕТАЛІ / ОПЕРАТИВНИЙ ЗВІТ','txt_generated':'Згенеровано','txt_sheet':'Аркуш','txt_proj':'Проект','txt_usage':'Використання аркуша','txt_fits':'Вміщається','txt_mat':'Вартість матеріалу','txt_mach':'Вартість машини','txt_labor':'Робота','txt_ship':'Доставка','txt_netto':'Ціна нетто','txt_vat':'ПДВ','txt_brutto':'ЦІНА БРУТТО','txt_zysk':'ВАШ ЧИСТИЙ ПРИБУТОК','txt_rpt':'📋 ОПЕРАТИВНИЙ ЗВІТ'},
-no:{'nav_calc':'🧮 KALKULATOR','nav_files':'📂 GRATIS FILER','nav_bhp':'⚠️ SIKKERHET','theme_light':'☀️ Lys modus','theme_dark':'🌙 Mørk modus','more_langs':'flere','hero_badge':'GRATIS VERKTØY · 2026','hero_h1':'Lasergravering Prisberegner 2026','hero_sub1':'Gratis verktøy for kostnadskalkulation av lasergravering','hero_sub2':'Brukt av makere over hele verden','calc_h2':'🎯 Laser Pris Studio','calc_sub':'Sett dine satser og se din reelle fortjeneste.','cur_label':'💱 Rapportvaluta','lang_label':'🌍 Rapportspråk TXT/PDF','lbl_hourly':'Din timesats ({s}/t)','lbl_machine':'Energi & avskrivningskostnader ({s}/t)','lbl_material':'Material & vanskelighet','lbl_lasermin':'Lasertid (min)','lbl_prep':'Prosjektforberedelse (min)','lbl_matprice':'Full platepris ({s})','mat_wood':'Kryssfiner / Tre (×1,0)','mat_acrylic':'Akryl / Pleksiglass (×1,4)','mat_metal':'Metall / Etsing (×1,8)','mat_laminate':'Graverlaminat (×2,0)','lbl_vat':'MVA-sats (%)','lbl_vatcountry':'Land / Region','vat_custom':'Egendefinert sats','mat_h4':'📐 Materialforbruksberegner','mat_desc':'Angi plate- og prosjektmål for å finne proporsjonal materialkostnad.','lbl_sheetw':'Plate – bredde (mm)','lbl_sheeth':'Plate – høyde (mm)','lbl_cutw':'Prosjekt – bredde (mm)','lbl_cuth':'Prosjekt – høyde (mm)','lbl_qty':'Antall','mat_placeholder':'Fyll inn mål ovenfor for å se resultatet.','mat_hint':'💡 Den beregnede materialkostnaden inkluderes automatisk i fortjenesteberegningen.','mat_exceed':'⚠️ Prosjektmål overskrider platen!','mat_area':'Prosjektareal','mat_perpiece':'Kostnad per stykk','mat_total':'Bestillingstotal','pcs':'stk.','mult_hint':'ℹ️ Vanskelighetsmultiplikator: Akryl, metall og laminater krever mer vedlikehold.','finish_title':'Etterbehandling','extra_title':'Tilleggsvalg','opt_painting':'Maling (+15 {s})','opt_lacquer':'Lakk (+10 {s})','opt_double':'Dobbeltsidig gravering (+50% tid)','opt_urgent':'Hastebestilling (+30%)','opt_shipping':'🚚 Legg til fraktkostnad','ship_title':'🚚 Velg fraktmetode','ship_inpost':'📦 Pakkeboks (14,99 {s})','ship_courier':'🚛 Budtjeneste DPD/DHL (19,99 {s})','ship_custom':'✏️ Egendefinert beløp:','ship_display':'Fraktkostnad','btn_calculate':'▶ BEREGN FORTJENESTE OG PRIS','result_gross':'Kundepris (Brutto):','result_profit_lbl':'DIN ESTIMERTE NETTOFORTJENESTE:','btn_txt':'💾 LAGRE TXT','btn_pdf':'🖼️ LAGRE PDF','compare_h3':'Diode laser vs CO2? Sammenligning 2026','tbl_feature':'Egenskap','tbl_diode':'Diode laser (f.eks. xTool)','tbl_co2':'CO2 laser','tbl_price':'Startpris','tbl_price_d':'Lav (fra €300)','tbl_price_c':'Høy (fra €2000)','tbl_acrylic':'Akrylskjæring','tbl_acrylic_d':'Bare mørke farger','tbl_acrylic_c':'Alle farger (inkl. transparent)','tbl_space':'Plass som trengs','tbl_space_d':'Skrivebord, kompakt','tbl_space_c':'Krever stor verksted','faq_h2':'💡 Vanlige spørsmål (FAQ)','faq1_q':'1. Kan en diode laser skjære metall?','faq1_a':'De fleste graverer rustfritt stål men kan ikke skjære det.','faq2_q':'2. Hvordan prissette lasergravering?','faq2_a':'Bruk kalkulatoren vår ovenfor!','faq3_q':'3. Beste programvare for laser?','faq3_a':'LightBurn er industristandarden.','create_h2':'🎨 Hva kan du lage med laseren din?','item_box':'📦 Graverte bokser','item_key':'🔑 Skinnøkkelringer','item_trophy':'🏆 Akryltrofeer','item_board':'🍳 Serveringsbrett','item_pen':'🖋️ Merkede penner','item_toy':'🧸 Treleker','seo_h2':'Hvordan prissette lasergravering i 2026?','seo_p1':'Mange makere spør: hvor mye ta per minutt lasertid?','seo_h3_1':'1. Timesatsen er grunnlaget','seo_p2':'Profesjonelle satser i Europa: €15–€50/time.','seo_h3_2':'2. Proporsjonal materialkostnad','seo_p3':'Kalkulatoren vår beregner dette automatisk.','seo_h3_3':'3. Maskinavskrivning & elektrisitet','seo_p4':'Legg til €5–15/t som servicefond.','seo_tip':'Tips: Ta alltid betalt for SVG/DXF-forberedelsestid!','res_h2':'📂 Beste gratis SVG / DXF databaser','res_visit':'Besøk nettsted →','res_icons':'Søk ikoner →','res_gen':'Åpne generator →','res_puzzle_lnk':'Lag puslespill →','res_gear_lnk':'Design tannhjul →','res_qr_lnk':'Generer QR →','res_ameede':'Gullgruve av DXF/CDR prosjekter.','res_3axis':'Tusenvis av vektorer etter kategori.','res_flaticon':'Beste gratis SVG ikoner.','res_boxes':'Kraftigste boksegenerator.','res_puzzle':'Perfekt SVG skjærerutenett for puslespill.','res_gear':'Tannhjulgenerator til millimeteren.','res_qr':'QR-koder i SVG.','res_warning':'⚠️ Sjekk alltid fillisenssen! Se etter Commercial Use-lisenser.','bhp_h2':'⚠️ Lasersikkerhetsregler','bhp1_h':'🕶️ Øyebeskyttelse','bhp1_p':'Se aldri inn i strålen uten sertifiserte briller OD5+.','bhp2_h':'🚫 Forbudte materialer','bhp2_p':'Skjær aldri PVC/vinyl (frigjør giftig klor).','bhp3_h':'🔥 Tilsyn & brann','bhp3_p':'Ha alltid en brannslukker tilgjengelig.','faq2_h2':'❓ Feilsøking & Tips','faq2_sub':'Vanlige spørsmål om priser, materialer og maskinoppsett','faqt1_q':'Hvordan beregner jeg priser?','faqt1_a':'Legg til: materiell + lasertid × sats + forberedelse + avskrivning.','faqt2_q':'Hvor mye ta per time?','faqt2_a':'Tyskland €25–45/t · UK £20–40/t · USA $25–60/t.','faqt3_q':'Beste diode laser 2026?','faqt3_a':'xTool D1 Pro 10W, Creality Falcon 2 22W, Atomstack X40 Pro 40W.','faqt4_q':'Diode vs CO2?','faqt4_a':'Diode: billigere, kompakt. CO2: skjærer all akryl.','faqt5_q':'Hva kan ikke skjæres?','faqt5_a':'Aldri: PVC, ABS, polykarbonat, karbonfiber.','faqt6_q':'Hvorfor er kanter svidd?','faqt6_a':'Ingen Air Assist eller matehastighet for lav. Rengjør linsen.','faqt7_q':'Beste programvare?','faqt7_a':'LightBurn. Gratis: LaserGRBL.','footer_aff':'Alle lenker er affiliate-lenker. Takk for støtten!','btn_feedback':'💬 Rapporter problem / Foreslå forbedring','fb_title':'💬 Rapporter problem','fb_sub':'Din tilbakemelding hjelper oss å forbedre LaserProfit.eu','fb_type_lbl':'Type rapport','fb_msg_lbl':'Beskrivelse','fb_email_lbl':'E-post (valgfritt)','fb_bug':'🐛 Feil / Noe fungerer ikke','fb_idea':'💡 Forbedringsidé','fb_trans':'🌍 Oversettelsesfeil','fb_laser':'⚡ Manglende laser','fb_other':'📋 Annet','fb_send':'📤 Send','fb_cancel':'Avbryt','fb_thanks':'✅ Takk! Vi tar kontakt snart.','fb_placeholder':'Beskriv problemet eller ideen...','txt_title':'LASERGRAVERING TILBUD – LASERPROFIT.EU 2026','txt_date':'Dato','txt_gross':'Kundepris (BRUTTO)','txt_profit':'Din nettofortjeneste','txt_details':'DETALJER / DRIFTSRAPPORT','txt_generated':'Generert av','txt_sheet':'Plate','txt_proj':'Prosjekt','txt_usage':'Plattebruk','txt_fits':'Passer på platen','txt_mat':'Materialkostnad','txt_mach':'Maskinkostnad','txt_labor':'Arbeidskraft','txt_ship':'Frakt','txt_netto':'Nettopris','txt_vat':'MVA','txt_brutto':'BRUTTOPRIS','txt_zysk':'DIN NETTOFORTJENESTE','txt_rpt':'📋 DRIFTSRAPPORT'},
-sv:{'nav_calc':'🧮 KALKYLATOR','nav_files':'📂 GRATIS FILER','nav_bhp':'⚠️ SÄKERHET','theme_light':'☀️ Ljust läge','theme_dark':'🌙 Mörkt läge','more_langs':'fler','hero_badge':'GRATIS VERKTYG · 2026','hero_h1':'Lasergravyr Prisberäknare 2026','hero_sub1':'Gratis verktyg för kostnadsberäkning av lasergravyr','hero_sub2':'Används av makers över hela världen','calc_h2':'🎯 Laser Pris Studio','calc_sub':'Ange dina priser och se din verkliga vinst.','cur_label':'💱 Rapportvaluta','lang_label':'🌍 Rapportspråk TXT/PDF','lbl_hourly':'Din timtaxa ({s}/h)','lbl_machine':'Energi & avskrivningskostnader ({s}/h)','lbl_material':'Material & svårighetsgrad','lbl_lasermin':'Lasertid (min)','lbl_prep':'Projektförberedelse (min)','lbl_matprice':'Hel plattapris ({s})','mat_wood':'Plywood / Trä (×1,0)','mat_acrylic':'Akryl / Plexiglas (×1,4)','mat_metal':'Metall / Etsning (×1,8)','mat_laminate':'Gravyrlaminat (×2,0)','lbl_vat':'Momssats (%)','lbl_vatcountry':'Land / Region','vat_custom':'Eget belopp','mat_h4':'📐 Materialförbrukningsberäknare','mat_desc':'Ange platt- och projektmått för proportionerliga materialkostnader.','lbl_sheetw':'Platta – bredd (mm)','lbl_sheeth':'Platta – höjd (mm)','lbl_cutw':'Projekt – bredd (mm)','lbl_cuth':'Projekt – höjd (mm)','lbl_qty':'Antal','mat_placeholder':'Fyll i måtten ovan för att se resultatet.','mat_hint':'💡 Den beräknade materialkostnaden inkluderas automatiskt i vinstberäkningen.','mat_exceed':'⚠️ Projektmåtten överskrider plattan!','mat_area':'Projektyta','mat_perpiece':'Kostnad per styck','mat_total':'Ordertotal','pcs':'st.','mult_hint':'ℹ️ Svårighetsmultiplikator: Akryl, metall och laminat kräver mer underhåll.','finish_title':'Ytbehandling','extra_title':'Extra alternativ','opt_painting':'Färgbeläggning (+15 {s})','opt_lacquer':'Lackfinish (+10 {s})','opt_double':'Dubbelsidig gravyr (+50% tid)','opt_urgent':'Expressbeställning (+30%)','opt_shipping':'🚚 Lägg till fraktkostnad','ship_title':'🚚 Välj fraktmetod','ship_inpost':'📦 Paketbox (14,99 {s})','ship_courier':'🚛 Budtjänst DPD/DHL (19,99 {s})','ship_custom':'✏️ Eget belopp:','ship_display':'Fraktkostnad','btn_calculate':'▶ BERÄKNA VINST OCH PRIS','result_gross':'Kundpris (Brutto):','result_profit_lbl':'DIN UPPSKATTADE NETTOVINST:','btn_txt':'💾 SPARA TXT','btn_pdf':'🖼️ SPARA PDF','compare_h3':'Diodlaser vs CO2? Jämförelse 2026','tbl_feature':'Egenskap','tbl_diode':'Diodlaser (t.ex. xTool)','tbl_co2':'CO2-laser','tbl_price':'Startpris','tbl_price_d':'Lågt (från €300)','tbl_price_c':'Högt (från €2000)','tbl_acrylic':'Akrylskärning','tbl_acrylic_d':'Bara mörka färger','tbl_acrylic_c':'Alla färger (inkl. transparent)','tbl_space':'Plats som behövs','tbl_space_d':'Skrivbord, kompakt','tbl_space_c':'Kräver stor verkstad','faq_h2':'💡 Vanliga frågor (FAQ)','faq1_q':'1. Kan en diodlaser skära metall?','faq1_a':'De flesta graverar rostfritt stål men kan inte skära igenom det.','faq2_q':'2. Hur prissätter man lasergravyr?','faq2_a':'Använd vår kalkylator ovan!','faq3_q':'3. Bästa programvara för laser?','faq3_a':'LightBurn är industristandarden.','create_h2':'🎨 Vad kan du skapa med din laser?','item_box':'📦 Graverade lådor','item_key':'🔑 Läder nyckelringar','item_trophy':'🏆 Akryltrofeer','item_board':'🍳 Serveringsbrickor','item_pen':'🖋️ Märkta pennor','item_toy':'🧸 Träeksaker','seo_h2':'Hur prissätter man lasergravyr 2026?','seo_p1':'Många makers frågar: hur mycket ta per minut lasertid?','seo_h3_1':'1. Timtaxan är grunden','seo_p2':'Professionella taxor i Europa: €15–€50/timme.','seo_h3_2':'2. Proportionerlig materialkostnad','seo_p3':'Vår kalkylator beräknar detta automatiskt.','seo_h3_3':'3. Maskinavskrivning & elektricitet','seo_p4':'Lägg till €5–15/h som servicefond.','seo_tip':'Tips: Ta alltid betalt för SVG/DXF-förberedelsetid!','res_h2':'📂 Bästa gratis SVG / DXF databaser','res_visit':'Besök webbplats →','res_icons':'Sök ikoner →','res_gen':'Öppna generator →','res_puzzle_lnk':'Skapa pussel →','res_gear_lnk':'Designa kugghjul →','res_qr_lnk':'Generera QR →','res_ameede':'Guldgruva av DXF/CDR-projekt.','res_3axis':'Tusentals vektorer efter kategori.','res_flaticon':'Bästa gratis SVG-ikoner.','res_boxes':'Kraftfullaste lådgeneratorn.','res_puzzle':'Perfekt SVG-skärnät för pussel.','res_gear':'Kugghjulsgenerator till millimetern.','res_qr':'QR-koder i SVG.','res_warning':'⚠️ Kontrollera alltid fillicensen!','bhp_h2':'⚠️ Lasersäkerhetsregler','bhp1_h':'🕶️ Ögonskydd','bhp1_p':'Titta aldrig in i strålen utan certifierade glasögon OD5+.','bhp2_h':'🚫 Förbjudna material','bhp2_p':'Skär aldrig PVC/vinyl (frigör giftig klor).','bhp3_h':'🔥 Övervakning & brand','bhp3_p':'Ha alltid en brandsläckare tillgänglig.','faq2_h2':'❓ Felsökning & Tips','faq2_sub':'Vanliga frågor om priser, material och maskininstallation','faqt1_q':'Hur beräknar jag priser?','faqt1_a':'Summera: material + lasertid × taxa + förberedelse + avskrivning.','faqt2_q':'Hur mycket ta per timme?','faqt2_a':'Tyskland €25–45/h · UK £20–40/h · USA $25–60/h.','faqt3_q':'Bästa diodlaser 2026?','faqt3_a':'xTool D1 Pro 10W, Creality Falcon 2 22W, Atomstack X40 Pro 40W.','faqt4_q':'Diod vs CO2?','faqt4_a':'Diod: billigare, kompakt. CO2: skär all akryl.','faqt5_q':'Vad kan inte skäras?','faqt5_a':'Aldrig: PVC, ABS, polykarbonat, kolfiber.','faqt6_q':'Varför är kanterna förkolnade?','faqt6_a':'Ingen Air Assist eller matningshastighet för låg. Rengör linsen.','faqt7_q':'Bästa programvara?','faqt7_a':'LightBurn. Gratis: LaserGRBL.','footer_aff':'Alla länkar är affiliatelänkar. Tack för ditt stöd!','btn_feedback':'💬 Rapportera problem / Föreslå förbättring','fb_title':'💬 Rapportera problem','fb_sub':'Din feedback hjälper oss att förbättra LaserProfit.eu','fb_type_lbl':'Typ av rapport','fb_msg_lbl':'Beskrivning','fb_email_lbl':'E-post (valfritt)','fb_bug':'🐛 Fel / Något fungerar inte','fb_idea':'💡 Förbättringsidé','fb_trans':'🌍 Översättningsfel','fb_laser':'⚡ Saknar laser','fb_other':'📋 Övrigt','fb_send':'📤 Skicka','fb_cancel':'Avbryt','fb_thanks':'✅ Tack! Vi hör av oss snart.','fb_placeholder':'Beskriv problemet eller idén...','txt_title':'LASERGRAVYR OFFERT – LASERPROFIT.EU 2026','txt_date':'Datum','txt_gross':'Kundpris (BRUTTO)','txt_profit':'Din nettovinst','txt_details':'DETALJER / DRIFTSRAPPORT','txt_generated':'Genererat av','txt_sheet':'Platta','txt_proj':'Projekt','txt_usage':'Plattanvändning','txt_fits':'Passar på plattan','txt_mat':'Materialkostnad','txt_mach':'Maskinkostnad','txt_labor':'Arbetstid','txt_ship':'Frakt','txt_netto':'Nettopris','txt_vat':'Moms','txt_brutto':'BRUTTOPRIS','txt_zysk':'DIN NETTOVINST','txt_rpt':'📋 DRIFTSRAPPORT'},
-da:{'nav_calc':'🧮 BEREGNER','nav_files':'📂 GRATIS FILER','nav_bhp':'⚠️ SIKKERHED','theme_light':'☀️ Lys tilstand','theme_dark':'🌙 Mørk tilstand','more_langs':'flere','hero_badge':'GRATIS VÆRKTØJ · 2026','hero_h1':'Lasergravering Prisberegner 2026','hero_sub1':'Gratis værktøj til beregning af lasergravering og skæreomkostninger','hero_sub2':'Brugt af makere over hele verden','calc_h2':'🎯 Laser Pris Studio','calc_sub':'Indstil dine satser og se dit reelle overskud.','cur_label':'💱 Rapportvaluta','lang_label':'🌍 Rapportsprog TXT/PDF','lbl_hourly':'Din timesats ({s}/t)','lbl_machine':'Energi & afskrivningsomkostninger ({s}/t)','lbl_material':'Materiale & sværhedsgrad','lbl_lasermin':'Lasertid (min)','lbl_prep':'Projektforberedelse (min)','lbl_matprice':'Fuld pladepris ({s})','mat_wood':'Krydsfiner / Træ (×1,0)','mat_acrylic':'Akryl / Plexiglas (×1,4)','mat_metal':'Metal / Ætsning (×1,8)','mat_laminate':'Graveringslaminat (×2,0)','lbl_vat':'Momssats (%)','lbl_vatcountry':'Land / Region','vat_custom':'Eget beløb','mat_h4':'📐 Materialforbrugsberegner','mat_desc':'Angiv plade- og projektmål for proportionerlige materialeomkostninger.','lbl_sheetw':'Plade – bredde (mm)','lbl_sheeth':'Plade – højde (mm)','lbl_cutw':'Projekt – bredde (mm)','lbl_cuth':'Projekt – højde (mm)','lbl_qty':'Antal','mat_placeholder':'Udfyld målene ovenfor for at se resultatet.','mat_hint':'💡 De beregnede materialeomkostninger inkluderes automatisk i overskudsberegningen.','mat_exceed':'⚠️ Projektmålene overskrider pladen!','mat_area':'Projektareal','mat_perpiece':'Pris per styk','mat_total':'Ordretotal','pcs':'stk.','mult_hint':'ℹ️ Sværhedsmultiplikator: Akryl, metal og laminater kræver mere vedligeholdelse.','finish_title':'Efterbehandling','extra_title':'Ekstra valg','opt_painting':'Maling (+15 {s})','opt_lacquer':'Lakering (+10 {s})','opt_double':'Dobbeltsidet gravering (+50% tid)','opt_urgent':'Hasteopgave (+30%)','opt_shipping':'🚚 Tilføj forsendelsesomkostninger','ship_title':'🚚 Vælg forsendelsesmetode','ship_inpost':'📦 Pakkeboks (14,99 {s})','ship_courier':'🚛 Kurer DPD/DHL (19,99 {s})','ship_custom':'✏️ Eget beløb:','ship_display':'Forsendelsesomkostninger','btn_calculate':'▶ BEREGN OVERSKUD OG PRIS','result_gross':'Kundepris (Brutto):','result_profit_lbl':'DIT ESTIMEREDE NETTOOVERSKUD:','btn_txt':'💾 GEM TXT','btn_pdf':'🖼️ GEM PDF','compare_h3':'Diode laser vs CO2? Sammenligning 2026','tbl_feature':'Egenskab','tbl_diode':'Diode laser (f.eks. xTool)','tbl_co2':'CO2 laser','tbl_price':'Startpris','tbl_price_d':'Lav (fra €300)','tbl_price_c':'Høj (fra €2000)','tbl_acrylic':'Akrylskæring','tbl_acrylic_d':'Kun mørke farver','tbl_acrylic_c':'Alle farver (inkl. transparent)','tbl_space':'Plads der kræves','tbl_space_d':'Skrivebord, kompakt','tbl_space_c':'Kræver stort værksted','faq_h2':'💡 Ofte stillede spørgsmål (FAQ)','faq1_q':'1. Kan en diode laser skære metal?','faq1_a':'De fleste graverer rustfrit stål men kan ikke skære det.','faq2_q':'2. Hvordan prissætter man lasergravering?','faq2_a':'Brug vores beregner ovenfor!','faq3_q':'3. Bedste software til laser?','faq3_a':'LightBurn er industristandarden.','create_h2':'🎨 Hvad kan du skabe med din laser?','item_box':'📦 Graverede kasser','item_key':'🔑 Lædernøgleringe','item_trophy':'🏆 Akryltrofæer','item_board':'🍳 Serveringsbræt','item_pen':'🖋️ Mærkede kuglepenne','item_toy':'🧸 Trælegetøj','seo_h2':'Hvordan prissætter man lasergravering i 2026?','seo_p1':'Mange makere spørger: hvor meget tage per minut lasertid?','seo_h3_1':'1. Timesatsen er grundlaget','seo_p2':'Professionelle satser i Europa: €15–€50/time.','seo_h3_2':'2. Proportionerlige materialeomkostninger','seo_p3':'Vores beregner beregner dette automatisk.','seo_h3_3':'3. Maskinafskrivning & elektricitet','seo_p4':'Tilføj €5–15/t som servicefond.','seo_tip':'Tip: Tag altid betaling for SVG/DXF-forberedelsestid!','res_h2':'📂 Bedste gratis SVG / DXF databaser','res_visit':'Besøg websted →','res_icons':'Søg ikoner →','res_gen':'Åbn generator →','res_puzzle_lnk':'Lav puslespil →','res_gear_lnk':'Design tandhjul →','res_qr_lnk':'Generer QR →','res_ameede':'Guldgrube af DXF/CDR projekter.','res_3axis':'Tusindvis af vektorer efter kategori.','res_flaticon':'Bedste gratis SVG ikoner.','res_boxes':'Kraftigste kassegenerator.','res_puzzle':'Perfekt SVG skæregitter til puslespil.','res_gear':'Tandhjulsgenerator til millimeteren.','res_qr':'QR-koder i SVG.','res_warning':'⚠️ Tjek altid fillicensen!','bhp_h2':'⚠️ Lasersikkerhedsregler','bhp1_h':'🕶️ Øjenbeskyttelse','bhp1_p':'Se aldrig ind i strålen uden certificerede briller OD5+.','bhp2_h':'🚫 Forbudte materialer','bhp2_p':'Skær aldrig PVC/vinyl (frigiver giftig klor).','bhp3_h':'🔥 Tilsyn & brand','bhp3_p':'Hav altid en brandslukker ved hånden.','faq2_h2':'❓ Fejlfinding & Tips','faq2_sub':'Hyppige spørgsmål om priser, materialer og maskinopsætning','faqt1_q':'Hvordan beregner jeg priser?','faqt1_a':'Læg sammen: materiale + lasertid × sats + forberedelse + afskrivning.','faqt2_q':'Hvor meget tage per time?','faqt2_a':'Tyskland €25–45/t · UK £20–40/t · USA $25–60/t.','faqt3_q':'Bedste diode laser 2026?','faqt3_a':'xTool D1 Pro 10W, Creality Falcon 2 22W, Atomstack X40 Pro 40W.','faqt4_q':'Diode vs CO2?','faqt4_a':'Diode: billigere, kompakt. CO2: skærer al akryl.','faqt5_q':'Hvad kan ikke skæres?','faqt5_a':'Aldrig: PVC, ABS, polycarbonat, kulfiber.','faqt6_q':'Hvorfor er kanterne svedne?','faqt6_a':'Ingen Air Assist eller fremføringshastighed for lav. Rengør linsen.','faqt7_q':'Bedste software?','faqt7_a':'LightBurn. Gratis: LaserGRBL.','footer_aff':'Alle links er affiliatelinks. Tak for din støtte!','btn_feedback':'💬 Rapportér problem / Foreslå forbedring','fb_title':'💬 Rapportér problem','fb_sub':'Din feedback hjælper os med at forbedre LaserProfit.eu','fb_type_lbl':'Type rapport','fb_msg_lbl':'Beskrivelse','fb_email_lbl':'E-mail (valgfrit)','fb_bug':'🐛 Fejl / Noget virker ikke','fb_idea':'💡 Forbedringsidé','fb_trans':'🌍 Oversættelsesfejl','fb_laser':'⚡ Manglende laser','fb_other':'📋 Andet','fb_send':'📤 Send','fb_cancel':'Annullér','fb_thanks':'✅ Tak! Vi vender tilbage snart.','fb_placeholder':'Beskriv problemet eller idéen...','txt_title':'LASERGRAVERING TILBUD – LASERPROFIT.EU 2026','txt_date':'Dato','txt_gross':'Kundepris (BRUTTO)','txt_profit':'Dit nettooverskud','txt_details':'DETALJER / DRIFTSRAPPORT','txt_generated':'Genereret af','txt_sheet':'Plade','txt_proj':'Projekt','txt_usage':'Pladeudnyttelse','txt_fits':'Passer på pladen','txt_mat':'Materialeomkostninger','txt_mach':'Maskinomkostninger','txt_labor':'Arbejdskraft','txt_ship':'Forsendelse','txt_netto':'Nettopris','txt_vat':'Moms','txt_brutto':'BRUTTOPRIS','txt_zysk':'DIT NETTOOVERSKUD','txt_rpt':'📋 DRIFTSRAPPORT'},
-hu:{'nav_calc':'🧮 KALKULÁTOR','nav_files':'📂 INGYENES FÁJLOK','nav_bhp':'⚠️ BIZTONSÁG','theme_light':'☀️ Világos mód','theme_dark':'🌙 Sötét mód','more_langs':'több','hero_badge':'INGYENES ESZKÖZ · 2026','hero_h1':'Lézergravírozás Árkalkulátor 2026','hero_sub1':'Ingyenes eszköz lézergravírozás és vágás költségkalkulációhoz','hero_sub2':'Makerek használják világszerte','calc_h2':'🎯 Lézer Ár Stúdió','calc_sub':'Állítsa be a díjait és nézze meg a valódi nyereségét.','cur_label':'💱 Jelentés pénzneme','lang_label':'🌍 Jelentés nyelve TXT/PDF','lbl_hourly':'Az Ön óradíja ({s}/óra)','lbl_machine':'Energia & értékcsökkenési költségek ({s}/óra)','lbl_material':'Anyag & nehézség','lbl_lasermin':'Lézeridő (perc)','lbl_prep':'Projektelőkészítés (perc)','lbl_matprice':'Teljes lemez ára ({s})','mat_wood':'Rétegelt lemez / Fa (×1,0)','mat_acrylic':'Akril / Plexiüveg (×1,4)','mat_metal':'Fém / Maratás (×1,8)','mat_laminate':'Gravírozási laminátumok (×2,0)','lbl_vat':'ÁFA kulcs (%)','lbl_vatcountry':'Ország / Régió','vat_custom':'Egyéni kulcs','mat_h4':'📐 Anyagfelhasználás kalkulátor','mat_desc':'Adja meg a lemez és projekt méreteit a proporcionális anyagköltség meghatározásához.','lbl_sheetw':'Lemez – szélesség (mm)','lbl_sheeth':'Lemez – magasság (mm)','lbl_cutw':'Projekt – szélesség (mm)','lbl_cuth':'Projekt – magasság (mm)','lbl_qty':'Mennyiség','mat_placeholder':'Töltse ki a méreteket a fent az eredmény megtekintéséhez.','mat_hint':'💡 A kiszámított anyagköltség automatikusan bekerül a nyereségkalkulációba.','mat_exceed':'⚠️ A projekt mérete meghaladja a lemez méretét!','mat_area':'Projektterület','mat_perpiece':'Darabonkénti költség','mat_total':'Rendelés összege','pcs':'db.','mult_hint':'ℹ️ Nehézségi szorzó: Az akril, fém és laminátumok több karbantartást igényelnek.','finish_title':'Befejezés','extra_title':'Extra opciók','opt_painting':'Festékbevonat (+15 {s})','opt_lacquer':'Lakk bevonat (+10 {s})','opt_double':'Kétoldalas gravírozás (+50% idő)','opt_urgent':'Sürgős megrendelés (+30%)','opt_shipping':'🚚 Szállítási költség hozzáadása','ship_title':'🚚 Szállítási mód kiválasztása','ship_inpost':'📦 Csomagmegőrző (14,99 {s})','ship_courier':'🚛 Futár DPD/DHL (19,99 {s})','ship_custom':'✏️ Egyéni összeg:','ship_display':'Szállítási költség','btn_calculate':'▶ NYERESÉG ÉS ÁR KISZÁMÍTÁSA','result_gross':'Ügyfél ára (Bruttó):','result_profit_lbl':'AZ ÖN BECSÜLT NETTÓ NYERESÉGE:','btn_txt':'💾 TXT MENTÉSE','btn_pdf':'🖼️ PDF MENTÉSE','compare_h3':'Dióda lézer vs CO2? Összehasonlítás 2026','tbl_feature':'Jellemző','tbl_diode':'Dióda lézer (pl. xTool)','tbl_co2':'CO2 lézer','tbl_price':'Kezdő ár','tbl_price_d':'Alacsony (€300-tól)','tbl_price_c':'Magas (€2000-tól)','tbl_acrylic':'Akril vágás','tbl_acrylic_d':'Csak sötét színek','tbl_acrylic_c':'Minden szín (átlátszó is)','tbl_space':'Szükséges hely','tbl_space_d':'Asztali, kompakt','tbl_space_c':'Nagy műhely szükséges','faq_h2':'💡 Gyakran ismételt kérdések (GYIK)','faq1_q':'1. Tud a dióda lézer fémet vágni?','faq1_a':'A legtöbb rozsdamentes acélt gravíroz, de nem tudja vágni.','faq2_q':'2. Hogyan árazom a lézergravírozást?','faq2_a':'Használja a fenti kalkulátort!','faq3_q':'3. Legjobb lézer szoftver?','faq3_a':'A LightBurn az iparági szabvány.','create_h2':'🎨 Mit hozhat létre lézerével?','item_box':'📦 Gravírozott dobozok','item_key':'🔑 Bőr kulcstartók','item_trophy':'🏆 Akril trófeák','item_board':'🍳 Tálalódeszkák','item_pen':'🖋️ Márkajelzett tollak','item_toy':'🧸 Fa játékok','seo_h2':'Hogyan árazzon lézergravírozást 2026-ban?','seo_p1':'Sok maker kérdezi: mennyit kell számítani lézerpercenként?','seo_h3_1':'1. Az óradíj az alap','seo_p2':'Szakmai díjak Európában: €15–€50/óra.','seo_h3_2':'2. Proporcionális anyagköltség','seo_p3':'Kalkulátorunk automatikusan kiszámítja ezt.','seo_h3_3':'3. Gépamortizáció & elektromosság','seo_p4':'Adjon hozzá €5–15/óra szervizalapot.','seo_tip':'Tipp: Mindig számítsa fel az SVG/DXF fájl előkészítési időt!','res_h2':'📂 Legjobb ingyenes SVG / DXF adatbázisok','res_visit':'Weboldal látogatása →','res_icons':'Ikonok keresése →','res_gen':'Generátor megnyitása →','res_puzzle_lnk':'Puzzle készítése →','res_gear_lnk':'Fogaskerekek tervezése →','res_qr_lnk':'QR generálása →','res_ameede':'DXF/CDR projektek aranybányája.','res_3axis':'Ezer vektor kategória szerint.','res_flaticon':'Legjobb ingyenes SVG ikonok.','res_boxes':'Leghatalmasabb dobozgenerátor.','res_puzzle':'Tökéletes SVG vágóháló puzzlehoz.','res_gear':'Fogaskerék generátor milliméterre.','res_qr':'QR-kódok SVG-ben.','res_warning':'⚠️ Mindig ellenőrizze a fájl licencét!','bhp_h2':'⚠️ Lézer biztonsági szabályok','bhp1_h':'🕶️ Szemvédelem','bhp1_p':'Soha ne nézzen a sugárba OD5+ tanúsítványos szemüveg nélkül.','bhp2_h':'🚫 Tiltott anyagok','bhp2_p':'Soha ne vágjon PVC-t/vinilt (mérgező klórt bocsát ki).','bhp3_h':'🔥 Felügyelet & tűz','bhp3_p':'Mindig tartson kéznél tűzoltót.','faq2_h2':'❓ Hibaelhárítás & Tippek','faq2_sub':'Gyakori kérdések az árakról, anyagokról és gépbeállításokról','faqt1_q':'Hogyan számítom ki az árakat?','faqt1_a':'Összeadás: anyag + lézeridő × díj + előkészítés + amortizáció.','faqt2_q':'Mennyit kell felszámítani óránként?','faqt2_a':'Németország €25–45/óra · UK £20–40/óra · USA $25–60/óra.','faqt3_q':'Legjobb dióda lézer 2026?','faqt3_a':'xTool D1 Pro 10W, Creality Falcon 2 22W, Atomstack X40 Pro 40W.','faqt4_q':'Dióda vs CO2?','faqt4_a':'Dióda: olcsóbb, kompakt. CO2: minden akrilt vágja.','faqt5_q':'Mit nem szabad vágni?','faqt5_a':'Soha: PVC, ABS, polikarbonát, szénszál.','faqt6_q':'Miért feketék a szélek?','faqt6_a':'Nincs Air Assist vagy az előtolás túl lassú. Tisztítsa a lencsét.','faqt7_q':'Legjobb szoftver?','faqt7_a':'LightBurn. Ingyenes: LaserGRBL.','footer_aff':'Minden link affiliate link. Köszönjük a támogatást!','btn_feedback':'💬 Probléma bejelentése / Fejlesztési javaslat','fb_title':'💬 Probléma bejelentése','fb_sub':'Az Ön visszajelzése segít javítani a LaserProfit.eu-t','fb_type_lbl':'Jelentés típusa','fb_msg_lbl':'Leírás','fb_email_lbl':'E-mail (opcionális)','fb_bug':'🐛 Hiba / Valami nem működik','fb_idea':'💡 Fejlesztési ötlet','fb_trans':'🌍 Fordítási hiba','fb_laser':'⚡ Hiányzó lézer','fb_other':'📋 Egyéb','fb_send':'📤 Küldés','fb_cancel':'Mégse','fb_thanks':'✅ Köszönjük! Hamarosan visszajelzünk.','fb_placeholder':'Írja le a problémát vagy ötletet...','txt_title':'LÉZERGRAVÍROZÁSI ÁRAJÁNLAT – LASERPROFIT.EU 2026','txt_date':'Dátum','txt_gross':'Ügyfél ára (BRUTTÓ)','txt_profit':'Az Ön nettó nyeresége','txt_details':'RÉSZLETEK / MŰKÖDÉSI JELENTÉS','txt_generated':'Készítette','txt_sheet':'Lemez','txt_proj':'Projekt','txt_usage':'Lemezhasználat','txt_fits':'Befér a lemezre','txt_mat':'Anyagköltség','txt_mach':'Gépköltség','txt_labor':'Munkaerő','txt_ship':'Szállítás','txt_netto':'Nettó ár','txt_vat':'ÁFA','txt_brutto':'BRUTTÓ ÁR','txt_zysk':'AZ ÖN NETTÓ NYERESÉGE','txt_rpt':'📋 MŰKÖDÉSI JELENTÉS'},
-ro:{'nav_calc':'🧮 CALCULATOR','nav_files':'📂 FIȘIERE GRATUITE','nav_bhp':'⚠️ SIGURANȚĂ','theme_light':'☀️ Mod luminos','theme_dark':'🌙 Mod întunecat','more_langs':'mai mult','hero_badge':'INSTRUMENT GRATUIT · 2026','hero_h1':'Calculator Prețuri Gravură Laser 2026','hero_sub1':'Instrument gratuit pentru calculul costurilor de gravare și tăiere laser','hero_sub2':'Folosit de makeri din întreaga lume','calc_h2':'🎯 Studio Prețuri Laser','calc_sub':'Configurați tarifele și vedeți profitul real.','cur_label':'💱 Moneda raportului','lang_label':'🌍 Limba raportului TXT/PDF','lbl_hourly':'Tariful dvs. orar ({s}/h)','lbl_machine':'Cost energie & amortizare ({s}/h)','lbl_material':'Material & dificultate','lbl_lasermin':'Timp laser (min)','lbl_prep':'Pregătire proiect (min)','lbl_matprice':'Prețul complet al plăcii ({s})','mat_wood':'Placaj / Lemn (×1,0)','mat_acrylic':'Acrilic / Plexiglas (×1,4)','mat_metal':'Metal / Gravare chimică (×1,8)','mat_laminate':'Laminat de gravare (×2,0)','lbl_vat':'Cotă TVA (%)','lbl_vatcountry':'Țară / Regiune','vat_custom':'Cotă personalizată','mat_h4':'📐 Calculator consum material','mat_desc':'Introduceți dimensiunile plăcii și proiectului pentru a calcula costul material proporțional.','lbl_sheetw':'Placă – lățime (mm)','lbl_sheeth':'Placă – înălțime (mm)','lbl_cutw':'Proiect – lățime (mm)','lbl_cuth':'Proiect – înălțime (mm)','lbl_qty':'Cantitate','mat_placeholder':'Completați dimensiunile de mai sus pentru a vedea rezultatul.','mat_hint':'💡 Costul materialului calculat este inclus automat în calculul profitului.','mat_exceed':'⚠️ Dimensiunile proiectului depășesc placa!','mat_area':'Suprafața proiectului','mat_perpiece':'Cost pe bucată','mat_total':'Total comandă','pcs':'buc.','mult_hint':'ℹ️ Multiplicator dificultate: Acrilicul, metalul și laminatele necesită mai multă întreținere.','finish_title':'Finisare','extra_title':'Opțiuni extra','opt_painting':'Vopsire (+15 {s})','opt_lacquer':'Lac (+10 {s})','opt_double':'Gravare față-verso (+50% timp)','opt_urgent':'Comandă urgentă (+30%)','opt_shipping':'🚚 Adăugați costul livrării','ship_title':'🚚 Alegeți metoda de livrare','ship_inpost':'📦 Cutie de pachete (14,99 {s})','ship_courier':'🚛 Curier DPD/DHL (19,99 {s})','ship_custom':'✏️ Sumă personalizată:','ship_display':'Cost livrare','btn_calculate':'▶ CALCULEAZĂ PROFIT ȘI PREȚ','result_gross':'Prețul pentru client (Brut):','result_profit_lbl':'PROFITUL DVSTR. NET ESTIMAT:','btn_txt':'💾 SALVEAZĂ TXT','btn_pdf':'🖼️ SALVEAZĂ PDF','compare_h3':'Laser cu diodă vs CO2? Comparație 2026','tbl_feature':'Caracteristică','tbl_diode':'Laser cu diodă (ex. xTool)','tbl_co2':'Laser CO2','tbl_price':'Prețul de start','tbl_price_d':'Scăzut (de la €300)','tbl_price_c':'Ridicat (de la €2000)','tbl_acrylic':'Tăiere acrilic','tbl_acrylic_d':'Numai culori închise','tbl_acrylic_c':'Toate culorile (incl. transparent)','tbl_space':'Spațiu necesar','tbl_space_d':'Desktop, compact','tbl_space_c':'Necesită atelier mare','faq_h2':'💡 Întrebări frecvente (FAQ)','faq1_q':'1. Poate un laser cu diodă tăia metal?','faq1_a':'Majoritatea gravează oțel inoxidabil dar nu pot tăia.','faq2_q':'2. Cum estimez prețul gravurii laser?','faq2_a':'Folosiți calculatorul nostru de mai sus!','faq3_q':'3. Cel mai bun software pentru laser?','faq3_a':'LightBurn este standardul industriei.','create_h2':'🎨 Ce poți crea cu laserul tău?','item_box':'📦 Cutii gravate','item_key':'🔑 Brelocuri din piele','item_trophy':'🏆 Trofee din acrilic','item_board':'🍳 Platouri de servire','item_pen':'🖋️ Pixuri branduite','item_toy':'🧸 Jucării din lemn','seo_h2':'Cum să prețuiești gravura laser în 2026?','seo_p1':'Mulți makeri întreabă: cât să taxez pe minut de timp laser?','seo_h3_1':'1. Tariful orar este baza','seo_p2':'Tarifele profesionale în Europa: €15–€50/oră.','seo_h3_2':'2. Cost material proporțional','seo_p3':'Calculatorul nostru calculează automat.','seo_h3_3':'3. Amortizarea mașinii & electricitate','seo_p4':'Adăugați €5–15/h ca fond de service.','seo_tip':'Sfat pro: Taxați întotdeauna pentru pregătirea fișierelor SVG/DXF!','res_h2':'📂 Cele mai bune baze de fișiere SVG / DXF gratuite','res_visit':'Vizitați site-ul →','res_icons':'Căutați pictograme →','res_gen':'Deschideți generatorul →','res_puzzle_lnk':'Creați puzzle →','res_gear_lnk':'Proiectați angrenaje →','res_qr_lnk':'Generați QR →','res_ameede':'Mina de aur a proiectelor DXF/CDR.','res_3axis':'Mii de vectori după categorie.','res_flaticon':'Cele mai bune pictograme SVG gratuite.','res_boxes':'Cel mai puternic generator de cutii.','res_puzzle':'Grilă SVG perfectă pentru puzzle.','res_gear':'Generator de angrenaje la milimetru.','res_qr':'Coduri QR în SVG.','res_warning':'⚠️ Verificați întotdeauna licența fișierului!','bhp_h2':'⚠️ Reguli de siguranță laser','bhp1_h':'🕶️ Protecția ochilor','bhp1_p':'Nu priviți niciodată în fascicul fără ochelari certificați OD5+.','bhp2_h':'🚫 Materiale interzise','bhp2_p':'Nu tăiați niciodată PVC/vinil (eliberează clor toxic).','bhp3_h':'🔥 Supraveghere & incendiu','bhp3_p':'Păstrați întotdeauna un stingător la îndemână.','faq2_h2':'❓ Depanare & Sfaturi','faq2_sub':'Întrebări frecvente despre prețuri, materiale și configurarea mașinii','faqt1_q':'Cum calculez prețurile?','faqt1_a':'Adunați: material + timp laser × tarif + pregătire + amortizare.','faqt2_q':'Cât să taxez pe oră?','faqt2_a':'Germania €25–45/h · UK £20–40/h · USA $25–60/h.','faqt3_q':'Cel mai bun laser cu diodă 2026?','faqt3_a':'xTool D1 Pro 10W, Creality Falcon 2 22W, Atomstack X40 Pro 40W.','faqt4_q':'Diodă vs CO2?','faqt4_a':'Diodă: mai ieftin, compact. CO2: taie tot acrilicul.','faqt5_q':'Ce nu se poate tăia?','faqt5_a':'Niciodată: PVC, ABS, policarbonat, fibră de carbon.','faqt6_q':'De ce marginile sunt carbonizate?','faqt6_a':'Fără Air Assist sau viteza de avans prea mică. Curățați lentila.','faqt7_q':'Cel mai bun software?','faqt7_a':'LightBurn. Gratuit: LaserGRBL.','footer_aff':'Toate linkurile sunt afiliate. Mulțumim pentru sprijin!','btn_feedback':'💬 Raportați problemă / Propuneți îmbunătățire','fb_title':'💬 Raportați problemă','fb_sub':'Feedback-ul dvs. ne ajută să îmbunătățim LaserProfit.eu','fb_type_lbl':'Tipul raportului','fb_msg_lbl':'Descriere','fb_email_lbl':'E-mail (opțional)','fb_bug':'🐛 Bug / Ceva nu funcționează','fb_idea':'💡 Idee de îmbunătățire','fb_trans':'🌍 Eroare de traducere','fb_laser':'⚡ Laser lipsă','fb_other':'📋 Altele','fb_send':'📤 Trimite','fb_cancel':'Anulează','fb_thanks':'✅ Mulțumim! Vă vom contacta în curând.','fb_placeholder':'Descrieți problema sau ideea...','txt_title':'OFERTĂ GRAVURĂ LASER – LASERPROFIT.EU 2026','txt_date':'Data','txt_gross':'Prețul pentru client (BRUT)','txt_profit':'Profitul dvs. net','txt_details':'DETALII / RAPORT OPERAȚIONAL','txt_generated':'Generat de','txt_sheet':'Placă','txt_proj':'Proiect','txt_usage':'Utilizare placă','txt_fits':'Încape pe placă','txt_mat':'Cost material','txt_mach':'Cost mașină','txt_labor':'Manoperă','txt_ship':'Livrare','txt_netto':'Preț net','txt_vat':'TVA','txt_brutto':'PREȚ BRUT','txt_zysk':'PROFITUL DVS. NET','txt_rpt':'📋 RAPORT OPERAȚIONAL'}
-};
-
-// ============================================================
-// WALUTY
+// CURRENCIES & LANGUAGES (for report TXT/PDF translator)
 // ============================================================
 const CURRENCIES=[
-    {code:'PLN',sym:'zł',flag:'🇵🇱'},{code:'EUR',sym:'€',flag:'🇪🇺'},
-    {code:'USD',sym:'$',flag:'🇺🇸'},{code:'GBP',sym:'£',flag:'🇬🇧'},
+    {code:'USD',sym:'$',flag:'🇺🇸'},{code:'EUR',sym:'€',flag:'🇪🇺'},
+    {code:'GBP',sym:'£',flag:'🇬🇧'},{code:'PLN',sym:'zł',flag:'🇵🇱'},
     {code:'CZK',sym:'Kč',flag:'🇨🇿'},{code:'UAH',sym:'₴',flag:'🇺🇦'},
     {code:'NOK',sym:'kr',flag:'🇳🇴'},{code:'SEK',sym:'kr',flag:'🇸🇪'},
     {code:'CHF',sym:'Fr',flag:'🇨🇭'},{code:'DKK',sym:'kr',flag:'🇩🇰'},
     {code:'HUF',sym:'Ft',flag:'🇭🇺'},{code:'RON',sym:'lei',flag:'🇷🇴'},
 ];
-
-// JĘZYKI TRANSLATORA – bez PL, EN, DE (mają własne strony)
 const LANGUAGES=[
+    // FR, IT, ES, NL, CS, UK, NO, SV, DA, HU, RO – raport TXT/PDF
+    // PL/EN/DE mają własne strony – są w navbarze jako linki
     {code:'fr',flag:'https://flagcdn.com/w40/fr.png',label:'🇫🇷 FR'},
     {code:'it',flag:'https://flagcdn.com/w40/it.png',label:'🇮🇹 IT'},
     {code:'es',flag:'https://flagcdn.com/w40/es.png',label:'🇪🇸 ES'},
@@ -885,79 +576,20 @@ const LANGUAGES=[
     {code:'ro',flag:'https://flagcdn.com/w40/ro.png',label:'🇷🇴 RO'},
 ];
 
-const CC={PL:'PLN',DE:'EUR',AT:'EUR',FR:'EUR',IT:'EUR',ES:'EUR',NL:'EUR',BE:'EUR',PT:'EUR',FI:'EUR',IE:'EUR',GR:'EUR',SK:'EUR',SI:'EUR',LV:'EUR',LT:'EUR',EE:'EUR',MT:'EUR',CY:'EUR',LU:'EUR',US:'USD',CA:'USD',GB:'GBP',CZ:'CZK',UA:'UAH',NO:'NOK',SE:'SEK',CH:'CHF',DK:'DKK',HU:'HUF',RO:'RON'};
+let activeCur='USD', activeLang='en';
 
-let activeCur='PLN', activeLang='pl';
-
+// TXT report strings per language (same as original)
+const TXT={
+    en:{txt_title:'LASER ENGRAVING QUOTE – LASERPROFIT.EU 2026',txt_date:'Date',txt_gross:'Client price (GROSS)',txt_profit:'Your net profit',txt_details:'DETAILS / OPERATIONAL REPORT',txt_generated:'Generated by',txt_sheet:'Sheet',txt_proj:'Project',txt_usage:'Sheet usage',txt_fits:'Fits on sheet',txt_mat:'Material cost',txt_mach:'Machine cost',txt_labor:'Labor',txt_ship:'Shipping',txt_netto:'Net price',txt_vat:'VAT',txt_brutto:'GROSS PRICE',txt_zysk:'YOUR NET PROFIT',txt_rpt:'📋 OPERATIONAL REPORT',pcs:'pcs.'},
+    pl:{txt_title:'WYCENA GRAWEROWANIA LASEROWEGO – LASERPROFIT.EU 2026',txt_date:'Data',txt_gross:'Cena dla klienta (BRUTTO)',txt_profit:'Twój zysk netto',txt_details:'SZCZEGÓŁY / RAPORT OPERACYJNY',txt_generated:'Wygenerowano przez',txt_sheet:'Arkusz',txt_proj:'Projekt',txt_usage:'Zużycie arkusza',txt_fits:'Zmieści się',txt_mat:'Koszt materiału',txt_mach:'Eksploatacja maszyny',txt_labor:'Robocizna',txt_ship:'Wysyłka',txt_netto:'Cena Netto',txt_vat:'VAT',txt_brutto:'CENA BRUTTO',txt_zysk:'TWÓJ ZYSK NETTO',txt_rpt:'📋 RAPORT OPERACYJNY',pcs:'szt.'},
+    de:{txt_title:'LASER-GRAVUR-ANGEBOT – LASERPROFIT.EU 2026',txt_date:'Datum',txt_gross:'Kundenpreis (BRUTTO)',txt_profit:'Ihr Nettogewinn',txt_details:'DETAILS / BETRIEBSBERICHT',txt_generated:'Erstellt von',txt_sheet:'Platte',txt_proj:'Projekt',txt_usage:'Plattennutzung',txt_fits:'Passt auf Platte',txt_mat:'Materialkosten',txt_mach:'Maschinenkosten',txt_labor:'Arbeitskosten',txt_ship:'Versand',txt_netto:'Nettopreis',txt_vat:'MwSt.',txt_brutto:'BRUTTOPREIS',txt_zysk:'IHR NETTOGEWINN',txt_rpt:'📋 BETRIEBSBERICHT',pcs:'Stk.'},
+    fr:{txt_title:'DEVIS GRAVURE LASER – LASERPROFIT.EU 2026',txt_date:'Date',txt_gross:'Prix client (TTC)',txt_profit:'Votre bénéfice net',txt_details:'DÉTAILS / RAPPORT OPÉRATIONNEL',txt_generated:'Généré par',txt_sheet:'Sheet',txt_proj:'Project',txt_usage:'Sheet usage',txt_fits:'Fits on sheet',txt_mat:'Material cost',txt_mach:'Machine cost',txt_labor:'Labor',txt_ship:'Shipping',txt_netto:'Prix HT',txt_vat:'TVA',txt_brutto:'PRIX TTC',txt_zysk:'VOTRE BÉNÉFICE NET',txt_rpt:'📋 RAPPORT OPÉRATIONNEL',pcs:'pcs.'},
+};
+function getT(){return TXT[activeLang]||TXT.en;}
 function getSym(){return(CURRENCIES.find(c=>c.code===activeCur)||CURRENCIES[0]).sym;}
-function getT(){return UI[activeLang]||UI.pl;}
 
 // ============================================================
-// STOSUJ JĘZYK
-// ============================================================
-function applyLang(lang){
-    activeLang=lang;
-    const T=UI[lang]||UI.pl;
-    const sym=getSym();
-    document.querySelectorAll('[data-t]').forEach(el=>{
-        const k=el.getAttribute('data-t');
-        if(!T[k])return;
-        el.innerHTML=T[k].replace(/\{s\}/g,sym);
-    });
-    document.querySelectorAll('option[data-t]').forEach(o=>{
-        const k=o.getAttribute('data-t');
-        if(T[k])o.textContent=T[k];
-    });
-    document.querySelectorAll('[data-placeholder]').forEach(el=>{
-        const k=el.getAttribute('data-placeholder');
-        if(T[k])el.placeholder=T[k];
-    });
-    const light=document.body.classList.contains('light-mode');
-    const tb=document.getElementById('themeBtn');
-    if(tb)tb.textContent=light?(T.theme_dark||'🌙'):(T.theme_light||'☀️');
-    const mb=document.getElementById('moreBtn');
-    if(mb)mb.textContent='＋ '+(T.more_langs||'więcej');
-    document.documentElement.lang=lang;
-    calcMat();
-    updateShip();
-    buildChips();
-    buildNavFlags();
-}
-
-// ============================================================
-// FLAGI DROPDOWN
-// ============================================================
-function buildNavFlags(){
-    const mf=document.getElementById('mainFlags');
-    const dd=document.getElementById('langDd');
-    mf.innerHTML='';dd.innerHTML='';
-    // Nie pokazujemy flag translatora w navbarze – PL/EN/DE mają własne linki powyżej
-    // Translator dostępny tylko przez przycisk "więcej"
-    LANGUAGES.forEach(l=>{
-        const b=document.createElement('button');
-        b.className='dd-btn'+(l.code===activeLang?' active':'');
-        b.innerHTML=`<img src="${l.flag}" style="width:18px;height:auto;"> ${l.label}`;
-        b.onmousedown=e=>{e.stopPropagation();switchLang(l.code);};
-        dd.appendChild(b);
-    });
-}
-
-function switchLang(code){
-    document.getElementById('langWrap').classList.remove('open');
-    applyLang(code);
-}
-
-document.getElementById('moreBtn').addEventListener('click',e=>{
-    e.stopPropagation();
-    document.getElementById('langWrap').classList.toggle('open');
-});
-document.addEventListener('mousedown',e=>{
-    if(!document.getElementById('langWrap').contains(e.target))
-        document.getElementById('langWrap').classList.remove('open');
-});
-
-// ============================================================
-// CHIPY
+// BUILD CHIPS (inline translator)
 // ============================================================
 function buildChips(){
     const cc=document.getElementById('curChips');
@@ -975,31 +607,72 @@ function buildChips(){
         const b=document.createElement('button');
         b.className='chip'+(l.code===activeLang?' al':'');
         b.textContent=l.label;
-        b.onclick=()=>switchLang(l.code);
+        b.onclick=()=>{activeLang=l.code;buildChips();};
         lc.appendChild(b);
     });
 }
 
+// ============================================================
+// BUILD FLAG DROPDOWN (inline translator)
+// ============================================================
+function buildNavFlags(){
+    const mf=document.getElementById('mainFlags');
+    const dd=document.getElementById('langDd');
+    mf.innerHTML='';dd.innerHTML='';
+    const top3=[activeLang,'en','de'].filter((v,i,a)=>a.indexOf(v)===i).slice(0,3);
+    top3.forEach(code=>{
+        const l=LANGUAGES.find(x=>x.code===code);if(!l)return;
+        const b=document.createElement('button');
+        b.className='flag-btn'+(code===activeLang?' active-flag':'');
+        b.innerHTML=`<img src="${l.flag}" alt="${code.toUpperCase()}" title="${l.label} (report)">`;
+        b.onmousedown=e=>{e.stopPropagation();activeLang=code;buildChips();buildNavFlags();};
+        mf.appendChild(b);
+    });
+    LANGUAGES.forEach(l=>{
+        const b=document.createElement('button');
+        b.className='dd-btn'+(l.code===activeLang?' active':'');
+        b.innerHTML=`<img src="${l.flag}" style="width:18px;height:auto;"> ${l.label}`;
+        b.onmousedown=e=>{e.stopPropagation();activeLang=l.code;buildChips();buildNavFlags();document.getElementById('langWrap').classList.remove('open');};
+        dd.appendChild(b);
+    });
+}
+
+document.getElementById('moreBtn').addEventListener('click',e=>{
+    e.stopPropagation();
+    document.getElementById('langWrap').classList.toggle('open');
+});
+document.addEventListener('mousedown',e=>{
+    if(!document.getElementById('langWrap').contains(e.target))
+        document.getElementById('langWrap').classList.remove('open');
+});
+
+// ============================================================
+// REFRESH SYMBOLS
+// ============================================================
 function refreshSyms(){
     const sym=getSym();
     document.querySelectorAll('.csym').forEach(el=>el.textContent=sym);
-    applyLang(activeLang);
+    document.getElementById('lbl_hourly').textContent='Your hourly rate ('+sym+'/h)';
+    document.getElementById('lbl_machine').textContent='Power & depreciation cost ('+sym+'/h)';
+    document.getElementById('lbl_matprice').textContent='Full sheet price ('+sym+')';
+    document.getElementById('opt_painting').textContent='Paint coating (+15 '+sym+')';
+    document.getElementById('opt_lacquer').textContent='Lacquer finish (+10 '+sym+')';
+    updateShip();
 }
 
 // ============================================================
-// TRYB JASNY/CIEMNY
+// THEME
 // ============================================================
 function toggleTheme(){
     document.body.classList.toggle('light-mode');
-    const T=UI[activeLang]||UI.pl;
     const light=document.body.classList.contains('light-mode');
-    document.getElementById('themeBtn').textContent=light?(T.theme_dark||'🌙'):(T.theme_light||'☀️');
+    document.getElementById('themeBtn').textContent=light?'🌙 Dark mode':'☀️ Light mode';
     localStorage.setItem('theme',light?'light':'dark');
 }
 if(localStorage.getItem('theme')==='light') document.body.classList.add('light-mode');
 
 // ============================================================
-// KALKULATOR MATERIAŁU
+// MATERIAL CALCULATOR
 // ============================================================
 function calcMat(){
     const sW=parseFloat(document.getElementById('sheetW').value)||0;
@@ -1010,37 +683,35 @@ function calcMat(){
     const mf=parseFloat(document.getElementById('rawMaterial').value)||0;
     const el=document.getElementById('matResult');
     const sym=getSym();
-    const T=getT();
-    if(!sW||!sH||!cW||!cH){el.innerHTML='<p class="mat-ph">'+(T.mat_placeholder||'...')+'</p>';return;}
-    if(cW>sW||cH>sH){el.innerHTML='<p class="mat-ph" style="color:#f87171;">'+(T.mat_exceed||'⚠️')+'</p>';return;}
+    if(!sW||!sH||!cW||!cH){el.innerHTML='<p class="mat-ph">Fill in the dimensions above to see the result.</p>';return;}
+    if(cW>sW||cH>sH){el.innerHTML='<p class="mat-ph" style="color:#f87171;">⚠️ Project dimensions exceed sheet size!</p>';return;}
     const sA=sW*sH,pA=cW*cH*qty,uPct=(pA/sA*100).toFixed(2);
     const mCost=(pA/sA*mf).toFixed(2);
     const pR=Math.floor(sW/cW),pC=Math.floor(sH/cH),maxPcs=pR*pC;
     const cPiece=maxPcs>0?(mf/maxPcs).toFixed(2):'0.00';
-    const pcsL=T.pcs||'szt.';
     function mr(label,val,cls=''){return`<div class="mat-row${cls?' '+cls:''}"><span class="ml">${label}</span><span class="mr">${val}</span></div>`;}
     el.innerHTML=`<div class="mat-result">
-        ${mr(T.txt_sheet||'Arkusz',sW+'×'+sH+' mm')}
-        ${mr((T.txt_proj||'Projekt')+' ('+qty+' '+pcsL+')',cW+'×'+cH+' mm')}
-        ${mr(T.mat_area||'Pole projektu',(pA/100).toFixed(2)+' cm²')}
-        ${mr(T.txt_usage||'Zużycie','<b>'+uPct+'%</b>')}
+        ${mr('Sheet',sW+'×'+sH+' mm')}
+        ${mr('Project ('+qty+' pcs.)',cW+'×'+cH+' mm')}
+        ${mr('Project area',(pA/100).toFixed(2)+' cm²')}
+        ${mr('Sheet usage','<b>'+uPct+'%</b>')}
         <div class="mat-row sep"></div>
-        ${mr(T.txt_fits||'Zmieści się','<b>'+maxPcs+' '+pcsL+'</b> ('+pR+'×'+pC+')')}
-        ${mr(T.mat_perpiece||'Na 1 szt.','<b>'+cPiece+' '+sym+'</b>')}
-        ${mr(T.mat_total||'Na zlecenie','<b>'+mCost+' '+sym+'</b>','tot')}
+        ${mr('Fits on sheet','<b>'+maxPcs+' pcs.</b> ('+pR+'×'+pC+')')}
+        ${mr('Cost per piece','<b>'+cPiece+' '+sym+'</b>')}
+        ${mr('Order total','<b>'+mCost+' '+sym+'</b>','tot')}
     </div>`;
 }
 
 // ============================================================
-// WYSYŁKA
+// SHIPPING
 // ============================================================
 function toggleShip(){
     document.getElementById('shipPanel').style.display=document.getElementById('shipping').checked?'block':'none';
     updateShip();
 }
 function updateShip(){
-    const cost=getShipVal();const sym=getSym();const T=getT();
-    document.getElementById('shipDisplay').innerHTML='➤ '+(T.ship_display||'Koszt wysyłki')+': '+cost.toFixed(2)+' '+sym;
+    const cost=getShipVal();const sym=getSym();
+    document.getElementById('shipDisplay').innerHTML='➤ Shipping cost: '+cost.toFixed(2)+' '+sym;
 }
 function getShipVal(){
     if(!document.getElementById('shipping').checked)return 0;
@@ -1052,9 +723,8 @@ function getShipVal(){
 }
 
 // ============================================================
-// KALKULACJA
+// CALCULATE
 // ============================================================
-function clamp(val,min,max){return Math.min(Math.max(val,min),max);}
 
 function updateCustomVat(){
     const rate=parseFloat(document.getElementById('vatCustomRate')?.value);
@@ -1062,19 +732,19 @@ function updateCustomVat(){
 }
 
 function calculate(){
-    const hourly=clamp(parseFloat(document.getElementById('hourlyRate').value)||0,0,9999);
-    const mach=clamp(parseFloat(document.getElementById('machineRate').value)||0,0,9999);
-    const lMin=clamp(parseFloat(document.getElementById('laserMinutes').value)||0,0,9999);
-    const pMin=clamp(parseFloat(document.getElementById('vectorPrep').value)||0,0,9999);
+    const hourly=parseFloat(document.getElementById('hourlyRate').value)||0;
+    const mach=parseFloat(document.getElementById('machineRate').value)||0;
+    const lMin=parseFloat(document.getElementById('laserMinutes').value)||0;
+    const pMin=parseFloat(document.getElementById('vectorPrep').value)||0;
     const mult=parseFloat(document.getElementById('materialType').value);
     const mf=parseFloat(document.getElementById('rawMaterial').value)||0;
-    const vatPct=(val=>isNaN(val)?23:val)(parseFloat(document.getElementById('vatRate')?.value))/100;
+    const vatPct=(val=>isNaN(val)?20:val)(parseFloat(document.getElementById('vatRate')?.value))/100;
     const sW=parseFloat(document.getElementById('sheetW').value)||0;
     const sH=parseFloat(document.getElementById('sheetH').value)||0;
     const cW=parseFloat(document.getElementById('cutW').value)||0;
     const cH=parseFloat(document.getElementById('cutH').value)||0;
     const qty=parseInt(document.getElementById('cutQty').value)||1;
-    const sym=getSym();const T=getT();
+    const sym=getSym();
 
     const vd=sW&&sH&&cW&&cH&&cW<=sW&&cH<=sH;
     const matCost=vd?(cW*cH*qty)/(sW*sH)*mf:mf;
@@ -1094,20 +764,19 @@ function calculate(){
     const macCost=(lMin/60)*mach;
     const profit=netto-matCost-macCost;
 
-    document.getElementById('bruttoLbl').textContent=T.result_gross||'Cena dla klienta (Brutto):';
-    document.getElementById('profitLbl').textContent=T.result_profit_lbl||'TWÓJ ZYSK:';
     document.getElementById('priceBrutto').textContent=brutto.toFixed(2)+' '+sym;
     document.getElementById('netProfit').textContent=profit.toFixed(2)+' '+sym;
 
+    const T=getT();
     function rrow(label,val,cls=''){return`<div class="rpt-row ${cls}"><span class="rl">${label}</span><span class="rv">${val.toFixed(2)} ${sym}</span></div>`;}
     const sep='<div class="rpt-row sep"></div>';
     const hdr=t=>`<div class="rpt-row hdr"><span class="rl">${t}</span><span class="rv"></span></div>`;
 
-    let h=hdr(T.txt_rpt||'📋 RAPORT');
+    let h=hdr(T.txt_rpt);
     if(vd){
-        h+=`<div class="rpt-row"><span class="rl">${T.txt_sheet||'Arkusz'}</span><span class="rv">${sW}×${sH} mm</span></div>`;
-        h+=`<div class="rpt-row"><span class="rl">${T.txt_proj||'Projekt'} (${qty})</span><span class="rv">${cW}×${cH} mm</span></div>`;
-        h+=`<div class="rpt-row"><span class="rl">${T.txt_usage||'Zużycie'}</span><span class="rv">${uPct}% · max ${maxPcs} ${T.pcs||'szt.'}</span></div>`;
+        h+=`<div class="rpt-row"><span class="rl">${T.txt_sheet}</span><span class="rv">${sW}×${sH} mm</span></div>`;
+        h+=`<div class="rpt-row"><span class="rl">${T.txt_proj} (${qty})</span><span class="rv">${cW}×${cH} mm</span></div>`;
+        h+=`<div class="rpt-row"><span class="rl">${T.txt_usage}</span><span class="rv">${uPct}% · max ${maxPcs} ${T.pcs}</span></div>`;
         h+=sep;
     }
     h+=rrow(T.txt_mat,matCost);h+=rrow(T.txt_mach,macCost);h+=rrow(T.txt_labor,design+work/mult);
@@ -1137,10 +806,10 @@ function calculate(){
 }
 
 // ============================================================
-// ZAPISZ TXT
+// SAVE TXT
 // ============================================================
 function saveTXT(){
-    const c=window._last;if(!c){alert('Najpierw oblicz wycenę!');return;}
+    const c=window._last;if(!c){alert('Please calculate first!');return;}
     const T=getT();const sym=c.sym;
     const s1='═'.repeat(54),s2='─'.repeat(54);
     const dt=new Date().toLocaleDateString()+' '+new Date().toLocaleTimeString();
@@ -1168,10 +837,10 @@ function saveTXT(){
     if(c.ship>0)txt+='+ '+T.txt_ship+': '+c.ship.toFixed(2)+' '+sym+'\n';
     txt+=T.txt_brutto+': '+c.brutto.toFixed(2)+' '+sym+'\n'+s2+'\n';
     txt+=T.txt_zysk+': '+c.profit.toFixed(2)+' '+sym+'\n';
-    txt+=s1+'\n'+T.txt_generated+': https://www.laserprofit.eu/';
+    txt+=s1+'\n'+T.txt_generated+': https://www.laserprofit.eu/en/';
     const blob=new Blob([txt],{type:'text/plain;charset=utf-8'});
     const a=document.createElement('a');a.href=URL.createObjectURL(blob);
-    a.download='Wycena_'+new Date().toISOString().slice(0,10)+'_'+activeCur+'_'+activeLang.toUpperCase()+'.txt';
+    a.download='Quote_'+new Date().toISOString().slice(0,10)+'_'+activeCur+'_'+activeLang.toUpperCase()+'.txt';
     a.click();URL.revokeObjectURL(a.href);
 }
 
@@ -1180,45 +849,46 @@ function saveTXT(){
 // ============================================================
 function sendFeedback(){
     const msg=document.getElementById('fbMsg')?.value||'';
-    if(!msg.trim()){alert('Proszę wpisać opis.');return;}
+    if(!msg.trim()){alert('Please enter a description.');return;}
     const type=document.getElementById('fbType')?.options[document.getElementById('fbType').selectedIndex]?.text||'';
     const email=document.getElementById('fbEmail')?.value||'';
     const btn=document.querySelector('#fbModal .btn');
-    if(btn){btn.textContent='⏳ Wysyłanie...';btn.disabled=true;}
+    if(btn){btn.textContent='⏳ Sending...';btn.disabled=true;}
     fetch('https://formspree.io/f/xykbnepw',{
         method:'POST',
         headers:{'Content-Type':'application/json','Accept':'application/json'},
         body:JSON.stringify({
-            typ:type,
-            jezyk:activeLang,
-            waluta:activeCur,
-            wiadomosc:msg,
-            email:email||'brak',
-            strona:'laserprofit.eu – PL'
+            type:type,
+            language:activeLang,
+            currency:activeCur,
+            message:msg,
+            email:email||'none',
+            page:'laserprofit.eu – EN'
         })
     }).then(r=>{
         if(r.ok){
             document.getElementById('fbThanks').style.display='block';
-            if(btn){btn.textContent='📤 Wyślij zgłoszenie';btn.disabled=false;}
+            if(btn){btn.textContent='📤 Send';btn.disabled=false;}
             setTimeout(()=>document.getElementById('fbModal').classList.remove('open'),2500);
         } else {
-            alert('Błąd wysyłania. Spróbuj ponownie.');
-            if(btn){btn.textContent='📤 Wyślij zgłoszenie';btn.disabled=false;}
+            alert('Sending error. Please try again.');
+            if(btn){btn.textContent='📤 Send';btn.disabled=false;}
         }
     }).catch(()=>{
-        alert('Błąd połączenia. Spróbuj ponownie.');
-        if(btn){btn.textContent='📤 Wyślij zgłoszenie';btn.disabled=false;}
+        alert('Connection error. Please try again.');
+        if(btn){btn.textContent='📤 Send';btn.disabled=false;}
     });
 }
 
 // ============================================================
-// WYKRYCIE KRAJU
+// DETECT COUNTRY (auto-select currency)
 // ============================================================
+const CC={PL:'PLN',DE:'EUR',AT:'EUR',FR:'EUR',IT:'EUR',ES:'EUR',NL:'EUR',BE:'EUR',PT:'EUR',FI:'EUR',IE:'EUR',GR:'EUR',SK:'EUR',SI:'EUR',LV:'EUR',LT:'EUR',EE:'EUR',MT:'EUR',CY:'EUR',LU:'EUR',US:'USD',CA:'USD',GB:'GBP',CZ:'CZK',UA:'UAH',NO:'NOK',SE:'SEK',CH:'CHF',DK:'DKK',HU:'HUF',RO:'RON'};
 async function detectCountry(){
     try{
         const r=await fetch('https://ipapi.co/json/');
         const d=await r.json();
-        const country=d.country_code||'PL';
+        const country=d.country_code||'US';
         if(CC[country])activeCur=CC[country];
     }catch{}
 }
@@ -1227,21 +897,26 @@ async function detectCountry(){
 // INIT
 // ============================================================
 document.addEventListener('DOMContentLoaded',async()=>{
-    buildChips();buildNavFlags();applyLang('pl');calcMat();
+    buildChips();
+    buildNavFlags();
+    calcMat();
+    refreshSyms();
     await detectCountry();
-    applyLang(activeLang);refreshSyms();calcMat();
+    buildChips();
+    refreshSyms();
+    calcMat();
 });
 </script>
 <!-- ── COOKIE BANNER ── -->
 <div id="cookieBanner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9998;background:var(--card);border-top:2px solid var(--orange);padding:14px 20px;box-shadow:0 -4px 20px rgba(0,0,0,.3);">
     <div style="max-width:1060px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:12px;justify-content:space-between;">
         <p style="font-size:.76rem;color:var(--muted);flex:1;min-width:220px;">
-            🍪 Ta strona używa plików cookie do analizy ruchu i poprawy działania. Korzystając ze strony, zgadzasz się na ich użycie.
-            <a href="https://laserprofit.eu/privacy" style="color:var(--orange);text-decoration:none;font-weight:700;"> Polityka prywatności</a>
+            🍪 This site uses cookies to analyze traffic and improve performance. By using this site, you agree to their use.
+            <a href="https://laserprofit.eu/privacy" style="color:var(--orange);text-decoration:none;font-weight:700;"> Privacy Policy</a>
         </p>
         <div style="display:flex;gap:8px;flex-shrink:0;">
-            <button onclick="acceptCookies()" style="background:var(--orange);color:#fff;border:none;padding:8px 20px;border-radius:7px;font-weight:700;cursor:pointer;font-family:var(--font);font-size:.78rem;">Akceptuję</button>
-            <button onclick="rejectCookies()" style="background:var(--card2);color:var(--muted);border:1px solid var(--border);padding:8px 16px;border-radius:7px;font-weight:700;cursor:pointer;font-family:var(--font);font-size:.78rem;">Tylko niezbędne</button>
+            <button onclick="acceptCookies()" style="background:var(--orange);color:#fff;border:none;padding:8px 20px;border-radius:7px;font-weight:700;cursor:pointer;font-family:var(--font);font-size:.78rem;">Accept</button>
+            <button onclick="rejectCookies()" style="background:var(--card2);color:var(--muted);border:1px solid var(--border);padding:8px 16px;border-radius:7px;font-weight:700;cursor:pointer;font-family:var(--font);font-size:.78rem;">Essential only</button>
         </div>
     </div>
 </div>
