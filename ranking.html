@@ -76,19 +76,19 @@ nav{background:rgba(13,27,46,.97);padding:12px 0;border-bottom:1px solid var(--b
 
 /* TABLE */
 .table-wrap{max-width:1300px;margin:0 auto;padding:0 16px 60px}
-table{width:100%;border-collapse:collapse;background:var(--card);border-radius:12px;overflow:hidden}
+table{width:100%;border-collapse:collapse;background:var(--card);border-radius:12px;overflow:hidden;table-layout:fixed}
 thead tr{background:var(--navy);border-bottom:2px solid var(--orange)}
-th{padding:10px 8px;text-align:left;font-size:.58rem;color:var(--orange);text-transform:uppercase;letter-spacing:.6px;font-weight:700;cursor:pointer;white-space:nowrap;user-select:none}
+th{padding:5px 4px;text-align:left;font-size:.58rem;color:var(--orange);text-transform:uppercase;letter-spacing:.6px;font-weight:700;cursor:pointer;white-space:nowrap;user-select:none}
 th:hover{color:#fff}
 th .si{margin-left:3px;opacity:.4;font-size:.55rem}
 th.sorted .si{opacity:1}
-td{padding:9px 8px;border-bottom:1px solid var(--border);vertical-align:top;font-size:.72rem;line-height:1.45}
+td{padding:2px 3px;border-bottom:1px solid var(--border);vertical-align:middle;font-size:.72rem;line-height:1.35;overflow:hidden;word-break:break-word}
 tbody tr:last-child td{border-bottom:none}
 tbody tr:hover td{background:rgba(255,107,43,.03)}
 tbody tr.hidden{display:none}
 tbody tr.in-compare td{background:rgba(255,107,43,.05);border-left:3px solid var(--orange)}
 
-.model-cell{display:flex;flex-direction:column;gap:2px;min-width:150px}
+.model-cell{display:flex;flex-direction:column;gap:1px}
 .model-name{font-weight:700;font-size:.78rem;color:var(--text);line-height:1.2}
 .model-brand{font-size:.62rem;color:var(--muted)}
 .cat-badge{display:inline-block;padding:1px 6px;border-radius:8px;font-size:.55rem;font-weight:700;letter-spacing:.5px;margin-top:2px;width:fit-content}
@@ -104,7 +104,7 @@ tbody tr.in-compare td{background:rgba(255,107,43,.05);border-left:3px solid var
 .speed-ms{font-weight:600}
 .speed-mm{color:var(--muted);font-size:.62rem}
 
-.mat-chips{display:flex;flex-wrap:wrap;gap:2px;min-width:130px}
+.mat-chips{display:flex;flex-wrap:wrap;gap:2px}
 .mat-chip{border-radius:4px;padding:2px 5px;font-size:.58rem;line-height:1.3}
 .mc-yes{background:rgba(52,211,153,.08);color:var(--green);border:1px solid rgba(52,211,153,.2)}
 .mc-partial{background:rgba(251,191,36,.06);color:#fbbf24;border:1px solid rgba(251,191,36,.2)}
@@ -119,19 +119,19 @@ tbody tr.in-compare td{background:rgba(255,107,43,.05);border-left:3px solid var
 .opt-lbl{color:#fbbf24;font-size:.7rem}
 .na-lbl{color:var(--muted);font-size:.65rem}
 
-.price-cell{min-width:130px}
+.price-cell{}
 .price-eur{font-weight:700;font-size:.82rem;color:var(--orange)}
 .price-pln{font-size:.65rem;color:var(--muted)}
 .price-orig{font-size:.62rem;color:var(--muted);margin-top:1px}
 
-.ship-cell{font-size:.68rem;line-height:1.5;min-width:130px}
+.ship-cell{font-size:.68rem;line-height:1.5}
 .ship-from{font-weight:600;color:var(--text)}
 .ship-eu{color:var(--green);font-size:.62rem}
 .ship-free{color:var(--green);font-size:.62rem}
 .ship-nofree{color:var(--muted);font-size:.62rem}
 .warranty{font-size:.62rem;color:var(--blue);margin-top:2px}
 
-.action-cell{display:flex;flex-direction:column;gap:4px;min-width:110px}
+.action-cell{display:flex;flex-direction:column;gap:3px}
 .btn-aff{display:inline-block;background:var(--orange);color:#fff;text-decoration:none;padding:5px 10px;border-radius:6px;font-size:.64rem;font-weight:700;font-family:var(--font);transition:.2s;border:none;cursor:pointer;text-align:center}
 .btn-aff:hover{opacity:.85}
 .btn-aff.soon{background:var(--card2);color:var(--muted);border:1px solid var(--border);cursor:default}
@@ -144,9 +144,9 @@ tbody tr.in-compare td{background:rgba(255,107,43,.05);border-left:3px solid var
 .expand-btn:hover{border-color:var(--orange);color:var(--orange)}
 
 /* DETAIL ROW */
-.detail-row td{background:rgba(14,30,52,.6);padding:14px 16px;border-top:1px solid var(--border)}
-.detail-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
-.di{background:var(--card2);border-radius:8px;padding:10px 12px;border:1px solid var(--border)}
+.detail-row td{background:rgba(14,30,52,.6);padding:4px 6px;border-top:1px solid var(--border)}
+.detail-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:3px}
+.di{background:var(--card2);border-radius:6px;padding:3px 5px;border:1px solid var(--border)}
 .di-lbl{font-size:.58rem;color:var(--orange);text-transform:uppercase;letter-spacing:.7px;margin-bottom:3px}
 .di-val{font-size:.76rem;color:var(--text);font-weight:600}
 .di-note{font-size:.62rem;color:var(--muted);margin-top:2px}
@@ -239,14 +239,28 @@ tbody tr.in-compare td{background:rgba(255,107,43,.05);border-left:3px solid var
 
 <div class="table-wrap">
 <table id="laserTable">
+<colgroup>
+  <col style="width:16%">  <!-- MODEL -->
+  <col style="width:6%">   <!-- MOC -->
+  <col style="width:9%">   <!-- OBSZAR -->
+  <col style="width:8%">   <!-- OBUDOWA -->
+  <col style="width:9%">   <!-- BUDOWA -->
+  <col style="width:8%">   <!-- AIR ASSIST -->
+  <col style="width:9%">   <!-- ROZMIAR PLAMKI -->
+  <col style="width:9%">   <!-- POŁĄCZENIE -->
+  <col style="width:10%">  <!-- WYSYŁKA/GWA -->
+  <col style="width:16%">  <!-- AKCJA -->
+</colgroup>
 <thead>
   <tr>
     <th>MODEL</th>
     <th>MOC</th>
     <th>OBSZAR</th>
-    <th>MATERIAŁY</th>
-    <th>POŁĄCZENIE</th>
+    <th>OBUDOWA</th>
+    <th>BUDOWA</th>
     <th>AIR ASSIST</th>
+    <th>PLAMKA</th>
+    <th>POŁĄCZENIE</th>
     <th>WYSYŁKA / GWA</th>
     <th>AKCJA</th>
   </tr>
@@ -333,14 +347,20 @@ async function fetchRates() {
 
 function pln(eur) { return Math.round(eur * rateEUR).toLocaleString('pl-PL'); }
 
-// 3. RENDEROWANIE WIERSZA (Widok Polski)
-// 3. RENDEROWANIE WIERSZA (Widok Polski)
+function toggleDetails(id, btn) {
+    const row = document.getElementById(id);
+    if (!row) return;
+    const isOpen = row.style.display !== 'none';
+    row.style.display = isOpen ? 'none' : 'table-row';
+    btn.textContent = isOpen ? '▼ Szczegóły' : '▲ Ukryj';
+}
+
 function renderRow(l) {
     const inCmp = compareSet.has(l.id);
     const isOrtur = (l.brand && l.brand.toLowerCase() === 'ortur');
     const hasAffLink = !!(l.affLink && l.affLink.trim() && l.affLink.trim() !== '-');
     const finalLink = isOrtur ? 'https://ortur.net/?ref=nskubuaw' : l.affLink;
-    const showBuy = isOrtur || hasAffLink; // Pokaż cenę i KUP TERAZ tylko gdy jest link afiliacyjny
+    const showBuy = isOrtur || hasAffLink;
 
     const connIcons = l.conn && l.conn.length > 0 
         ? l.conn.map(c => `<span class="conn-chip on">${c}</span>`).join(' ') 
@@ -349,13 +369,13 @@ function renderRow(l) {
     const detailsId = `details-${l.id}`;
 
     const priceAndBuyHtml = showBuy ? `
-        <div class="price-cell" style="margin-bottom:4px">
+        <div class="price-cell" style="margin-bottom:2px">
             <span class="price-eur">${l.priceEur} €</span>
             <span class="price-pln"> ≈ ${pln(l.priceEur)} zł</span>
             ${l.shipEU ? '<br><span class="ship-eu">📦 Magazyn EU</span>' : ''}
         </div>
         <a href="${finalLink}" target="_blank" class="btn-aff">KUP TERAZ</a>
-        ${isOrtur ? `<div style="font-size:10px; color:var(--orange); font-weight:700; text-align:center; border:1px dashed var(--orange); border-radius:4px; padding:2px; margin-top:3px;">KOD: ${MY_PROMO_CODE}</div>` : ''}
+        ${isOrtur ? `<div style="font-size:10px; color:var(--orange); font-weight:700; text-align:center; border:1px dashed var(--orange); border-radius:4px; padding:2px; margin-top:2px;">KOD: ${MY_PROMO_CODE}</div>` : ''}
     ` : '';
 
     return `
@@ -369,34 +389,28 @@ function renderRow(l) {
                 <button class="expand-btn" onclick="toggleDetails('${detailsId}', this)">▼ Szczegóły</button>
             </div>
         </td>
-
         <td class="power-cell">${l.power} W</td>
-
         <td class="area-cell">
             ${l.areaW}×${l.areaH} mm<br>
-            ${l.expandable ? `<span class="area-exp yes">⚡ Można powiększyć</span>` : ''}
+            ${l.expandable ? `<span class="area-exp yes">⚡ Powiększ.</span>` : ''}
         </td>
-
-        <td>
-            <div class="mat-chips">
-                <span class="mat-chip ${l.wood ? 'mc-yes' : 'mc-no'}">Drewno</span>
-                <span class="mat-chip ${l.leather ? 'mc-yes' : 'mc-no'}">Skóra</span>
-            </div>
+        <td style="font-size:.68rem">
+            ${l.enclosed ? '🔒 Zamknięta' : '<span class="na-lbl">Otwarta</span>'}
         </td>
-
-        <td><div class="conn-chips">${connIcons}</div></td>
-
+        <td style="font-size:.65rem">
+            ${l.linearRails ? '✅ Szyny' : '⚪ Rolki'}
+        </td>
         <td>
             ${l.airAssist === 'builtin' ? '<span class="check">✅ Tak</span>' : (l.airAssist === 'option' ? '<span class="opt-lbl">◎ Opcja</span>' : '<span class="cross">❌</span>')}
         </td>
-
+        <td style="font-size:.68rem">${l.spotSize || '-'}</td>
+        <td><div class="conn-chips">${connIcons}</div></td>
         <td>
             <div class="ship-cell">
                 <span class="ship-from">📍 ${l.shipFrom || 'CN'}</span><br>
                 <span class="warranty">🛡️ ${l.warranty || '12'} m-cy</span>
             </div>
         </td>
-
         <td>
             <div class="action-cell">
                 ${priceAndBuyHtml}
@@ -407,28 +421,18 @@ function renderRow(l) {
         </td>
     </tr>
     <tr class="detail-row" id="${detailsId}" style="display:none">
-        <td colspan="8">
+        <td colspan="10">
             <div class="detail-grid">
-                <div class="di"><div class="di-lbl">Budowa</div><div class="di-val">${l.linearRails ? '✅ Szyny liniowe' : '⚪ Rolki V-Slot'}</div></div>
                 <div class="di"><div class="di-lbl">Kamera</div><div class="di-val">${l.camera ? '📷 Tak' : '❌ Brak'}</div></div>
-                <div class="di"><div class="di-lbl">Rozmiar plamki</div><div class="di-val">${l.spotSize || '-'}</div></div>
                 <div class="di"><div class="di-lbl">Długość fali</div><div class="di-val">${l.wavelength || '-'}</div></div>
                 <div class="di"><div class="di-lbl">Grubość cięcia</div><div class="di-val">${l.cutDepth || '-'} mm</div></div>
-                <div class="di"><div class="di-lbl">Obudowa</div><div class="di-val">${l.enclosed ? '🔒 Zamknięta' : 'Otwarta'}</div></div>
                 <div class="di"><div class="di-lbl">Max prędkość</div><div class="di-val">${l.speed ? l.speed + ' mm/min' : '-'}</div></div>
+                <div class="di"><div class="di-lbl">Materiały</div><div class="di-val">${l.wood ? '✅ Drewno ' : ''}${l.leather ? '✅ Skóra' : ''}</div></div>
                 ${!showBuy ? `<div class="di"><div class="di-lbl">Cena</div><div class="di-val" style="color:var(--orange)">${l.priceEur} € <span style="color:var(--muted);font-size:.65rem">≈ ${pln(l.priceEur)} zł</span></div></div>` : ''}
             </div>
         </td>
     </tr>`;
 }
-function toggleDetails(id, btn) {
-    const row = document.getElementById(id);
-    if (!row) return;
-    const isOpen = row.style.display !== 'none';
-    row.style.display = isOpen ? 'none' : 'table-row';
-    btn.textContent = isOpen ? '▼ Szczegóły' : '▲ Ukryj';
-}
-
 function applyFilters() {
     const search = document.getElementById('search').value.toLowerCase();
     const fType = document.getElementById('fType').value;
