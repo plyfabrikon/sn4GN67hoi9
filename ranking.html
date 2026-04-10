@@ -109,6 +109,17 @@ tbody tr.in-compare td{background:rgba(255,107,43,.05);border-left:3px solid var
 .mc-yes{background:rgba(52,211,153,.08);color:var(--green);border:1px solid rgba(52,211,153,.2)}
 .mc-partial{background:rgba(251,191,36,.06);color:#fbbf24;border:1px solid rgba(251,191,36,.2)}
 .mc-no{background:rgba(248,113,113,.05);color:var(--red);border:1px solid rgba(248,113,113,.15);opacity:.6}
+/* Unikalne kolory per materiał */
+.mc-wood{background:rgba(180,120,60,.12);color:#c8864a;border:1px solid rgba(180,120,60,.3)}
+.mc-wood-no{background:rgba(180,120,60,.04);color:rgba(180,120,60,.4);border:1px solid rgba(180,120,60,.15);opacity:.5}
+.mc-metal-cut{background:rgba(148,163,184,.15);color:#94a3b8;border:1px solid rgba(148,163,184,.35)}
+.mc-metal-eng{background:rgba(148,163,184,.07);color:rgba(148,163,184,.7);border:1px solid rgba(148,163,184,.2)}
+.mc-metal-no{background:rgba(148,163,184,.03);color:rgba(148,163,184,.3);border:1px solid rgba(148,163,184,.12);opacity:.5}
+.mc-leather{background:rgba(205,133,63,.12);color:#cd853f;border:1px solid rgba(205,133,63,.3)}
+.mc-leather-no{background:rgba(205,133,63,.04);color:rgba(205,133,63,.35);border:1px solid rgba(205,133,63,.15);opacity:.5}
+.mc-acrylic{background:rgba(56,189,248,.1);color:#38bdf8;border:1px solid rgba(56,189,248,.25)}
+.mc-acrylic-part{background:rgba(56,189,248,.05);color:rgba(56,189,248,.6);border:1px solid rgba(56,189,248,.15)}
+.mc-acrylic-no{background:rgba(56,189,248,.03);color:rgba(56,189,248,.25);border:1px solid rgba(56,189,248,.1);opacity:.5}
 
 .conn-chips{display:flex;gap:2px;flex-wrap:wrap}
 .conn-chip{padding:2px 5px;border-radius:4px;font-size:.58rem;font-weight:600;background:rgba(255,255,255,.05);color:var(--muted);border:1px solid var(--border)}
@@ -197,6 +208,7 @@ tbody tr.in-compare td{background:rgba(255,107,43,.05);border-left:3px solid var
   <div class="brand-badge">Longer</div>
   <div class="brand-badge">ComMarker</div>
 </div>
+
 <div class="filters">
   <div class="fg"><label>🔍 Szukaj</label><input type="text" id="search" placeholder="xTool, D1 Pro, Atomstack..." oninput="applyFilters()"></div>
   <div class="fg"><label>⚡ Typ</label>
@@ -396,11 +408,41 @@ function renderRow(l) {
 
     const detailsId = `details-${l.id}`;
 
+    // Konwersja wartości materiałów na czytelne etykiety
+    function matClass(v) {
+        const s = String(v).toLowerCase().trim();
+        if(s === 'true' || s === 'yes' || s === 'cut') return 'mc-yes';
+        if(s === 'partial' || s === 'engrave' || s === 'marking') return 'mc-partial';
+        return 'mc-no';
+    }
+    function matLabel(v, fallback) {
+        const s = String(v).toLowerCase().trim();
+        if(s === 'true' || s === 'yes') return fallback + ' ✓';
+        if(s === 'cut') return 'Cięcie';
+        if(s === 'engrave') return 'Grawerowanie';
+        if(s === 'partial') return 'Częściowo';
+        if(s === 'marking') return 'Znakowanie';
+        return fallback;
+    }
+    const metalVal = l.metal && l.metal !== '-' && String(l.metal).toLowerCase() !== 'none' && String(l.metal).toLowerCase() !== 'false';
+    const acrylicVal = l.acrylic && l.acrylic !== '-' && String(l.acrylic).toLowerCase() !== 'none' && String(l.acrylic).toLowerCase() !== 'false';
+    function metalChip(v) {
+        const s = String(v).toLowerCase().trim();
+        if(s === 'true' || s === 'yes' || s === 'cut') return '<span class="mat-chip mc-metal-cut" title="Tnie metal">Metal: cięcie</span>';
+        if(s === 'engrave' || s === 'partial' || s === 'marking') return '<span class="mat-chip mc-metal-eng" title="Tylko grawerowanie metalu">Metal: grawer</span>';
+        return '<span class="mat-chip mc-metal-no">Metal: ✕</span>';
+    }
+    function acrylicChip(v) {
+        const s = String(v).toLowerCase().trim();
+        if(s === 'true' || s === 'yes' || s === 'cut') return '<span class="mat-chip mc-acrylic" title="Tnie i graweruje plexi">Plexa: cięcie</span>';
+        if(s === 'partial' || s === 'engrave') return '<span class="mat-chip mc-acrylic-part" title="Ograniczone możliwości plexi">Plexa: częściowo</span>';
+        return '<span class="mat-chip mc-acrylic-no">Plexa: ✕</span>';
+    }
     const matHtml = [
-        l.wood    ? '<span class="mat-chip mc-yes">Drewno</span>'                                                              : '<span class="mat-chip mc-no">Drewno</span>',
-        l.metal   && l.metal   !== '-' && l.metal   !== 'none' ? `<span class="mat-chip mc-partial">${l.metal}</span>`        : '<span class="mat-chip mc-no">Metal</span>',
-        l.leather ? '<span class="mat-chip mc-yes">Skóra</span>'                                                               : '<span class="mat-chip mc-no">Skóra</span>',
-        l.acrylic && l.acrylic !== '-' && l.acrylic !== 'none' ? `<span class="mat-chip mc-partial">${l.acrylic}</span>`      : '<span class="mat-chip mc-no">Plexa</span>',
+        l.wood    ? '<span class="mat-chip mc-wood" title="Cięcie i grawerowanie drewna">Drewno: ✓</span>' : '<span class="mat-chip mc-wood-no">Drewno: ✕</span>',
+        metalChip(metalVal ? l.metal : 'false'),
+        l.leather ? '<span class="mat-chip mc-leather" title="Cięcie i grawerowanie skóry">Skóra: ✓</span>' : '<span class="mat-chip mc-leather-no">Skóra: ✕</span>',
+        acrylicChip(acrylicVal ? l.acrylic : 'false'),
     ].join('');
 
     return `
