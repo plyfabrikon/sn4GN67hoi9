@@ -178,6 +178,34 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
 .modal-box{background:var(--card);border-radius:14px;padding:28px;max-width:500px;width:90%;border:1px solid var(--orange);position:relative}
 .modal-close{position:absolute;top:12px;right:14px;background:none;border:none;color:var(--muted);font-size:1.2rem;cursor:pointer}
 @media print{html,body{margin:0!important;padding:0!important}@page{margin:1.2cm;size:A4}body *{visibility:hidden}#expertResult,#expertResult *{visibility:visible}#expertResult{position:absolute;left:0;top:0;width:100%;border:none!important;background:#fff!important;color:#000!important;padding:20px!important;margin:0!important;display:block!important}.btn-group,#expertResult .btn,#expertResult button{display:none!important}.profit-box{background:#d1fae5!important}.pb-lbl,#netProfit{color:#065f46!important}#expertBreakdown{background:#f0fdf4!important}.rl{color:#334155!important}.rv{color:#0f172a!important}nav,footer,.lang-wrap,.theme-btn,.settings-bar,iframe{display:none!important}}
+.btn-coffee-calc {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: #FFDD00;
+    color: #000000 !important;
+    text-decoration: none;
+    padding: 12px 14px;
+    border-radius: 7px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    transition: 0.25s;
+    border: none;
+    cursor: pointer;
+    font-family: var(--font);
+    margin-top: 12px;
+    width: 100%;
+}
+.btn-coffee-calc:hover {
+    background: #ffbe00;
+    box-shadow: 0 0 18px rgba(255, 221, 0, 0.4);
+    transform: translateY(-2px);
+}
+.btn-coffee-calc img {
+    height: 20px;
+    width: auto;
+}
 </style>
 </head>
 <body>
@@ -375,6 +403,10 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
         <p id="shipDisplay">➤ <span data-t="ship_display">Versandkosten</span>: 4,99 <span class="csym">€</span></p>
     </div>
     <button onclick="calculate()" class="btn" style="width:100%;margin-top:20px;font-size:.86rem;letter-spacing:1.5px;padding:13px;background:var(--navy);color:#fff;" data-t="btn_calculate">▶ GEWINN &amp; PREIS BERECHNEN</button>
+    	<a href="https://buymeacoffee.com/laserprofit" target="_blank" class="btn-coffee-calc">
+    <img src="https://cdn.buymeacoffee.com/buttons/bmc-new-btn-logo.svg" alt="Coffee icon">
+    <span>Projekt unterstützen – Kauf mir einen Kaffee ☕</span>
+</a>
     <button onclick="document.getElementById('fbModal').classList.add('open')" class="btn" style="width:100%;margin-top:8px;font-size:.76rem;padding:9px;background:transparent;border:1px solid var(--orange);color:var(--orange);" data-t="btn_feedback">💬 Problem melden / Verbesserung vorschlagen</button>
     <div id="expertResult">
         <div class="result-top"><span id="bruttoLbl" data-t="result_gross">Kundenpreis (Brutto):</span><span id="priceBrutto">0,00 €</span></div>
