@@ -13,7 +13,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LaserProfit.eu – Free Laser Engraving Price Calculator 2026</title>
 <meta name="description" content="LaserProfit.eu – Free laser engraving & cutting price calculator. 14 languages, 12 currencies. Calculate exact costs for xTool, Creality, Atomstack and more.">
-<meta name="keywords" content="laser engraving price calculator, laser cutting cost calculator, laser engraving pricing tool, xTool calculator, Creality laser cost">
+<meta name="keywords" content="laser engraving price calculator, laser cutting cost calculator, laser engraving pricing tool, xTool calculator, Creality laser cost, laser engraving cost calculator, calculate profit laser engraving, engraving pricing calculator, laser cutting quote, laser profit calculator, engraving cost per minute, how much to charge laser engraving">
 <meta name="author" content="LaserProfit.eu">
 <meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large">
 <meta name="google-site-verification" content="HGtiv1o5Zh2URMz7O5Dxean6mWRR7Ac9hlp3GZSHdH8"/>
@@ -179,34 +179,6 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
 .modal-box{background:var(--card);border-radius:14px;padding:28px;max-width:500px;width:90%;border:1px solid var(--orange);position:relative}
 .modal-close{position:absolute;top:12px;right:14px;background:none;border:none;color:var(--muted);font-size:1.2rem;cursor:pointer}
 @media print{html,body{margin:0!important;padding:0!important}@page{margin:1.2cm;size:A4}body *{visibility:hidden}#expertResult,#expertResult *{visibility:visible}#expertResult{position:absolute;left:0;top:0;width:100%;border:none!important;background:#fff!important;color:#000!important;padding:20px!important;margin:0!important;display:block!important}.btn-group,#expertResult .btn,#expertResult button{display:none!important}.profit-box{background:#d1fae5!important}.pb-lbl,#netProfit{color:#065f46!important}#expertBreakdown{background:#f0fdf4!important}.rl{color:#334155!important}.rv{color:#0f172a!important}nav,footer,.lang-wrap,.theme-btn,.settings-bar,iframe{display:none!important}}
-.btn-coffee-calc {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    background: #FFDD00; /* Kolor charakterystyczny dla BuyMeACoffee */
-    color: #000000 !important; /* Czarny tekst lepiej pasuje do żółtego tła */
-    text-decoration: none;
-    padding: 12px 14px;
-    border-radius: 7px;
-    font-weight: 700;
-    font-size: 0.85rem;
-    transition: 0.25s;
-    border: none;
-    cursor: pointer;
-    font-family: var(--font);
-    margin-top: 12px;
-    width: 100%;
-}
-.btn-coffee-calc:hover {
-    background: #ffbe00;
-    box-shadow: 0 0 18px rgba(255, 221, 0, 0.4);
-    transform: translateY(-2px);
-}
-.btn-coffee-calc img {
-    height: 20px;
-    width: auto;
-}
 </style>
 </head>
 <body>
@@ -214,6 +186,7 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
 <div class="nav-content">
     <a href="https://www.laserprofit.eu/en/" class="logo">⚡ LASERPROFIT.EU</a>
     <div class="nav-links">
+        <a href="/comparator/" class="nav-link" style="opacity:.6;cursor:default;" title="Coming soon">🏆 LASER RANKING <span style="font-size:.55rem;background:var(--orange);color:#fff;padding:1px 5px;border-radius:8px;margin-left:3px;">soon</span></a>
         <a href="#calculator" class="nav-link">🧮 CALCULATOR</a>
         <a href="#files" class="nav-link">📂 FREE FILES</a>
         <a href="#safety" class="nav-link danger">⚠️ SAFETY</a>
@@ -404,10 +377,6 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
         <p id="shipDisplay">➤ Shipping cost: 14.99 <span class="csym">$</span></p>
     </div>
     <button onclick="calculate()" class="btn" style="width:100%;margin-top:20px;font-size:.86rem;letter-spacing:1.5px;padding:13px;background:var(--navy);color:#fff;">▶ CALCULATE PROFIT &amp; PRICE</button>
-	<a href="https://buymeacoffee.com/laserprofit" target="_blank" class="btn-coffee-calc">
-    <img src="https://cdn.buymeacoffee.com/buttons/bmc-new-btn-logo.svg" alt="Coffee icon">
-    <span>Support the project – Buy me a coffee</span>
-</a>
     <button onclick="document.getElementById('fbModal').classList.add('open')" class="btn" style="width:100%;margin-top:8px;font-size:.76rem;padding:9px;background:transparent;border:1px solid var(--orange);color:var(--orange);">💬 Report issue / Suggest improvement</button>
     <div id="expertResult">
         <div class="result-top"><span id="bruttoLbl">Client price (Gross):</span><span id="priceBrutto">0.00 $</span></div>
@@ -418,6 +387,34 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
             <button onclick="window.print()" class="btn" style="background:#334155;flex:1;font-size:.72rem;">🖼️ SAVE PDF</button>
         </div>
     </div>
+</section>
+
+<section style="margin-top:40px;line-height:1.85;padding:30px;border-radius:16px;background:rgba(255,255,255,.02);border:1px solid var(--border);font-size:.82rem;">
+    <h2 style="color:var(--orange);margin-bottom:14px;font-size:.95rem;">How to price laser engraving and cutting? Calculator 2026</h2>
+    <p>Wondering <strong>how much to charge for laser engraving</strong> or how to correctly quote a project in LightBurn? Our <strong>laser calculator</strong> lets you calculate profit, material cost and labour in seconds — no spreadsheets needed. It is a free <strong>engraving cost calculator</strong> and <strong>laser cutting price calculator</strong> built for laser makers worldwide.</p>
+    <p style="margin-top:14px;">Our <strong>laser engraving quote generator</strong> supports the most popular diode lasers: <strong>xTool</strong> (D1 Pro, S1, F1), <strong>Creality</strong> (Falcon 2), <strong>Sculpfun</strong> (S30 Pro, S30 Ultra), <strong>Atomstack</strong> (A24 Pro, A40 Pro V2, Kraft Dual), <strong>Ortur</strong>, <strong>Two Trees</strong>, <strong>Acmer</strong>, <strong>Longer</strong>, <strong>ComMarker</strong> and <strong>Snapmaker</strong>. Enter laser time, hourly rate and material cost — the tool will automatically calculate the <strong>price per laser minute 2026</strong>, machine depreciation and your real net profit.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0;">
+        <div style="background:var(--card2);border-radius:8px;padding:12px 14px;">
+            <p style="font-size:.68rem;font-weight:700;color:var(--orange);margin:0 0 5px;text-transform:uppercase;letter-spacing:.5px;">Calculate project quote</p>
+            <p style="color:var(--muted);margin:0;line-height:1.65;">Laser cutting quote, engraving quote, pricing for SVG and DXF projects — all in one place. Calculate your quote and profit from cutting and engraving.</p>
+        </div>
+        <div style="background:var(--card2);border-radius:8px;padding:12px 14px;">
+            <p style="font-size:.68rem;font-weight:700;color:var(--orange);margin:0 0 5px;text-transform:uppercase;letter-spacing:.5px;">Laser profit calculator</p>
+            <p style="color:var(--muted);margin:0;line-height:1.65;">The laser profit calculator includes margin, laser power consumption calculator and laser depreciation calculator — real numbers for your workshop.</p>
+        </div>
+        <div style="background:var(--card2);border-radius:8px;padding:12px 14px;">
+            <p style="font-size:.68rem;font-weight:700;color:var(--orange);margin:0 0 5px;text-transform:uppercase;letter-spacing:.5px;">Laser cutting pricing software</p>
+            <p style="color:var(--muted);margin:0;line-height:1.65;">Works like a laser service price list — save report to PDF or TXT and send the client a ready quote. LightBurn project pricing has never been easier.</p>
+        </div>
+        <div style="background:var(--card2);border-radius:8px;padding:12px 14px;">
+            <p style="font-size:.68rem;font-weight:700;color:var(--orange);margin:0 0 5px;text-transform:uppercase;letter-spacing:.5px;">Making money with a diode laser</p>
+            <p style="color:var(--muted);margin:0;line-height:1.65;">Check workshop profitability, CO2 cutting cost optimisation and how much a wood engraving costs. Free calculator for laser engravers and plotters.</p>
+        </div>
+    </div>
+    <h3 style="color:var(--orange);margin:18px 0 10px;font-size:.86rem;">Top diode lasers 2026 — ranking and project pricing</h3>
+    <p>Planning to buy a laser and wondering <strong>which diode laser to choose in 2026</strong>? Our laser ranking covers models from top brands: <strong>xTool D1 Pro 20W</strong>, <strong>Creality Falcon 2 22W</strong>, <strong>Sculpfun S30 Ultra 33W</strong>, <strong>Atomstack A40 Pro V2 48W</strong>, <strong>Ortur LM3</strong>, <strong>Two Trees TTS-55 Pro</strong>, <strong>Acmer P2</strong>, <strong>Longer Ray5 Pro</strong>, <strong>ComMarker B4 Fiber</strong> and <strong>Snapmaker</strong>. Cutting parameters vs price — the key to choosing the right machine and running a profitable laser workshop.</p>
+    <p style="margin-top:14px;">The built-in <strong>laser depreciation calculator</strong> helps you calculate the costs of running a laser business — service margin, electricity cost, material usage and hourly rate. It is a complete <strong>laser cutting pricing tool</strong> for both hobbyists and small businesses.</p>
+    <div style="background:var(--card2);border-left:4px solid var(--orange);padding:14px;margin-top:18px;border-radius:0 7px 7px 0;">⚡ <strong>LaserProfit.eu</strong> — free laser engraving price calculator 2026. Calculate your profit from cutting and engraving in seconds. Available in Polish, English and German. Also check our laser comparator and best models ranking 2026.</div>
 </section>
 
 <section style="margin-top:46px;overflow-x:auto;">
@@ -924,5 +921,6 @@ function acceptCookies(){document.getElementById('cookieBanner').style.display='
 function rejectCookies(){document.getElementById('cookieBanner').style.display='none';localStorage.setItem('cookies','rejected');}
 if(!localStorage.getItem('cookies')){document.getElementById('cookieBanner').style.display='block';}
 </script>
+
 </body>
 </html>
