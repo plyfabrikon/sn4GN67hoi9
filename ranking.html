@@ -340,6 +340,30 @@ async function loadData() {
                 if(s === 'option') return 'option';
                 return 'none';
             }
+
+            function formatPower(p) {
+                if(!p) return '-';
+                const s = String(p).trim();
+                // np. "48 + 24" lub "70+30" lub "48+24" → "48W / 24W"
+                if(s.includes('+')) {
+                    return s.split('+').map(x => x.trim() + 'W').join(' / ');
+                }
+                return s + 'W';
+            }
+
+            function formatSpot(s) {
+                if(!s || s === '-') return '-';
+                s = String(s).trim();
+                // "0.08x0.10mm (20W) / 0.03x0.03mm (IR)"
+                if(s.includes('/')) {
+                    return s.split('/').map(x => x.trim()).join('<br>');
+                }
+                // "0.12*0.18mm + 0.08mm*0.12mm"
+                if(s.includes('+')) {
+                    return s.split('+').map(x => x.trim()).join('<br>');
+                }
+                return s;
+            }
             LASERS = results.data.map(l => ({
                 id:         l['id'],
                 brand:      l['Marka'],
@@ -451,7 +475,7 @@ function renderRow(l) {
             <button class="expand-btn" onclick="toggleDetails('${detailsId}', this)" style="margin-top:3px">▼ Więcej</button>
         </td>
         <td><span class="cat-badge ${l.type === 'fiber' ? 'cat-fiber' : 'cat-diode'}">${l.type === 'fiber' ? 'FIBER' : 'DIOD.'}</span></td>
-        <td class="power-cell">${l.power}W</td>
+        <td class="power-cell">${formatPower(l.power)}</td>
         <td style="font-size:.68rem">${l.areaW}×${l.areaH} mm${l.expandable ? '<br><span class="area-exp yes" style="font-size:.58rem">⚡ Powiększ.</span>' : ''}</td>
         <td style="font-size:.68rem">${l.speed || '-'} <span style="font-size:.55rem;color:var(--muted)">mm/min</span></td>
         <td>
@@ -473,7 +497,7 @@ function renderRow(l) {
         <td colspan="10">
             <div class="detail-grid">
                 <div class="di"><div class="di-lbl">Obudowa</div><div class="di-val">${l.enclosed ? '🔒 Zamknięta' : 'Otwarta'}</div></div>
-                <div class="di"><div class="di-lbl">Wielkość plamki</div><div class="di-val">${l.spotSize || '-'}</div></div>
+                <div class="di"><div class="di-lbl">Wielkość plamki</div><div class="di-val" style="line-height:1.6">${formatSpot(l.spotSize)}</div></div>
                 <div class="di"><div class="di-lbl">Długość fali</div><div class="di-val">${l.wavelength || '-'}</div></div>
                 <div class="di"><div class="di-lbl">Prowadnice</div><div class="di-val">${l.linearRails ? '✅ Szyny liniowe' : '⚪ Rolki'}</div></div>
                 <div class="di"><div class="di-lbl">Kamera</div><div class="di-val">${l.camera ? '📷 Tak' : '❌ Brak'}</div></div>
@@ -604,7 +628,7 @@ function openCompare() {
 
     const rows = [
         ['TYP LASERA', 'type'],
-        ['MOC LASERA', 'power', ' W'],
+        ['MOC LASERA', 'power', ''],  // handled specially
         ['OBSZAR ROBOCZY', 'areaW', ' x ', 'areaH', ' mm'],
         ['MAX PRĘDKOŚĆ', 'speed', ' mm/min'],
 		['ROZMIAR PLAMKI', 'spotSize'],
@@ -641,6 +665,10 @@ function openCompare() {
                 val = "❌ Nie";
             } else if (row[1] === 'airAssist') {
                 val = l.airAssist === 'builtin' ? "✅ Zintegrowany" : (l.airAssist === 'option' ? "🟡 Opcja" : "❌ Brak");
+            } else if (row[1] === 'spotSize') {
+                val = formatSpot(l.spotSize) || '-';
+            } else if (row[1] === 'power') {
+                val = formatPower(l.power);
             } else if (row[1] === 'shipFrom') {
                 val = `<span title="Wysyłka również z CN (producent). Przed zakupem sprawdź czy produkt jest dostępny z danego obszaru." style="cursor:help">${l.shipFrom || 'CN'} / CN</span>`;
             } else {
