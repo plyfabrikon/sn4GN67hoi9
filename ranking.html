@@ -459,7 +459,7 @@ function renderRow(l) {
             <div class="mat-chips">${matHtml}</div>
         </td>
         <td><div class="conn-chips">${connIcons}</div></td>
-        <td style="font-size:.68rem">📍 ${l.shipFrom || 'CN'}</td>
+        <td style="font-size:.68rem"><span title="Wysyłka również z CN (producent). Przed zakupem sprawdź czy produkt jest dostępny z danego obszaru." style="cursor:help;">📍 ${l.shipFrom || 'CN'} / CN</span></td>
         <td>
             <div class="action-cell">
                 ${showBuy ? `<a href="${finalLink}" target="_blank" class="btn-aff" style="font-size:.6rem;padding:3px 8px">KUP TERAZ</a>${isOrtur ? `<div style="font-size:.55rem;color:var(--orange);text-align:center;border:1px dashed var(--orange);border-radius:3px;padding:1px">KOD: LASERPROFIT</div>` : ''}` : ''}
@@ -641,6 +641,8 @@ function openCompare() {
                 val = "❌ Nie";
             } else if (row[1] === 'airAssist') {
                 val = l.airAssist === 'builtin' ? "✅ Zintegrowany" : (l.airAssist === 'option' ? "🟡 Opcja" : "❌ Brak");
+            } else if (row[1] === 'shipFrom') {
+                val = `<span title="Wysyłka również z CN (producent). Przed zakupem sprawdź czy produkt jest dostępny z danego obszaru." style="cursor:help">${l.shipFrom || 'CN'} / CN</span>`;
             } else {
                 val = (l[row[1]] || '-') + (row[2] || '');
             }
