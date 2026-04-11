@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LaserProfit – Spec Extractor</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#080c14;--panel:#0f1923;--panel2:#162030;--panel3:#1c2a3e;
+  --orange:#ff6b2b;--orange2:#ff9a5c;--green:#22c55e;--blue:#38bdf8;
+  --red:#ef4444;--yellow:#fbbf24;--text:#e2e8f0;--muted:#4a6080;
+  --border:#1a2840;--font:'Syne',sans-serif;--mono:'JetBrains Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(255,107,43,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,107,43,.025) 1px,transparent 1px);background-size:36px 36px;pointer-events:none;z-index:0;}
+.wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:36px 20px 80px;}
+header{text-align:center;margin-bottom:40px;}
+.logo{font-family:var(--mono);font-size:.6rem;color:var(--orange);border:1px solid rgba(255,107,43,.4);padding:3px 12px;border-radius:20px;display:inline-block;margin-bottom:16px;letter-spacing:2px;}
+h1{font-size:clamp(1.5rem,3.5vw,2.4rem);font-weight:800;margin-bottom:8px;}
+h1 em{color:var(--orange);font-style:normal;}
+.sub{color:var(--muted);font-family:var(--mono);font-size:.72rem;}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:16px;}
+.card-title{font-size:.65rem;color:var(--orange);font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px;font-family:var(--mono);display:flex;align-items:center;gap:8px;}
+.card-title::after{content:'';flex:1;height:1px;background:var(--border);}
+.url-row{display:flex;gap:8px;margin-bottom:14px;}
+.url-in{flex:1;background:var(--bg);border:1.5px solid var(--border);border-radius:9px;color:var(--text);font-family:var(--mono);font-size:.78rem;padding:11px 14px;outline:none;transition:border .2s;}
+.url-in:focus{border-color:var(--orange);}
+.url-in::placeholder{color:var(--muted);}
+.btn{font-family:var(--font);font-weight:700;font-size:.8rem;padding:10px 20px;border-radius:9px;border:none;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:7px;white-space:nowrap;}
+.btn:disabled{opacity:.4;cursor:not-allowed;}
+.btn-primary{background:var(--orange);color:#fff;}
+.btn-primary:hover:not(:disabled){background:var(--orange2);transform:translateY(-1px);}
+.btn-deep{background:var(--panel2);color:var(--blue);border:1.5px solid var(--blue);}
+.btn-deep:hover:not(:disabled){background:rgba(56,189,248,.1);}
+.btn-clear{background:transparent;color:var(--muted);border:1px solid var(--border);}
+.btn-clear:hover{color:var(--red);border-color:var(--red);}
+.btn-sec{background:var(--panel2);color:var(--text);border:1px solid var(--border);}
+.btn-sec:hover{border-color:var(--orange);color:var(--orange);}
+.chip{font-family:var(--mono);font-size:.65rem;padding:4px 11px;border-radius:20px;border:1.5px solid var(--border);background:var(--panel2);color:var(--muted);cursor:pointer;transition:.15s;white-space:nowrap;}
+.chip:hover{border-color:var(--orange);color:var(--text);}
+.chip.active{border-color:var(--orange);background:rgba(255,107,43,.15);color:var(--orange);font-weight:700;}
+.var-chips{display:flex;flex-wrap:wrap;gap:5px;}
+.eu-auto{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:.65rem;color:var(--blue);margin-top:10px;}
+.eu-toggle{width:34px;height:18px;background:rgba(56,189,248,.2);border:1px solid var(--blue);border-radius:20px;cursor:pointer;position:relative;transition:.2s;}
+.eu-toggle::after{content:'';position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:50%;background:var(--blue);transition:.2s;}
+.eu-toggle.on{background:var(--blue);}
+.eu-toggle.on::after{left:18px;background:#fff;}
+#log{background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:0;font-family:var(--mono);font-size:.68rem;max-height:150px;overflow-y:auto;display:none;}
+#log.show{display:block;}
+.log-line{padding:5px 14px;border-bottom:1px solid var(--border);}
+.log-line:last-child{border:none;}
+.log-line.ok{color:var(--green);}
+.log-line.warn{color:var(--yellow);}
+.log-line.err{color:var(--red);}
+.log-line.info{color:var(--blue);}
+.log-line.dim{color:var(--muted);}
+#variantModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:100;align-items:center;justify-content:center;}
+#variantModal.show{display:flex;}
+.modal-box{background:var(--panel);border:1px solid var(--orange);border-radius:16px;padding:28px;max-width:600px;width:90%;max-height:80vh;overflow-y:auto;}
+.modal-title{font-size:1rem;font-weight:800;color:var(--orange);margin-bottom:6px;}
+.modal-sub{font-size:.72rem;color:var(--muted);font-family:var(--mono);margin-bottom:20px;}
+.variant-list{display:flex;flex-direction:column;gap:8px;}
+.variant-opt{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-radius:10px;border:1.5px solid var(--border);cursor:pointer;transition:.15s;background:var(--panel2);}
+.variant-opt:hover{border-color:var(--orange);}
+.variant-opt.selected{border-color:var(--orange);background:rgba(255,107,43,.1);}
+.v-name{font-weight:700;font-size:.85rem;}
+.v-price{font-family:var(--mono);font-size:.75rem;color:var(--orange);}
+.v-tags{display:flex;gap:4px;margin-top:4px;flex-wrap:wrap;}
+.v-tag{font-family:var(--mono);font-size:.55rem;padding:2px 7px;border-radius:4px;}
+.v-tag.eu{background:rgba(56,189,248,.15);color:var(--blue);border:1px solid rgba(56,189,248,.3);}
+.v-tag.ir{background:rgba(251,191,36,.1);color:var(--yellow);border:1px solid rgba(251,191,36,.3);}
+.v-tag.air{background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.3);}
+.modal-footer{display:flex;gap:8px;margin-top:18px;}
+#results{display:none;}
+#results.show{display:block;}
+.res-header{background:linear-gradient(135deg,var(--panel2),var(--panel3));border:1px solid var(--border);border-radius:14px;padding:20px 22px;margin-bottom:12px;display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap;}
+.res-badge{font-family:var(--mono);font-size:.6rem;padding:3px 10px;border-radius:20px;}
+.res-badge.brand{background:rgba(255,107,43,.15);color:var(--orange);border:1px solid rgba(255,107,43,.3);}
+.res-badge.eu-b{background:rgba(56,189,248,.1);color:var(--blue);border:1px solid rgba(56,189,248,.3);}
+.res-badge.power{background:rgba(34,197,94,.1);color:var(--green);border:1px solid rgba(34,197,94,.3);}
+.res-badge.ir{background:rgba(251,191,36,.1);color:var(--yellow);border:1px solid rgba(251,191,36,.3);}
+.res-name{font-size:1.05rem;font-weight:800;}
+.confidence{font-family:var(--mono);font-size:.65rem;margin-left:auto;text-align:right;}
+.confidence.high{color:var(--green);}
+.confidence.mid{color:var(--yellow);}
+.confidence.low{color:var(--red);}
+.fields-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:1px;background:var(--border);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:12px;}
+.field-item{background:var(--panel);padding:13px 16px;transition:background .15s;position:relative;}
+.field-item:hover{background:var(--panel2);}
+.field-item.uncertain{background:rgba(251,191,36,.04);}
+.field-item.uncertain::after{content:'?';position:absolute;top:8px;right:10px;color:var(--yellow);font-size:.6rem;font-family:var(--mono);}
+.f-name{font-size:.55rem;color:var(--orange);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;font-family:var(--mono);}
+.f-val{background:transparent;border:none;border-bottom:1px dashed var(--border);color:var(--text);font-family:var(--mono);font-size:.78rem;width:100%;outline:none;padding:2px 0;transition:border .2s;}
+.f-val:focus{border-color:var(--orange);}
+.f-val.empty{color:var(--muted);}
+.tsv-box{padding:20px;}
+.tsv-label{font-family:var(--mono);font-size:.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+.tsv-out{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px 14px;font-family:var(--mono);font-size:.68rem;color:var(--orange2);word-break:break-all;white-space:pre-wrap;max-height:100px;overflow-y:auto;line-height:1.9;}
+.actions{display:flex;gap:8px;padding:14px 20px;border-top:1px solid var(--border);flex-wrap:wrap;}
+.btn-copy{background:var(--orange);color:#fff;}
+.btn-copy:hover{background:var(--orange2);}
+.btn-copy.ok{background:var(--green);}
+@media(max-width:580px){.url-row{flex-direction:column;}.fields-grid{grid-template-columns:1fr 1fr;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="logo">⚡ LASERPROFIT.EU</div>
+  <h1>Laser <em>Spec</em> Extractor</h1>
+  <p class="sub">// wklej URL → wybierz wariant EU → gotowy wiersz do Google Sheets</p>
+</header>
+
+<div class="card">
+  <div class="card-title">🔗 URL produktu</div>
+  <div class="url-row">
+    <input type="url" id="urlIn" class="url-in" placeholder="https://ortur.net/products/ortur-h20-laser-engraver-cutter-machine">
+    <button class="btn btn-primary" id="btnFetch" onclick="step1()">⚡ Analizuj</button>
+  </div>
+  <div class="eu-auto">
+    <div class="eu-toggle on" id="euToggle" onclick="toggleEU()"></div>
+    <span id="euLabel">Filtruj tylko warianty EU (220V) — włączony</span>
+  </div>
+  <div style="margin-top:16px;">
+    <div class="card-title">⚡ Preferowana moc</div>
+    <div class="var-chips" id="pwChips">
+      <span class="chip active" data-pw="any" onclick="setPW(this)">Wszystkie</span>
+      <span class="chip" data-pw="5" onclick="setPW(this)">5W</span>
+      <span class="chip" data-pw="10" onclick="setPW(this)">10W</span>
+      <span class="chip" data-pw="20" onclick="setPW(this)">20W</span>
+      <span class="chip" data-pw="30" onclick="setPW(this)">30W</span>
+      <span class="chip" data-pw="40" onclick="setPW(this)">40W</span>
+      <span class="chip" data-pw="55" onclick="setPW(this)">55W+</span>
+    </div>
+  </div>
+</div>
+
+<div id="log" class="card" style="padding:0;overflow:hidden;"></div>
+
+<!-- VARIANT MODAL -->
+<div id="variantModal">
+  <div class="modal-box">
+    <div class="modal-title">🇪🇺 Wybierz wariant EU</div>
+    <div class="modal-sub" id="modalSub"></div>
+    <div class="variant-list" id="variantList"></div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" onclick="confirmVariant()">✅ Użyj tego wariantu</button>
+      <button class="btn btn-clear" onclick="closeModal()">Anuluj</button>
+    </div>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div id="results">
+  <div class="res-header" id="resHeader"></div>
+  <div class="fields-grid" id="fieldsGrid"></div>
+  <div class="card" style="padding:0;overflow:hidden;">
+    <div class="tsv-box">
+      <div class="tsv-label">// gotowy wiersz z tabulatorami → wklej bezpośrednio do Google Sheets</div>
+      <div class="tsv-out" id="tsvOut"></div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-copy" id="btnCopy" onclick="copyTSV()">📋 Kopiuj do Sheets</button>
+      <button class="btn btn-sec" onclick="copyCSV()">💾 Kopiuj CSV</button>
+      <button class="btn btn-deep" id="btnDeep" onclick="deepSearch()" style="display:none">🔍 Szukaj głębiej</button>
+      <button class="btn btn-clear" style="margin-left:auto" onclick="resetAll()">↺ Nowy URL</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+const COLUMNS=[
+  {key:'id',label:'id'},{key:'brand',label:'Marka'},{key:'name',label:'Nazwa'},
+  {key:'type',label:'Rodzaj lasera'},{key:'power',label:'Moc'},
+  {key:'areaW',label:'Wielkość (szer.)'},{key:'areaH',label:'WielkośćH (wys.)'},
+  {key:'expandable',label:'Możliwość powiększenia'},{key:'speed',label:'Max Prędkość'},
+  {key:'cutMats',label:'Materiały - cięcie'},{key:'engMats',label:'Materiały - grawerowanie'},
+  {key:'conn',label:'Połączenie'},{key:'airAssist',label:'Powietrze'},
+  {key:'enclosed',label:'Obudowa'},{key:'shipFrom',label:'Wysyłka'},
+  {key:'spotSize',label:'Wielkość plamki lasera'},{key:'wavelength',label:'Długość fali'},
+  {key:'warranty',label:'Gwarancja'},{key:'rails',label:'Rodzaj prowadnic'},
+  {key:'safety',label:'Bezpieczeństwo'},{key:'camera',label:'Wbudowana kamera'},
+  {key:'affLink',label:'Link afiliacyjny'},
+];
+const SHIP={Ortur:'Niemcy / Hiszpania',xTool:'Niemcy (EU)',Sculpfun:'Niemcy (EU)',
+  Creality:'Niemcy / Czechy',Atomstack:'CN/EU','Two Trees':'CN',Acmer:'CN',Longer:'CN',ComMarker:'CN/DE'};
+
+let S={url:'',euOnly:true,prefPW:'any',variants:[],selIdx:0,selVariants:[],data:{}};
+
+function log(msg,type='dim'){
+  const el=document.getElementById('log');
+  el.classList.add('show');
+  const d=document.createElement('div');
+  d.className='log-line '+type;
+  const t=new Date().toLocaleTimeString('pl',{hour12:false});
+  d.textContent=t+'  '+msg;
+  el.appendChild(d);
+  el.scrollTop=el.scrollHeight;
+}
+function clrLog(){const el=document.getElementById('log');el.innerHTML='';el.classList.remove('show');}
+function toggleEU(){
+  S.euOnly=!S.euOnly;
+  document.getElementById('euToggle').classList.toggle('on',S.euOnly);
+  document.getElementById('euLabel').textContent='Filtruj tylko warianty EU (220V) — '+(S.euOnly?'włączony':'wyłączony');
+}
+function setPW(el){
+  document.querySelectorAll('#pwChips .chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');S.prefPW=el.dataset.pw;
+}
+function detectBrand(url){
+  const u=url.toLowerCase();
+  if(u.includes('ortur'))return'Ortur';if(u.includes('xtool'))return'xTool';
+  if(u.includes('sculpfun'))return'Sculpfun';if(u.includes('atomstack'))return'Atomstack';
+  if(u.includes('creality'))return'Creality';if(u.includes('acmer'))return'Acmer';
+  if(u.includes('twotrees')||u.includes('two-trees'))return'Two Trees';
+  if(u.includes('longer'))return'Longer';if(u.includes('commarker'))return'ComMarker';
+  return'';
+}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+async function step1(){
+  const url=document.getElementById('urlIn').value.trim();
+  if(!url.startsWith('http')){log('❌ Podaj poprawny URL','err');return;}
+  S.url=url;clrLog();
+  document.getElementById('results').classList.remove('show');
+  document.getElementById('btnFetch').disabled=true;
+  document.getElementById('btnFetch').textContent='⏳ Analizuję...';
+  log('📡 Wysyłam zapytanie do Claude AI...','info');
+  log('🇪🇺 Filtr EU: '+(S.euOnly?'włączony':'wyłączony'),S.euOnly?'ok':'warn');
+  if(S.prefPW!=='any') log('⚡ Preferowana moc: '+S.prefPW+'W','info');
+
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:2000,
+        messages:[{role:'user',content:`Przeanalizuj dokładnie stronę produktu lasera: ${url}
+
+Zwróć JSON z listą WSZYSTKICH wariantów produktu. Każdy wariant to osobna kombinacja mocy + wtyczki + ew. modułu IR.
+
+Format odpowiedzi (TYLKO JSON, bez żadnego tekstu):
+{
+  "brand": "np. Ortur",
+  "variants": [
+    {
+      "name": "pełna nazwa np. H20 40W + 2W IR EU(220V)",
+      "power": 40,
+      "hasIR": true,
+      "irPower": 2,
+      "plug": "EU",
+      "isEU": true,
+      "price_usd": 2718,
+      "areaW": 410,
+      "areaH": 275,
+      "speed": 20000,
+      "cutMats": "sklejka;sosnowe deski;czarna plexa",
+      "engMats": "drewno;skóra;ceramika;szkło;metal powlekany;kamień",
+      "spotSize": "0.08x0.08mm",
+      "wavelength": "455nm",
+      "airAssist": "builtin",
+      "enclosed": true,
+      "camera": true,
+      "expandable": false,
+      "conn": "USB;WiFi;SD",
+      "rails": "Szyny liniowe",
+      "safety": "Flame, Tilt, E-Stop, Lid-stop",
+      "warranty": 12,
+      "shipFrom": "Niemcy / Hiszpania",
+      "type": "diode"
+    }
+  ]
+}
+
+WAŻNE ZASADY:
+1. Każda kombinacja moc+wtyczka+IR = osobny wariant w liście
+2. isEU=true gdy EU(220V) lub brak wyboru wtyczki (universal)
+3. hasIR=true gdy wariant zawiera dodatkowy moduł IR/1064nm
+4. Obszar roboczy (areaW, areaH) może się RÓŻNIĆ między wariantami mocy - podaj właściwy dla każdego!
+5. Materiały do cięcia i grawerowania podaj po polsku oddzielone średnikiem
+6. airAssist: "builtin" gdy wbudowany, "option" gdy opcjonalny, "none" gdy brak
+7. Zwróć TYLKO JSON`}]
+      })
+    });
+
+    const apiData=await resp.json();
+    const raw=apiData.content?.[0]?.text||'';
+    log('✅ Odpowiedź otrzymana','ok');
+
+    let parsed;
+    try{parsed=JSON.parse(raw.replace(/```json|```/g,'').trim());}
+    catch(e){log('❌ Błąd JSON: '+e.message,'err');log(raw.substring(0,300),'warn');return;}
+
+    S.variants=parsed.variants||[];
+    S.brand=parsed.brand||detectBrand(url);
+    log(`🔍 Wykryto ${S.variants.length} wariantów`,'info');
+
+    // Filtrowanie
+    let filtered=[...S.variants];
+    if(S.euOnly){
+      const eu=filtered.filter(v=>v.isEU||v.plug==='EU'||v.plug==='universal'||!v.plug);
+      if(eu.length>0){filtered=eu;log(`🇪🇺 Po filtrze EU: ${filtered.length} wariantów`,'ok');}
+      else log('⚠️ Brak wariantów EU — pokazuję wszystkie','warn');
+    }
+    if(S.prefPW!=='any'){
+      const pw=parseInt(S.prefPW);
+      const pf=filtered.filter(v=>v.power==pw||(pw>=55&&v.power>=55));
+      if(pf.length>0){filtered=pf;log(`⚡ Po filtrze ${S.prefPW}W: ${filtered.length} wariantów`,'ok');}
+      else log(`⚠️ Brak wariantów ${S.prefPW}W — ignoruję filtr mocy`,'warn');
+    }
+
+    if(filtered.length===0){log('❌ Brak wariantów po filtrowaniu','err');return;}
+
+    S.selVariants=filtered;
+    if(filtered.length===1){
+      S.selIdx=0;
+      log('✅ Jeden wariant pasuje automatycznie: '+filtered[0].name,'ok');
+      buildResult();
+    } else {
+      log(`📋 Znaleziono ${filtered.length} wariantów — wybierz właściwy`,'info');
+      showModal(filtered);
+    }
+  }catch(err){log('❌ Błąd: '+err.message,'err');}
+  finally{
+    document.getElementById('btnFetch').disabled=false;
+    document.getElementById('btnFetch').textContent='⚡ Analizuj';
+  }
+}
+
+function showModal(variants){
+  document.getElementById('modalSub').textContent=`Znaleziono ${variants.length} wariantów EU. Kliknij właściwy.`;
+  document.getElementById('variantList').innerHTML=variants.map((v,i)=>{
+    const tags=[];
+    if(v.isEU)tags.push('<span class="v-tag eu">🇪🇺 EU 220V</span>');
+    if(v.hasIR)tags.push('<span class="v-tag ir">+ '+v.irPower+'W IR 1064nm</span>');
+    if(v.airAssist==='builtin')tags.push('<span class="v-tag air">Air Assist</span>');
+    return`<div class="variant-opt${i===0?' selected':''}" onclick="selVar(${i},this)">
+      <div><div class="v-name">${esc(v.name||v.power+'W')}</div>
+      <div class="v-tags">${tags.join('')}</div>
+      ${v.areaW?`<div style="font-family:var(--mono);font-size:.6rem;color:var(--muted);margin-top:4px;">📐 ${v.areaW}×${v.areaH}mm · ⚡${v.speed}mm/min</div>`:''}
+      </div>
+      <div class="v-price">${v.price_usd?'$'+v.price_usd:''}</div>
+    </div>`;
+  }).join('');
+  S.selIdx=0;
+  document.getElementById('variantModal').classList.add('show');
+}
+function selVar(i,el){
+  document.querySelectorAll('.variant-opt').forEach(e=>e.classList.remove('selected'));
+  el.classList.add('selected');S.selIdx=i;
+}
+function confirmVariant(){
+  closeModal();
+  log('✅ Wybrany: '+S.selVariants[S.selIdx].name,'ok');
+  buildResult();
+}
+function closeModal(){document.getElementById('variantModal').classList.remove('show');}
+
+function buildResult(){
+  const v=S.selVariants[S.selIdx];
+  const brand=S.brand||detectBrand(S.url);
+  let name=v.name||(brand+' '+v.power+'W');
+  const baseUrl=S.url.split('?')[0];
+  const aff=brand==='Ortur'?'?ref=nskubuaw':'';
+
+  S.data={
+    id:'',brand,name,
+    type:v.hasIR?'fiber.diode':(v.type||'diode'),
+    power:String(v.power||''),
+    areaW:String(v.areaW||''),areaH:String(v.areaH||''),
+    expandable:v.expandable?'TRUE':'FALSE',
+    speed:String(v.speed||''),
+    cutMats:v.cutMats||'',engMats:v.engMats||'',
+    conn:v.conn||'USB;WiFi',
+    airAssist:v.airAssist||'option',
+    enclosed:v.enclosed?'TRUE':'FALSE',
+    shipFrom:v.shipFrom||SHIP[brand]||'CN',
+    spotSize:v.spotSize||'',wavelength:v.wavelength||'455nm',
+    warranty:String(v.warranty||12),
+    rails:v.rails||'Szyny liniowe',
+    safety:v.safety||'',
+    camera:v.camera?'TRUE':'FALSE',
+    affLink:baseUrl+aff,
+  };
+
+  const filled=COLUMNS.filter(c=>S.data[c.key]&&S.data[c.key]!=='').length;
+  const pct=Math.round(filled/COLUMNS.length*100);
+  const cls=pct>80?'high':pct>60?'mid':'low';
+
+  document.getElementById('resHeader').innerHTML=`
+    <div>
+      <div style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap;">
+        <span class="res-badge brand">${brand}</span>
+        ${v.isEU?'<span class="res-badge eu-b">🇪🇺 EU 220V</span>':''}
+        <span class="res-badge power">⚡ ${v.power}W</span>
+        ${v.hasIR?`<span class="res-badge ir">+ ${v.irPower}W IR</span>`:''}
+      </div>
+      <div class="res-name">${esc(name)}</div>
+      ${v.areaW?`<div style="font-family:var(--mono);font-size:.65rem;color:var(--muted);margin-top:6px;">📐 ${v.areaW}×${v.areaH}mm · ⚡ ${v.speed}mm/min</div>`:''}
+    </div>
+    <div class="confidence ${cls}" style="margin-left:auto;text-align:right;">
+      ${pct}% pewność<br>
+      <span style="font-size:.55rem;color:var(--muted);">${filled}/${COLUMNS.length} pól</span>
+    </div>`;
+
+  document.getElementById('fieldsGrid').innerHTML=COLUMNS.map(col=>{
+    const val=S.data[col.key]??'';
+    const unc=!val||val==='';
+    return`<div class="field-item ${unc?'uncertain':''}">
+      <div class="f-name">${col.label}</div>
+      <input class="f-val ${val?'':'empty'}" id="f_${col.key}"
+        value="${esc(String(val))}" placeholder="—"
+        oninput="onEdit('${col.key}',this.value)">
+    </div>`;
+  }).join('');
+
+  document.getElementById('tsvOut').textContent=buildTSV();
+  document.getElementById('results').classList.add('show');
+  document.getElementById('btnDeep').style.display='flex';
+  document.getElementById('results').scrollIntoView({behavior:'smooth'});
+}
+
+function onEdit(key,val){
+  S.data[key]=val;
+  document.getElementById('tsvOut').textContent=buildTSV();
+}
+
+async function deepSearch(){
+  const missing=COLUMNS.filter(c=>!S.data[c.key]||S.data[c.key]==='');
+  if(!missing.length){log('✅ Wszystkie pola wypełnione!','ok');return;}
+  log(`🔍 Szukam głębiej ${missing.length} brakujących pól: ${missing.map(c=>c.label).join(', ')},'info'`);
+  const btn=document.getElementById('btnDeep');
+  btn.disabled=true;btn.textContent='⏳ Szukam...';
+
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:800,
+        messages:[{role:'user',content:`Dla lasera "${S.data.name}" marki ${S.data.brand}, strona: ${S.url}
+
+Mam już: ${JSON.stringify(S.data)}
+Brakuje: ${missing.map(c=>c.key+' ('+c.label+')').join(', ')}
+
+Znajdź brakujące wartości. Zwróć TYLKO JSON z brakującymi kluczami (pusty string jeśli nieznane):
+{${missing.map(c=>'"'+c.key+'":""').join(',')}}`}]
+      })
+    });
+    const d=await resp.json();
+    const extra=JSON.parse((d.content?.[0]?.text||'{}').replace(/```json|```/g,'').trim());
+    let n=0;
+    for(const[k,v] of Object.entries(extra)){
+      if(v&&v!==''&&!S.data[k]){
+        S.data[k]=v;
+        const inp=document.getElementById('f_'+k);
+        if(inp){inp.value=v;inp.classList.remove('empty');}
+        log(`✅ ${k} = ${v}`,'ok');n++;
+      }
+    }
+    document.getElementById('tsvOut').textContent=buildTSV();
+    log(`🔍 Uzupełniono ${n} z ${missing.length} pól`,n>0?'ok':'warn');
+  }catch(e){log('❌ '+e.message,'err');}
+  btn.disabled=false;btn.innerHTML='🔍 Szukaj głębiej';
+}
+
+function buildTSV(){return COLUMNS.map(c=>S.data[c.key]??'').join('\t');}
+function buildCSV(){return COLUMNS.map(c=>{const v=String(S.data[c.key]??'');return v.includes(',')?`"${v}"`:v;}).join(',');}
+function copyTSV(){
+  navigator.clipboard.writeText(buildTSV()).then(()=>{
+    const b=document.getElementById('btnCopy');
+    b.textContent='✅ Skopiowano!';b.classList.add('ok');
+    setTimeout(()=>{b.innerHTML='📋 Kopiuj do Sheets';b.classList.remove('ok');},2000);
+  });
+}
+function copyCSV(){navigator.clipboard.writeText(buildCSV()).then(()=>log('✅ CSV skopiowane','ok'));}
+function resetAll(){
+  S={url:'',euOnly:true,prefPW:'any',variants:[],selIdx:0,selVariants:[],data:{}};
+  clrLog();
+  document.getElementById('results').classList.remove('show');
+  document.getElementById('urlIn').value='';
+  document.getElementById('btnDeep').style.display='none';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+document.getElementById('urlIn').addEventListener('keydown',e=>{if(e.key==='Enter')step1();});
+</script>
+</body>
+</html>
