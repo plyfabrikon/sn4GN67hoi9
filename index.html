@@ -1358,9 +1358,9 @@ function initFirebase(){
 
 function fbListen(){
     if(!fbInited)return;
-    fbRef.limitToLast(100).on('value',snap=>{
+    fbRef.limitToLast(100).on('value',function(snap){
         chatMessages=[];
-        snap.forEach(c=>chatMessages.push(c.val()));
+        snap.forEach(function(c){chatMessages.push(c.val());});
         renderMessages();
     });
 }
@@ -1502,7 +1502,15 @@ function showChatMain(){
     if(info)info.textContent=chatUser.name+(chatUser.email===MODERATOR_EMAIL?' 👑':'');
     const badge=document.getElementById('onlineBadge');
     if(badge)badge.textContent='● '+(Math.floor(Math.random()*8)+3)+' online';
-    if(fbInited){fbListen();}else{renderMessages();}
+    if(fbInited){
+        fbRef.limitToLast(100).on('value',function(snap){
+            chatMessages=[];
+            snap.forEach(function(c){chatMessages.push(c.val());});
+            renderMessages();
+        });
+    } else {
+        renderMessages();
+    }
 }
 
 function initChat(){
