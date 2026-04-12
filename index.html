@@ -1356,11 +1356,17 @@ function initFirebase(){
     }catch(e){fbInited=false;}
 }
 
+let fbListening=false;
+
 function fbListen(){
-    if(!fbInited)return;
+    if(!fbInited||fbListening)return;
+    fbListening=true;
     fbRef.limitToLast(100).on('value',function(snap){
         chatMessages=[];
-        snap.forEach(function(c){chatMessages.push(c.val());});
+        snap.forEach(function(c){
+            var v=c.val();
+            if(v)chatMessages.push(v);
+        });
         renderMessages();
     });
 }
@@ -1502,15 +1508,8 @@ function showChatMain(){
     if(info)info.textContent=chatUser.name+(chatUser.email===MODERATOR_EMAIL?' 👑':'');
     const badge=document.getElementById('onlineBadge');
     if(badge)badge.textContent='● '+(Math.floor(Math.random()*8)+3)+' online';
-    if(fbInited){
-        fbRef.limitToLast(100).on('value',function(snap){
-            chatMessages=[];
-            snap.forEach(function(c){chatMessages.push(c.val());});
-            renderMessages();
-        });
-    } else {
-        renderMessages();
-    }
+    fbListen();
+    if(!fbInited)renderMessages();
 }
 
 function initChat(){
