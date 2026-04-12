@@ -1326,203 +1326,171 @@ async function detectCountry(){
 }
 
 // ============================================================
-// INIT
+// CZAT – prosta wersja Firebase
 // ============================================================
-const MODERATOR_EMAIL='plyfabrikon@gmail.com';
-const CHAT_USER_KEY='lp_chat_user';
-const CHAT_MSG_KEY='lp_chat_msgs_v2';
-let chatUser=null;
-let chatMessages=[];
-let chatDisplayLang='en';
+var MODERATOR_EMAIL='plyfabrikon@gmail.com';
+var CHAT_USER_KEY='lp_chat_user';
+var chatUser=null;
+var chatDisplayLang='en';
+var chatDb=null;
+var chatRef=null;
 
-// ── FIREBASE ──
-const FB_CONFIG={
+var FB_CONFIG={
     apiKey:"AIzaSyCz1SFsl4OeHIsCf-BCzOToklmiWWI35CU",
     authDomain:"czatlaser.firebaseapp.com",
     databaseURL:"https://czatlaser-default-rtdb.europe-west1.firebasedatabase.app",
     projectId:"czatlaser",
     storageBucket:"czatlaser.firebasestorage.app",
     messagingSenderId:"458317857687",
-    appId:"1:458317857687:web:0955c9be26e6a686d1bad2",
+    appId:"1:458317857687:web:0955c9be26e6a686d1bad2"
 };
-let fbRef=null;
-let fbInited=false;
 
-function initFirebase(){
+function initChat(){
     try{
-        if(!firebase.apps.length)firebase.initializeApp(FB_CONFIG);
-        fbRef=firebase.database().ref('chat/messages');
-        fbInited=true;
-    }catch(e){fbInited=false;}
+        if(!firebase.apps.length) firebase.initializeApp(FB_CONFIG);
+        chatDb=firebase.database();
+        chatRef=chatDb.ref('chat/messages');
+    }catch(e){
+        console.error('Firebase error:',e);
+    }
+    var saved=localStorage.getItem(CHAT_USER_KEY);
+    if(saved){
+        try{chatUser=JSON.parse(saved);}catch{}
+    }
+    if(chatUser&&chatUser.name&&chatUser.email){
+        showChatMain();
+    } else {
+        document.getElementById('chatLogin').style.display='flex';
+        document.getElementById('chatMain').style.display='none';
+    }
 }
 
-let fbListening=false;
+function showChatMain(){
+    document.getElementById('chatLogin').style.display='none';
+    document.getElementById('chatMain').style.display='flex';
+    var info=document.getElementById('chatUserInfo');
+    if(info) info.textContent=chatUser.name+(chatUser.email===MODERATOR_EMAIL?' 👑':'');
+    var badge=document.getElementById('onlineBadge');
+    if(badge) badge.textContent='● '+(Math.floor(Math.random()*8)+3)+' online';
+    startListening();
+}
 
-function fbListen(){
-    if(!fbInited||fbListening)return;
-    fbListening=true;
-    fbRef.limitToLast(100).on('value',function(snap){
-        chatMessages=[];
-        snap.forEach(function(c){
-            var v=c.val();
-            if(v)chatMessages.push(v);
+function startListening(){
+    if(!chatRef) return;
+    chatRef.limitToLast(100).on('value', function(snap){
+        var msgs=[];
+        snap.forEach(function(child){
+            var v=child.val();
+            if(v && v.text) msgs.push(v);
         });
-        renderMessages();
+        renderChat(msgs);
     });
 }
 
-function fbSend(msg){
-    if(fbInited&&fbRef){fbRef.push(msg);}
-    else{chatMessages.push(msg);saveMsgsLocal();renderMessages();}
-}
-
-function fbDelete(id){
-    if(fbInited&&fbRef){
-        fbRef.orderByChild('id').equalTo(id).once('value',snap=>{snap.forEach(c=>c.ref.remove());});
-    } else {
-        chatMessages=chatMessages.filter(m=>m.id!==id);
-        saveMsgsLocal();renderMessages();
+function renderChat(msgs){
+    var wrap=document.getElementById('chatMessages');
+    if(!wrap) return;
+    var html='';
+    for(var i=0;i<msgs.length;i++){
+        var msg=msgs[i];
+        var mine=(chatUser && msg.email===chatUser.email);
+        var initials=(msg.user||'??').slice(0,2).toUpperCase();
+        var t=new Date(msg.time||Date.now()).toLocaleTimeString('en',{hour:'2-digit',minute:'2-digit'});
+        var isMod=(chatUser && chatUser.email===MODERATOR_EMAIL && !mine);
+        var modBtn=isMod?'<button class="cmod-btn" onclick="chatDelete(\''+msg.id+'\')" title="Delete">🗑</button>':'';
+        var txt=escH(msg.text||'');
+        html+='<div class="cmsg'+(mine?' mine':'')+'" id="msg_'+msg.id+'">';
+        html+='<div class="cavatar">'+initials+'</div>';
+        html+='<div><div class="cbubble">';
+        html+='<div class="cname">'+escH(msg.user||'')+' '+modBtn+'</div>';
+        html+='<div class="ctext" id="txt_'+msg.id+'">'+txt+'</div>';
+        if(!mine) html+='<div class="ctranslated" id="tr_'+msg.id+'" style="display:none;font-size:.65rem;color:var(--muted);font-style:italic;margin-top:4px;padding-top:4px;border-top:1px solid var(--border);"></div>';
+        html+='</div><div class="ctime">'+t+'</div></div></div>';
     }
-}
-
-function saveMsgsLocal(){try{localStorage.setItem(CHAT_MSG_KEY,JSON.stringify(chatMessages));}catch{}}
-function loadMsgsLocal(){
-    try{const r=localStorage.getItem(CHAT_MSG_KEY);if(r)chatMessages=JSON.parse(r);}catch{}
-    if(!chatMessages.length){
-        chatMessages=[{
-            id:'welcome',user:'LaserProfit',email:'admin',
-            text:'Welcome! Share your feedback – what should we add or improve? 👋',
-            time:Date.now()-60000
-        }];
-    }
-}
-
-// ── TŁUMACZENIE ──
-const transCache={};
-
-async function translateText(text,targetLang){
-    if(targetLang==='en')return text;
-    const key=text+'|'+targetLang;
-    if(transCache[key])return transCache[key];
-    try{
-        const res=await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|${targetLang}`);
-        const d=await res.json();
-        const tr=d.responseData&&d.responseData.translatedText?d.responseData.translatedText:text;
-        transCache[key]=tr;
-        return tr;
-    }catch{return text;}
-}
-
-function chatSetLang(lang,btn){
-    chatDisplayLang=lang;
-    document.querySelectorAll('.chat-trans-btn').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    renderMessages();
-}
-
-function renderMessages(){
-    const wrap=document.getElementById('chatMessages');
-    if(!wrap)return;
-    const isMod=chatUser&&chatUser.email===MODERATOR_EMAIL;
-    const html=[];
-    for(const msg of chatMessages){
-        const mine=chatUser&&msg.email===chatUser.email;
-        const initials=msg.user.slice(0,2).toUpperCase();
-        const timeStr=new Date(msg.time).toLocaleTimeString('en',{hour:'2-digit',minute:'2-digit'});
-        const modBtn=(isMod&&!mine)?`<button class="cmod-btn" onclick="chatDelete('${msg.id}')" title="Delete">🗑</button>`:'';
-        const translateDiv=!mine?`<div class="ctranslated" id="tr_${msg.id}"></div>`:'';
-        html.push(`<div class="cmsg${mine?' mine':''}" id="msg_${msg.id}">
-            <div class="cavatar">${initials}</div>
-            <div>
-                <div class="cbubble">
-                    <div class="cname">${escHtml(msg.user)} ${modBtn}</div>
-                    <div class="ctext" id="txt_${msg.id}">${escHtml(msg.text)}</div>
-                    ${translateDiv}
-                </div>
-                <div class="ctime">${timeStr}</div>
-            </div>
-        </div>`);
-    }
-    wrap.innerHTML=html.join('');
+    wrap.innerHTML=html;
     wrap.scrollTop=wrap.scrollHeight;
-    if(chatDisplayLang!=='en') translateAllMessages();
+    if(chatDisplayLang!=='en') translateAll(msgs);
 }
 
-async function translateAllMessages(){
-    for(const msg of chatMessages){
-        const el=document.getElementById('tr_'+msg.id);
-        if(!el)continue;
-        const tr=await translateText(msg.text,chatDisplayLang);
-        el.textContent=tr;
-        el.style.display='block';
+function translateAll(msgs){
+    for(var i=0;i<msgs.length;i++){
+        (function(msg){
+            if(chatUser && msg.email===chatUser.email) return;
+            var el=document.getElementById('tr_'+msg.id);
+            if(!el) return;
+            fetch('https://api.mymemory.translated.net/get?q='+encodeURIComponent(msg.text)+'&langpair=en|'+chatDisplayLang)
+            .then(function(r){return r.json();})
+            .then(function(d){
+                if(el && d.responseData && d.responseData.translatedText){
+                    el.textContent=d.responseData.translatedText;
+                    el.style.display='block';
+                }
+            }).catch(function(){});
+        })(msgs[i]);
     }
 }
 
-function escHtml(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function escH(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
 function chatSend(){
-    const inp=document.getElementById('chatInput');
-    const text=(inp.value||'').trim();
-    if(!text||!chatUser)return;
-    const msg={
-        id:Date.now().toString(36)+Math.random().toString(36).slice(2,5),
+    var inp=document.getElementById('chatInput');
+    var text=(inp.value||'').trim();
+    if(!text||!chatUser||!chatRef) return;
+    var msg={
+        id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),
         user:chatUser.name,
         email:chatUser.email,
-        text,
+        text:text,
         time:Date.now()
     };
     inp.value='';
-    fbSend(msg);
+    chatRef.push(msg);
 }
 
 function chatDelete(id){
-    if(!chatUser||chatUser.email!==MODERATOR_EMAIL)return;
-    const msg=chatMessages.find(m=>m.id===id);
-    if(!msg)return;
-    if(confirm(`Delete message from "${msg.user}"?\n\n"${msg.text}"`)){fbDelete(id);}
+    if(!chatUser||chatUser.email!==MODERATOR_EMAIL||!chatRef) return;
+    if(confirm('Delete this message?')){
+        chatRef.orderByChild('id').equalTo(id).once('value',function(snap){
+            snap.forEach(function(c){c.ref.remove();});
+        });
+    }
 }
 
 function chatDoLogin(){
-    const name=(document.getElementById('loginName').value||'').trim();
-    const email=(document.getElementById('loginEmail').value||'').trim();
-    const err=document.getElementById('loginErr');
-    if(!name||!email||!email.includes('@')){err.style.display='block';return;}
+    var name=(document.getElementById('loginName').value||'').trim();
+    var email=(document.getElementById('loginEmail').value||'').trim();
+    var err=document.getElementById('loginErr');
+    if(!name||!email||email.indexOf('@')===-1){
+        err.style.display='block';return;
+    }
     err.style.display='none';
-    chatUser={name,email};
-    try{localStorage.setItem(CHAT_USER_KEY,JSON.stringify(chatUser));}catch{}
+    chatUser={name:name,email:email};
+    localStorage.setItem(CHAT_USER_KEY,JSON.stringify(chatUser));
     showChatMain();
 }
 
 function chatLogout(){
     chatUser=null;
-    try{localStorage.removeItem(CHAT_USER_KEY);}catch{}
+    localStorage.removeItem(CHAT_USER_KEY);
+    if(chatRef) chatRef.off();
     document.getElementById('chatLogin').style.display='flex';
     document.getElementById('chatMain').style.display='none';
 }
 
-function showChatMain(){
-    document.getElementById('chatLogin').style.display='none';
-    const main=document.getElementById('chatMain');
-    main.style.display='flex';
-    const info=document.getElementById('chatUserInfo');
-    if(info)info.textContent=chatUser.name+(chatUser.email===MODERATOR_EMAIL?' 👑':'');
-    const badge=document.getElementById('onlineBadge');
-    if(badge)badge.textContent='● '+(Math.floor(Math.random()*8)+3)+' online';
-    fbListen();
-    if(!fbInited)renderMessages();
+function chatSetLang(lang,btn){
+    chatDisplayLang=lang;
+    document.querySelectorAll('.chat-trans-btn').forEach(function(b){b.classList.remove('active');});
+    btn.classList.add('active');
+    if(chatRef){
+        chatRef.limitToLast(100).once('value',function(snap){
+            var msgs=[];
+            snap.forEach(function(c){var v=c.val();if(v&&v.text)msgs.push(v);});
+            renderChat(msgs);
+        });
+    }
 }
 
-function initChat(){
-    initFirebase();
-    if(!fbInited)loadMsgsLocal();
-    try{
-        const saved=localStorage.getItem(CHAT_USER_KEY);
-        if(saved){chatUser=JSON.parse(saved);showChatMain();return;}
-    }catch{}
-    document.getElementById('chatLogin').style.display='flex';
-}
-
-document.addEventListener('DOMContentLoaded',async()=>{
+document.addEventListener('DOMContentLoaded',async function(){
     buildChips();buildNavFlags();applyLang('pl');calcMat();
     await detectCountry();
     applyLang(activeLang);refreshSyms();calcMat();
