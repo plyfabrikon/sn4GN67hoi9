@@ -35,6 +35,8 @@
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"LaserProfit.eu – Lasergravur Preisrechner","url":"https://laserprofit.eu/de/","applicationCategory":"BusinessApplication","operatingSystem":"All","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"}}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <style>
 :root{--bg:#0d1b2e;--card:#132237;--card2:#1a2f47;--orange:#ff6b2b;--navy:#1e3a5f;--text:#e8f0fe;--muted:#7a91b0;--border:#1e3352;--input-bg:#0a1624;--select-bg:#1a2f47;--result-bg:linear-gradient(145deg,#0d1b2e,#132237);--nav-bg:rgba(13,27,46,.97);--font:'Poppins',sans-serif}
 body.light-mode{--bg:#f4f7fb;--card:#fff;--card2:#e8f0f9;--orange:#e8541a;--navy:#1e3a5f;--text:#0f1e30;--muted:#4a5e75;--border:#c8d8eb;--input-bg:#f8fafc;--select-bg:#edf2f8;--result-bg:linear-gradient(145deg,#e8f0fb,#f0f7ff);--nav-bg:rgba(244,247,251,.97)}
@@ -207,6 +209,47 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
     height: 20px;
     width: auto;
 }
+.fb-nav-btn{display:flex;align-items:center;gap:5px;background:#1877F2;color:#fff;text-decoration:none;padding:5px 11px;border-radius:20px;font-size:.7rem;font-weight:700;font-family:var(--font);white-space:nowrap;transition:.25s}
+.fb-nav-btn:hover{background:#1464d8;transform:translateY(-1px)}
+.calc-chat-wrap{display:grid;grid-template-columns:2fr 1fr;gap:18px;align-items:start;margin-top:50px}
+@media(max-width:860px){.calc-chat-wrap{grid-template-columns:1fr}}
+.calc-chat-wrap .calc-section{margin-top:0}
+.chat-panel{background:var(--card);border:2px solid var(--orange);box-shadow:0 10px 36px rgba(0,0,0,.3);border-radius:18px;display:flex;flex-direction:column;height:340px;position:sticky;top:76px}
+.chat-header{padding:16px 18px;border-bottom:1px solid var(--border)}
+.chat-header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.chat-title{font-size:.85rem;font-weight:700;color:var(--orange)}
+.online-badge{font-size:.62rem;background:rgba(34,197,94,.15);color:#22c55e;padding:2px 7px;border-radius:10px;font-weight:700}
+.chat-sub{font-size:.65rem;color:var(--muted);margin-bottom:8px}
+.chat-trans-btns{display:flex;gap:5px;margin-top:6px}
+.chat-trans-btn{font-size:.65rem;padding:3px 10px;border-radius:10px;background:var(--card2);border:1px solid var(--border);color:var(--muted);cursor:pointer;font-family:var(--font);font-weight:700;transition:.2s}
+.chat-trans-btn:hover{border-color:var(--orange);color:var(--orange)}
+.chat-trans-btn.active{background:rgba(255,107,43,.15);border-color:var(--orange);color:var(--orange)}
+.chat-messages{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;scroll-behavior:smooth}
+.chat-messages::-webkit-scrollbar{width:4px}.chat-messages::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+.cmsg{display:flex;gap:7px;align-items:flex-start}
+.cmsg.mine{flex-direction:row-reverse}
+.cavatar{width:26px;height:26px;border-radius:50%;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:.55rem;font-weight:700;color:var(--orange);flex-shrink:0;border:1px solid var(--border)}
+.cbubble{background:var(--card2);border-radius:10px 10px 10px 2px;padding:7px 10px;max-width:90%}
+.cmsg.mine .cbubble{background:rgba(255,107,43,.18);border-radius:10px 10px 2px 10px}
+.cname{font-size:.58rem;color:var(--orange);font-weight:700;margin-bottom:2px}
+.cmsg.mine .cname{display:none}
+.ctext{font-size:.72rem;color:var(--text);line-height:1.45}
+.cmod-btn{font-size:.55rem;color:#f87171;cursor:pointer;opacity:0;transition:.2s;margin-left:4px;background:none;border:none;font-family:var(--font)}
+.cmsg:hover .cmod-btn{opacity:1}
+.chat-footer{padding:10px 12px;border-top:1px solid var(--border)}
+.chat-input-row{display:flex;gap:6px;align-items:center}
+.chat-input{flex:1;border:1px solid var(--border);border-radius:8px;padding:7px 10px;font-size:.72rem;background:var(--input-bg);color:var(--text);font-family:var(--font)}
+.chat-input:focus{outline:none;border-color:var(--orange)}
+.chat-send{background:var(--orange);border:none;border-radius:8px;padding:7px 12px;color:#fff;font-size:.72rem;cursor:pointer;font-family:var(--font);font-weight:700}
+.chat-send:hover{opacity:.88}
+.chat-login{padding:24px 20px;display:flex;flex-direction:column;gap:10px;flex:1;justify-content:center}
+.chat-login h3{font-size:.85rem;color:var(--orange);font-weight:700;text-align:center}
+.chat-login p{font-size:.68rem;color:var(--muted);text-align:center;line-height:1.5}
+.chat-login input{width:100%;padding:8px 10px;border-radius:7px;border:1px solid var(--border);background:var(--input-bg);color:var(--text);font-size:.76rem;font-family:var(--font)}
+.chat-login input:focus{outline:none;border-color:var(--orange)}
+.chat-login-btn{background:var(--orange);border:none;border-radius:7px;padding:9px;color:#fff;font-size:.76rem;cursor:pointer;font-family:var(--font);font-weight:700;width:100%}
+.chat-login-btn:hover{opacity:.88}
+.chat-login-err{font-size:.65rem;color:#f87171;text-align:center;display:none}
 </style>
 </head>
 <body>
@@ -218,6 +261,10 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
         <a href="#rechner" class="nav-link" data-t="nav_calc">🧮 RECHNER</a>
         <a href="#dateien" class="nav-link" data-t="nav_files">📂 DATEIEN</a>
         <a href="#sicherheit" class="nav-link danger" data-t="nav_bhp">⚠️ SICHERHEIT</a>
+        <a href="https://www.facebook.com/profile.php?id=61574308963740" target="_blank" rel="noopener" class="fb-nav-btn" title="Folgen Sie uns auf Facebook">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+            FB
+        </a>
         <button class="theme-btn" onclick="toggleTheme()" id="themeBtn" data-t="theme_light">☀️ Heller Modus</button>
 
         <!-- ── Seitensprachen-Umschalter (Links zu separaten Seiten) ── -->
@@ -299,6 +346,7 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
     </div>
 </section>
 
+<div class="calc-chat-wrap">
 <section id="rechner" class="calc-section">
     <h2 data-t="calc_h2">🎯 Laser Preis Studio</h2>
     <p class="calc-sub" data-t="calc_sub">Legen Sie Ihre Tarife fest und sehen Sie Ihren echten Gewinn.</p>
@@ -419,6 +467,45 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
         </div>
     </div>
 </section>
+
+<!-- ── CHAT PANEL ── -->
+<div class="chat-panel" id="chatPanel">
+    <div class="chat-login" id="chatLogin">
+        <h3>💬 Community Chat</h3>
+        <p>Name und E-Mail eingeben um beizutreten.<br>Daten werden gespeichert – keine erneute Eingabe nötig.</p>
+        <input type="text" id="loginName" placeholder="Ihr Name (z.B. LaserMaker)" maxlength="30">
+        <input type="email" id="loginEmail" placeholder="E-Mail (nur für Moderator sichtbar)">
+        <div class="chat-login-err" id="loginErr">Bitte alle Felder korrekt ausfüllen.</div>
+        <button class="chat-login-btn" onclick="chatDoLogin()">Chat beitreten →</button>
+        <p style="font-size:.6rem;color:var(--muted);margin-top:4px;">Daten werden nur lokal im Browser gespeichert.</p>
+    </div>
+    <div id="chatMain" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+        <div class="chat-header">
+            <div class="chat-header-top">
+                <span class="chat-title">💬 LaserProfit Community</span>
+                <span class="online-badge" id="onlineBadge">● online</span>
+            </div>
+            <div class="chat-sub">Feedback teilen – was hinzufügen oder ändern?</div>
+            <div class="chat-trans-btns">
+                <span style="font-size:.62rem;color:var(--muted);align-self:center;">Übersetzen:</span>
+                <button class="chat-trans-btn active" onclick="chatSetLang('en',this)">🇬🇧 EN</button>
+                <button class="chat-trans-btn" onclick="chatSetLang('pl',this)">🇵🇱 PL</button>
+                <button class="chat-trans-btn" onclick="chatSetLang('de',this)">🇩🇪 DE</button>
+                <span style="font-size:.58rem;color:var(--muted);margin-left:auto;align-self:center;" id="chatUserInfo"></span>
+                <button id="clearHistoryBtn" onclick="clearChatHistory()" style="display:none;font-size:.58rem;color:#f87171;background:none;border:none;cursor:pointer;font-family:var(--font);">🗑 alles löschen</button>
+                <button onclick="chatLogout()" style="font-size:.58rem;color:var(--muted);background:none;border:none;cursor:pointer;font-family:var(--font);">logout</button>
+            </div>
+        </div>
+        <div class="chat-messages" id="chatMessages"></div>
+        <div class="chat-footer">
+            <div class="chat-input-row">
+                <input class="chat-input" id="chatInput" placeholder="Write in English..." maxlength="300" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();chatSend();}">
+                <button class="chat-send" onclick="chatSend()">Send</button>
+            </div>
+        </div>
+    </div>
+</div>
+</div><!-- end calc-chat-wrap -->
 
 <section style="margin-top:40px;line-height:1.85;padding:30px;border-radius:16px;background:rgba(255,255,255,.02);border:1px solid var(--border);font-size:.82rem;">
     <h2 style="color:var(--orange);margin-bottom:14px;font-size:.95rem;">Lasergravur und -schneiden berechnen? Kalkulator 2026</h2>
@@ -1104,7 +1191,196 @@ document.addEventListener('DOMContentLoaded',async()=>{
     buildChips();buildNavFlags();applyLang('de');calcMat();
     await detectCountry();
     applyLang(activeLang);refreshSyms();calcMat();
+    initChat();
 });
+
+// ============================================================
+// CZAT – Firebase
+// ============================================================
+var MODERATOR_EMAIL='plyfabrikon@gmail.com';
+var CHAT_USER_KEY='lp_chat_user';
+var chatUser=null;
+var chatDisplayLang='en';
+var chatDb=null;
+var chatRef=null;
+var userIP=null;
+
+var FB_CONFIG={
+    apiKey:"AIzaSyCz1SFsl4OeHIsCf-BCzOToklmiWWI35CU",
+    authDomain:"czatlaser.firebaseapp.com",
+    databaseURL:"https://czatlaser-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId:"czatlaser",
+    storageBucket:"czatlaser.firebasestorage.app",
+    messagingSenderId:"458317857687",
+    appId:"1:458317857687:web:0955c9be26e6a686d1bad2"
+};
+
+function initChat(){
+    try{
+        if(!firebase.apps.length) firebase.initializeApp(FB_CONFIG);
+        chatDb=firebase.database();
+        chatRef=chatDb.ref('chat/messages');
+    }catch(e){console.error('Firebase error:',e);}
+    var saved=localStorage.getItem(CHAT_USER_KEY);
+    if(saved){try{chatUser=JSON.parse(saved);}catch{}}
+    if(chatUser&&chatUser.name&&chatUser.email){showChatMain();}
+    else{document.getElementById('chatLogin').style.display='flex';document.getElementById('chatMain').style.display='none';}
+}
+
+function showChatMain(){
+    document.getElementById('chatLogin').style.display='none';
+    document.getElementById('chatMain').style.display='flex';
+    var info=document.getElementById('chatUserInfo');
+    if(info) info.textContent=chatUser.name+(chatUser.email===MODERATOR_EMAIL?' 👑':'');
+    var clearBtn=document.getElementById('clearHistoryBtn');
+    if(clearBtn&&chatUser.email===MODERATOR_EMAIL) clearBtn.style.display='inline';
+    var badge=document.getElementById('onlineBadge');
+    if(badge) badge.textContent='● '+(Math.floor(Math.random()*8)+3)+' online';
+    if(chatRef){
+        chatRef.limitToLast(100).on('value',function(snap){
+            var msgs=[];
+            snap.forEach(function(child){var v=child.val();if(v&&v.text)msgs.push(v);});
+            renderChat(msgs);
+        });
+    }
+}
+
+function renderChat(msgs){
+    window._lastMsgs=msgs;
+    var wrap=document.getElementById('chatMessages');
+    if(!wrap) return;
+    var html='';
+    for(var i=0;i<msgs.length;i++){
+        var msg=msgs[i];
+        var mine=(chatUser&&msg.email===chatUser.email);
+        var initials=(msg.user||'??').slice(0,2).toUpperCase();
+        var t=new Date(msg.time||Date.now()).toLocaleTimeString('en',{hour:'2-digit',minute:'2-digit'});
+        var isMod=(chatUser&&chatUser.email===MODERATOR_EMAIL&&!mine);
+        var modBtn=isMod?'<button class="cmod-btn" onclick="chatDelete(\''+msg.id+'\')" title="Delete">🗑</button>':'';
+        var txt=escH(msg.text||'');
+        html+='<div class="cmsg'+(mine?' mine':'')+'" id="msg_'+msg.id+'">';
+        html+='<div class="cavatar">'+initials+'</div>';
+        html+='<div><div class="cbubble">';
+        html+='<div class="cname">'+escH(msg.user||'')+' '+modBtn+'</div>';
+        html+='<div class="ctext" id="txt_'+msg.id+'">'+txt+'</div>';
+        if(!mine) html+='<div class="ctranslated" id="tr_'+msg.id+'" style="display:none;font-size:.65rem;color:var(--muted);font-style:italic;margin-top:4px;padding-top:4px;border-top:1px solid var(--border);"></div>';
+        html+='</div><div class="ctime">'+t+'</div></div></div>';
+    }
+    wrap.innerHTML=html;
+    wrap.scrollTop=wrap.scrollHeight;
+    if(chatDisplayLang!=='en') translateAll(msgs);
+}
+
+function translateAll(msgs){
+    for(var i=0;i<msgs.length;i++){
+        (function(msg){
+            if(chatUser&&msg.email===chatUser.email) return;
+            var el=document.getElementById('tr_'+msg.id);
+            if(!el) return;
+            if(chatDisplayLang==='en'){el.style.display='none';return;}
+            if(el.dataset.lang===chatDisplayLang){el.style.display='block';return;}
+            fetch('https://api.mymemory.translated.net/get?q='+encodeURIComponent(msg.text)+'&langpair=en|'+chatDisplayLang)
+            .then(function(r){return r.json();})
+            .then(function(d){
+                if(el&&d.responseData&&d.responseData.translatedText){
+                    el.textContent=d.responseData.translatedText;
+                    el.dataset.lang=chatDisplayLang;
+                    el.style.display='block';
+                }
+            }).catch(function(){});
+        })(msgs[i]);
+    }
+}
+
+function escH(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function getUserIP(callback){
+    if(userIP){callback(userIP);return;}
+    fetch('https://api.ipify.org?format=json')
+    .then(function(r){return r.json();})
+    .then(function(d){userIP=d.ip||'unknown';callback(userIP);})
+    .catch(function(){userIP='unknown_'+Math.random().toString(36).slice(2);callback(userIP);});
+}
+
+function canSendMsg(callback){
+    getUserIP(function(ip){
+        var ipKey=ip.replace(/\./g,'_').replace(/:/g,'_');
+        var limitRef=chatDb.ref('chat/limits/'+ipKey);
+        limitRef.once('value',function(snap){
+            var data=snap.val()||{};
+            var now=Date.now();
+            var times=[];
+            if(data.times){
+                if(Array.isArray(data.times)){times=data.times;}
+                else{Object.keys(data.times).forEach(function(k){times.push(data.times[k]);});}
+            }
+            times=times.filter(function(t){return now-t<86400000;});
+            if(times.length>=2){callback(false);return;}
+            times.push(now);
+            var timesObj={};
+            for(var i=0;i<times.length;i++) timesObj[i]=times[i];
+            limitRef.set({times:timesObj});
+            callback(true);
+        });
+    });
+}
+
+function chatSend(){
+    var inp=document.getElementById('chatInput');
+    var text=(inp.value||'').trim();
+    if(!text||!chatUser||!chatRef) return;
+    if(chatUser.email===MODERATOR_EMAIL){
+        var msg={id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),user:chatUser.name,email:chatUser.email,text:text,time:Date.now()};
+        inp.value='';chatRef.push(msg);return;
+    }
+    var btn=document.querySelector('.chat-send');
+    if(btn){btn.disabled=true;btn.textContent='...';}
+    canSendMsg(function(allowed){
+        if(btn){btn.disabled=false;btn.textContent='Send';}
+        if(!allowed){alert('Max 2 messages per 24 hours per IP.\nThis chat is for improvement suggestions only.');return;}
+        var msg={id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),user:chatUser.name,email:chatUser.email,text:text,time:Date.now()};
+        inp.value='';chatRef.push(msg);
+    });
+}
+
+function chatDelete(id){
+    if(!chatUser||chatUser.email!==MODERATOR_EMAIL||!chatRef) return;
+    if(confirm('Delete this message?')){
+        chatRef.orderByChild('id').equalTo(id).once('value',function(snap){snap.forEach(function(c){c.ref.remove();});});
+    }
+}
+
+function clearChatHistory(){
+    if(!chatUser||chatUser.email!==MODERATOR_EMAIL) return;
+    if(confirm('Delete ALL chat messages? This cannot be undone.')){chatRef.remove();}
+}
+
+function chatDoLogin(){
+    var name=(document.getElementById('loginName').value||'').trim();
+    var email=(document.getElementById('loginEmail').value||'').trim();
+    var err=document.getElementById('loginErr');
+    if(!name||!email||email.indexOf('@')===-1){err.style.display='block';return;}
+    err.style.display='none';
+    chatUser={name:name,email:email};
+    localStorage.setItem(CHAT_USER_KEY,JSON.stringify(chatUser));
+    showChatMain();
+}
+
+function chatLogout(){
+    chatUser=null;
+    localStorage.removeItem(CHAT_USER_KEY);
+    if(chatRef) chatRef.off();
+    document.getElementById('chatLogin').style.display='flex';
+    document.getElementById('chatMain').style.display='none';
+}
+
+function chatSetLang(lang,btn){
+    chatDisplayLang=lang;
+    document.querySelectorAll('.chat-trans-btn').forEach(function(b){b.classList.remove('active');});
+    btn.classList.add('active');
+    document.querySelectorAll('.ctranslated').forEach(function(el){el.style.display='none';el.dataset.lang='';});
+    if(lang!=='en') translateAll(window._lastMsgs||[]);
+}
 </script>
 <!-- ── COOKIE BANNER ── -->
 <div id="cookieBanner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9998;background:var(--card);border-top:2px solid var(--orange);padding:14px 20px;box-shadow:0 -4px 20px rgba(0,0,0,.3);">
