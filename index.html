@@ -166,6 +166,52 @@ summary{font-weight:700;color:var(--orange);font-size:.8rem;list-style:none;curs
 summary::marker{display:none}summary::before{content:'▶  ';font-size:.62rem}
 details[open] summary::before{content:'▼  '}
 details p{margin-top:8px;font-size:.79rem;color:var(--muted)}
+/* ── FB button ── */
+.fb-nav-btn{display:flex;align-items:center;gap:5px;background:#1877F2;color:#fff;text-decoration:none;padding:5px 11px;border-radius:20px;font-size:.7rem;font-weight:700;font-family:var(--font);white-space:nowrap;transition:.25s}
+.fb-nav-btn:hover{background:#1464d8;transform:translateY(-1px)}
+/* ── Kalkulator + czat obok siebie ── */
+.calc-chat-wrap{display:grid;grid-template-columns:2fr 1fr;gap:18px;align-items:start;margin-top:50px}
+@media(max-width:860px){.calc-chat-wrap{grid-template-columns:1fr}}
+.calc-chat-wrap .calc-section{margin-top:0}
+/* ── Panel czatu ── */
+.chat-panel{background:var(--card);border:2px solid var(--orange);box-shadow:0 10px 36px rgba(0,0,0,.3);border-radius:18px;display:flex;flex-direction:column;height:340px;position:sticky;top:76px;overflow:hidden}
+.chat-header{padding:10px 14px;border-bottom:1px solid var(--border);flex-shrink:0}
+.chat-header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.chat-title{font-size:.82rem;font-weight:700;color:var(--orange)}
+.online-badge{font-size:.62rem;background:rgba(34,197,94,.15);color:#22c55e;padding:2px 7px;border-radius:10px;font-weight:700}
+.chat-sub{font-size:.62rem;color:var(--muted);margin-bottom:6px}
+.chat-trans-btns{display:flex;gap:4px;margin-top:4px;flex-wrap:wrap}
+.chat-trans-btn{font-size:.62rem;padding:2px 8px;border-radius:10px;background:var(--card2);border:1px solid var(--border);color:var(--muted);cursor:pointer;font-family:var(--font);font-weight:700;transition:.2s}
+.chat-trans-btn:hover{border-color:var(--orange);color:var(--orange)}
+.chat-trans-btn.active{background:rgba(255,107,43,.15);border-color:var(--orange);color:var(--orange)}
+.chat-messages{flex:1;overflow-y:auto;padding:10px 12px;display:flex;flex-direction:column;gap:6px;scroll-behavior:smooth;min-height:0}
+.chat-messages::-webkit-scrollbar{width:4px}.chat-messages::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+.cmsg{display:flex;gap:7px;align-items:flex-start}
+.cmsg.mine{flex-direction:row-reverse}
+.cavatar{width:26px;height:26px;border-radius:50%;background:var(--card2);display:flex;align-items:center;justify-content:center;font-size:.55rem;font-weight:700;color:var(--orange);flex-shrink:0;border:1px solid var(--border)}
+.cbubble{background:var(--card2);border-radius:10px 10px 10px 2px;padding:7px 10px;max-width:90%}
+.cmsg.mine .cbubble{background:rgba(255,107,43,.18);border-radius:10px 10px 2px 10px}
+.cname{font-size:.58rem;color:var(--orange);font-weight:700;margin-bottom:2px}
+.cmsg.mine .cname{display:none}
+.ctext{font-size:.72rem;color:var(--text);line-height:1.45}
+.ctranslated{font-size:.68rem;color:var(--muted);font-style:italic;margin-top:4px;padding-top:4px;border-top:1px solid var(--border);display:none}
+.ctime{font-size:.55rem;color:var(--muted);margin-top:2px}
+.cmod-btn{font-size:.55rem;color:#f87171;cursor:pointer;opacity:0;transition:.2s;margin-left:4px;background:none;border:none;font-family:var(--font)}
+.cmsg:hover .cmod-btn{opacity:1}
+.chat-footer{padding:8px 12px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:5px;flex-shrink:0}
+.chat-input-row{display:flex;gap:6px;align-items:center}
+.chat-input{flex:1;border:1px solid var(--border);border-radius:8px;padding:7px 10px;font-size:.72rem;background:var(--input-bg);color:var(--text);font-family:var(--font)}
+.chat-input:focus{outline:none;border-color:var(--orange)}
+.chat-send{background:var(--orange);border:none;border-radius:8px;padding:7px 12px;color:#fff;font-size:.72rem;cursor:pointer;font-family:var(--font);font-weight:700;white-space:nowrap}
+.chat-send:hover{opacity:.88}
+.chat-login{padding:24px 20px;display:flex;flex-direction:column;gap:10px;flex:1;justify-content:center}
+.chat-login h3{font-size:.85rem;color:var(--orange);font-weight:700;text-align:center}
+.chat-login p{font-size:.68rem;color:var(--muted);text-align:center;line-height:1.5}
+.chat-login input{width:100%;padding:8px 10px;border-radius:7px;border:1px solid var(--border);background:var(--input-bg);color:var(--text);font-size:.76rem;font-family:var(--font)}
+.chat-login input:focus{outline:none;border-color:var(--orange)}
+.chat-login-btn{background:var(--orange);border:none;border-radius:7px;padding:9px;color:#fff;font-size:.76rem;cursor:pointer;font-family:var(--font);font-weight:700;width:100%}
+.chat-login-btn:hover{opacity:.88}
+.chat-login-err{font-size:.65rem;color:#f87171;text-align:center;display:none}
 footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-top:2px solid var(--orange);background:var(--card);font-size:.77rem}
 .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:9999;align-items:center;justify-content:center}
 .modal-bg.open{display:flex}
@@ -201,6 +247,8 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
     width: auto;
 }
 </style>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 </head>
 <body>
 <nav>
@@ -211,6 +259,10 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
         <a href="#kalkulator" class="nav-link" data-t="nav_calc">🧮 KALKULATOR</a>
         <a href="#zasoby" class="nav-link" data-t="nav_files">📂 DARMOWE PLIKI</a>
         <a href="#bhp" class="nav-link danger" data-t="nav_bhp">⚠️ BHP</a>
+        <a href="https://www.facebook.com/profile.php?id=61574308963740" target="_blank" rel="noopener" class="fb-nav-btn" title="Dołącz do nas na Facebooku">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+            FB
+        </a>
         <button class="theme-btn" onclick="toggleTheme()" id="themeBtn" data-t="theme_light">☀️ Tryb jasny</button>
 
         <!-- ── Linki do wersji językowych (osobne strony) ── -->
@@ -292,6 +344,7 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
     </div>
 </section>
 
+<div class="calc-chat-wrap">
 <section id="kalkulator" class="calc-section">
     <h2 data-t="calc_h2">🎯 Laser Price Studio</h2>
     <p class="calc-sub" data-t="calc_sub">Skonfiguruj własne stawki i zobacz swój realny zysk.</p>
@@ -410,6 +463,46 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
         </div>
     </div>
 </section>
+
+<!-- ── PANEL CZATU ── -->
+<div class="chat-panel" id="chatPanel">
+    <!-- LOGIN -->
+    <div class="chat-login" id="chatLogin">
+        <h3>💬 Community Chat</h3>
+        <p>Enter your name and email to join the chat.<br>Your details are saved – you won't need to enter them again.</p>
+        <input type="text" id="loginName" placeholder="Your name (e.g. MakerKarol)" maxlength="30">
+        <input type="email" id="loginEmail" placeholder="Email (visible to moderator only)">
+        <div class="chat-login-err" id="loginErr">Please fill in all fields correctly.</div>
+        <button class="chat-login-btn" onclick="chatDoLogin()">Join Chat →</button>
+        <p style="font-size:.6rem;color:var(--muted);margin-top:4px;">Your data is stored locally in your browser only.</p>
+    </div>
+    <!-- CZAT GŁÓWNY -->
+    <div id="chatMain" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
+        <div class="chat-header">
+            <div class="chat-header-top">
+                <span class="chat-title">💬 LaserProfit Community</span>
+                <span class="online-badge" id="onlineBadge">● online</span>
+            </div>
+            <div class="chat-sub">Share your feedback – what to add or change?</div>
+            <div class="chat-trans-btns">
+                <span style="font-size:.62rem;color:var(--muted);align-self:center;">Translate:</span>
+                <button class="chat-trans-btn active" id="transEN" onclick="chatSetLang('en',this)">🇬🇧 EN</button>
+                <button class="chat-trans-btn" id="transPL" onclick="chatSetLang('pl',this)">🇵🇱 PL</button>
+                <button class="chat-trans-btn" id="transDE" onclick="chatSetLang('de',this)">🇩🇪 DE</button>
+                <span style="font-size:.58rem;color:var(--muted);margin-left:auto;align-self:center;" id="chatUserInfo"></span>
+                <button onclick="chatLogout()" style="font-size:.58rem;color:var(--muted);background:none;border:none;cursor:pointer;font-family:var(--font);">logout</button>
+            </div>
+        </div>
+        <div class="chat-messages" id="chatMessages"></div>
+        <div class="chat-footer">
+            <div class="chat-input-row">
+                <input class="chat-input" id="chatInput" placeholder="Write in English..." maxlength="300" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();chatSend();}">
+                <button class="chat-send" onclick="chatSend()">Send</button>
+            </div>
+        </div>
+    </div>
+</div>
+</div><!-- end calc-chat-wrap -->
 
 <section style="margin-top:46px;background:rgba(255,255,255,.02);padding:28px 30px;border-radius:16px;border:1px solid var(--border);line-height:1.82;font-size:.82rem;">
     <h2 style="color:var(--orange);margin-bottom:14px;font-size:.95rem;">Jak wycenić grawerowanie i cięcie laserem? Kalkulator 2026</h2>
@@ -1235,11 +1328,193 @@ async function detectCountry(){
 // ============================================================
 // INIT
 // ============================================================
+const MODERATOR_EMAIL='laserprofit.eu@gmail.com';
+const CHAT_USER_KEY='lp_chat_user';
+const CHAT_MSG_KEY='lp_chat_msgs_v2';
+let chatUser=null;
+let chatMessages=[];
+let chatDisplayLang='en';
+
+// ── FIREBASE ──
+const FB_CONFIG={
+    apiKey:"AIzaSyCz1SFsl4OeHIsCf-BCzOToklmiWWI35CU",
+    authDomain:"czatlaser.firebaseapp.com",
+    databaseURL:"https://czatlaser-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId:"czatlaser",
+    storageBucket:"czatlaser.firebasestorage.app",
+    messagingSenderId:"458317857687",
+    appId:"1:458317857687:web:0955c9be26e6a686d1bad2",
+};
+let fbRef=null;
+let fbInited=false;
+
+function initFirebase(){
+    try{
+        if(!firebase.apps.length)firebase.initializeApp(FB_CONFIG);
+        fbRef=firebase.database().ref('chat/messages');
+        fbInited=true;
+    }catch(e){fbInited=false;}
+}
+
+function fbListen(){
+    if(!fbInited)return;
+    fbRef.limitToLast(100).on('value',snap=>{
+        chatMessages=[];
+        snap.forEach(c=>chatMessages.push(c.val()));
+        renderMessages();
+    });
+}
+
+function fbSend(msg){
+    if(fbInited&&fbRef){fbRef.push(msg);}
+    else{chatMessages.push(msg);saveMsgsLocal();renderMessages();}
+}
+
+function fbDelete(id){
+    if(fbInited&&fbRef){
+        fbRef.orderByChild('id').equalTo(id).once('value',snap=>{snap.forEach(c=>c.ref.remove());});
+    } else {
+        chatMessages=chatMessages.filter(m=>m.id!==id);
+        saveMsgsLocal();renderMessages();
+    }
+}
+
+function saveMsgsLocal(){try{localStorage.setItem(CHAT_MSG_KEY,JSON.stringify(chatMessages));}catch{}}
+function loadMsgsLocal(){
+    try{const r=localStorage.getItem(CHAT_MSG_KEY);if(r)chatMessages=JSON.parse(r);}catch{}
+    if(!chatMessages.length){
+        chatMessages=[{
+            id:'welcome',user:'LaserProfit',email:'admin',
+            text:'Welcome! Share your feedback – what should we add or improve? 👋',
+            time:Date.now()-60000
+        }];
+    }
+}
+
+// ── TŁUMACZENIE ──
+const transCache={};
+
+async function translateText(text,targetLang){
+    if(targetLang==='en')return text;
+    const key=text+'|'+targetLang;
+    if(transCache[key])return transCache[key];
+    try{
+        const res=await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|${targetLang}`);
+        const d=await res.json();
+        const tr=d.responseData&&d.responseData.translatedText?d.responseData.translatedText:text;
+        transCache[key]=tr;
+        return tr;
+    }catch{return text;}
+}
+
+async function chatSetLang(lang,btn){
+    chatDisplayLang=lang;
+    document.querySelectorAll('.chat-trans-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const wrap=document.getElementById('chatMessages');
+    if(wrap){wrap.innerHTML='<div style="text-align:center;padding:20px;font-size:.72rem;color:var(--muted);">Translating...</div>';}
+    await renderMessages();
+}
+
+async function renderMessages(){
+    const wrap=document.getElementById('chatMessages');
+    if(!wrap)return;
+    const isMod=chatUser&&chatUser.email===MODERATOR_EMAIL;
+    const html=[];
+    for(const msg of chatMessages){
+        const mine=chatUser&&msg.email===chatUser.email;
+        const initials=msg.user.slice(0,2).toUpperCase();
+        let displayText=msg.text;
+        if(chatDisplayLang!=='en'){
+            displayText=await translateText(msg.text,chatDisplayLang);
+        }
+        const timeStr=new Date(msg.time).toLocaleTimeString('en',{hour:'2-digit',minute:'2-digit'});
+        const modBtn=(isMod&&!mine)?`<button class="cmod-btn" onclick="chatDelete('${msg.id}')" title="Delete">🗑</button>`:'';
+        html.push(`<div class="cmsg${mine?' mine':''}" id="msg_${msg.id}">
+            <div class="cavatar">${initials}</div>
+            <div>
+                <div class="cbubble">
+                    <div class="cname">${escHtml(msg.user)} ${modBtn}</div>
+                    <div class="ctext">${escHtml(displayText)}</div>
+                </div>
+                <div class="ctime">${timeStr}</div>
+            </div>
+        </div>`);
+    }
+    wrap.innerHTML=html.join('');
+    wrap.scrollTop=wrap.scrollHeight;
+}
+
+function escHtml(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function chatSend(){
+    const inp=document.getElementById('chatInput');
+    const text=(inp.value||'').trim();
+    if(!text||!chatUser)return;
+    const msg={
+        id:Date.now().toString(36)+Math.random().toString(36).slice(2,5),
+        user:chatUser.name,
+        email:chatUser.email,
+        text,
+        time:Date.now()
+    };
+    inp.value='';
+    fbSend(msg);
+}
+
+function chatDelete(id){
+    if(!chatUser||chatUser.email!==MODERATOR_EMAIL)return;
+    const msg=chatMessages.find(m=>m.id===id);
+    if(!msg)return;
+    if(confirm(`Delete message from "${msg.user}"?\n\n"${msg.text}"`)){fbDelete(id);}
+}
+
+function chatDoLogin(){
+    const name=(document.getElementById('loginName').value||'').trim();
+    const email=(document.getElementById('loginEmail').value||'').trim();
+    const err=document.getElementById('loginErr');
+    if(!name||!email||!email.includes('@')){err.style.display='block';return;}
+    err.style.display='none';
+    chatUser={name,email};
+    try{localStorage.setItem(CHAT_USER_KEY,JSON.stringify(chatUser));}catch{}
+    showChatMain();
+}
+
+function chatLogout(){
+    chatUser=null;
+    try{localStorage.removeItem(CHAT_USER_KEY);}catch{}
+    document.getElementById('chatLogin').style.display='flex';
+    document.getElementById('chatMain').style.display='none';
+}
+
+function showChatMain(){
+    document.getElementById('chatLogin').style.display='none';
+    const main=document.getElementById('chatMain');
+    main.style.display='flex';
+    const info=document.getElementById('chatUserInfo');
+    if(info)info.textContent=chatUser.name+(chatUser.email===MODERATOR_EMAIL?' 👑':'');
+    const badge=document.getElementById('onlineBadge');
+    if(badge)badge.textContent='● '+(Math.floor(Math.random()*8)+3)+' online';
+    if(fbInited){fbListen();}else{renderMessages();}
+}
+
+function initChat(){
+    initFirebase();
+    if(!fbInited)loadMsgsLocal();
+    try{
+        const saved=localStorage.getItem(CHAT_USER_KEY);
+        if(saved){chatUser=JSON.parse(saved);showChatMain();return;}
+    }catch{}
+    document.getElementById('chatLogin').style.display='flex';
+}
+
 document.addEventListener('DOMContentLoaded',async()=>{
     buildChips();buildNavFlags();applyLang('pl');calcMat();
     await detectCountry();
     applyLang(activeLang);refreshSyms();calcMat();
+    initChat();
 });
+
 </script>
 <!-- ── COOKIE BANNER ── -->
 <div id="cookieBanner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9998;background:var(--card);border-top:2px solid var(--orange);padding:14px 20px;box-shadow:0 -4px 20px rgba(0,0,0,.3);">
