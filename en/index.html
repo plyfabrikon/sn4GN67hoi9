@@ -44,6 +44,7 @@ body.light-mode{--bg:#f4f7fb;--card:#fff;--card2:#e8f0f9;--orange:#e8541a;--navy
 body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.6;transition:background .3s,color .3s;font-size:13.5px}
 nav{background:var(--nav-bg);padding:12px 0;position:sticky;top:0;border-bottom:1px solid var(--border);z-index:200;backdrop-filter:blur(12px)}
 .nav-content{max-width:1060px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;padding:0 20px;gap:10px;flex-wrap:wrap}
+.nav-row2{max-width:1060px;margin:0 auto;display:flex;justify-content:flex-end;align-items:center;padding:5px 20px 8px;gap:6px;border-top:1px solid var(--border)}
 .logo{font-weight:700;font-size:.9rem;color:var(--orange);text-decoration:none;letter-spacing:1.5px}
 .nav-links{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
 .nav-link{color:var(--text);text-decoration:none;font-size:.7rem;font-weight:600;border-bottom:2px solid transparent;transition:.25s;padding-bottom:2px}
@@ -213,7 +214,7 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
     width: auto;
 }
 /* ── FB button ── */
-.fb-nav-btn{display:flex;align-items:center;gap:5px;background:#1877F2;color:#fff;text-decoration:none;padding:5px 11px;border-radius:20px;font-size:.7rem;font-weight:700;font-family:var(--font);white-space:nowrap;transition:.25s}
+.fb-nav-btn{display:flex;align-items:center;gap:4px;background:#1877F2;color:#fff;text-decoration:none;padding:4px 8px;border-radius:20px;font-size:.62rem;font-weight:700;font-family:var(--font);white-space:nowrap;transition:.25s}
 .fb-nav-btn:hover{background:#1464d8;transform:translateY(-1px)}
 /* ── Calc + chat layout ── */
 .calc-chat-wrap{display:grid;grid-template-columns:2fr 1fr;gap:18px;align-items:start;margin-top:50px}
@@ -267,10 +268,6 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
         <a href="#calculator" class="nav-link">🧮 CALCULATOR</a>
         <a href="#files" class="nav-link">📂 FREE FILES</a>
         <a href="#safety" class="nav-link danger">⚠️ SAFETY</a>
-        <a href="https://www.facebook.com/profile.php?id=61574308963740" target="_blank" rel="noopener" class="fb-nav-btn" title="Join us on Facebook">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-            FB
-        </a>
         <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">☀️ Light mode</button>
 
         <!-- ── Page language switcher (links to separate pages) ── -->
@@ -293,6 +290,17 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
             <div class="lang-dd" id="langDd"></div>
         </div>
     </div>
+</div>
+<div class="nav-row2">
+    <span style="font-size:.58rem;color:var(--muted);margin-right:4px;">Follow us:</span>
+    <a href="https://www.facebook.com/profile.php?id=61574308963740" target="_blank" rel="noopener" class="fb-nav-btn" title="LaserProfit on Facebook">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+        LaserProfit.eu
+    </a>
+    <a href="https://www.facebook.com/profile.php?id=61552974866954" target="_blank" rel="noopener" class="fb-nav-btn" title="PlyMakers on Facebook">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+        PlyMakers
+    </a>
 </div>
 </nav>
 <div class="container">
