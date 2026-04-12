@@ -1490,6 +1490,19 @@ function chatSend(){
     var inp=document.getElementById('chatInput');
     var text=(inp.value||'').trim();
     if(!text||!chatUser||!chatRef) return;
+    // Admin has no limits
+    if(chatUser.email===MODERATOR_EMAIL){
+        var msg={
+            id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),
+            user:chatUser.name,
+            email:chatUser.email,
+            text:text,
+            time:Date.now()
+        };
+        inp.value='';
+        chatRef.push(msg);
+        return;
+    }
     var btn=document.querySelector('.chat-send');
     if(btn){btn.disabled=true;btn.textContent='...';}
     canSendMsg(function(allowed){
