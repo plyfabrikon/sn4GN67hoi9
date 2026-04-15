@@ -218,7 +218,7 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
 .modal-bg.open{display:flex}
 .modal-box{background:var(--card);border-radius:14px;padding:28px;max-width:500px;width:90%;border:1px solid var(--orange);position:relative}
 .modal-close{position:absolute;top:12px;right:14px;background:none;border:none;color:var(--muted);font-size:1.2rem;cursor:pointer}
-@media print{html,body{margin:0!important;padding:0!important}@page{margin:1.2cm;size:A4}body *{visibility:hidden}#expertResult,#expertResult *{visibility:visible}#printHeader,#printHeader *{visibility:visible}#printHeader{display:block!important;position:absolute;left:0;top:0;width:100%;padding:20px 20px 0;}#expertResult{position:absolute;left:0;top:0;width:100%;border:none!important;background:#fff!important;color:#000!important;padding:20px!important;margin:0!important;display:block!important}.btn-group,#expertResult .btn,#expertResult button{display:none!important}.profit-box{background:#d1fae5!important}.pb-lbl,#netProfit{color:#065f46!important}#expertBreakdown{background:#f0fdf4!important}.rl{color:#334155!important}.rv{color:#0f172a!important}nav,footer,.lang-wrap,.theme-btn,.settings-bar,iframe{display:none!important}#logoModal{display:none!important}}
+@media print{html,body{margin:0!important;padding:0!important}@page{margin:1.2cm;size:A4}body *{visibility:hidden;position:static!important}#printHeader,#printHeader *{visibility:visible}#expertResult,#expertResult *{visibility:visible}#printHeader{display:block!important;position:static!important;width:100%;padding:0 0 12px 0;border-bottom:2px solid #ff6b2b;margin-bottom:16px;}#expertResult{position:static!important;width:100%;border:none!important;background:#fff!important;color:#000!important;padding:0!important;margin:0!important;display:block!important}.btn-group,#expertResult .btn,#expertResult button{display:none!important}.profit-box{background:#d1fae5!important}.pb-lbl,#netProfit{color:#065f46!important}#expertBreakdown{background:#f0fdf4!important}.rl{color:#334155!important}.rv{color:#0f172a!important}nav,footer,.lang-wrap,.theme-btn,.settings-bar,iframe,#changelogBanner,.chat-panel,.calc-chat-wrap>*:not(#kalkulator){display:none!important}#logoModal{display:none!important}#kalkulator{display:block!important;visibility:visible!important}}
 .btn-coffee-calc {
     display: flex;
     align-items: center;
@@ -616,7 +616,7 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
 
 <!-- ── PRINT HEADER (widoczny tylko przy druku) ── -->
 <div id="printHeader" style="display:none;">
-    <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid #ff6b2b;">
+    <div style="display:flex;align-items:center;gap:16px;">
         <img id="printLogoImg" style="max-height:60px;max-width:180px;object-fit:contain;">
         <div>
             <div id="printCompanyName" style="font-size:1rem;font-weight:700;color:#0d1b2e;"></div>
