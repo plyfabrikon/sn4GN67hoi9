@@ -21,8 +21,8 @@
 <link rel="canonical" href="https://laserprofit.eu/"/>
 <link rel="alternate" hreflang="x-default" href="https://laserprofit.eu/"/>
 <link rel="alternate" hreflang="pl" href="https://laserprofit.eu/"/>
-<link rel="alternate" hreflang="en" href="https://laserprofit.eu/en/"/>
-<link rel="alternate" hreflang="de" href="https://laserprofit.eu/de/"/>
+<link rel="alternate" hreflang="en" href="https://laserprofit.eu/en"/>
+<link rel="alternate" hreflang="de" href="https://laserprofit.eu/de"/>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
 <meta name="theme-color" content="#ff6b2b">
 <meta property="og:type" content="website">
@@ -218,7 +218,7 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
 .modal-bg.open{display:flex}
 .modal-box{background:var(--card);border-radius:14px;padding:28px;max-width:500px;width:90%;border:1px solid var(--orange);position:relative}
 .modal-close{position:absolute;top:12px;right:14px;background:none;border:none;color:var(--muted);font-size:1.2rem;cursor:pointer}
-@media print{html,body{margin:0!important;padding:0!important}@page{margin:1.2cm;size:A4}body *{visibility:hidden}#expertResult,#expertResult *{visibility:visible}#expertResult{position:absolute;left:0;top:0;width:100%;border:none!important;background:#fff!important;color:#000!important;padding:20px!important;margin:0!important;display:block!important}.btn-group,#expertResult .btn,#expertResult button{display:none!important}.profit-box{background:#d1fae5!important}.pb-lbl,#netProfit{color:#065f46!important}#expertBreakdown{background:#f0fdf4!important}.rl{color:#334155!important}.rv{color:#0f172a!important}nav,footer,.lang-wrap,.theme-btn,.settings-bar,iframe{display:none!important}}
+@media print{html,body{margin:0!important;padding:0!important}@page{margin:1.2cm;size:A4}body *{visibility:hidden}#expertResult,#expertResult *{visibility:visible}#printHeader,#printHeader *{visibility:visible}#printHeader{display:block!important;position:absolute;left:0;top:0;width:100%;padding:20px 20px 0;}#expertResult{position:absolute;left:0;top:0;width:100%;border:none!important;background:#fff!important;color:#000!important;padding:20px!important;margin:0!important;display:block!important}.btn-group,#expertResult .btn,#expertResult button{display:none!important}.profit-box{background:#d1fae5!important}.pb-lbl,#netProfit{color:#065f46!important}#expertBreakdown{background:#f0fdf4!important}.rl{color:#334155!important}.rv{color:#0f172a!important}nav,footer,.lang-wrap,.theme-btn,.settings-bar,iframe{display:none!important}#logoModal{display:none!important}}
 .btn-coffee-calc {
     display: flex;
     align-items: center;
@@ -353,6 +353,106 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
 </section>
 
 <div class="calc-chat-wrap">
+
+<!-- ── CHANGELOG BANNER ── -->
+<div id="changelogBanner" style="margin-bottom:18px;background:#0d1b2e;border:1.5px solid var(--orange);border-radius:14px;overflow:hidden;">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:rgba(255,107,43,.08);cursor:pointer;gap:12px;" onclick="toggleChangelog()">
+        <div style="display:flex;align-items:center;gap:10px;">
+            <span style="background:var(--orange);color:#fff;font-size:.58rem;font-weight:700;padding:2px 8px;border-radius:10px;letter-spacing:1px;white-space:nowrap;">v2.6 · kwi 2026</span>
+            <span style="font-size:.75rem;font-weight:700;color:var(--text);">📋 Release Notes – co nowego w kalkulatorze?</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;flex-shrink:0;">
+            <div style="display:flex;gap:6px;">
+                <span style="background:rgba(34,197,94,.15);color:#22c55e;font-size:.6rem;font-weight:700;padding:2px 7px;border-radius:8px;">3 nowe funkcje</span>
+                <span style="background:rgba(59,130,246,.15);color:#60a5fa;font-size:.6rem;font-weight:700;padding:2px 7px;border-radius:8px;">2 poprawki</span>
+            </div>
+            <span id="changelogArrow" style="color:var(--orange);font-size:.9rem;transition:.2s;">▼</span>
+        </div>
+    </div>
+    <div id="changelogBody" style="display:none;padding:16px 18px;border-top:1px solid var(--border);">
+        <!-- v2.6 -->
+        <div style="margin-bottom:16px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+                <span style="background:var(--orange);color:#fff;font-size:.6rem;font-weight:700;padding:2px 9px;border-radius:10px;">v2.6</span>
+                <span style="font-size:.72rem;color:var(--muted);">15 kwietnia 2026</span>
+                <span style="background:rgba(34,197,94,.12);color:#22c55e;font-size:.58rem;padding:1px 7px;border-radius:8px;margin-left:auto;">NAJNOWSZA</span>
+            </div>
+            <div style="display:grid;gap:7px;">
+                <div style="display:flex;gap:8px;align-items:flex-start;">
+                    <span style="background:rgba(34,197,94,.15);color:#22c55e;font-size:.6rem;font-weight:700;padding:1px 6px;border-radius:6px;white-space:nowrap;margin-top:1px;">NOWE</span>
+                    <span style="font-size:.72rem;color:var(--text);line-height:1.5;">🖼️ <b>PDF z własnym logo</b> – generuj profesjonalne wyceny ze swoim brandingiem. Logo zapisywane lokalnie w przeglądarce.</span>
+                </div>
+                <div style="display:flex;gap:8px;align-items:flex-start;">
+                    <span style="background:rgba(34,197,94,.15);color:#22c55e;font-size:.6rem;font-weight:700;padding:1px 6px;border-radius:6px;white-space:nowrap;margin-top:1px;">NOWE</span>
+                    <span style="font-size:.72rem;color:var(--text);line-height:1.5;">💰 <b>Kalkulator platform sprzedażowych</b> – oblicz realny zysk po prowizjach Allegro (8 kategorii) i Etsy (6,5% + 3%).</span>
+                </div>
+                <div style="display:flex;gap:8px;align-items:flex-start;">
+                    <span style="background:rgba(34,197,94,.15);color:#22c55e;font-size:.6rem;font-weight:700;padding:1px 6px;border-radius:6px;white-space:nowrap;margin-top:1px;">NOWE</span>
+                    <span style="font-size:.72rem;color:var(--text);line-height:1.5;">💬 <b>Community Chat</b> – czat społecznościowy w czasie rzeczywistym z tłumaczeniem EN/PL/DE.</span>
+                </div>
+                <div style="display:flex;gap:8px;align-items:flex-start;">
+                    <span style="background:rgba(59,130,246,.15);color:#60a5fa;font-size:.6rem;font-weight:700;padding:1px 6px;border-radius:6px;white-space:nowrap;margin-top:1px;">POPRAWKA</span>
+                    <span style="font-size:.72rem;color:var(--muted);line-height:1.5;">Naprawiono indeksowanie Google dla wersji EN i DE – poprawione canonical URL i sitemap.</span>
+                </div>
+                <div style="display:flex;gap:8px;align-items:flex-start;">
+                    <span style="background:rgba(59,130,246,.15);color:#60a5fa;font-size:.6rem;font-weight:700;padding:1px 6px;border-radius:6px;white-space:nowrap;margin-top:1px;">POPRAWKA</span>
+                    <span style="font-size:.72rem;color:var(--muted);line-height:1.5;">Nawigacja – oba przyciski Facebook przeniesione do osobnej linii pod flagami językowymi.</span>
+                </div>
+            </div>
+        </div>
+        <!-- v2.5 -->
+        <div style="margin-bottom:16px;padding-top:14px;border-top:1px solid var(--border);">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+                <span style="background:#334155;color:#94a3b8;font-size:.6rem;font-weight:700;padding:2px 9px;border-radius:10px;">v2.5</span>
+                <span style="font-size:.72rem;color:var(--muted);">4 kwietnia 2026</span>
+            </div>
+            <div style="display:grid;gap:7px;">
+                <div style="display:flex;gap:8px;align-items:flex-start;">
+                    <span style="background:rgba(34,197,94,.15);color:#22c55e;font-size:.6rem;font-weight:700;padding:1px 6px;border-radius:6px;white-space:nowrap;margin-top:1px;">NOWE</span>
+                    <span style="font-size:.72rem;color:var(--text);line-height:1.5;">🌍 <b>Wersje językowe PL/EN/DE</b> jako osobne strony – lepsza optymalizacja SEO i dedykowane URL dla każdego języka.</span>
+                </div>
+                <div style="display:flex;gap:8px;align-items:flex-start;">
+                    <span style="background:rgba(34,197,94,.15);color:#22c55e;font-size:.6rem;font-weight:700;padding:1px 6px;border-radius:6px;white-space:nowrap;margin-top:1px;">NOWE</span>
+                    <span style="font-size:.72rem;color:var(--text);line-height:1.5;">📐 <b>Kalkulator zużycia materiału</b> – automatyczne przeliczanie kosztu sklejki/akrylu na podstawie wymiarów projektu.</span>
+                </div>
+                <div style="display:flex;gap:8px;align-items:flex-start;">
+                    <span style="background:rgba(251,191,36,.15);color:#fbbf24;font-size:.6rem;font-weight:700;padding:1px 6px;border-radius:6px;white-space:nowrap;margin-top:1px;">ZMIANA</span>
+                    <span style="font-size:.72rem;color:var(--muted);line-height:1.5;">Zaktualizowano 14 tłumaczeń – poprawiono błędy językowe w wersji norweskiej, szwedzkiej i czeskiej.</span>
+                </div>
+            </div>
+        </div>
+        <!-- v2.4 -->
+        <div style="padding-top:14px;border-top:1px solid var(--border);">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+                <span style="background:#334155;color:#94a3b8;font-size:.6rem;font-weight:700;padding:2px 9px;border-radius:10px;">v2.4</span>
+                <span style="font-size:.72rem;color:var(--muted);">18 marca 2026</span>
+            </div>
+            <div style="display:grid;gap:7px;">
+                <div style="display:flex;gap:8px;align-items:flex-start;">
+                    <span style="background:rgba(34,197,94,.15);color:#22c55e;font-size:.6rem;font-weight:700;padding:1px 6px;border-radius:6px;white-space:nowrap;margin-top:1px;">NOWE</span>
+                    <span style="font-size:.72rem;color:var(--text);line-height:1.5;">⚡ <b>12 walut w czasie rzeczywistym</b> – USD, EUR, GBP, CHF, CZK, UAH i więcej z automatyczną konwersją.</span>
+                </div>
+                <div style="display:flex;gap:8px;align-items:flex-start;">
+                    <span style="background:rgba(34,197,94,.15);color:#22c55e;font-size:.6rem;font-weight:700;padding:1px 6px;border-radius:6px;white-space:nowrap;margin-top:1px;">NOWE</span>
+                    <span style="font-size:.72rem;color:var(--text);line-height:1.5;">🚀 <b>Opcje ekspresowe i wykończenie</b> – malowanie, lakierowanie, grawerowanie dwustronne z automatyczną dopłatą.</span>
+                </div>
+                <div style="display:flex;gap:8px;align-items:flex-start;">
+                    <span style="background:rgba(251,191,36,.15);color:#fbbf24;font-size:.6rem;font-weight:700;padding:1px 6px;border-radius:6px;white-space:nowrap;margin-top:1px;">ZMIANA</span>
+                    <span style="font-size:.72rem;color:var(--muted);line-height:1.5;">Dodano 47 nowych modeli laserów do bazy – Atomstack, Sculpfun, OMTech, Thunder Laser.</span>
+                </div>
+            </div>
+        </div>
+        <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+            <span style="font-size:.62rem;color:var(--muted);">LaserProfit.eu · darmowy kalkulator wyceny grawerowania laserem</span>
+            <div style="display:flex;gap:10px;">
+                <span style="font-size:.62rem;color:var(--muted);">📊 <b style="color:var(--text);">47</b> modeli laserów</span>
+                <span style="font-size:.62rem;color:var(--muted);">🌍 <b style="color:var(--text);">14</b> języków</span>
+                <span style="font-size:.62rem;color:var(--muted);">💱 <b style="color:var(--text);">12</b> walut</span>
+            </div>
+        </div>
+    </div>
+</div>
+
 <section id="kalkulator" class="calc-section">
     <h2 data-t="calc_h2">🎯 Laser Price Studio</h2>
     <p class="calc-sub" data-t="calc_sub">Skonfiguruj własne stawki i zobacz swój realny zysk.</p>
@@ -467,9 +567,53 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
         <div id="expertBreakdown"></div>
         <div class="btn-group" style="display:flex;gap:9px;margin-top:14px;">
             <button onclick="saveTXT()" class="btn" style="background:#334155;flex:1;font-size:.72rem;" data-t="btn_txt">💾 ZAPISZ TXT</button>
-            <button onclick="window.print()" class="btn" style="background:#334155;flex:1;font-size:.72rem;" data-t="btn_pdf">🖼️ ZAPISZ PDF</button>
+            <button onclick="openLogoModal()" class="btn" style="background:var(--orange);flex:1;font-size:.72rem;">🖼️ PDF Z MOIM LOGO</button>
         </div>
     </div>
+
+<!-- ── MODAL LOGO PDF ── -->
+<div id="logoModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:9999;align-items:center;justify-content:center;">
+    <div style="background:#132237;border:2px solid var(--orange);border-radius:16px;padding:28px;max-width:460px;width:92%;position:relative;">
+        <button onclick="closeLogoModal()" style="position:absolute;top:12px;right:14px;background:none;border:none;color:#7a91b0;font-size:1.2rem;cursor:pointer;">✕</button>
+        <h3 style="color:var(--orange);font-size:.92rem;font-weight:700;margin-bottom:6px;">🖼️ Generuj PDF z własnym logo</h3>
+        <p style="font-size:.68rem;color:#7a91b0;margin-bottom:16px;line-height:1.6;">Dodaj logo swojej firmy do raportu. Zostanie umieszczone na górze wydruku.</p>
+
+        <div id="logoDropZone" onclick="document.getElementById('logoFileInput').click()"
+            style="border:2px dashed #1e3352;border-radius:10px;padding:20px;text-align:center;cursor:pointer;margin-bottom:14px;transition:.2s;">
+            <div id="logoPreviewWrap" style="display:none;margin-bottom:10px;">
+                <img id="logoPreviewImg" style="max-height:80px;max-width:100%;border-radius:6px;object-fit:contain;">
+            </div>
+            <div id="logoDropLabel" style="font-size:.72rem;color:#7a91b0;">
+                📁 Kliknij aby wybrać logo lub wklej <kbd style="background:#1e3352;color:#e8f0fe;padding:1px 5px;border-radius:4px;font-size:.6rem;">Ctrl+V</kbd> zrzut ekranu<br>
+                <span style="font-size:.62rem;opacity:.7;">PNG, JPG, SVG · max 2MB · najlepiej poziome</span>
+            </div>
+            <input type="file" id="logoFileInput" accept="image/*" style="display:none;" onchange="handleLogoUpload(this)">
+        </div>
+
+        <div style="margin-bottom:14px;">
+            <label style="font-size:.63rem;color:var(--orange);font-weight:700;text-transform:uppercase;letter-spacing:.8px;display:block;margin-bottom:4px;">Nazwa firmy / podpis (opcjonalnie)</label>
+            <input type="text" id="logoCompanyName" placeholder="np. PlyMakers – grawerowanie laserowe"
+                style="width:100%;padding:8px 10px;border-radius:7px;border:1px solid #1e3352;background:#0a1624;color:#e8f0fe;font-size:.78rem;font-family:var(--font);">
+        </div>
+
+        <div style="display:flex;gap:10px;">
+            <button onclick="closeLogoModal()" style="flex:1;padding:10px;border-radius:8px;border:1px solid #1e3352;background:transparent;color:#7a91b0;font-size:.76rem;cursor:pointer;font-family:var(--font);">Anuluj</button>
+            <button onclick="printWithLogo()" style="flex:2;padding:10px;border-radius:8px;border:none;background:var(--orange);color:#fff;font-size:.78rem;font-weight:700;cursor:pointer;font-family:var(--font);">🖨️ Generuj PDF</button>
+        </div>
+        <p style="font-size:.6rem;color:#7a91b0;margin-top:10px;text-align:center;">Logo jest zapisane tylko lokalnie w Twojej przeglądarce i nie jest nigdzie wysyłane.</p>
+    </div>
+</div>
+
+<!-- ── PRINT HEADER (widoczny tylko przy druku) ── -->
+<div id="printHeader" style="display:none;">
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid #ff6b2b;">
+        <img id="printLogoImg" style="max-height:60px;max-width:180px;object-fit:contain;">
+        <div>
+            <div id="printCompanyName" style="font-size:1rem;font-weight:700;color:#0d1b2e;"></div>
+            <div style="font-size:.72rem;color:#7a91b0;">Wycena grawerowania laserowego · LaserProfit.eu</div>
+        </div>
+    </div>
+</div>
 </section>
 
 <!-- ── PANEL CZATU ── -->
@@ -1250,6 +1394,108 @@ function calculate(){
 // ============================================================
 // ZAPISZ TXT
 // ============================================================
+/* ── CHANGELOG ── */
+function toggleChangelog(){
+    var body = document.getElementById('changelogBody');
+    var arrow = document.getElementById('changelogArrow');
+    var open = body.style.display === 'block';
+    body.style.display = open ? 'none' : 'block';
+    arrow.style.transform = open ? 'rotate(0deg)' : 'rotate(180deg)';
+}
+
+/* ── LOGO PDF MODAL ── */
+var _logoDataURL = localStorage.getItem('lp_logo') || '';
+var _logoCompany = localStorage.getItem('lp_company') || '';
+
+function openLogoModal(){
+    var modal = document.getElementById('logoModal');
+    modal.style.display = 'flex';
+    // Restore saved logo
+    if(_logoDataURL){
+        document.getElementById('logoPreviewImg').src = _logoDataURL;
+        document.getElementById('logoPreviewWrap').style.display = 'block';
+        document.getElementById('logoDropLabel').innerHTML = '✅ Logo wgrane · kliknij aby zmienić';
+    }
+    if(_logoCompany) document.getElementById('logoCompanyName').value = _logoCompany;
+    // Hover effect
+    var dz = document.getElementById('logoDropZone');
+    dz.onmouseenter = function(){dz.style.borderColor='#ff6b2b';};
+    dz.onmouseleave = function(){dz.style.borderColor='#1e3352';};
+
+    // Clipboard paste support
+    document.addEventListener('paste', handleLogoPaste);
+}
+
+function closeLogoModal(){
+    document.getElementById('logoModal').style.display = 'none';
+    document.removeEventListener('paste', handleLogoPaste);
+}
+
+function handleLogoPaste(e){
+    var items = (e.clipboardData || e.originalEvent.clipboardData).items;
+    for(var i=0; i<items.length; i++){
+        if(items[i].type.indexOf('image') !== -1){
+            var blob = items[i].getAsFile();
+            var reader = new FileReader();
+            reader.onload = function(ev){
+                _logoDataURL = ev.target.result;
+                localStorage.setItem('lp_logo', _logoDataURL);
+                document.getElementById('logoPreviewImg').src = _logoDataURL;
+                document.getElementById('logoPreviewWrap').style.display = 'block';
+                document.getElementById('logoDropLabel').innerHTML = '✅ <b>Obraz wklejony ze schowka</b> · kliknij aby zmienić';
+                document.getElementById('logoDropZone').style.borderColor = '#22c55e';
+                setTimeout(function(){ document.getElementById('logoDropZone').style.borderColor = '#1e3352'; }, 1500);
+            };
+            reader.readAsDataURL(blob);
+            e.preventDefault();
+            break;
+        }
+    }
+}
+
+function handleLogoUpload(input){
+    var file = input.files[0];
+    if(!file) return;
+    if(file.size > 2*1024*1024){ alert('Plik za duży! Maksymalny rozmiar to 2MB.'); return; }
+    var reader = new FileReader();
+    reader.onload = function(e){
+        _logoDataURL = e.target.result;
+        localStorage.setItem('lp_logo', _logoDataURL);
+        document.getElementById('logoPreviewImg').src = _logoDataURL;
+        document.getElementById('logoPreviewWrap').style.display = 'block';
+        document.getElementById('logoDropLabel').innerHTML = '✅ <b>'+file.name+'</b> · kliknij aby zmienić';
+    };
+    reader.readAsDataURL(file);
+}
+
+function printWithLogo(){
+    var company = document.getElementById('logoCompanyName').value.trim();
+    _logoCompany = company;
+    localStorage.setItem('lp_company', company);
+
+    // Set print header
+    var ph = document.getElementById('printHeader');
+    var pi = document.getElementById('printLogoImg');
+    var pc = document.getElementById('printCompanyName');
+
+    if(_logoDataURL){
+        pi.src = _logoDataURL;
+        pi.style.display = 'block';
+    } else {
+        pi.style.display = 'none';
+    }
+    pc.textContent = company;
+    ph.style.display = 'block';
+
+    // Close modal and print
+    closeLogoModal();
+    setTimeout(function(){
+        window.print();
+        // After print, re-hide header
+        setTimeout(function(){ ph.style.display = 'none'; }, 1000);
+    }, 300);
+}
+
 function saveTXT(){
     const c=window._last;if(!c){alert('Najpierw oblicz wycenę!');return;}
     const T=getT();const sym=c.sym;
