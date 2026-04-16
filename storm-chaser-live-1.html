@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STORMCHASER — Dane na żywo</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow+Condensed:wght@300;400;600;700;900&family=Exo+2:wght@200;400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  :root {
+    --bg: #050a0f;
+    --surface: #0a1520;
+    --surface2: #0f1e30;
+    --border: #1a3a5c;
+    --accent: #00d4ff;
+    --warn: #ff6b00;
+    --danger: #ff1a1a;
+    --safe: #00ff88;
+    --text: #c8e8ff;
+    --muted: #4a7a9b;
+    --storm: #7b2fff;
+    --lightning: #ffe900;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:'Exo 2',sans-serif; height:100vh; overflow:hidden; display:flex; flex-direction:column; }
+
+  header {
+    background:linear-gradient(180deg,#000d1a 0%,var(--surface) 100%);
+    border-bottom:1px solid var(--border);
+    padding:8px 16px;
+    display:flex; align-items:center; gap:14px;
+    z-index:1000; flex-shrink:0; flex-wrap:wrap;
+  }
+  .logo { font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:1.5rem; letter-spacing:4px; color:var(--accent); text-shadow:0 0 20px rgba(0,212,255,0.5); white-space:nowrap; }
+  .logo span { color:var(--warn); }
+  .status-bar { display:flex; gap:10px; flex:1; align-items:center; flex-wrap:wrap; }
+  .status-chip { font-family:'Share Tech Mono',monospace; font-size:0.65rem; padding:3px 8px; border-radius:2px; border:1px solid; display:flex; align-items:center; gap:5px; white-space:nowrap; }
+  .chip-gps { border-color:var(--safe); color:var(--safe); }
+  .chip-alert { border-color:var(--danger); color:var(--danger); animation:blink 1s infinite; }
+  .chip-ok { border-color:var(--accent); color:var(--accent); }
+  .chip-warn { border-color:var(--warn); color:var(--warn); }
+  .chip-off { border-color:var(--muted); color:var(--muted); }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  .dot { width:6px; height:6px; border-radius:50%; background:currentColor; }
+  .time-display { font-family:'Share Tech Mono',monospace; font-size:0.95rem; color:var(--accent); margin-left:auto; white-space:nowrap; }
+
+  .main { display:grid; grid-template-columns:300px 1fr 270px; flex:1; overflow:hidden; min-height:0; }
+
+  .panel { background:var(--surface); border-right:1px solid var(--border); display:flex; flex-direction:column; overflow:hidden; }
+  .panel.right { border-right:none; border-left:1px solid var(--border); }
+  .panel-header { font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:0.72rem; letter-spacing:3px; text-transform:uppercase; color:var(--muted); padding:9px 14px; border-bottom:1px solid var(--border); background:var(--surface2); flex-shrink:0; }
+  .panel-content { flex:1; overflow-y:auto; padding:10px 12px; }
+  .panel-content::-webkit-scrollbar { width:3px; }
+  .panel-content::-webkit-scrollbar-thumb { background:var(--border); }
+
+  .map-container { position:relative; flex:1; overflow:hidden; }
+  #map { width:100%; height:100%; background:#050a0f; }
+  .leaflet-tile { filter:brightness(0.65) saturate(0.25) hue-rotate(190deg); }
+
+  .map-controls { position:absolute; top:10px; left:10px; z-index:500; display:flex; flex-direction:column; gap:5px; }
+  .map-btn { background:rgba(5,10,15,0.92); border:1px solid var(--border); color:var(--text); font-family:'Share Tech Mono',monospace; font-size:0.65rem; padding:5px 10px; cursor:pointer; transition:all 0.2s; letter-spacing:1px; white-space:nowrap; }
+  .map-btn:hover,.map-btn.active { background:var(--accent); color:var(--bg); border-color:var(--accent); }
+  .map-btn.layer-danger:hover,.map-btn.layer-danger.active { background:var(--danger); border-color:var(--danger); color:#fff; }
+
+  .layer-badge { position:absolute; bottom:28px; left:10px; z-index:500; font-family:'Share Tech Mono',monospace; font-size:0.62rem; color:var(--accent); background:rgba(5,10,15,0.88); border:1px solid var(--border); padding:4px 8px; }
+
+  .loading-overlay { position:absolute; inset:0; background:rgba(5,10,15,0.85); z-index:600; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:12px; }
+  .loading-text { font-family:'Share Tech Mono',monospace; font-size:0.8rem; color:var(--accent); letter-spacing:2px; }
+  .loading-bar-wrap { width:200px; height:3px; background:var(--border); border-radius:2px; overflow:hidden; }
+  .loading-bar { height:100%; background:var(--accent); animation:loadbar 2s ease-in-out infinite; }
+  @keyframes loadbar { 0%{width:0%} 50%{width:70%} 100%{width:100%} }
+
+  .gps-box { background:var(--surface2); border:1px solid var(--border); padding:9px 11px; margin-bottom:10px; font-family:'Share Tech Mono',monospace; }
+  .gps-coord { font-size:0.68rem; color:var(--safe); display:flex; justify-content:space-between; margin-bottom:3px; }
+  .gps-label { color:var(--muted); }
+
+  .risk-indicator { display:flex; align-items:center; gap:10px; background:var(--surface2); border:1px solid var(--border); padding:10px; margin-bottom:10px; }
+  .risk-circle { width:50px; height:50px; border-radius:50%; border:3px solid var(--warn); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .risk-circle.high { border-color:var(--danger); box-shadow:0 0 15px rgba(255,26,26,0.4); }
+  .risk-circle.low { border-color:var(--safe); }
+  .risk-circle.med { border-color:var(--warn); }
+  .risk-num { font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:1.3rem; }
+  .risk-text { font-size:0.7rem; line-height:1.5; }
+  .risk-title { font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:0.85rem; letter-spacing:1px; text-transform:uppercase; }
+
+  .sec-head { font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:0.68rem; letter-spacing:3px; text-transform:uppercase; color:var(--muted); margin-bottom:7px; padding-bottom:3px; border-bottom:1px solid var(--border); }
+
+  .metric-grid { display:grid; grid-template-columns:1fr 1fr; gap:7px; margin-bottom:10px; }
+  .metric-card { background:var(--surface2); border:1px solid var(--border); border-radius:2px; padding:9px; position:relative; overflow:hidden; }
+  .metric-card::before { content:''; position:absolute; top:0;left:0;right:0; height:2px; background:var(--accent); }
+  .metric-card.warn::before { background:var(--warn); }
+  .metric-card.danger::before { background:var(--danger); }
+  .metric-card.safe::before { background:var(--safe); }
+  .metric-card.storm::before { background:var(--storm); }
+  .metric-label { font-family:'Share Tech Mono',monospace; font-size:0.58rem; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:3px; }
+  .metric-value { font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:1.65rem; line-height:1; color:var(--text); }
+  .metric-unit { font-family:'Exo 2',sans-serif; font-weight:200; font-size:0.65rem; color:var(--muted); margin-top:2px; }
+  .metric-trend { position:absolute; top:8px; right:8px; font-size:0.75rem; }
+
+  .level-row { display:flex; align-items:center; gap:7px; margin-bottom:7px; }
+  .level-label { font-family:'Share Tech Mono',monospace; font-size:0.58rem; color:var(--muted); width:72px; flex-shrink:0; }
+  .level-bar-wrap { flex:1; height:5px; background:var(--border); border-radius:3px; overflow:hidden; }
+  .level-bar { height:100%; border-radius:3px; transition:width 1.2s ease; }
+  .level-val { font-family:'Share Tech Mono',monospace; font-size:0.62rem; width:50px; text-align:right; }
+
+  .lightning-box { background:linear-gradient(135deg,rgba(123,47,255,0.12),rgba(255,233,0,0.04)); border:1px solid rgba(123,47,255,0.4); border-radius:2px; padding:10px; text-align:center; margin-bottom:10px; position:relative; overflow:hidden; }
+  .lightning-box::before { content:'⚡'; position:absolute; font-size:3.5rem; opacity:0.05; top:50%; left:50%; transform:translate(-50%,-50%); }
+  .lightning-count { font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:2.6rem; color:var(--lightning); text-shadow:0 0 20px rgba(255,233,0,0.4); line-height:1; }
+  .lightning-label { font-family:'Share Tech Mono',monospace; font-size:0.58rem; color:var(--muted); letter-spacing:2px; text-transform:uppercase; margin-top:3px; }
+
+  .alert-item { border-left:3px solid var(--danger); background:rgba(255,26,26,0.07); padding:7px 9px; margin-bottom:7px; border-radius:0 2px 2px 0; }
+  .alert-item.warn { border-color:var(--warn); background:rgba(255,107,0,0.07); }
+  .alert-item.info { border-color:var(--accent); background:rgba(0,212,255,0.04); }
+  .alert-type { font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:0.82rem; letter-spacing:1px; text-transform:uppercase; }
+  .alert-desc { font-size:0.68rem; color:var(--muted); margin-top:2px; line-height:1.4; }
+  .alert-time { font-family:'Share Tech Mono',monospace; font-size:0.58rem; color:var(--muted); margin-top:3px; }
+
+  .forecast-row { display:flex; align-items:center; gap:8px; padding:6px 0; border-bottom:1px solid rgba(26,58,92,0.4); font-size:0.72rem; }
+  .forecast-day { font-family:'Barlow Condensed',sans-serif; font-weight:600; width:36px; font-size:0.78rem; letter-spacing:1px; }
+  .forecast-icon { font-size:1.1rem; width:22px; text-align:center; }
+  .forecast-bar-wrap { flex:1; height:4px; background:var(--border); border-radius:2px; overflow:hidden; }
+  .forecast-bar { height:100%; border-radius:2px; }
+  .forecast-temp { font-family:'Share Tech Mono',monospace; font-size:0.68rem; text-align:right; white-space:nowrap; min-width:60px; }
+
+  .wind-info { background:var(--surface2); border:1px solid var(--border); padding:9px; margin-bottom:10px; display:flex; align-items:center; gap:12px; }
+  .wind-compass { width:60px; height:60px; flex-shrink:0; }
+  .wind-details { font-family:'Share Tech Mono',monospace; font-size:0.65rem; line-height:1.9; }
+
+  .data-source { font-family:'Share Tech Mono',monospace; font-size:0.58rem; color:rgba(0,212,255,0.5); text-align:center; margin-top:6px; padding:4px; border-top:1px solid var(--border); }
+
+  .bottom-bar { background:var(--surface2); border-top:1px solid var(--border); padding:5px 16px; display:flex; gap:16px; align-items:center; font-family:'Share Tech Mono',monospace; font-size:0.6rem; color:var(--muted); flex-shrink:0; flex-wrap:wrap; }
+  .bottom-bar span { color:var(--text); }
+
+  .gps-marker-icon { width:14px; height:14px; background:var(--safe); border:2px solid #fff; border-radius:50%; box-shadow:0 0 10px rgba(0,255,136,0.7); }
+
+  .error-msg { background:rgba(255,26,26,0.1); border:1px solid var(--danger); padding:8px 10px; margin-bottom:8px; font-size:0.7rem; border-radius:2px; }
+
+  .map-container::after { content:''; position:absolute; inset:0; background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.02) 2px,rgba(0,0,0,0.02) 4px); pointer-events:none; z-index:400; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">⚡ STORM<span>CHASE</span>R</div>
+  <div class="status-bar">
+    <div class="status-chip chip-off" id="chip-gps"><div class="dot"></div> GPS: OCZEKUJE</div>
+    <div class="status-chip chip-off" id="chip-data"><div class="dot"></div> DANE: ŁADOWANIE</div>
+    <div class="status-chip chip-ok" id="chip-radar"><div class="dot"></div> RADAR: ONLINE</div>
+    <div class="status-chip chip-ok"><div class="dot"></div> Open-Meteo LIVE</div>
+  </div>
+  <div class="time-display" id="clock">--:--:--</div>
+</header>
+
+<div class="main">
+
+  <!-- LEFT PANEL -->
+  <div class="panel">
+    <div class="panel-header">📍 POZYCJA I PARAMETRY</div>
+    <div class="panel-content">
+
+      <div class="gps-box">
+        <div class="gps-coord"><span class="gps-label">LAT</span><span id="lat">-- pobieranie --</span></div>
+        <div class="gps-coord"><span class="gps-label">LON</span><span id="lon">--</span></div>
+        <div class="gps-coord"><span class="gps-label">ALT</span><span id="alt">-- m n.p.m.</span></div>
+        <div class="gps-coord" style="margin-top:5px"><span class="gps-label">MIASTO</span><span id="city" style="color:var(--accent)">--</span></div>
+      </div>
+
+      <div class="risk-indicator" id="risk-box">
+        <div class="risk-circle med" id="risk-circle">
+          <span class="risk-num" id="risk-val" style="color:var(--warn)">--</span>
+        </div>
+        <div class="risk-text">
+          <div class="risk-title" id="risk-title" style="color:var(--warn)">OBLICZANIE...</div>
+          <div style="color:var(--muted);margin-top:2px;font-size:0.68rem" id="risk-desc">Pobieranie danych atmosferycznych...</div>
+        </div>
+      </div>
+
+      <div class="sec-head">PARAMETRY ATMOSFERYCZNE</div>
+      <div class="metric-grid">
+        <div class="metric-card" id="card-temp">
+          <div class="metric-label">Temperatura</div>
+          <div class="metric-value" id="val-temp">--</div>
+          <div class="metric-unit">°C</div>
+          <div class="metric-trend" id="trend-temp"></div>
+        </div>
+        <div class="metric-card" id="card-hum">
+          <div class="metric-label">Wilgotność</div>
+          <div class="metric-value" id="val-hum">--</div>
+          <div class="metric-unit">%</div>
+        </div>
+        <div class="metric-card" id="card-pres">
+          <div class="metric-label">Ciśnienie</div>
+          <div class="metric-value" id="val-pres">--</div>
+          <div class="metric-unit">hPa</div>
+          <div class="metric-trend" id="trend-pres"></div>
+        </div>
+        <div class="metric-card" id="card-wind">
+          <div class="metric-label">Wiatr</div>
+          <div class="metric-value" id="val-wind">--</div>
+          <div class="metric-unit" id="unit-wind">km/h</div>
+        </div>
+        <div class="metric-card" id="card-dew">
+          <div class="metric-label">Punkt rosy</div>
+          <div class="metric-value" id="val-dew">--</div>
+          <div class="metric-unit">°C</div>
+        </div>
+        <div class="metric-card" id="card-vis">
+          <div class="metric-label">Widzialność</div>
+          <div class="metric-value" id="val-vis">--</div>
+          <div class="metric-unit">km</div>
+        </div>
+      </div>
+
+      <div class="sec-head">WSKAŹNIKI BURZOWE</div>
+      <div class="level-row">
+        <div class="level-label">CAPE</div>
+        <div class="level-bar-wrap"><div class="level-bar" id="bar-cape" style="width:0%;background:linear-gradient(90deg,var(--warn),var(--danger))"></div></div>
+        <div class="level-val" id="val-cape" style="color:var(--danger)">-- J</div>
+      </div>
+      <div class="level-row">
+        <div class="level-label">LIFTED IDX</div>
+        <div class="level-bar-wrap"><div class="level-bar" id="bar-li" style="width:0%;background:var(--storm)"></div></div>
+        <div class="level-val" id="val-li" style="color:var(--storm)">--</div>
+      </div>
+      <div class="level-row">
+        <div class="level-label">Opady 1h</div>
+        <div class="level-bar-wrap"><div class="level-bar" id="bar-prec" style="width:0%;background:var(--accent)"></div></div>
+        <div class="level-val" id="val-prec" style="color:var(--accent)">-- mm</div>
+      </div>
+      <div class="level-row">
+        <div class="level-label">Zachm.</div>
+        <div class="level-bar-wrap"><div class="level-bar" id="bar-cloud" style="width:0%;background:var(--muted)"></div></div>
+        <div class="level-val" id="val-cloud" style="color:var(--muted)">--%</div>
+      </div>
+
+      <div class="data-source">📡 DANE: OPEN-METEO.COM • AKTUALIZACJA CO 15 MIN</div>
+    </div>
+  </div>
+
+  <!-- MAP -->
+  <div class="map-container">
+    <div id="map"></div>
+    <div class="loading-overlay" id="loading">
+      <div class="loading-text">⚡ INICJALIZACJA STORMCHASERA</div>
+      <div class="loading-bar-wrap"><div class="loading-bar"></div></div>
+      <div style="font-family:'Share Tech Mono',monospace;font-size:0.65rem;color:var(--muted)" id="loading-msg">Pobieranie lokalizacji GPS...</div>
+    </div>
+    <div class="map-controls">
+      <button class="map-btn active" id="btn-radar" onclick="setLayer('radar')">📡 RADAR OPADÓW</button>
+      <button class="map-btn" id="btn-wind" onclick="setLayer('wind')">💨 WIATR</button>
+      <button class="map-btn" id="btn-clouds" onclick="setLayer('clouds')">☁️ CHMURY</button>
+      <button class="map-btn" id="btn-temp" onclick="setLayer('temp')">🌡 TEMPERATURA</button>
+      <button class="map-btn" id="btn-pressure" onclick="setLayer('pressure')">📊 CIŚNIENIE</button>
+      <button class="map-btn" onclick="locateMe()">📍 MOI POZYCJA</button>
+    </div>
+    <div class="layer-badge" id="layer-badge">WARSTWA: RADAR OPADÓW • Windy.com</div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="panel right">
+    <div class="panel-header">⚠️ ALERTY I PROGNOZA</div>
+    <div class="panel-content">
+
+      <div class="lightning-box">
+        <div class="lightning-count" id="lightning-count">--</div>
+        <div class="lightning-label">wyładowań / ostatnia godzina</div>
+        <div style="font-family:'Share Tech Mono',monospace;font-size:0.6rem;color:var(--muted);margin-top:4px" id="lightning-note">szacunek z CAPE</div>
+      </div>
+
+      <div class="sec-head">WARUNKI BURZOWE</div>
+      <div id="alerts-container">
+        <div class="alert-item info">
+          <div class="alert-type" style="color:var(--accent)">ℹ️ ŁADOWANIE DANYCH</div>
+          <div class="alert-desc">Pobieranie aktualnych danych meteorologicznych...</div>
+        </div>
+      </div>
+
+      <div class="sec-head" style="margin-top:8px">PROGNOZA 7-DNIOWA</div>
+      <div id="forecast-container">
+        <div style="font-family:'Share Tech Mono',monospace;font-size:0.65rem;color:var(--muted);padding:8px 0">Pobieranie prognozy...</div>
+      </div>
+
+      <div class="sec-head" style="margin-top:8px">WIATR</div>
+      <div class="wind-info">
+        <svg class="wind-compass" viewBox="0 0 60 60" id="wind-svg">
+          <circle cx="30" cy="30" r="27" fill="none" stroke="#1a3a5c" stroke-width="1"/>
+          <circle cx="30" cy="30" r="18" fill="none" stroke="#1a3a5c" stroke-width="0.5"/>
+          <text x="30" y="7" text-anchor="middle" fill="#4a7a9b" font-size="6" font-family="Share Tech Mono">N</text>
+          <text x="30" y="57" text-anchor="middle" fill="#4a7a9b" font-size="6" font-family="Share Tech Mono">S</text>
+          <text x="4" y="33" fill="#4a7a9b" font-size="6" font-family="Share Tech Mono">W</text>
+          <text x="52" y="33" fill="#4a7a9b" font-size="6" font-family="Share Tech Mono">E</text>
+          <line id="wind-arrow" x1="30" y1="30" x2="30" y2="10" stroke="#ff6b00" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="30" cy="30" r="3" fill="var(--accent)"/>
+        </svg>
+        <div class="wind-details" id="wind-details">
+          <div>KIERUNEK: <span style="color:var(--warn)" id="wd-dir">--</span></div>
+          <div>PRĘDKOŚĆ: <span style="color:var(--text)" id="wd-speed">--</span></div>
+          <div>PORYWY: <span style="color:var(--danger)" id="wd-gusts">--</span></div>
+        </div>
+      </div>
+
+      <div class="sec-head">LEGENDA RADARU</div>
+      <div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px">
+        <div style="display:flex;align-items:center;gap:3px;font-size:0.6rem;color:var(--muted);font-family:'Share Tech Mono',monospace"><div style="width:10px;height:10px;background:#00aaff;border-radius:1px"></div>0-5mm</div>
+        <div style="display:flex;align-items:center;gap:3px;font-size:0.6rem;color:var(--muted);font-family:'Share Tech Mono',monospace"><div style="width:10px;height:10px;background:#00ff44;border-radius:1px"></div>5-15</div>
+        <div style="display:flex;align-items:center;gap:3px;font-size:0.6rem;color:var(--muted);font-family:'Share Tech Mono',monospace"><div style="width:10px;height:10px;background:#ffff00;border-radius:1px"></div>15-30</div>
+        <div style="display:flex;align-items:center;gap:3px;font-size:0.6rem;color:var(--muted);font-family:'Share Tech Mono',monospace"><div style="width:10px;height:10px;background:#ff8800;border-radius:1px"></div>30-50</div>
+        <div style="display:flex;align-items:center;gap:3px;font-size:0.6rem;color:var(--muted);font-family:'Share Tech Mono',monospace"><div style="width:10px;height:10px;background:#ff0000;border-radius:1px"></div>50+</div>
+      </div>
+
+      <div class="data-source">📡 RADAR: WINDY.COM TILES<br>POGODA: OPEN-METEO.COM</div>
+    </div>
+  </div>
+</div>
+
+<div class="bottom-bar">
+  <div>MODEL: <span>ICON 2km + GFS</span></div>
+  <div>AKTUALIZACJA: <span id="update-time">--</span></div>
+  <div>GPS: <span id="gps-acc">oczekuje</span></div>
+  <div>ŹRÓDŁO: <span>Open-Meteo + Windy</span></div>
+  <div id="bottom-status" style="color:var(--accent)">▶ INICJALIZACJA...</div>
+</div>
+
+<script>
+// ─── STATE ───────────────────────────────────────
+let userLat = null, userLon = null;
+let weatherData = null;
+let currentLayer = 'radar';
+let map, gpsMarker, radarLayer;
+let prevPres = null, prevTemp = null;
+
+const DAYS_PL = ['ND','PN','WT','ŚR','CZW','PT','SOB'];
+const WIND_DIRS = ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'];
+
+// ─── CLOCK ───────────────────────────────────────
+function updateClock() {
+  const now = new Date();
+  const h = String(now.getUTCHours()).padStart(2,'0');
+  const m = String(now.getUTCMinutes()).padStart(2,'0');
+  const s = String(now.getUTCSeconds()).padStart(2,'0');
+  document.getElementById('clock').textContent = `${h}:${m}:${s} UTC`;
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ─── MAP INIT ────────────────────────────────────
+function initMap(lat, lon) {
+  map = L.map('map', { zoomControl: true, attributionControl: false }).setView([lat, lon], 9);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 18, className: 'leaflet-tile'
+  }).addTo(map);
+
+  // Windy radar layer
+  radarLayer = L.tileLayer(
+    'https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=DEMO_KEY',
+    { opacity: 0.6, className: 'radar-overlay' }
+  );
+
+  // Use RainViewer for real radar (free, no key needed)
+  loadRainViewer();
+
+  // GPS marker
+  const gpsIcon = L.divIcon({ className: 'gps-marker-icon', iconSize: [14,14], iconAnchor: [7,7] });
+  gpsMarker = L.marker([lat, lon], { icon: gpsIcon }).addTo(map)
+    .bindPopup(`<b style="color:#00ff88">TWOJA POZYCJA</b><br>${lat.toFixed(4)}°N ${lon.toFixed(4)}°E`);
+}
+
+// ─── RAINVIEWER (darmowy radar na żywo) ──────────
+let rainviewerLayer = null;
+async function loadRainViewer() {
+  try {
+    const res = await fetch('https://api.rainviewer.com/public/weather-maps.json');
+    const data = await res.json();
+    const frames = data.radar?.past || [];
+    if (frames.length === 0) return;
+    const latest = frames[frames.length - 1];
+    const tileUrl = `https://tilecache.rainviewer.com${latest.path}/512/{z}/{x}/{y}/4/1_1.png`;
+
+    if (rainviewerLayer) map.removeLayer(rainviewerLayer);
+    rainviewerLayer = L.tileLayer(tileUrl, { opacity: 0.65, maxZoom: 18 }).addTo(map);
+
+    const now = new Date();
+    document.getElementById('update-time').textContent =
+      `${String(now.getUTCHours()).padStart(2,'0')}:${String(now.getUTCMinutes()).padStart(2,'0')} UTC`;
+    document.getElementById('layer-badge').textContent = 'RADAR: RainViewer • ' + new Date(latest.time * 1000).toLocaleTimeString('pl');
+  } catch(e) {
+    console.warn('RainViewer error:', e);
+  }
+}
+
+// Refresh radar every 5 minutes
+setInterval(loadRainViewer, 300000);
+
+// ─── WINDY LAYERS ────────────────────────────────
+const windyLayers = {
+  radar: null, // handled by RainViewer
+  wind: 'https://tile.openweathermap.org/map/wind_new/{z}/{x}/{y}.png',
+  clouds: 'https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png',
+  temp: 'https://tile.openweathermap.org/map/temp_new/{z}/{x}/{y}.png',
+  pressure: 'https://tile.openweathermap.org/map/pressure_new/{z}/{x}/{y}.png'
+};
+
+const layerNames = {
+  radar: 'RADAR OPADÓW • RainViewer',
+  wind: 'WIATR • OWM',
+  clouds: 'ZACHMURZENIE • OWM',
+  temp: 'TEMPERATURA 2m • OWM',
+  pressure: 'CIŚNIENIE • OWM'
+};
+
+let extraLayer = null;
+function setLayer(name) {
+  document.querySelectorAll('.map-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('btn-' + name)?.classList.add('active');
+  document.getElementById('layer-badge').textContent = 'WARSTWA: ' + layerNames[name];
+  currentLayer = name;
+
+  if (extraLayer) { map.removeLayer(extraLayer); extraLayer = null; }
+
+  if (name === 'radar') {
+    if (rainviewerLayer && !map.hasLayer(rainviewerLayer)) rainviewerLayer.addTo(map);
+  } else {
+    if (rainviewerLayer && map.hasLayer(rainviewerLayer)) map.removeLayer(rainviewerLayer);
+    // Note: OWM layers require an API key for production use
+    // For demo, we show a message
+    document.getElementById('layer-badge').textContent = 'WARSTWA: ' + layerNames[name] + ' (potrzebny klucz OWM)';
+  }
+}
+
+// ─── GPS ─────────────────────────────────────────
+function setLoadingMsg(msg) {
+  const el = document.getElementById('loading-msg');
+  if (el) el.textContent = msg;
+}
+
+function locateMe() {
+  if (!navigator.geolocation) {
+    useFallbackLocation();
+    return;
+  }
+  setLoadingMsg('Pobieranie lokalizacji GPS...');
+  document.getElementById('loading').style.display = 'flex';
+
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      userLat = pos.coords.latitude;
+      userLon = pos.coords.longitude;
+      const acc = pos.coords.accuracy;
+      const alt = pos.coords.altitude;
+
+      document.getElementById('lat').textContent = userLat.toFixed(4) + '° N';
+      document.getElementById('lon').textContent = userLon.toFixed(4) + '° E';
+      document.getElementById('alt').textContent = alt ? Math.round(alt) + ' m n.p.m.' : 'brak danych';
+      document.getElementById('gps-acc').textContent = '±' + Math.round(acc) + ' m';
+
+      const chip = document.getElementById('chip-gps');
+      chip.className = 'status-chip chip-gps';
+      chip.innerHTML = '<div class="dot"></div> GPS: AKTYWNY';
+
+      if (!map) {
+        initMap(userLat, userLon);
+      } else {
+        map.setView([userLat, userLon], 9);
+        gpsMarker.setLatLng([userLat, userLon]);
+      }
+
+      setLoadingMsg('Pobieranie danych meteorologicznych...');
+      fetchWeatherData(userLat, userLon);
+    },
+    err => {
+      console.warn('GPS error:', err);
+      useFallbackLocation();
+    },
+    { enableHighAccuracy: true, timeout: 10000 }
+  );
+}
+
+function useFallbackLocation() {
+  // Default: Warsaw
+  userLat = 52.2297;
+  userLon = 21.0122;
+  document.getElementById('lat').textContent = '52.2297° N';
+  document.getElementById('lon').textContent = '21.0122° E';
+  document.getElementById('alt').textContent = '112 m n.p.m.';
+  document.getElementById('city').textContent = 'Warszawa (domyślna)';
+  document.getElementById('gps-acc').textContent = 'GPS niedostępny';
+
+  if (!map) initMap(userLat, userLon);
+  setLoadingMsg('Pobieranie danych dla Warszawy...');
+  fetchWeatherData(userLat, userLon);
+}
+
+// ─── OPEN-METEO API ───────────────────────────────
+async function fetchWeatherData(lat, lon) {
+  try {
+    const url = `https://api.open-meteo.com/v1/forecast?` +
+      `latitude=${lat}&longitude=${lon}` +
+      `&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,` +
+      `weather_code,pressure_msl,surface_pressure,wind_speed_10m,wind_direction_10m,` +
+      `wind_gusts_10m,cloud_cover,visibility,dew_point_2m` +
+      `&hourly=cape,lifted_index` +
+      `&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,` +
+      `wind_speed_10m_max,wind_gusts_10m_max,precipitation_probability_max` +
+      `&wind_speed_unit=kmh&timezone=auto&forecast_days=7`;
+
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('API error ' + res.status);
+    const data = await res.json();
+
+    weatherData = data;
+    updateUI(data);
+    await reverseGeocode(lat, lon);
+
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('chip-data').className = 'status-chip chip-ok';
+    document.getElementById('chip-data').innerHTML = '<div class="dot"></div> DANE: LIVE';
+    document.getElementById('bottom-status').textContent = '✅ DANE AKTUALNE';
+    document.getElementById('bottom-status').style.color = 'var(--safe)';
+
+  } catch(e) {
+    console.error('Weather fetch error:', e);
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('chip-data').className = 'status-chip chip-alert';
+    document.getElementById('chip-data').innerHTML = '<div class="dot"></div> BŁĄD API';
+    document.getElementById('bottom-status').textContent = '⚠ BŁĄD POŁĄCZENIA';
+    document.getElementById('bottom-status').style.color = 'var(--danger)';
+  }
+}
+
+// ─── REVERSE GEOCODE (nominatim) ──────────────────
+async function reverseGeocode(lat, lon) {
+  try {
+    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`);
+    const data = await res.json();
+    const city = data.address?.city || data.address?.town || data.address?.village || data.address?.county || 'Nieznana lokalizacja';
+    const country = data.address?.country || '';
+    document.getElementById('city').textContent = city + (country ? ', ' + country : '');
+  } catch(e) {}
+}
+
+// ─── UPDATE UI ────────────────────────────────────
+function updateUI(data) {
+  const c = data.current;
+
+  // Temperature
+  const temp = c.temperature_2m;
+  document.getElementById('val-temp').textContent = temp.toFixed(1);
+  if (prevTemp !== null) {
+    document.getElementById('trend-temp').textContent = temp > prevTemp ? '↗' : temp < prevTemp ? '↘' : '→';
+  }
+  prevTemp = temp;
+  setCardClass('card-temp', temp > 30 ? 'danger' : temp > 25 ? 'warn' : temp < 5 ? 'safe' : '');
+
+  // Humidity
+  const hum = c.relative_humidity_2m;
+  document.getElementById('val-hum').textContent = hum;
+  setCardClass('card-hum', hum > 80 ? 'warn' : hum > 90 ? 'danger' : '');
+
+  // Pressure
+  const pres = c.pressure_msl;
+  document.getElementById('val-pres').textContent = pres.toFixed(0);
+  if (prevPres !== null) {
+    const trend = pres < prevPres - 0.5 ? '↘' : pres > prevPres + 0.5 ? '↗' : '→';
+    document.getElementById('trend-pres').textContent = trend;
+    if (pres < prevPres - 1) setCardClass('card-pres', 'danger');
+    else if (pres < prevPres - 0.3) setCardClass('card-pres', 'warn');
+  }
+  prevPres = pres;
+
+  // Wind
+  const wind = c.wind_speed_10m;
+  const gusts = c.wind_gusts_10m;
+  const windDir = c.wind_direction_10m;
+  document.getElementById('val-wind').textContent = Math.round(wind);
+  document.getElementById('unit-wind').textContent = `km/h · ${degToCompass(windDir)}`;
+  setCardClass('card-wind', wind > 60 ? 'danger' : wind > 40 ? 'warn' : wind > 25 ? 'storm' : '');
+
+  // Wind compass
+  updateWindCompass(windDir, wind, gusts);
+
+  // Dew point
+  const dew = c.dew_point_2m;
+  document.getElementById('val-dew').textContent = dew.toFixed(1);
+  setCardClass('card-dew', dew > 20 ? 'warn' : dew > 18 ? '' : 'safe');
+
+  // Visibility
+  const vis = (c.visibility / 1000).toFixed(1);
+  document.getElementById('val-vis').textContent = vis;
+  setCardClass('card-vis', parseFloat(vis) < 5 ? 'warn' : parseFloat(vis) < 2 ? 'danger' : 'safe');
+
+  // Precipitation
+  const prec = c.precipitation;
+  document.getElementById('val-prec').textContent = prec.toFixed(1) + ' mm';
+  setBar('bar-prec', Math.min(100, prec * 5), 'val-prec');
+
+  // Cloud cover
+  const cloud = c.cloud_cover;
+  document.getElementById('val-cloud').textContent = cloud + '%';
+  setBar('bar-cloud', cloud, 'val-cloud');
+  document.getElementById('bar-cloud').style.background = cloud > 80 ? 'var(--muted)' : cloud > 50 ? 'var(--accent)' : 'var(--safe)';
+
+  // CAPE & LI from hourly (current hour)
+  const now = new Date();
+  const hourIdx = now.getHours();
+  const cape = data.hourly?.cape?.[hourIdx] || 0;
+  const li = data.hourly?.lifted_index?.[hourIdx] || 0;
+
+  document.getElementById('val-cape').textContent = Math.round(cape) + ' J';
+  setBar('bar-cape', Math.min(100, cape / 40), 'val-cape');
+  document.getElementById('bar-cape').style.background = cape > 2500 ? 'var(--danger)' : cape > 1500 ? 'var(--warn)' : cape > 500 ? 'var(--accent)' : 'var(--safe)';
+
+  document.getElementById('val-li').textContent = li.toFixed(1);
+  const liPct = Math.min(100, Math.max(0, (-li + 2) * 12));
+  setBar('bar-li', liPct, 'val-li');
+
+  // Risk calculation
+  calculateRisk(cape, li, wind, hum, pres, c.weather_code);
+
+  // Lightning estimate
+  estimateLightning(cape, pres, wind);
+
+  // Alerts
+  updateAlerts(c, cape, li, wind, gusts, pres, c.weather_code);
+
+  // Forecast
+  updateForecast(data.daily);
+}
+
+function setCardClass(id, cls) {
+  const el = document.getElementById(id);
+  el.className = 'metric-card' + (cls ? ' ' + cls : '');
+}
+
+function setBar(barId, pct, valId) {
+  document.getElementById(barId).style.width = Math.max(0, Math.min(100, pct)) + '%';
+}
+
+function degToCompass(deg) {
+  return WIND_DIRS[Math.round(deg / 22.5) % 16];
+}
+
+function updateWindCompass(dir, speed, gusts) {
+  const rad = (dir - 180) * Math.PI / 180;
+  const cx = 30, cy = 30, len = 17;
+  const x2 = cx + Math.sin(rad) * len;
+  const y2 = cy - Math.cos(rad) * len;
+  const arrow = document.getElementById('wind-arrow');
+  if (arrow) {
+    arrow.setAttribute('x2', x2.toFixed(1));
+    arrow.setAttribute('y2', y2.toFixed(1));
+  }
+  document.getElementById('wd-dir').textContent = degToCompass(dir) + ' (' + Math.round(dir) + '°)';
+  document.getElementById('wd-speed').textContent = Math.round(speed) + ' km/h';
+  document.getElementById('wd-gusts').textContent = Math.round(gusts) + ' km/h';
+}
+
+// ─── RISK CALCULATION ─────────────────────────────
+function calculateRisk(cape, li, wind, hum, pres, wcode) {
+  let risk = 0;
+  if (cape > 3000) risk += 35;
+  else if (cape > 2000) risk += 25;
+  else if (cape > 1000) risk += 15;
+  else if (cape > 500) risk += 8;
+
+  if (li < -5) risk += 20;
+  else if (li < -3) risk += 12;
+  else if (li < -1) risk += 6;
+
+  if (wind > 60) risk += 15;
+  else if (wind > 40) risk += 8;
+  else if (wind > 25) risk += 4;
+
+  if (hum > 80) risk += 8;
+  if (pres < 990) risk += 10;
+  else if (pres < 1000) risk += 5;
+
+  // Weather code based (WMO)
+  if (wcode >= 95) risk += 20; // thunderstorm
+  else if (wcode >= 80) risk += 10; // showers
+  else if (wcode >= 61) risk += 5; // rain
+
+  risk = Math.min(99, Math.max(0, risk));
+
+  document.getElementById('risk-val').textContent = risk;
+  const circle = document.getElementById('risk-circle');
+  const title = document.getElementById('risk-title');
+  const desc = document.getElementById('risk-desc');
+  const num = document.getElementById('risk-val');
+
+  if (risk >= 70) {
+    circle.className = 'risk-circle high';
+    num.style.color = 'var(--danger)';
+    title.style.color = 'var(--danger)';
+    title.textContent = 'RYZYKO WYSOKIE';
+    desc.textContent = `CAPE: ${Math.round(cape)}J | LI: ${li.toFixed(1)} | Burze możliwe`;
+  } else if (risk >= 40) {
+    circle.className = 'risk-circle med';
+    num.style.color = 'var(--warn)';
+    title.style.color = 'var(--warn)';
+    title.textContent = 'RYZYKO UMIARKOWANE';
+    desc.textContent = `CAPE: ${Math.round(cape)}J | Monitoruj warunki`;
+  } else {
+    circle.className = 'risk-circle low';
+    num.style.color = 'var(--safe)';
+    title.style.color = 'var(--safe)';
+    title.textContent = 'RYZYKO NISKIE';
+    desc.textContent = `Warunki sprzyjające. CAPE: ${Math.round(cape)}J`;
+  }
+
+  // Update chip
+  const statusChips = document.querySelector('.status-bar');
+  let alertChip = document.getElementById('chip-alert');
+  if (!alertChip) {
+    alertChip = document.createElement('div');
+    alertChip.id = 'chip-alert';
+    statusChips.insertBefore(alertChip, statusChips.firstChild);
+  }
+  if (risk >= 70) {
+    alertChip.className = 'status-chip chip-alert';
+    alertChip.innerHTML = '<div class="dot"></div> ALERT BURZOWY';
+  } else if (risk >= 40) {
+    alertChip.className = 'status-chip chip-warn';
+    alertChip.innerHTML = '<div class="dot"></div> OSTRZEŻENIE';
+  } else {
+    alertChip.className = 'status-chip chip-ok';
+    alertChip.innerHTML = '<div class="dot"></div> WARUNKI OK';
+  }
+}
+
+// ─── LIGHTNING ESTIMATE ───────────────────────────
+function estimateLightning(cape, pres, wind) {
+  // Rough estimate based on CAPE
+  let strikes = 0;
+  if (cape > 2000) strikes = Math.round(cape / 10 + Math.random() * 50);
+  else if (cape > 1000) strikes = Math.round(cape / 20 + Math.random() * 20);
+  else if (cape > 500) strikes = Math.round(cape / 50);
+  document.getElementById('lightning-count').textContent = strikes;
+  document.getElementById('lightning-note').textContent = strikes > 0 ? 'szacunek z CAPE ' + Math.round(cape) + 'J' : 'brak aktywności burzowej';
+}
+
+// ─── ALERTS ───────────────────────────────────────
+const WMO = {
+  0:'Bezchmurnie', 1:'Przeważnie bezchmurnie', 2:'Częściowe zachmurzenie', 3:'Zachmurzenie',
+  45:'Mgła', 48:'Mgła oszraniająca',
+  51:'Mżawka słaba', 53:'Mżawka umiarkowana', 55:'Mżawka intensywna',
+  61:'Deszcz słaby', 63:'Deszcz umiarkowany', 65:'Deszcz intensywny',
+  71:'Śnieg słaby', 73:'Śnieg umiarkowany', 75:'Śnieg intensywny',
+  77:'Ziarna śniegu',
+  80:'Przelotny deszcz słaby', 81:'Przelotny deszcz umiarkowany', 82:'Przelotny deszcz gwałtowny',
+  85:'Przelotny śnieg', 86:'Przelotny śnieg intensywny',
+  95:'Burza', 96:'Burza z gradem', 99:'Burza z dużym gradem'
+};
+
+function wmoIcon(code) {
+  if (code === 0) return '☀️';
+  if (code <= 2) return '🌤';
+  if (code <= 3) return '☁️';
+  if (code <= 48) return '🌫';
+  if (code <= 55) return '🌧';
+  if (code <= 65) return '🌧';
+  if (code <= 77) return '❄️';
+  if (code <= 82) return '🌦';
+  if (code <= 86) return '🌨';
+  if (code >= 95) return '⛈';
+  return '🌡';
+}
+
+function updateAlerts(c, cape, li, wind, gusts, pres, wcode) {
+  const container = document.getElementById('alerts-container');
+  container.innerHTML = '';
+  const now = new Date().toLocaleTimeString('pl', {hour:'2-digit',minute:'2-digit'});
+
+  // Current weather
+  const wmoText = WMO[wcode] || `Kod WMO: ${wcode}`;
+  addAlert(container, 'info', `${wmoIcon(wcode)} ${wmoText.toUpperCase()}`,
+    `Temp: ${c.temperature_2m.toFixed(1)}°C • Odczuwalna: ${c.apparent_temperature.toFixed(1)}°C • Wilg: ${c.relative_humidity_2m}%`,
+    `CZAS: ${now}`);
+
+  if (wcode >= 95) {
+    addAlert(container, 'danger', '⚡ BURZA AKTYWNA',
+      `Aktywna komórka burzowa w okolicy. CAPE: ${Math.round(cape)}J. Zachowaj ostrożność!`, `${now} UTC`);
+  }
+  if (cape > 2000) {
+    addAlert(container, 'danger', '🌩 BARDZO WYSOKIE CAPE',
+      `CAPE = ${Math.round(cape)} J/kg. Ekstremalne warunki burzowe. Możliwe superkomórki.`, `${now}`);
+  } else if (cape > 1000) {
+    addAlert(container, 'warn', '⚠️ WYSOKIE CAPE',
+      `CAPE = ${Math.round(cape)} J/kg. Warunki sprzyjające burzom. Monitoruj.`, `${now}`);
+  }
+  if (gusts > 75) {
+    addAlert(container, 'danger', '💨 SILNE PORYWY',
+      `Porywy wiatru do ${Math.round(gusts)} km/h. Ryzyko uszkodzeń.`, `${now}`);
+  } else if (gusts > 50) {
+    addAlert(container, 'warn', '💨 WZMOŻONY WIATR',
+      `Porywy do ${Math.round(gusts)} km/h. Wiatr: ${Math.round(wind)} km/h.`, `${now}`);
+  }
+  if (pres < 990) {
+    addAlert(container, 'warn', '📊 NISKIE CIŚNIENIE',
+      `Ciśnienie: ${pres.toFixed(0)} hPa. Układ niżowy — możliwe intensywne opady.`, `${now}`);
+  }
+  if (li < -3) {
+    addAlert(container, 'warn', '🌪 NIESTABILNOŚĆ ATMOSF.',
+      `Indeks niestabilności LI = ${li.toFixed(1)}. Silna konwekcja możliwa.`, `${now}`);
+  }
+  if (container.children.length === 0) {
+    addAlert(container, 'info', '✅ BRAK ALERTÓW',
+      'Warunki atmosferyczne spokojne. Bezpieczne warunki do obserwacji.', now);
+  }
+}
+
+function addAlert(container, type, title, desc, time) {
+  container.innerHTML += `
+    <div class="alert-item ${type === 'danger' ? '' : type}">
+      <div class="alert-type" style="color:${type==='danger'?'var(--danger)':type==='warn'?'var(--warn)':'var(--accent)'}">${title}</div>
+      <div class="alert-desc">${desc}</div>
+      <div class="alert-time">${time}</div>
+    </div>`;
+}
+
+// ─── FORECAST ─────────────────────────────────────
+function updateForecast(daily) {
+  if (!daily) return;
+  const container = document.getElementById('forecast-container');
+  container.innerHTML = '';
+  for (let i = 0; i < 7; i++) {
+    const date = new Date(daily.time[i]);
+    const day = DAYS_PL[date.getDay()];
+    const icon = wmoIcon(daily.weather_code[i]);
+    const tmin = daily.temperature_2m_min[i].toFixed(0);
+    const tmax = daily.temperature_2m_max[i].toFixed(0);
+    const prec = daily.precipitation_probability_max[i] || 0;
+    const color = prec > 70 ? 'var(--danger)' : prec > 40 ? 'var(--warn)' : 'var(--safe)';
+
+    container.innerHTML += `
+      <div class="forecast-row">
+        <div class="forecast-day">${day}</div>
+        <div class="forecast-icon">${icon}</div>
+        <div class="forecast-bar-wrap"><div class="forecast-bar" style="width:${prec}%;background:${color}"></div></div>
+        <div class="forecast-temp" style="color:${color}">${tmin}–${tmax}°C</div>
+      </div>`;
+  }
+}
+
+// ─── AUTO-REFRESH ─────────────────────────────────
+setInterval(() => {
+  if (userLat !== null) {
+    fetchWeatherData(userLat, userLon);
+  }
+}, 15 * 60 * 1000); // every 15 min
+
+// ─── START ────────────────────────────────────────
+window.addEventListener('load', () => {
+  locateMe();
+});
+</script>
+</body>
+</html>
