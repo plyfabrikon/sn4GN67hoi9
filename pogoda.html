@@ -438,74 +438,75 @@ function loadRVandSat(){
 function loadRV(){loadRVandSat();}
 setInterval(loadRVandSat,300000);
 
+// BLITZORTUNG - losowy serwer z listy
 function startBlitz(){
   if(blitzWS)return;
+  var servers=["wss://ws1.blitzortung.org:7979/","wss://ws2.blitzortung.org:7979/",
+    "wss://ws3.blitzortung.org:7979/","wss://ws4.blitzortung.org:7979/",
+    "wss://ws5.blitzortung.org:7979/","wss://ws6.blitzortung.org:7979/",
+    "wss://ws7.blitzortung.org:7979/","wss://ws8.blitzortung.org:7979/"];
+  connectBlitz(servers, Math.floor(Math.random()*servers.length), 0);
+}
+function connectBlitz(servers, idx, tries){
+  if(tries>=servers.length)return;
   try{
-    blitzWS=new WebSocket("wss://ws1.blitzortung.org:7979/");
+    blitzWS=new WebSocket(servers[idx%servers.length]);
     blitzWS.onopen=function(){
-      blitzWS.send(JSON.stringify({west:-15,east:40,north:72,south:35}));
+      pi("p-blk","ok","BLK LIVE");
+      blitzWS.send(JSON.stringify({west:-30,east:50,north:75,south:30}));
     };
     blitzWS.onmessage=function(e){
       try{
         var d=JSON.parse(e.data);
-        if(!d.lat||!mapObj)return;
-        var ic=L.divIcon({
-          className:"",
-          html:"<div style=\'width:10px;height:10px;background:#ffe033;border-radius:50%;box-shadow:0 0 8px 4px rgba(255,224,51,0.95)\'></div>",
-          iconSize:[10,10],iconAnchor:[5,5]
-        });
-        var m=L.marker([d.lat,d.lon],{icon:ic,zIndexOffset:900}).addTo(mapObj);
+        if(!mapObj||typeof d.lat==="undefined")return;
+        var lt2=d.lat, ln2=d.lon;
+        if(Math.abs(lt2)>90){lt2=d.lat/10;ln2=d.lon/10;}
+        if(isNaN(lt2)||isNaN(ln2)||Math.abs(lt2)>90||Math.abs(ln2)>180)return;
+        var ic=L.divIcon({className:"",
+          html:"<div style=\"width:14px;height:14px;background:#ffe033;border-radius:50%;box-shadow:0 0 12px 6px rgba(255,224,51,1)\"></div>",
+          iconSize:[14,14],iconAnchor:[7,7]});
+        var m=L.marker([lt2,ln2],{icon:ic,zIndexOffset:950}).addTo(mapObj);
         blitzMarkers.push(m);
         setTimeout(function(){try{mapObj.removeLayer(m);}catch(x){}},4000);
-        if(blitzMarkers.length>200){
-          var old=blitzMarkers.splice(0,50);
-          old.forEach(function(mk){try{mapObj.removeLayer(mk);}catch(x){}});
-        }
-        var cnt=parseInt(document.getElementById("lgnt-cnt").textContent)||0;
-        document.getElementById("lgnt-cnt").textContent=cnt+1;
+        if(blitzMarkers.length>300){var o=blitzMarkers.splice(0,100);o.forEach(function(mk){try{mapObj.removeLayer(mk);}catch(x){}});}
+        var cnt=(parseInt(document.getElementById("lgnt-cnt").textContent)||0)+1;
+        document.getElementById("lgnt-cnt").textContent=cnt;
+        pi("p-blk","ok","BLK "+cnt);
       }catch(x){}
     };
     blitzWS.onerror=function(){blitzWS=null;};
-    blitzWS.onclose=function(){blitzWS=null; setTimeout(startBlitz,5000);};
-  }catch(x){blitzWS=null;}
+    blitzWS.onclose=function(){blitzWS=null;pi("p-blk","wn","BLK...");setTimeout(function(){connectBlitz(servers,(idx+1)%servers.length,tries+1);},4000);};
+  }catch(x){blitzWS=null;setTimeout(function(){connectBlitz(servers,(idx+1)%servers.length,tries+1);},2000);}
 }
 
 function setL(n){
-  ["r","c","w","t"].forEach(function(x){
-    var e=document.getElementById("lb-"+x);if(e)e.classList.remove("ac");
-  });
+  ["r","c","w","t"].forEach(function(x){var e=document.getElementById("lb-"+x);if(e)e.classList.remove("ac");});
   var b=document.getElementById("lb-"+n);if(b)b.classList.add("ac");
   if(rvLyr&&mapObj.hasLayer(rvLyr))mapObj.removeLayer(rvLyr);
   if(satLyr&&mapObj.hasLayer(satLyr))mapObj.removeLayer(satLyr);
   if(extraLyr){mapObj.removeLayer(extraLyr);extraLyr=null;}
 
   if(n==="r"){
-    loadRV();
-    setTimeout(function(){if(rvLyr)rvLyr.addTo(mapObj);},700);
-    document.getElementById("mbadge").textContent="RADAR OPADOW - RainViewer";
-
+    if(rvLyr)rvLyr.addTo(mapObj);
+    document.getElementById("mbadge").textContent="RADAR - RainViewer";
   }else if(n==="c"){
     if(satLyr)satLyr.addTo(mapObj);
-    loadRV();
-    setTimeout(function(){if(rvLyr)rvLyr.addTo(mapObj);},700);
-    document.getElementById("mbadge").textContent="CHMURY (OWM) + RADAR";
-
+    if(rvLyr)rvLyr.addTo(mapObj);
+    document.getElementById("mbadge").textContent="CHMURY + RADAR";
   }else if(n==="w"){
     if(satLyr)satLyr.addTo(mapObj);
-    extraLyr=L.tileLayer("https://tile.openweathermap.org/map/wind_new/{z}/{x}/{y}.png?appid="+OWM_KEY,{
-      opacity:0.85, maxNativeZoom:12, maxZoom:12, zIndex:4, tileSize:256
-    });
+    extraLyr=L.tileLayer("https://tile.openweathermap.org/map/wind_new/{z}/{x}/{y}.png?appid="+OWM_KEY,
+      {opacity:0.9,maxNativeZoom:12,maxZoom:12,zIndex:4,tileSize:256});
     extraLyr.addTo(mapObj);
     document.getElementById("mbadge").textContent="WIATR - OWM";
-
   }else if(n==="t"){
-    extraLyr=L.tileLayer("https://tile.openweathermap.org/map/temp_new/{z}/{x}/{y}.png?appid="+OWM_KEY,{
-      opacity:0.85, maxNativeZoom:12, maxZoom:12, zIndex:4, tileSize:256
-    });
+    extraLyr=L.tileLayer("https://tile.openweathermap.org/map/temp_new/{z}/{x}/{y}.png?appid="+OWM_KEY,
+      {opacity:0.9,maxNativeZoom:12,maxZoom:12,zIndex:4,tileSize:256});
     extraLyr.addTo(mapObj);
     document.getElementById("mbadge").textContent="TEMPERATURA - OWM";
   }
 }
+
 
 // GPS - ciagla obserwacja + znacznik lokalizacji zawsze aktywny
 var gpsWatch=null;
