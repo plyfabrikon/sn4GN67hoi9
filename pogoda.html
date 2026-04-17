@@ -1136,6 +1136,557 @@ window.onload=function(){setTimeout(startGPS,300);};
 </script>
 </body>
 </html>
+.mbtn{background:rgba(6,13,24,.9);border:1px solid var(--border);color:var(--text);font-family:'DM Mono',monospace;font-size:.58rem;padding:5px 8px;border-radius:5px;cursor:pointer;transition:all .15s}
+.mbtn.active{background:var(--accent);color:var(--bg);border-color:var(--accent);font-weight:700}
+.map-badge{position:absolute;bottom:8px;left:8px;z-index:500;font-family:'DM Mono',monospace;font-size:.55rem;color:var(--accent);background:rgba(6,13,24,.85);border:1px solid var(--border);padding:3px 7px;border-radius:4px;pointer-events:none}
+.map-loc-btn{position:absolute;bottom:8px;right:8px;z-index:500;background:var(--accent);color:var(--bg);border:none;font-size:1.1rem;width:34px;height:34px;border-radius:50%;cursor:pointer;box-shadow:0 2px 12px rgba(41,212,255,.4);display:flex;align-items:center;justify-content:center}
+.gps-pulse{width:18px;height:18px;position:relative}
+.gps-inner{width:12px;height:12px;background:var(--safe);border:2px solid #fff;border-radius:50%;position:absolute;top:3px;left:3px;box-shadow:0 0 8px rgba(31,222,138,.8)}
+.gps-ring{width:18px;height:18px;border:2px solid var(--safe);border-radius:50%;position:absolute;top:0;left:0;animation:gr 1.8s ease-out infinite;opacity:0}
+@keyframes gr{0%{transform:scale(.5);opacity:.9}100%{transform:scale(2.2);opacity:0}}
+.lmark{width:9px;height:9px;background:var(--lightning);border-radius:50%;box-shadow:0 0 6px rgba(255,224,51,.9);animation:lf 2.2s ease-out forwards}
+@keyframes lf{0%{opacity:1;transform:scale(1)}80%{opacity:.5;transform:scale(1.5)}100%{opacity:0}}
+.loc-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;position:relative;overflow:hidden}
+.loc-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--safe),var(--accent))}
+.loc-city{font-family:'Oswald',sans-serif;font-weight:700;font-size:1.4rem;color:var(--text);margin-bottom:3px}
+.loc-street{font-size:.88rem;color:var(--muted);margin-bottom:10px;min-height:1.1rem}
+.loc-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.loc-lbl{font-family:'DM Mono',monospace;font-size:.55rem;color:var(--muted);text-transform:uppercase;letter-spacing:.8px}
+.loc-val{font-family:'DM Mono',monospace;font-size:.76rem;color:var(--safe);margin-top:2px}
+.risk{border-radius:10px;padding:14px 16px;display:flex;align-items:center;gap:12px;border:1px solid}
+.risk.low{background:rgba(31,222,138,.07);border-color:rgba(31,222,138,.3)}
+.risk.med{background:rgba(255,170,0,.07);border-color:rgba(255,170,0,.35)}
+.risk.high{background:rgba(255,58,58,.09);border-color:rgba(255,58,58,.4)}
+.risk-num{font-family:'Oswald',sans-serif;font-weight:700;font-size:2.8rem;line-height:1;flex-shrink:0;min-width:60px;text-align:center}
+.risk-title{font-family:'Oswald',sans-serif;font-weight:600;font-size:1rem;letter-spacing:1px;text-transform:uppercase}
+.risk-sub{font-size:.74rem;color:var(--muted);margin-top:3px;line-height:1.45}
+.mgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px}
+.met{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px;position:relative;overflow:hidden}
+.met::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px}
+.c-safe::after{background:var(--safe)}.c-warn::after{background:var(--warn)}.c-danger::after{background:var(--danger)}.c-accent::after{background:var(--accent)}.c-muted::after{background:var(--dim)}
+.met-lbl{font-family:'DM Mono',monospace;font-size:.55rem;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:3px}
+.met-val{font-family:'Oswald',sans-serif;font-weight:600;font-size:1.5rem;line-height:1;color:var(--text)}
+.met-unit{font-size:.6rem;color:var(--muted);margin-top:2px}
+.met-trend{position:absolute;top:7px;right:7px;font-size:.68rem;color:var(--muted)}
+.cloud-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px}
+.cl{display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:6px;border-left:4px solid;background:rgba(255,255,255,.02);margin-bottom:5px;transition:background .3s}
+.cl.active{background:rgba(255,255,255,.07)}
+.cl-cb{border-color:var(--danger)}.cl-ci{border-color:var(--cci)}.cl-hi{border-color:var(--chi)}.cl-mid{border-color:var(--cmid)}.cl-lo{border-color:var(--clo)}
+.cl-alt{font-family:'DM Mono',monospace;font-size:.58rem;color:var(--muted);width:70px;flex-shrink:0}
+.cl-name{font-family:'Rajdhani',sans-serif;font-weight:600;font-size:.84rem;flex:1}
+.cl-bar{width:52px;height:5px;background:var(--dim);border-radius:3px;overflow:hidden}
+.cl-fill{height:100%;border-radius:3px;transition:width 1s ease}
+.cl-pct{font-family:'DM Mono',monospace;font-size:.58rem;width:28px;text-align:right}
+.cb-box{margin-top:10px;padding-top:9px;border-top:1px solid var(--border)}
+.cb-lbl{font-family:'DM Mono',monospace;font-size:.56rem;color:var(--muted);margin-bottom:3px}
+.cb-val{font-family:'Oswald',sans-serif;font-weight:600;font-size:1.2rem;color:var(--warn)}
+.cb-note{font-size:.72rem;color:var(--muted);margin-top:2px}
+.lgnt-card{background:var(--card);border:1px solid rgba(255,224,51,.22);border-radius:10px;padding:14px;display:flex;align-items:center;gap:14px;position:relative;overflow:hidden}
+.lgnt-card::before{content:'⚡';position:absolute;font-size:5rem;right:-6px;top:50%;transform:translateY(-50%);opacity:.05}
+.lgnt-big{font-family:'Oswald',sans-serif;font-weight:700;font-size:3rem;color:var(--lightning);text-shadow:0 0 20px rgba(255,224,51,.4);line-height:1;flex-shrink:0;min-width:76px;text-align:center}
+.lgnt-title{font-family:'Oswald',sans-serif;font-weight:600;font-size:.8rem;letter-spacing:2px;text-transform:uppercase;color:var(--lightning)}
+.lgnt-sub{font-size:.72rem;color:var(--muted);margin-top:3px;line-height:1.5}
+.ldot{display:inline-block;width:6px;height:6px;background:var(--lightning);border-radius:50%;animation:bl .8s infinite;margin-right:3px;vertical-align:middle}
+.hail-card{background:var(--card);border:1px solid rgba(167,139,250,.22);border-radius:10px;padding:14px}
+.hail-ttl{font-family:'Oswald',sans-serif;font-weight:600;font-size:.76rem;letter-spacing:2px;text-transform:uppercase;color:var(--hail);margin-bottom:10px}
+.hail-scale{display:flex;gap:3px;align-items:flex-end;height:46px;margin-bottom:6px}
+.hb{flex:1;border-radius:3px 3px 0 0;transition:all .5s ease;min-height:4px}
+.hail-lbls{display:flex;gap:3px}
+.hl{flex:1;text-align:center;font-family:'DM Mono',monospace;font-size:.48rem;color:var(--muted)}
+.hail-cur{margin-top:8px;font-size:.78rem;color:var(--muted)}
+.hail-cur strong{color:var(--hail);font-size:.92rem}
+.idx-card{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.idx-row{display:flex;align-items:center;gap:8px;padding:9px 12px;border-bottom:1px solid var(--border)}
+.idx-row:last-child{border-bottom:none}
+.idx-name{font-family:'DM Mono',monospace;font-size:.6rem;color:var(--muted);text-transform:uppercase;width:76px;flex-shrink:0}
+.idx-bw{flex:1;height:5px;background:var(--dim);border-radius:3px;overflow:hidden}
+.idx-b{height:100%;border-radius:3px;transition:width 1.2s ease}
+.idx-v{font-family:'DM Mono',monospace;font-size:.63rem;min-width:50px;text-align:right}
+.idx-d{font-size:.66rem;color:var(--muted);width:58px;flex-shrink:0;text-align:right}
+.alert{border-radius:8px;padding:11px 13px;border-left:4px solid;margin-bottom:7px;background:var(--card)}
+.a-danger{border-color:var(--danger);background:rgba(255,58,58,.06)}
+.a-warn{border-color:var(--warn);background:rgba(255,170,0,.06)}
+.a-info{border-color:var(--accent);background:rgba(41,212,255,.04)}
+.alert-head{font-family:'Oswald',sans-serif;font-weight:600;font-size:.9rem;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px}
+.alert-body{font-size:.8rem;color:var(--muted);line-height:1.45}
+.alert-time{font-family:'DM Mono',monospace;font-size:.55rem;color:var(--dim);margin-top:4px}
+.wind-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;display:flex;align-items:center;gap:14px}
+.wind-card svg{width:76px;height:76px;flex-shrink:0}
+.wstats{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ws-lbl{font-family:'DM Mono',monospace;font-size:.55rem;color:var(--muted);text-transform:uppercase;letter-spacing:.8px}
+.ws-val{font-family:'Oswald',sans-serif;font-weight:600;font-size:1.22rem;line-height:1.1}
+.fc-scroll{display:flex;gap:7px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.fc-scroll::-webkit-scrollbar{display:none}
+.fcd{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:9px 8px;min-width:62px;flex-shrink:0;text-align:center}
+.fcd.today{border-color:var(--accent);background:rgba(41,212,255,.07)}
+.fc-name{font-family:'Oswald',sans-serif;font-weight:600;font-size:.66rem;letter-spacing:2px;color:var(--muted);margin-bottom:4px}
+.fc-icon{font-size:1.35rem;margin-bottom:4px}
+.fc-tt{font-family:'DM Mono',monospace;font-size:.6rem}
+.fc-hi{color:var(--warn)}.fc-lo{color:var(--accent)}
+.fc-prec{margin-top:4px;height:3px;background:var(--dim);border-radius:2px;overflow:hidden}
+.fc-bar{height:100%;border-radius:2px}
+.footer{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 13px;font-family:'DM Mono',monospace;font-size:.57rem;color:var(--muted);line-height:2}
+.overlay{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px}
+.ov-logo{font-family:'Oswald',sans-serif;font-weight:700;font-size:1.8rem;letter-spacing:6px;color:var(--accent)}
+.ov-logo b{color:var(--warn)}
+.ov-bar{width:180px;height:2px;background:var(--dim);border-radius:2px;overflow:hidden}
+.ov-fill{height:100%;background:var(--accent);border-radius:2px;animation:prog 2.5s ease forwards}
+@keyframes prog{0%{width:0}100%{width:100%}}
+.ov-msg{font-family:'DM Mono',monospace;font-size:.67rem;color:var(--muted);letter-spacing:1px}
+.mb{height:24px}
+</style>
+</head>
+<body>
+
+<div class="overlay" id="overlay">
+  <div class="ov-logo">⚡ STORM<b>CHASER</b></div>
+  <div class="ov-bar"><div class="ov-fill"></div></div>
+  <div class="ov-msg" id="ov-msg">Pobieranie lokalizacji GPS...</div>
+</div>
+
+<div class="topbar">
+  <div class="logo">⚡ STORM<b>CHASER</b></div>
+  <div class="pills">
+    <div class="pill p-off" id="pill-gps">📍 GPS</div>
+    <div class="pill p-off" id="pill-data">📡 DANE</div>
+    <div class="pill p-off" id="pill-risk">⚠ RYZYKO</div>
+    <div class="pill p-off" id="pill-lgnt">⚡ BŁK</div>
+  </div>
+  <div class="clock" id="clock">--:--</div>
+</div>
+
+<div class="sec"><div class="sec-lbl">🗺 MAPA NA ŻYWO</div></div>
+<div class="map-wrap">
+  <div id="map"></div>
+  <div class="map-btns">
+    <button class="mbtn active" id="lb-radar"  onclick="setLayer('radar')">📡 RADAR</button>
+    <button class="mbtn"        id="lb-clouds" onclick="setLayer('clouds')">☁️ CHMURY</button>
+    <button class="mbtn"        id="lb-wind"   onclick="setLayer('wind')">💨 WIATR</button>
+    <button class="mbtn"        id="lb-temp"   onclick="setLayer('temp')">🌡 TEMP</button>
+  </div>
+  <div class="map-badge" id="map-badge">RADAR • ładowanie...</div>
+  <button class="map-loc-btn" onclick="recenter()">📍</button>
+</div>
+
+<div class="sec" style="margin-top:13px"><div class="sec-lbl">📍 TWOJA LOKALIZACJA</div>
+  <div class="loc-card">
+    <div class="loc-city" id="loc-city">Pobieranie...</div>
+    <div class="loc-street" id="loc-street">&nbsp;</div>
+    <div class="loc-grid">
+      <div><div class="loc-lbl">Szerokość</div><div class="loc-val" id="loc-lat">---</div></div>
+      <div><div class="loc-lbl">Długość</div><div class="loc-val" id="loc-lon">---</div></div>
+      <div><div class="loc-lbl">Dokładność</div><div class="loc-val" id="loc-acc">---</div></div>
+      <div><div class="loc-lbl">Wysokość</div><div class="loc-val" id="loc-alt">---</div></div>
+      <div><div class="loc-lbl">Powiat/Gm.</div><div class="loc-val" id="loc-county" style="color:var(--accent)">---</div></div>
+      <div><div class="loc-lbl">Kraj</div><div class="loc-val" id="loc-country" style="color:var(--accent)">---</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="sec" style="margin-top:13px"><div class="sec-lbl">⚠ RYZYKO BURZOWE</div>
+  <div class="risk low" id="risk-box">
+    <div class="risk-num" id="risk-num" style="color:var(--safe)">--</div>
+    <div>
+      <div class="risk-title" id="risk-title" style="color:var(--safe)">Obliczanie...</div>
+      <div class="risk-sub" id="risk-sub">Pobieranie danych...</div>
+    </div>
+  </div>
+</div>
+
+<div class="sec" style="margin-top:13px"><div class="sec-lbl">🌡 PARAMETRY</div>
+  <div class="mgrid">
+    <div class="met c-muted" id="card-temp"><div class="met-lbl">Temperatura</div><div class="met-val" id="mv-temp">--</div><div class="met-unit">°C</div><div class="met-trend" id="mt-temp"></div></div>
+    <div class="met c-muted"><div class="met-lbl">Odczuwalna</div><div class="met-val" id="mv-feel">--</div><div class="met-unit">°C</div></div>
+    <div class="met c-muted" id="card-hum"><div class="met-lbl">Wilgotność</div><div class="met-val" id="mv-hum">--</div><div class="met-unit">%</div></div>
+    <div class="met c-muted" id="card-pres"><div class="met-lbl">Ciśnienie</div><div class="met-val" id="mv-pres">--</div><div class="met-unit">hPa</div><div class="met-trend" id="mt-pres"></div></div>
+    <div class="met c-muted"><div class="met-lbl">Punkt rosy</div><div class="met-val" id="mv-dew">--</div><div class="met-unit">°C</div></div>
+    <div class="met c-muted" id="card-vis"><div class="met-lbl">Widoczność</div><div class="met-val" id="mv-vis">--</div><div class="met-unit">km</div></div>
+  </div>
+</div>
+
+<div class="sec" style="margin-top:13px"><div class="sec-lbl">☁ PIĘTRA CHMUR</div>
+  <div class="cloud-card">
+    <div class="cl cl-cb" id="cl-cb"><div class="cl-alt">&gt;10 000 m</div><div class="cl-name" style="color:var(--danger)">Cb Cumulonimbus</div><div class="cl-bar"><div class="cl-fill" id="cf-cb" style="width:0%;background:var(--danger)"></div></div><div class="cl-pct" id="cp-cb" style="color:var(--danger)">--%</div></div>
+    <div class="cl cl-ci" id="cl-ci"><div class="cl-alt">7–13 000 m</div><div class="cl-name" style="color:var(--cci)">Cirrus / Ci-St</div><div class="cl-bar"><div class="cl-fill" id="cf-ci" style="width:0%;background:var(--cci)"></div></div><div class="cl-pct" id="cp-ci" style="color:var(--cci)">--%</div></div>
+    <div class="cl cl-hi" id="cl-hi"><div class="cl-alt">2–7 000 m</div><div class="cl-name" style="color:var(--chi)">Alto / Średnie</div><div class="cl-bar"><div class="cl-fill" id="cf-hi" style="width:0%;background:var(--chi)"></div></div><div class="cl-pct" id="cp-hi" style="color:var(--chi)">--%</div></div>
+    <div class="cl cl-mid" id="cl-mid"><div class="cl-alt">600–2 000 m</div><div class="cl-name" style="color:var(--cmid)">Stratus / Cu</div><div class="cl-bar"><div class="cl-fill" id="cf-mid" style="width:0%;background:var(--cmid)"></div></div><div class="cl-pct" id="cp-mid" style="color:var(--cmid)">--%</div></div>
+    <div class="cl cl-lo" id="cl-lo"><div class="cl-alt">0–600 m</div><div class="cl-name" style="color:var(--clo)">Stratus / Mgła</div><div class="cl-bar"><div class="cl-fill" id="cf-lo" style="width:0%;background:var(--clo)"></div></div><div class="cl-pct" id="cp-lo" style="color:var(--clo)">--%</div></div>
+    <div class="cb-box"><div class="cb-lbl">PODSTAWA CHMUR KONWEKCYJNYCH (LCL)</div><div class="cb-val" id="cloud-base">--- m</div><div class="cb-note" id="cloud-base-note">Obliczam...</div></div>
+  </div>
+</div>
+
+<div class="sec" style="margin-top:13px"><div class="sec-lbl">⚡ WYŁADOWANIA ATMOSFERYCZNE</div>
+  <div class="lgnt-card">
+    <div class="lgnt-big" id="lgnt-cnt">--</div>
+    <div>
+      <div class="lgnt-title"><span class="ldot"></span>NA ŻYWO</div>
+      <div class="lgnt-sub" id="lgnt-info">Ładowanie...</div>
+      <div style="margin-top:5px;font-family:'DM Mono',monospace;font-size:.57rem;color:var(--muted)" id="lgnt-last">Szacunek z CAPE</div>
+    </div>
+  </div>
+</div>
+
+<div class="sec" style="margin-top:13px"><div class="sec-lbl">🧊 RYZYKO GRADU</div>
+  <div class="hail-card">
+    <div class="hail-ttl">🧊 SKALA WIELKOŚCI GRADU</div>
+    <div class="hail-scale" id="hail-scale"></div>
+    <div class="hail-lbls" id="hail-lbls"></div>
+    <div class="hail-cur" id="hail-cur">Ładowanie...</div>
+  </div>
+</div>
+
+<div class="sec" style="margin-top:13px"><div class="sec-lbl">📊 WSKAŹNIKI BURZOWE</div>
+  <div class="idx-card">
+    <div class="idx-row"><div class="idx-name">CAPE</div><div class="idx-bw"><div class="idx-b" id="ib-cape" style="width:0%"></div></div><div class="idx-v" id="iv-cape">-- J</div><div class="idx-d" id="id-cape">--</div></div>
+    <div class="idx-row"><div class="idx-name">LIFTED IDX</div><div class="idx-bw"><div class="idx-b" id="ib-li" style="width:0%"></div></div><div class="idx-v" id="iv-li">--</div><div class="idx-d" id="id-li">--</div></div>
+    <div class="idx-row"><div class="idx-name">OPADY 1H</div><div class="idx-bw"><div class="idx-b" id="ib-prec" style="width:0%"></div></div><div class="idx-v" id="iv-prec">-- mm</div><div class="idx-d" id="id-prec">--</div></div>
+    <div class="idx-row"><div class="idx-name">ZACHMURZENIE</div><div class="idx-bw"><div class="idx-b" id="ib-cloud" style="width:0%"></div></div><div class="idx-v" id="iv-cloud">--%</div><div class="idx-d" id="id-cloud">--</div></div>
+    <div class="idx-row"><div class="idx-name">WIATR MAX</div><div class="idx-bw"><div class="idx-b" id="ib-wind" style="width:0%"></div></div><div class="idx-v" id="iv-wind">-- km/h</div><div class="idx-d" id="id-wind">--</div></div>
+  </div>
+</div>
+
+<div class="sec" style="margin-top:13px"><div class="sec-lbl">🚨 ALERTY</div>
+  <div id="alerts-box"></div>
+</div>
+
+<div class="sec" style="margin-top:13px"><div class="sec-lbl">💨 WIATR</div>
+  <div class="wind-card">
+    <svg viewBox="0 0 76 76">
+      <circle cx="38" cy="38" r="34" fill="none" stroke="#1a2e42" stroke-width="1"/>
+      <circle cx="38" cy="38" r="18" fill="none" stroke="#1a2e42" stroke-width="0.5" stroke-dasharray="3,3"/>
+      <text x="38" y="8"  text-anchor="middle" fill="#4d7a9e" font-size="6" font-family="DM Mono,monospace">N</text>
+      <text x="38" y="72" text-anchor="middle" fill="#4d7a9e" font-size="6" font-family="DM Mono,monospace">S</text>
+      <text x="4"  y="41" fill="#4d7a9e" font-size="6" font-family="DM Mono,monospace">W</text>
+      <text x="65" y="41" fill="#4d7a9e" font-size="6" font-family="DM Mono,monospace">E</text>
+      <line id="wind-needle" x1="38" y1="38" x2="38" y2="11" stroke="#ffaa00" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="38" cy="38" r="4" fill="#29d4ff"/>
+    </svg>
+    <div class="wstats">
+      <div><div class="ws-lbl">Kierunek</div><div class="ws-val" id="wv-dir" style="color:var(--warn)">--</div></div>
+      <div><div class="ws-lbl">Prędkość</div><div class="ws-val" id="wv-spd">--</div></div>
+      <div><div class="ws-lbl">Porywy</div><div class="ws-val" id="wv-gust" style="color:var(--danger)">--</div></div>
+      <div><div class="ws-lbl">Beaufort</div><div class="ws-val" id="wv-bft" style="color:var(--accent)">--</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="sec" style="margin-top:13px"><div class="sec-lbl">📅 PROGNOZA 7 DNI</div>
+  <div class="fc-scroll" id="fc-box"></div>
+</div>
+
+<div class="sec" style="margin-top:13px;padding-bottom:0">
+  <div class="footer">
+    📡 RADAR: <span style="color:var(--accent)">RainViewer (na żywo)</span> &nbsp;|&nbsp; 🌡 DANE: <span style="color:var(--accent)">Open-Meteo.com</span><br>
+    🔄 AKTUALIZACJA: <span style="color:var(--text)" id="upd-time">--</span> &nbsp;|&nbsp; 📍 GEOKODOWANIE: <span style="color:var(--text)">Nominatim OSM</span>
+  </div>
+</div>
+<div class="mb"></div>
+
+<script>
+var lat=null,lon=null,map,gpsMarker,rvLayer,extraLayer,prevT=null,prevP=null,lMark=[],lInt=null;
+var DAYS=['ND','PN','WT','ŚR','CZW','PT','SOB'];
+var DIRS=['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'];
+
+setInterval(function(){var n=new Date();document.getElementById('clock').textContent=p(n.getUTCHours())+':'+p(n.getUTCMinutes())+' UTC';},1000);
+function p(n){return String(n).padStart(2,'0');}
+
+function initMap(lt,ln){
+  map=L.map('map',{zoomControl:false,attributionControl:false}).setView([lt,ln],10);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,className:'leaflet-tile'}).addTo(map);
+  loadRV();
+  var ic=L.divIcon({className:'',html:'<div class="gps-pulse"><div class="gps-ring"></div><div class="gps-inner"></div></div>',iconSize:[18,18],iconAnchor:[9,9]});
+  gpsMarker=L.marker([lt,ln],{icon:ic,zIndexOffset:1000}).addTo(map);
+}
+function recenter(){if(map&&lat)map.setView([lat,lon],11);}
+
+function loadRV(){
+  fetch('https://api.rainviewer.com/public/weather-maps.json')
+    .then(function(r){return r.json();})
+    .then(function(d){
+      var frames=(d.radar&&d.radar.past)?d.radar.past:[];
+      if(!frames.length)return;
+      var last=frames[frames.length-1];
+      var url='https://tilecache.rainviewer.com'+last.path+'/512/{z}/{x}/{y}/4/1_1.png';
+      if(rvLayer)map.removeLayer(rvLayer);
+      rvLayer=L.tileLayer(url,{opacity:.7,maxZoom:18}).addTo(map);
+      var t=new Date(last.time*1000);
+      document.getElementById('map-badge').textContent='RADAR • '+p(t.getHours())+':'+p(t.getMinutes());
+    }).catch(function(){});
+}
+setInterval(loadRV,300000);
+
+function setLayer(name){
+  ['radar','clouds','wind','temp'].forEach(function(n){var el=document.getElementById('lb-'+n);if(el)el.classList.remove('active');});
+  var btn=document.getElementById('lb-'+name);if(btn)btn.classList.add('active');
+  if(extraLayer){map.removeLayer(extraLayer);extraLayer=null;}
+  if(name==='radar'){if(rvLayer&&!map.hasLayer(rvLayer))rvLayer.addTo(map);document.getElementById('map-badge').textContent='RADAR • RainViewer';}
+  else{if(rvLayer&&map.hasLayer(rvLayer))map.removeLayer(rvLayer);document.getElementById('map-badge').textContent=name.toUpperCase()+' (klucz OWM wymagany)';}
+}
+
+function startGPS(){
+  if(!navigator.geolocation){fallback();return;}
+  ovMsg('Pobieranie lokalizacji GPS...');
+  navigator.geolocation.getCurrentPosition(onGPS,function(){fallback();},{enableHighAccuracy:true,timeout:12000,maximumAge:0});
+}
+function onGPS(pos){
+  lat=pos.coords.latitude; lon=pos.coords.longitude;
+  var acc=Math.round(pos.coords.accuracy);
+  var alt=pos.coords.altitude?Math.round(pos.coords.altitude)+' m':'brak';
+  document.getElementById('loc-lat').textContent=lat.toFixed(5)+'°N';
+  document.getElementById('loc-lon').textContent=lon.toFixed(5)+'°E';
+  document.getElementById('loc-acc').textContent='±'+acc+' m';
+  document.getElementById('loc-alt').textContent=alt;
+  pill('pill-gps','p-ok','📍 GPS OK');
+  if(!map){initMap(lat,lon);}else{map.setView([lat,lon],10);gpsMarker.setLatLng([lat,lon]);}
+  ovMsg('Pobieranie danych pogodowych...');
+  geocode(lat,lon);
+  fetchWx(lat,lon);
+}
+function fallback(){
+  lat=52.2297;lon=21.0122;
+  document.getElementById('loc-lat').textContent='52.22970°N';
+  document.getElementById('loc-lon').textContent='21.01220°E';
+  document.getElementById('loc-acc').textContent='GPS brak';
+  document.getElementById('loc-alt').textContent='112 m';
+  document.getElementById('loc-city').textContent='Warszawa';
+  document.getElementById('loc-street').textContent='Lokalizacja domyślna';
+  document.getElementById('loc-county').textContent='mazowieckie';
+  document.getElementById('loc-country').textContent='PL';
+  pill('pill-gps','p-warn','📍 Domyślna');
+  if(!map)initMap(lat,lon);
+  fetchWx(lat,lon);
+}
+
+function geocode(lt,ln){
+  fetch('https://nominatim.openstreetmap.org/reverse?lat='+lt+'&lon='+ln+'&format=json&zoom=18&addressdetails=1',{headers:{'Accept-Language':'pl'}})
+    .then(function(r){return r.json();})
+    .then(function(d){
+      var a=d.address||{};
+      // Miejscowość
+      var city=a.city||a.town||a.village||a.hamlet||a.suburb||a.county||'Nieznana';
+      document.getElementById('loc-city').textContent=city;
+      // Ulica lub najbliższy punkt
+      var street='';
+      if(a.road){
+        street=a.road;
+        if(a.house_number)street+=' '+a.house_number;
+        if(a.suburb&&a.suburb!==city)street+=', '+a.suburb;
+      } else if(a.suburb){street=a.suburb;}
+      else if(a.neighbourhood){street=a.neighbourhood;}
+      else if(a.quarter){street=a.quarter;}
+      else if(a.county){street=a.county;}
+      document.getElementById('loc-street').textContent=street||'';
+      // Powiat
+      var county=a.county||a.state_district||a.state||'';
+      document.getElementById('loc-county').textContent=county;
+      // Kraj
+      document.getElementById('loc-country').textContent=(a.country_code||'').toUpperCase()||(a.country||'');
+    }).catch(function(){});
+}
+
+function fetchWx(lt,ln){
+  var url='https://api.open-meteo.com/v1/forecast?latitude='+lt+'&longitude='+ln
+    +'&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,'
+    +'weather_code,pressure_msl,wind_speed_10m,wind_direction_10m,wind_gusts_10m,'
+    +'cloud_cover,visibility,dew_point_2m'
+    +'&hourly=cape,lifted_index,cloud_cover_low,cloud_cover_mid,cloud_cover_high'
+    +'&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,'
+    +'wind_speed_10m_max,wind_gusts_10m_max,precipitation_probability_max'
+    +'&wind_speed_unit=kmh&timezone=auto&forecast_days=7';
+  fetch(url)
+    .then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.json();})
+    .then(function(d){
+      updateAll(d);
+      document.getElementById('overlay').style.display='none';
+      pill('pill-data','p-ok','📡 LIVE');
+      var now=new Date();
+      document.getElementById('upd-time').textContent=p(now.getHours())+':'+p(now.getMinutes());
+    })
+    .catch(function(e){
+      document.getElementById('overlay').style.display='none';
+      pill('pill-data','p-warn','📡 BŁĄD');
+      addA('a-warn','⚠ Błąd danych','Nie udało się pobrać: '+e.message,'--');
+    });
+}
+setInterval(function(){if(lat)fetchWx(lat,lon);},15*60*1000);
+
+function updateAll(d){
+  var c=d.current,hi=d.hourly,hr=new Date().getHours();
+  var temp=c.temperature_2m,feel=c.apparent_temperature,hum=c.relative_humidity_2m;
+  var pres=c.pressure_msl,dew=c.dew_point_2m,vis=(c.visibility/1000).toFixed(1);
+  var wind=c.wind_speed_10m,gust=c.wind_gusts_10m,wdir=c.wind_direction_10m;
+  var prec=c.precipitation,cloud=c.cloud_cover,code=c.weather_code;
+
+  setM('card-temp','mv-temp','mt-temp',temp.toFixed(1),temp>30?'c-danger':temp>25?'c-warn':'c-safe');
+  setM(null,'mv-feel',null,feel.toFixed(1),'c-muted');
+  setM('card-hum','mv-hum',null,hum,hum>85?'c-warn':'c-safe');
+  setM('card-pres','mv-pres','mt-pres',pres.toFixed(0),pres<990?'c-danger':pres<1000?'c-warn':'c-accent');
+  setM(null,'mv-dew',null,dew.toFixed(1),dew>20?'c-warn':'c-safe');
+  setM('card-vis','mv-vis',null,vis,parseFloat(vis)<3?'c-danger':parseFloat(vis)<8?'c-warn':'c-safe');
+
+  if(prevT!==null)document.getElementById('mt-temp').textContent=temp>prevT+.1?'↑':temp<prevT-.1?'↓':'→';
+  if(prevP!==null)document.getElementById('mt-pres').textContent=pres<prevP-.5?'↓':pres>prevP+.5?'↑':'→';
+  prevT=temp;prevP=pres;
+
+  updateWind(wdir,wind,gust);
+  var cape=(hi&&hi.cape)?hi.cape[hr]||0:0;
+  var li=(hi&&hi.lifted_index)?hi.lifted_index[hr]||0:0;
+  var lo=(hi&&hi.cloud_cover_low)?hi.cloud_cover_low[hr]||Math.round(cloud*.4):Math.round(cloud*.4);
+  var mid=(hi&&hi.cloud_cover_mid)?hi.cloud_cover_mid[hr]||Math.round(cloud*.3):Math.round(cloud*.3);
+  var hic=(hi&&hi.cloud_cover_high)?hi.cloud_cover_high[hr]||Math.round(cloud*.3):Math.round(cloud*.3);
+
+  updateClouds(lo,mid,hic,code,cape,dew,temp);
+  updateIdx(cape,li,prec,cloud,wind,gust);
+  var risk=calcRisk(cape,li,wind,hum,pres,code);
+  updateRisk(risk,cape,li);
+  updateLgnt(cape,code);
+  updateHail(cape,code);
+  updateAlerts(c,cape,li,wind,gust,pres,code);
+  updateFC(d.daily);
+}
+
+function pill(id,cls,txt){var el=document.getElementById(id);el.className='pill '+cls;el.textContent=txt;}
+function ovMsg(m){var el=document.getElementById('ov-msg');if(el)el.textContent=m;}
+function d2c(d){return DIRS[Math.round(d/22.5)%16];}
+function bft(k){var t=[1,6,12,20,29,39,50,62,75,89,103,117];for(var i=0;i<t.length;i++)if(k<t[i])return i;return 12;}
+
+function setM(cardId,valId,trendId,val,cls){
+  document.getElementById(valId).textContent=val;
+  if(cardId){var c=document.getElementById(cardId);if(c)c.className='met '+(cls||'c-muted');}
+}
+
+function updateWind(dir,spd,gust){
+  var rad=(dir-180)*Math.PI/180;
+  var x2=38+Math.sin(rad)*21,y2=38-Math.cos(rad)*21;
+  var n=document.getElementById('wind-needle');
+  if(n){n.setAttribute('x2',x2.toFixed(1));n.setAttribute('y2',y2.toFixed(1));}
+  document.getElementById('wv-dir').textContent=d2c(dir)+' '+Math.round(dir)+'°';
+  document.getElementById('wv-spd').textContent=Math.round(spd)+' km/h';
+  document.getElementById('wv-gust').textContent=Math.round(gust)+' km/h';
+  document.getElementById('wv-bft').textContent='Bf '+bft(spd);
+}
+
+function updateClouds(lo,mid,hi,code,cape,dew,temp){
+  var cbPct=code>=95?90:code>=80?Math.min(70,cape/40):cape>2000?50:cape>1000?25:0;
+  function sc(fi,pi,pct){pct=Math.max(0,Math.min(100,Math.round(pct)));document.getElementById(fi).style.width=pct+'%';document.getElementById(pi).textContent=pct+'%';}
+  sc('cf-cb','cp-cb',cbPct);sc('cf-ci','cp-ci',hi);sc('cf-hi','cp-hi',mid);sc('cf-mid','cp-mid',lo);
+  var fog=dew>(temp-2)?Math.min(100,Math.max(0,(temp-dew+2)*30)):0;
+  sc('cf-lo','cp-lo',fog);
+  ['cl-cb','cl-ci','cl-hi','cl-mid','cl-lo'].forEach(function(id){var el=document.getElementById(id);if(el)el.classList.remove('active');});
+  if(cbPct>15)document.getElementById('cl-cb').classList.add('active');
+  if(hi>20)document.getElementById('cl-ci').classList.add('active');
+  if(mid>20)document.getElementById('cl-hi').classList.add('active');
+  if(lo>20)document.getElementById('cl-mid').classList.add('active');
+  if(fog>10)document.getElementById('cl-lo').classList.add('active');
+  var lcl=Math.round((temp-dew)*125);
+  document.getElementById('cloud-base').textContent=lcl>0?lcl+' m':'< 100 m';
+  document.getElementById('cloud-base-note').textContent=
+    lcl<300?'⚠ Bardzo nisko — ryzyko mgły':lcl<800?'Podstawa niska':lcl<1500?'Podstawa umiarkowana':lcl<3000?'Podstawa wysoka':'✅ Dobra widoczność pionowa';
+}
+
+function updateLgnt(cape,code){
+  var est=code>=95?Math.round(120+cape/18):code>=80?Math.round(cape/28):cape>1500?Math.round(cape/60):0;
+  document.getElementById('lgnt-cnt').textContent=est;
+  document.getElementById('lgnt-info').textContent=code>=95?'🔴 Aktywna burza! Wyładowania częste.':code>=80?'🟡 Aktywność burzowa umiarkowana.':cape>1000?'🟠 Potencjał burzowy — możliwe wyładowania.':'🟢 Brak aktywności burzowej.';
+  document.getElementById('lgnt-last').textContent='Szacunek z CAPE '+Math.round(cape)+' J/kg';
+  pill('pill-lgnt',code>=95?'p-alert':code>=80?'p-warn':'p-ok','⚡ '+est+'/h');
+  clearInterval(lInt);
+  if(map&&est>10&&lat){
+    lInt=setInterval(function(){
+      if(lMark.length>15){var old=lMark.splice(0,8);old.forEach(function(m){try{map.removeLayer(m);}catch(e){}});}
+      var ic=L.divIcon({className:'',html:'<div class="lmark"></div>',iconSize:[9,9],iconAnchor:[4,4]});
+      var m=L.marker([lat+(Math.random()-.5)*.7,lon+(Math.random()-.5)*.9],{icon:ic}).addTo(map);
+      lMark.push(m);
+      setTimeout(function(){try{map.removeLayer(m);}catch(e){}},2400);
+    },Math.max(400,Math.round(3600000/Math.max(est,1)/8)));
+  }
+}
+
+var HC=[{l:'< 5mm',c:'#64b5f6'},{l:'5–10',c:'#29d4ff'},{l:'10–20',c:'#1fde8a'},{l:'20–30',c:'#ffaa00'},{l:'30–50',c:'#ff6b35'},{l:'> 50',c:'#ff3a3a'}];
+var HH=[8,18,35,55,78,96];
+function updateHail(cape,code){
+  var risk=code>=96?5:code>=95?4:cape>3000?4:cape>2000?3:cape>1000?2:cape>500?1:0;
+  var sc=document.getElementById('hail-scale'),lb=document.getElementById('hail-lbls');
+  sc.innerHTML='';lb.innerHTML='';
+  HC.forEach(function(cat,i){
+    var h=i<=risk?HH[i]:Math.max(4,HH[i]*.12),op=i<=risk?1:.22;
+    sc.innerHTML+='<div class="hb" style="height:'+h+'%;background:'+cat.c+';opacity:'+op+'"></div>';
+    lb.innerHTML+='<div class="hl" style="color:'+(i<=risk?cat.c:'var(--dim)')+'">'+cat.l+'</div>';
+  });
+  var cat=HC[risk];
+  document.getElementById('hail-cur').innerHTML='Szacowany rozmiar: <strong style="color:'+cat.c+'">'+cat.l+' mm</strong> &nbsp;·&nbsp; '+(risk>=4?'🚨 NIEBEZPIECZNY GRAD!':risk>=3?'⚠ Chroń pojazd':risk>=2?'🟡 Grad możliwy':risk>=1?'🔵 Drobny grad':'✅ Brak ryzyka');
+}
+
+function updateIdx(cape,li,prec,cloud,wind,gust){
+  function si(bi,vi,di,pct,val,col,desc){
+    var b=document.getElementById(bi);b.style.width=Math.min(100,Math.max(0,pct))+'%';b.style.background=col;
+    var v=document.getElementById(vi);v.textContent=val;v.style.color=col;
+    document.getElementById(di).textContent=desc;
+  }
+  var cc=cape>2500?'var(--danger)':cape>1500?'var(--warn)':cape>500?'var(--accent)':'var(--safe)';
+  si('ib-cape','iv-cape','id-cape',Math.min(100,cape/40),Math.round(cape)+' J',cc,cape>2500?'Ekstremalny':cape>1500?'Wysoki':cape>500?'Umiark.':'Niski');
+  var lc=li<-5?'var(--danger)':li<-2?'var(--warn)':'var(--safe)';
+  si('ib-li','iv-li','id-li',Math.min(100,(-li+2)*10),li.toFixed(1),lc,li<-5?'Ekstremalny':li<-2?'Niestabilny':li<0?'Słaby':'Stabilny');
+  var pc=prec>10?'var(--danger)':prec>3?'var(--warn)':'var(--accent)';
+  si('ib-prec','iv-prec','id-prec',Math.min(100,prec*8),prec.toFixed(1)+' mm',pc,prec>10?'Ulewa':prec>3?'Intensywny':prec>0.1?'Lekki':'Brak');
+  si('ib-cloud','iv-cloud','id-cloud',cloud,cloud+'%','var(--muted)',cloud>80?'Całkowite':cloud>50?'Duże':cloud>20?'Częściowe':'Małe');
+  var wc=wind>60?'var(--danger)':wind>40?'var(--warn)':wind>20?'var(--accent)':'var(--safe)';
+  si('ib-wind','iv-wind','id-wind',Math.min(100,wind*1.2),Math.round(wind)+' km/h',wc,wind>60?'Burzowy':wind>40?'Silny':wind>20?'Umiark.':'Słaby');
+}
+
+function calcRisk(cape,li,wind,hum,pres,code){
+  var r=0;
+  r+=cape>3000?35:cape>2000?25:cape>1000?14:cape>500?7:0;
+  r+=li<-5?22:li<-3?13:li<-1?6:0;
+  r+=wind>60?15:wind>40?8:wind>25?3:0;
+  r+=hum>80?7:0;r+=pres<990?10:pres<1000?5:0;
+  r+=code>=95?20:code>=80?9:code>=61?4:0;
+  return Math.min(99,Math.max(0,r));
+}
+function updateRisk(risk,cape,li){
+  document.getElementById('risk-num').textContent=risk;
+  var box=document.getElementById('risk-box'),title=document.getElementById('risk-title'),sub=document.getElementById('risk-sub'),num=document.getElementById('risk-num');
+  if(risk>=70){box.className='risk high';num.style.color=title.style.color='var(--danger)';title.textContent='RYZYKO WYSOKIE';sub.textContent='CAPE '+Math.round(cape)+' J/kg · LI '+li.toFixed(1);pill('pill-risk','p-alert','⚠ WYSOKIE');}
+  else if(risk>=40){box.className='risk med';num.style.color=title.style.color='var(--warn)';title.textContent='RYZYKO UMIARKOWANE';sub.textContent='CAPE '+Math.round(cape)+' J/kg · Monitoruj';pill('pill-risk','p-warn','⚠ UMIAR.');}
+  else{box.className='risk low';num.style.color=title.style.color='var(--safe)';title.textContent='WARUNKI SPOKOJNE';sub.textContent='CAPE '+Math.round(cape)+' J/kg · Bezpiecznie';pill('pill-risk','p-ok','✅ NISKIE');}
+}
+
+var WMO={0:'Bezchmurnie',1:'Prawie bezchmurnie',2:'Częściowo pochmurno',3:'Zachmurzenie',45:'Mgła',48:'Mgła oszraniająca',51:'Mżawka słaba',53:'Mżawka',55:'Mżawka silna',61:'Deszcz słaby',63:'Deszcz',65:'Deszcz silny',71:'Śnieg słaby',73:'Śnieg',75:'Śnieg silny',80:'Przelotny deszcz',81:'Przelotny deszcz umiark.',82:'Nawałnica',95:'Burza',96:'Burza z gradem',99:'Burza — duży grad'};
+function wmoI(c){if(c===0)return'☀️';if(c<=2)return'🌤️';if(c<=3)return'☁️';if(c<=48)return'🌫️';if(c<=65)return'🌧️';if(c<=77)return'❄️';if(c<=82)return'🌦️';if(c>=95)return'⛈️';return'🌡️';}
+
+function updateAlerts(c,cape,li,wind,gust,pres,code){
+  document.getElementById('alerts-box').innerHTML='';
+  var now=p(new Date().getHours())+':'+p(new Date().getMinutes());
+  addA('a-info',wmoI(code)+' '+(WMO[code]||'Kod '+code).toUpperCase(),'Temp '+c.temperature_2m.toFixed(1)+'°C · Odczuwalna '+c.apparent_temperature.toFixed(1)+'°C · Wilg. '+c.relative_humidity_2m+'%',now);
+  if(code>=96)addA('a-danger','🧊 BURZA Z GRADEM','Aktywna burza z gradem. CAPE: '+Math.round(cape)+' J. Szukaj schronienia!',now);
+  else if(code>=95)addA('a-danger','⛈ BURZA ELEKTRYCZNA','Aktywna komórka burzowa. Wyładowania częste.',now);
+  if(cape>2000)addA('a-danger','🌩 EKSTREMALNE CAPE','CAPE = '+Math.round(cape)+' J/kg — możliwe superkomórki.',now);
+  else if(cape>1000)addA('a-warn','⚠ WYSOKIE CAPE','CAPE = '+Math.round(cape)+' J/kg — sprzyjające warunki burzowe.',now);
+  if(gust>80)addA('a-danger','💨 BARDZO SILNE PORYWY','Porywy do '+Math.round(gust)+' km/h — ryzyko uszkodzeń.',now);
+  else if(gust>55)addA('a-warn','💨 SILNE PORYWY','Porywy do '+Math.round(gust)+' km/h.',now);
+  if(pres<990)addA('a-danger','📉 GŁĘBOKI NIŻ','Ciśnienie '+pres.toFixed(0)+' hPa.',now);
+  else if(pres<998)addA('a-warn','📉 NISKIE CIŚNIENIE','Ciśnienie '+pres.toFixed(0)+' hPa.',now);
+  if(li<-5)addA('a-warn','🌪 SILNA NIESTABILNOŚĆ','Lifted Index = '+li.toFixed(1)+' — silna konwekcja.',now);
+  var box=document.getElementById('alerts-box');
+  if(box.children.length===1)addA('a-info','✅ BRAK ALERTÓW','Warunki atmosferyczne sprzyjające.',now);
+}
+function addA(cls,title,body,time){var col={'a-danger':'var(--danger)','a-warn':'var(--warn)','a-info':'var(--accent)'};document.getElementById('alerts-box').innerHTML+='<div class="alert '+cls+'"><div class="alert-head" style="color:'+col[cls]+'">'+title+'</div><div class="alert-body">'+body+'</div><div class="alert-time">'+time+' UTC</div></div>';}
+
+function updateFC(d){
+  if(!d)return;
+  var box=document.getElementById('fc-box');box.innerHTML='';
+  for(var i=0;i<7;i++){
+    var dt=new Date(d.time[i]),name=i===0?'DZIŚ':i===1?'JUTRO':DAYS[dt.getDay()];
+    var icon=wmoI(d.weather_code[i]),thi=d.temperature_2m_max[i].toFixed(0),tlo=d.temperature_2m_min[i].toFixed(0);
+    var prec=d.precipitation_probability_max[i]||0,pc=prec>70?'var(--danger)':prec>40?'var(--warn)':'var(--safe)';
+    box.innerHTML+='<div class="fcd'+(i===0?' today':'')+'"><div class="fc-name">'+name+'</div><div class="fc-icon">'+icon+'</div><div class="fc-tt"><span class="fc-hi">'+thi+'°</span> <span class="fc-lo">'+tlo+'°</span></div><div class="fc-prec"><div class="fc-bar" style="width:'+prec+'%;background:'+pc+'"></div></div></div>';
+  }
+}
+
+window.onload=function(){setTimeout(startGPS,300);};
+</script>
+</body>
+</html>
 
 html, body {
   background: var(--bg);
