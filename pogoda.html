@@ -302,42 +302,48 @@ function we(c){if(c===0)return"&#9728;";if(c<=2)return"&#127780;";if(c<=3)return
 setInterval(function(){var n=new Date();document.getElementById("clk").textContent=pd(n.getUTCHours())+":"+pd(n.getUTCMinutes())+" UTC";},1000);
 
 // MAPA
+var satLyr=null, rvLyr=null, extraLyr=null, blitzWS=null, blitzMarkers=[];
+
 function initMap(lt,ln){
   if(mapObj)return;
-  mapObj=L.map("map",{zoomControl:true,attributionControl:false}).setView([lt,ln],7);
+  mapObj=L.map("map",{zoomControl:true,attributionControl:false}).setView([lt,ln],6);
   L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",{
     maxZoom:14, minZoom:1
   }).addTo(mapObj);
 
-  // Chmury satelitarne - publiczny endpoint EUMETSAT przez RainViewer
+  // Chmury satelitarne EUMETSAT - najlepsza darmowa opcja (Mercator/NASA WorldView)
+  // Uzywamy RainViewer satellite infrared - to samo co Windy.com
   satLyr=L.tileLayer("https://tilecache.rainviewer.com/v2/satellite/infrared/256/{z}/{x}/{y}/0/0_0.png",{
-    opacity:0.5, tileSize:256, maxNativeZoom:7, maxZoom:14
+    opacity:0.7, tileSize:256, maxNativeZoom:6, maxZoom:14, zIndex:2
   });
 
   var ic=L.divIcon({className:"",html:"<div class='gpin'><div class='gpin-r'></div><div class='gpin-c'></div></div>",iconSize:[16,16],iconAnchor:[8,8]});
   gpsMkr=L.marker([lt,ln],{icon:ic,zIndexOffset:1000}).addTo(mapObj);
   setTimeout(function(){mapObj.invalidateSize();},300);
+
+  // Laduj radar i chmury domyslnie
   loadRV();
-  // Domyslnie: radar + chmury od razu
   setTimeout(function(){
-    if(satLyr)satLyr.addTo(mapObj);
-  },1500);
+    setL('c'); // domyslnie: chmury + radar
+  },1200);
 }
+
 function rc(){if(mapObj&&uLat)mapObj.setView([uLat,uLon],7);}
 
-// RESIZE MAPY
+// RESIZE
 var mapBig=false;
 document.addEventListener("DOMContentLoaded",function(){
   var btn=document.getElementById("mresize-btn");
   if(btn) btn.addEventListener("click",function(){
     var box=document.getElementById("mapbox");
     mapBig=!mapBig;
-    box.style.height=mapBig?"80vh":"500px";
-    setTimeout(function(){if(mapObj)mapObj.invalidateSize();},100);
+    box.style.height=mapBig?"85vh":"500px";
+    setTimeout(function(){if(mapObj)mapObj.invalidateSize();},150);
     btn.innerHTML=mapBig?"&#x2B06;":"&#x2195;";
   });
 });
-var satLyr=null;
+
+// RADAR (RainViewer)
 function loadRV(){
   if(!mapObj)return;
   fetch("https://api.rainviewer.com/public/weather-maps.json")
@@ -347,38 +353,98 @@ function loadRV(){
     if(!f.length)return;
     var l=f[f.length-1];
     var host=d.host||"https://tilecache.rainviewer.com";
+    var wasOn=rvLyr&&mapObj.hasLayer(rvLyr);
     if(rvLyr)mapObj.removeLayer(rvLyr);
-    // maxNativeZoom:7 = radar dziala do zoom 7, powyzej skaluje kafle bez bledow
     rvLyr=L.tileLayer(host+l.path+"/512/{z}/{x}/{y}/2/1_1.png",{
-      opacity:0.75, tileSize:512, zoomOffset:-1,
-      maxNativeZoom:6, maxZoom:14
-    }).addTo(mapObj);
+      opacity:0.8, tileSize:512, zoomOffset:-1,
+      maxNativeZoom:6, maxZoom:14, zIndex:3
+    });
+    if(wasOn||!satLyr)rvLyr.addTo(mapObj);
     var t=new Date(l.time*1000);
-    document.getElementById("mbadge").textContent="RADAR "+pd(t.getHours())+":"+pd(t.getMinutes());
-  }).catch(function(){document.getElementById("mbadge").textContent="RADAR - brak";});
+    document.getElementById("mbadge").textContent="RADAR "+pd(t.getHours())+":"+pd(t.getMinutes())+" UTC";
+  }).catch(function(){});
 }
 setInterval(loadRV,300000);
-var extraLyr=null;
+
+// BLITZORTUNG - bliskawice na zywo (WebSocket)
+function startBlitz(){
+  if(blitzWS)return;
+  try{
+    blitzWS=new WebSocket("wss://ws1.blitzortung.org:7979/");
+    blitzWS.onopen=function(){
+      blitzWS.send(JSON.stringify({west:-10,east:35,north:72,south:44})); // Europa
+    };
+    blitzWS.onmessage=function(e){
+      try{
+        var d=JSON.parse(e.data);
+        if(!d.lat||!mapObj)return;
+        var lt2=d.lat, ln2=d.lon;
+        // Animowany marker blyskawicy
+        var ic=L.divIcon({
+          className:"",
+          html:"<div style='width:10px;height:10px;background:#ffe033;border-radius:50%;box-shadow:0 0 8px 3px rgba(255,224,51,0.9);animation:lf 2s forwards'></div>",
+          iconSize:[10,10],iconAnchor:[5,5]
+        });
+        var m=L.marker([lt2,ln2],{icon:ic,zIndexOffset:900}).addTo(mapObj);
+        blitzMarkers.push(m);
+        setTimeout(function(){try{mapObj.removeLayer(m);}catch(x){}},4000);
+        // Max 150 markerow
+        if(blitzMarkers.length>150){
+          var old=blitzMarkers.splice(0,30);
+          old.forEach(function(mk){try{mapObj.removeLayer(mk);}catch(x){}});
+        }
+        // Aktualizuj licznik
+        var cnt=parseInt(document.getElementById("lgnt-cnt").textContent)||0;
+        document.getElementById("lgnt-cnt").textContent=cnt+1;
+      }catch(x){}
+    };
+    blitzWS.onerror=function(){blitzWS=null;};
+    blitzWS.onclose=function(){blitzWS=null; setTimeout(startBlitz,5000);};
+  }catch(x){blitzWS=null;}
+}
+
+// WARSTWY MAP
 function setL(n){
-  ["r","c","w","t"].forEach(function(x){var e=document.getElementById("lb-"+x);if(e)e.classList.remove("ac");});
-  var b=document.getElementById("lb-"+n);if(b)b.classList.add("ac");
-  if(extraLyr){mapObj.removeLayer(extraLyr);extraLyr=null;}
+  ["r","c","w","t"].forEach(function(x){
+    var e=document.getElementById("lb-"+x);
+    if(e)e.classList.remove("ac");
+  });
+  var b=document.getElementById("lb-"+n);
+  if(b)b.classList.add("ac");
+
+  // Ukryj wszystkie warstwy
   if(rvLyr&&mapObj.hasLayer(rvLyr))mapObj.removeLayer(rvLyr);
   if(satLyr&&mapObj.hasLayer(satLyr))mapObj.removeLayer(satLyr);
+  if(extraLyr){mapObj.removeLayer(extraLyr);extraLyr=null;}
+
   if(n==="r"){
+    // Tylko radar opadow
     if(rvLyr)rvLyr.addTo(mapObj);
-    document.getElementById("mbadge").textContent="RADAR - RainViewer";
-  } else if(n==="c"){
-    // Chmury satelitarne z RainViewer - tak jak Windy
+    document.getElementById("mbadge").textContent="RADAR OPADOW - RainViewer";
+
+  }else if(n==="c"){
+    // Chmury satelitarne (podczerwien) + radar opadow
     if(satLyr)satLyr.addTo(mapObj);
     if(rvLyr)rvLyr.addTo(mapObj);
-    document.getElementById("mbadge").textContent="CHMURY + RADAR";
-  } else if(n==="w"){
-    // Wiatr - warstwa z open-meteo tiles
-    extraLyr=L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",{opacity:0.5,maxNativeZoom:7,maxZoom:14});
-    document.getElementById("mbadge").textContent="WIATR (dane w panelu)";
-  } else if(n==="t"){
-    document.getElementById("mbadge").textContent="TEMPERATURA (dane w panelu)";
+    document.getElementById("mbadge").textContent="CHMURY SATELITARNE + RADAR";
+
+  }else if(n==="w"){
+    // Wiatr - warstwa z OpenWeatherMap (wymaga klucza) - pokazujemy alternatywe
+    // Uzywamy Windy tiles publicznie dostepnych
+    extraLyr=L.tileLayer("https://tile.openweathermap.org/map/wind_new/{z}/{x}/{y}.png?appid=439d4b804bc8187953eb36d2a8c26a02",{
+      opacity:0.7, maxNativeZoom:7, maxZoom:14, zIndex:3
+    });
+    extraLyr.addTo(mapObj);
+    if(satLyr)satLyr.addTo(mapObj);
+    document.getElementById("mbadge").textContent="WIATR - OpenWeatherMap";
+
+  }else if(n==="t"){
+    // Temperatura
+    extraLyr=L.tileLayer("https://tile.openweathermap.org/map/temp_new/{z}/{x}/{y}.png?appid=439d4b804bc8187953eb36d2a8c26a02",{
+      opacity:0.7, maxNativeZoom:7, maxZoom:14, zIndex:3
+    });
+    extraLyr.addTo(mapObj);
+    document.getElementById("mbadge").textContent="TEMPERATURA - OpenWeatherMap";
   }
 }
 
@@ -386,6 +452,7 @@ function setL(n){
 function startGPS(){
   initMap(52.2297,21.0122);
   fetchWx(52.2297,21.0122);
+  startBlitz(); // zacznij odzbirac bliskawice od razu
   if(!navigator.geolocation)return;
   navigator.geolocation.getCurrentPosition(function(pos){
     uLat=pos.coords.latitude; uLon=pos.coords.longitude;
@@ -396,6 +463,7 @@ function startGPS(){
     pi("p-gps","ok","GPS OK");
     if(mapObj){mapObj.setView([uLat,uLon],7);gpsMkr.setLatLng([uLat,uLon]);}
     geo(uLat,uLon); fetchWx(uLat,uLon);
+    startBlitz();
   },function(){pi("p-gps","wn","GPS brak");},{enableHighAccuracy:true,timeout:10000});
 }
 
