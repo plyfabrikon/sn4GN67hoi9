@@ -72,19 +72,33 @@ body{background:#060d18;color:#dff0ff;font-family:Arial,sans-serif;font-size:14p
 .mtr{position:absolute;top:7px;right:7px;font-size:.68rem;color:#4d7a9e}
 
 /* CHMURY */
-.ccard{background:#0d1e30;border:1px solid #1e3a55;border-radius:8px;padding:12px}
-.cl{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:5px;border-left:4px solid;background:rgba(255,255,255,.02);margin-bottom:4px}
-.cl.on{background:rgba(255,255,255,.07)}
-.cb{border-color:#ff3a3a}.cc{border-color:#e0f7ff}.ch{border-color:#64b5f6}.cm{border-color:#ffda3d}.clo{border-color:#ff6b35}
-.ca{font-size:.58rem;color:#4d7a9e;width:70px;flex-shrink:0;font-family:monospace}
-.cn{font-size:.84rem;font-weight:600;flex:1}
-.cbar{width:52px;height:5px;background:#1a2e42;border-radius:3px;overflow:hidden}
-.cf{height:100%;border-radius:3px;transition:width 1s}
-.cp{font-size:.58rem;width:28px;text-align:right;font-family:monospace}
-.lcl-box{margin-top:10px;padding-top:8px;border-top:1px solid #1e3a55}
-.lcl-l{font-size:.56rem;color:#4d7a9e;margin-bottom:2px}
-.lcl-v{font-size:1.2rem;font-weight:700;color:#ffaa00}
-.lcl-n{font-size:.7rem;color:#5a8aaa;margin-top:2px}
+.ccard{background:#0d1e30;border:1px solid #1e3a55;border-radius:8px;padding:14px}
+.cl{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:6px;border-left:5px solid;margin-bottom:6px;transition:all .3s;background:rgba(255,255,255,.025)}
+.cl.on{box-shadow:inset 0 0 0 1px rgba(255,255,255,.1)}
+/* Cb - CZERWONY (niebezpieczny) */
+.cb{border-color:#ff2020}
+.cl-cb.on{background:rgba(255,32,32,.14)}
+/* Cirrus - BIAŁY/LODOWY (najwyżej) */
+.cc{border-color:#dff3ff}
+.cl-ci.on{background:rgba(220,240,255,.06)}
+/* Alto - NIEBIESKI (srednie) */
+.ch{border-color:#4da6ff}
+.cl-hi.on{background:rgba(77,166,255,.09)}
+/* Stratus/Cu - ZIELONO-ZOLTY (niskie) */
+.cm{border-color:#b8ff00}
+.cl-mid.on{background:rgba(184,255,0,.07)}
+/* Mgla/Stratus - POMARANCZOWY (przyziemne) */
+.clo{border-color:#ff7700}
+.cl-lo.on{background:rgba(255,119,0,.10)}
+.ca{font-size:.6rem;color:#4d7a9e;width:76px;flex-shrink:0;font-family:monospace}
+.cn{font-size:.9rem;font-weight:700;flex:1}
+.cbar{flex:1;height:12px;background:#0a1420;border-radius:6px;overflow:hidden;max-width:180px;border:1px solid #1a2e42}
+.cf{height:100%;border-radius:6px;transition:width 1.2s ease;min-width:3px}
+.cp{font-family:monospace;font-size:.72rem;width:36px;text-align:right;font-weight:700}
+.lcl-box{margin-top:12px;padding-top:10px;border-top:1px solid #1e3a55}
+.lcl-l{font-size:.58rem;color:#4d7a9e;margin-bottom:3px;text-transform:uppercase;letter-spacing:1px}
+.lcl-v{font-size:1.3rem;font-weight:700;color:#ffaa00}
+.lcl-n{font-size:.72rem;color:#5a8aaa;margin-top:2px}
 
 /* BLISKAWICE */
 .lcard{background:#0d1e30;border:1px solid rgba(255,224,51,.2);border-radius:8px;padding:12px;display:flex;align-items:center;gap:12px}
@@ -210,12 +224,47 @@ body{background:#060d18;color:#dff0ff;font-family:Arial,sans-serif;font-size:14p
 
 <div class="s" style="margin-top:12px"><div class="sl">PIETRA CHMUR</div>
   <div class="ccard">
-    <div class="cl cb" id="cl-cb"><div class="ca">&gt;10000m</div><div class="cn" style="color:#ff3a3a">Cb Cumulonimbus</div><div class="cbar"><div class="cf" id="cf-cb" style="width:0%;background:#ff3a3a"></div></div><div class="cp" id="cp-cb" style="color:#ff3a3a">0%</div></div>
-    <div class="cl cc" id="cl-ci"><div class="ca">7-13000m</div><div class="cn" style="color:#e0f7ff">Cirrus/Ci-St</div><div class="cbar"><div class="cf" id="cf-ci" style="width:0%;background:#e0f7ff"></div></div><div class="cp" id="cp-ci" style="color:#e0f7ff">0%</div></div>
-    <div class="cl ch" id="cl-hi"><div class="ca">2-7000m</div><div class="cn" style="color:#64b5f6">Alto/Srednie</div><div class="cbar"><div class="cf" id="cf-hi" style="width:0%;background:#64b5f6"></div></div><div class="cp" id="cp-hi" style="color:#64b5f6">0%</div></div>
-    <div class="cl cm" id="cl-md"><div class="ca">600-2000m</div><div class="cn" style="color:#ffda3d">Stratus/Cu</div><div class="cbar"><div class="cf" id="cf-md" style="width:0%;background:#ffda3d"></div></div><div class="cp" id="cp-md" style="color:#ffda3d">0%</div></div>
-    <div class="cl clo" id="cl-lo"><div class="ca">0-600m</div><div class="cn" style="color:#ff6b35">Stratus/Mgla</div><div class="cbar"><div class="cf" id="cf-lo" style="width:0%;background:#ff6b35"></div></div><div class="cp" id="cp-lo" style="color:#ff6b35">0%</div></div>
-    <div class="lcl-box"><div class="lcl-l">PODSTAWA CHMUR (LCL)</div><div class="lcl-v" id="lcl-v">--- m</div><div class="lcl-n" id="lcl-n">Obliczam...</div></div>
+
+    <div class="cl cb cl-cb" id="cl-cb">
+      <div class="ca">&gt;10 000 m</div>
+      <div class="cn" style="color:#ff2020">⛈ Cb Cumulonimbus</div>
+      <div class="cbar"><div class="cf" id="cf-cb" style="width:0%;background:linear-gradient(90deg,#8b0000,#ff2020,#ff6060)"></div></div>
+      <div class="cp" id="cp-cb" style="color:#ff2020">0%</div>
+    </div>
+
+    <div class="cl cc cl-ci" id="cl-ci">
+      <div class="ca">7–13 000 m</div>
+      <div class="cn" style="color:#dff3ff">❄ Cirrus / Ci-St</div>
+      <div class="cbar"><div class="cf" id="cf-ci" style="width:0%;background:linear-gradient(90deg,#90c8e8,#c8e8f8,#dff3ff)"></div></div>
+      <div class="cp" id="cp-ci" style="color:#c8e8f8">0%</div>
+    </div>
+
+    <div class="cl ch cl-hi" id="cl-hi">
+      <div class="ca">2–7 000 m</div>
+      <div class="cn" style="color:#4da6ff">☁ Alto / Srednie</div>
+      <div class="cbar"><div class="cf" id="cf-hi" style="width:0%;background:linear-gradient(90deg,#0055bb,#1a80ff,#4da6ff)"></div></div>
+      <div class="cp" id="cp-hi" style="color:#4da6ff">0%</div>
+    </div>
+
+    <div class="cl cm cl-mid" id="cl-md">
+      <div class="ca">600–2 000 m</div>
+      <div class="cn" style="color:#b8ff00">🌥 Stratus / Cu</div>
+      <div class="cbar"><div class="cf" id="cf-md" style="width:0%;background:linear-gradient(90deg,#558800,#99dd00,#b8ff00)"></div></div>
+      <div class="cp" id="cp-md" style="color:#b8ff00">0%</div>
+    </div>
+
+    <div class="cl clo cl-lo" id="cl-lo">
+      <div class="ca">0–600 m</div>
+      <div class="cn" style="color:#ff9933">🌫 Stratus / Mgla</div>
+      <div class="cbar"><div class="cf" id="cf-lo" style="width:0%;background:linear-gradient(90deg,#993300,#ff5500,#ff9933)"></div></div>
+      <div class="cp" id="cp-lo" style="color:#ff9933">0%</div>
+    </div>
+
+    <div class="lcl-box">
+      <div class="lcl-l">PODSTAWA CHMUR KONWEKCYJNYCH (LCL)</div>
+      <div class="lcl-v" id="lcl-v">--- m</div>
+      <div class="lcl-n" id="lcl-n">Obliczam...</div>
+    </div>
   </div>
 </div>
 
@@ -312,17 +361,14 @@ function initMap(lt,ln){
     maxZoom:12, minZoom:1
   }).addTo(mapObj);
 
-  // Chmury OWM clouds_new - najlepsza darmowa z kluczem
-  satLyr=L.tileLayer("https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid="+OWM_KEY,{
-    opacity:0.85, maxNativeZoom:12, maxZoom:12, zIndex:2, tileSize:256
-  });
-
-  var ic=L.divIcon({className:"",html:"<div class=\'gpin\'><div class=\'gpin-r\'></div><div class=\'gpin-c\'></div></div>",iconSize:[16,16],iconAnchor:[8,8]});
+  var ic=L.divIcon({className:"",html:"<div class='gpin'><div class='gpin-r'></div><div class='gpin-c'></div></div>",iconSize:[16,16],iconAnchor:[8,8]});
   gpsMkr=L.marker([lt,ln],{icon:ic,zIndexOffset:1000}).addTo(mapObj);
   setTimeout(function(){mapObj.invalidateSize();},300);
-  loadRV();
+
+  // Laduj radar I satelite z jednego API call
+  loadRVandSat();
   setupMapClick();
-  setTimeout(function(){ setL("c"); },1200);
+  setTimeout(function(){ setL("c"); },1800);
 }
 
 function rc(){if(mapObj&&uLat)mapObj.setView([uLat,uLon],7);}
@@ -339,27 +385,58 @@ document.addEventListener("DOMContentLoaded",function(){
   });
 });
 
-function loadRV(){
+// Jeden fetch dla radaru I satelity - RainViewer API zwraca obydwa
+function loadRVandSat(){
   if(!mapObj)return;
   fetch("https://api.rainviewer.com/public/weather-maps.json")
   .then(function(r){return r.json();})
   .then(function(d){
-    var f=d.radar&&d.radar.past?d.radar.past:[];
-    if(!f.length)return;
-    var l=f[f.length-1];
     var host=d.host||"https://tilecache.rainviewer.com";
-    var wasOn=rvLyr&&mapObj.hasLayer(rvLyr);
-    if(rvLyr)mapObj.removeLayer(rvLyr);
-    rvLyr=L.tileLayer(host+l.path+"/512/{z}/{x}/{y}/2/1_1.png",{
-      opacity:0.8, tileSize:512, zoomOffset:-1,
-      maxNativeZoom:6, maxZoom:12, zIndex:3
+
+    // RADAR - ostatnia klatka
+    var rf=d.radar&&d.radar.past?d.radar.past:[];
+    if(rf.length){
+      var rl=rf[rf.length-1];
+      var wasOn=rvLyr&&mapObj.hasLayer(rvLyr);
+      if(rvLyr)mapObj.removeLayer(rvLyr);
+      // POPRAWNY URL: tileSize 512, zoomOffset -1 (wymagane dla 512px kafli)
+      rvLyr=L.tileLayer(host+rl.path+"/512/{z}/{x}/{y}/2/1_1.png",{
+        opacity:0.85, tileSize:512, zoomOffset:-1,
+        maxNativeZoom:6, maxZoom:12, zIndex:4
+      });
+      if(wasOn)rvLyr.addTo(mapObj);
+      var rt=new Date(rl.time*1000);
+      document.getElementById("mbadge").textContent="RADAR "+pd(rt.getHours())+":"+pd(rt.getMinutes())+" UTC";
+    }
+
+    // SATELITA PODCZERWIEN - ostatnia klatka z satellite.infrared
+    var sf=d.satellite&&d.satellite.infrared?d.satellite.infrared:[];
+    if(sf.length){
+      var sl=sf[sf.length-1];
+      var satWasOn=satLyr&&mapObj.hasLayer(satLyr);
+      if(satLyr)mapObj.removeLayer(satLyr);
+      // Satelita nie ma zoomOffset, tileSize 256
+      satLyr=L.tileLayer(host+sl.path+"/256/{z}/{x}/{y}/0/0_0.png",{
+        opacity:0.7, tileSize:256,
+        maxNativeZoom:4, maxZoom:12, zIndex:2
+      });
+      if(satWasOn)satLyr.addTo(mapObj);
+    } else {
+      // Fallback - OWM clouds jesli nie ma satelity
+      satLyr=L.tileLayer("https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid="+OWM_KEY,{
+        opacity:0.9, maxNativeZoom:12, maxZoom:12, zIndex:2, tileSize:256
+      });
+    }
+  }).catch(function(e){
+    // Fallback na OWM jesli RainViewer niedostepny
+    satLyr=L.tileLayer("https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid="+OWM_KEY,{
+      opacity:0.9, maxNativeZoom:12, maxZoom:12, zIndex:2
     });
-    if(wasOn)rvLyr.addTo(mapObj);
-    var t=new Date(l.time*1000);
-    document.getElementById("mbadge").textContent="RADAR "+pd(t.getHours())+":"+pd(t.getMinutes())+" UTC";
-  }).catch(function(){});
+  });
 }
-setInterval(loadRV,300000);
+
+function loadRV(){loadRVandSat();}
+setInterval(loadRVandSat,300000);
 
 function startBlitz(){
   if(blitzWS)return;
@@ -608,19 +685,49 @@ function updWind(dir,spd,gst){
 }
 function updClouds(lo,mi,hi,cod,cape,dew,tmp){
   var cb=cod>=95?90:cod>=80?Math.min(70,cape/40):cape>2000?50:cape>1000?25:0;
-  function sc(fi,pi2,pct){pct=Math.max(0,Math.min(100,Math.round(pct)));document.getElementById(fi).style.width=pct+"%";document.getElementById(pi2).textContent=pct+"%";}
-  sc("cf-cb","cp-cb",cb);sc("cf-ci","cp-ci",hi);sc("cf-hi","cp-hi",mi);sc("cf-md","cp-md",lo);
+
+  function sc(fillId,pctId,pct,color){
+    pct=Math.max(0,Math.min(100,Math.round(pct)));
+    var fill=document.getElementById(fillId);
+    var pctEl=document.getElementById(pctId);
+    if(fill){
+      fill.style.width=pct+"%";
+      if(color) fill.style.background=color;
+    }
+    if(pctEl){
+      pctEl.textContent=pct+"%";
+      // Pogrub jesli aktywne
+      pctEl.style.fontWeight=pct>20?"700":"400";
+    }
+  }
+
   var fog=dew>(tmp-2)?Math.min(100,Math.max(0,(tmp-dew+2)*30)):0;
-  sc("cf-lo","cp-lo",fog);
-  ["cl-cb","cl-ci","cl-hi","cl-md","cl-lo"].forEach(function(id){var e=document.getElementById(id);if(e)e.classList.remove("on");});
-  if(cb>15)document.getElementById("cl-cb").classList.add("on");
-  if(hi>20)document.getElementById("cl-ci").classList.add("on");
-  if(mi>20)document.getElementById("cl-hi").classList.add("on");
-  if(lo>20)document.getElementById("cl-md").classList.add("on");
-  if(fog>10)document.getElementById("cl-lo").classList.add("on");
+
+  sc("cf-cb","cp-cb",cb,   "linear-gradient(90deg,#8b0000,#ff2020,#ff6060)");
+  sc("cf-ci","cp-ci",hi,   "linear-gradient(90deg,#90c8e8,#c8e8f8,#dff3ff)");
+  sc("cf-hi","cp-hi",mi,   "linear-gradient(90deg,#0055bb,#1a80ff,#4da6ff)");
+  sc("cf-md","cp-md",lo,   "linear-gradient(90deg,#558800,#99dd00,#b8ff00)");
+  sc("cf-lo","cp-lo",fog,  "linear-gradient(90deg,#993300,#ff5500,#ff9933)");
+
+  // Aktywne klasy (on) — uzywamy ID bo HTML ma id="cl-cb" etc.
+  ["cl-cb","cl-ci","cl-hi","cl-md","cl-lo"].forEach(function(id){
+    var e=document.getElementById(id);
+    if(e)e.classList.remove("on");
+  });
+  if(cb>5)  document.getElementById("cl-cb").classList.add("on");
+  if(hi>10) document.getElementById("cl-ci").classList.add("on");
+  if(mi>10) document.getElementById("cl-hi").classList.add("on");
+  if(lo>10) document.getElementById("cl-md").classList.add("on");
+  if(fog>5) document.getElementById("cl-lo").classList.add("on");
+
   var lcl=Math.round((tmp-dew)*125);
-  document.getElementById("lcl-v").textContent=lcl>0?lcl+" m":"<100m";
-  document.getElementById("lcl-n").textContent=lcl<300?"Bardzo nisko - mgla":lcl<800?"Podstawa niska":lcl<1500?"Umiarkowana":lcl<3000?"Wysoka":"Dobra widocznosc";
+  document.getElementById("lcl-v").textContent=lcl>0?lcl+" m":"< 100 m";
+  document.getElementById("lcl-n").textContent=
+    lcl<300?"⚠ Bardzo nisko — ryzyko mgly":
+    lcl<800?"Podstawa niska — mozliwe opady":
+    lcl<1500?"Podstawa umiarkowana":
+    lcl<3000?"Podstawa wysoka":
+    "✅ Dobra widocznosc pionowa";
 }
 function updIdx(cape,li,prc,cld,wsp,wgu){
   function si(bi,vi,di,pct,val,col,dsc){
