@@ -12,10 +12,8 @@
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#060d18;color:#dff0ff;font-family:Arial,sans-serif;font-size:14px;height:100vh;overflow:hidden;display:flex;flex-direction:column}
-
-/* TOPBAR */
-.bar{flex-shrink:0;z-index:999;background:#07111f;border-bottom:1px solid #1e3a55;padding:8px 12px;display:flex;align-items:center;gap:8px}
+body{background:#060d18;color:#dff0ff;font-family:Arial,sans-serif;font-size:14px}
+.bar{position:sticky;top:0;z-index:999;background:#07111f;border-bottom:1px solid #1e3a55;padding:8px 12px;display:flex;align-items:center;gap:8px}
 .bar-logo{font-weight:700;font-size:1.1rem;letter-spacing:3px;color:#29d4ff}
 .bar-logo b{color:#ffaa00}
 .ps{display:flex;gap:5px;flex:1;overflow-x:auto}
@@ -26,52 +24,19 @@ body{background:#060d18;color:#dff0ff;font-family:Arial,sans-serif;font-size:14p
 .al{border-color:#ff3a3a;color:#ff3a3a}
 .of{border-color:#1a2e42;color:#4d7a9e}
 .clk{font-size:.7rem;color:#29d4ff;margin-left:auto;white-space:nowrap}
-
-/* DWUKOLUMNOWY LAYOUT */
-.layout{display:flex;flex:1;overflow:hidden;min-height:0}
-
-/* LEWA KOLUMNA - parametry 1/3 */
-.col-left{width:33.333%;flex-shrink:0;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:8px;border-right:1px solid #1e3a55}
-.col-left::-webkit-scrollbar{width:3px}
-.col-left::-webkit-scrollbar-thumb{background:#1e3a55}
-
-/* PRAWA KOLUMNA - mapa 2/3 */
-.col-right{flex:1;display:flex;flex-direction:column;min-width:0;position:relative}
-
-.s{padding:0}
-.sl{font-size:.62rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#4d7a9e;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.s{padding:12px 12px 0}
+.sl{font-size:.68rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#4d7a9e;margin-bottom:8px;display:flex;align-items:center;gap:8px}
 .sl::after{content:"";flex:1;height:1px;background:#1e3a55}
 
-/* MAPA - wypelnia prawa kolumne */
-#mapbox{position:relative;flex:1;min-height:0;overflow:hidden;background:#e8f4f8}
+/* MAPA */
+#mapbox{position:relative;height:500px;margin:0 12px;border:1px solid #1e3a55;border-radius:8px;overflow:hidden;background:#e8f4f8;resize:vertical;min-height:300px;max-height:90vh}
 #map{width:100%;height:100%}
-/* Przesuń przyciski zoom Leaflet na górę po prawej, nad legendą */
-.leaflet-top.leaflet-right{top:8px !important}
-.leaflet-control-zoom{margin-top:0 !important; margin-right:8px !important}
-.mbtns{position:absolute;top:8px;left:8px;z-index:500;display:flex;flex-direction:column;gap:3px;min-width:148px}
-/* Panel warstw */
-.lyr-panel{background:rgba(4,10,20,0.93);border:1px solid #1e3a55;border-radius:8px;padding:7px 8px;backdrop-filter:blur(6px)}
-.lyr-title{font-size:.52rem;font-weight:700;letter-spacing:2px;color:#4d7a9e;text-transform:uppercase;margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid #1a2e42}
-.lyr-row{display:flex;align-items:center;gap:7px;padding:4px 2px;cursor:pointer;border-radius:4px;transition:background .12s;user-select:none}
-.lyr-row:hover{background:rgba(255,255,255,.05)}
-/* Custom checkbox */
-.lyr-chk{width:15px;height:15px;border-radius:3px;border:1.5px solid #1e3a55;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;font-size:10px}
-.lyr-chk.on{border-color:currentColor;background:currentColor}
-.lyr-chk.on::after{content:"✓";color:#000;font-weight:900;font-size:9px}
-/* Kolor paska warstwy */
-.lyr-dot{width:6px;height:24px;border-radius:3px;flex-shrink:0}
-.lyr-label{font-size:.63rem;color:#c8dff0;line-height:1.2;flex:1}
-.lyr-label small{font-size:.52rem;color:#4d7a9e;display:block}
-/* Separator */
-.lyr-sep{height:1px;background:#1a2e42;margin:4px 0}
-/* Przycisk mapy bazowej */
-.base-row{display:flex;gap:3px;margin-top:5px}
-.base-btn{flex:1;font-size:.52rem;padding:3px;border-radius:3px;border:1px solid #1a2e42;background:rgba(255,255,255,.04);color:#5a8aaa;cursor:pointer;text-align:center;transition:all .12s}
-.base-btn:hover{border-color:#29d4ff;color:#29d4ff}
-.base-btn.on{border-color:#29d4ff;color:#060d18;background:#29d4ff;font-weight:700}
+.mbtns{position:absolute;top:8px;left:8px;z-index:500;display:flex;flex-direction:column;gap:4px}
+.mb2{background:rgba(6,13,24,.9);border:1px solid #1e3a55;color:#dff0ff;font-size:.6rem;padding:5px 8px;border-radius:4px;cursor:pointer}
+.mb2.ac{background:#29d4ff;color:#060d18;font-weight:700}
 .mbadge{position:absolute;bottom:8px;left:8px;z-index:500;font-size:.58rem;color:#29d4ff;background:rgba(6,13,24,.85);border:1px solid #1e3a55;padding:3px 7px;border-radius:4px}
-.mrecenter{position:absolute;bottom:8px;right:8px;z-index:500;background:#29d4ff;color:#060d18;border:none;width:36px;height:36px;border-radius:50%;font-size:1.1rem;cursor:pointer;box-shadow:0 2px 8px rgba(41,212,255,.4)}
-.mresize{display:none}
+.mrecenter{position:absolute;bottom:8px;right:50px;z-index:500;background:#29d4ff;color:#060d18;border:none;width:34px;height:34px;border-radius:50%;font-size:1rem;cursor:pointer}
+.mresize{position:absolute;bottom:8px;right:8px;z-index:500;background:#1e3a55;color:#dff0ff;border:none;width:34px;height:34px;border-radius:50%;font-size:1rem;cursor:ns-resize;display:flex;align-items:center;justify-content:center}
 
 /* GPS pulsujacy */
 .gpin{width:16px;height:16px;position:relative}
@@ -209,13 +174,45 @@ body{background:#060d18;color:#dff0ff;font-family:Arial,sans-serif;font-size:14p
   <div class="clk" id="clk">--:--</div>
 </div>
 
-<div class="layout">
+<div class="s"><div class="sl">MAPA NA ZYWO</div></div>
+<div id="mapbox">
+  <div id="map">
+  <!-- TIMELINE -->
+<div id="timeline-box" style="
+  position:absolute;
+  bottom:90px;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:600;
+  background:rgba(6,13,24,0.9);
+  border:1px solid #1e3a55;
+  border-radius:8px;
+  padding:8px 12px;
+  width:320px;
+  text-align:center;
+">
+  <input type="range" min="-1800" max="3600" step="60" value="0" id="timeSlider" style="width:100%">
+  <div style="font-size:.6rem;color:#29d4ff;margin-top:4px;font-family:monospace">
+    <span id="timeLabel">LIVE</span>
+  </div>
+  <div style="margin-top:6px">
+    <button onclick="playTimeline()">▶</button>
+    <button onclick="stopTimeline()">⏸</button>
+  </div>
+</div>
+  </div>
+  <div class="mbtns">
+    <button class="mb2 ac" id="lb-r" onclick="setL('r')">RADAR</button>
+    <button class="mb2"    id="lb-c" onclick="setL('c')">CHMURY+RADAR</button>
+    <button class="mb2"    id="lb-w" onclick="setL('w')">WIATR</button>
+    <button class="mb2"    id="lb-t" onclick="setL('t')">TEMP</button>
+  </div>
+  <div class="mbadge" id="mbadge">RADAR...</div>
+  <button class="mrecenter" onclick="rc()" title="Moja pozycja">&#x25CE;</button>
+  <button class="mresize" id="mresize-btn" title="Powieksz/zmniejsz mape">&#x2195;</button>
+</div>
 
-  <!-- LEWA KOLUMNA: wszystkie parametry -->
-  <div class="col-left">
-
-
-<div class="s"><div class="sl">TWOJA LOKALIZACJA</div>
+<div class="s" style="margin-top:12px"><div class="sl">TWOJA LOKALIZACJA</div>
   <div class="card" style="position:relative;overflow:hidden">
     <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#1fde8a,#29d4ff)"></div>
     <div class="city" id="l-city">---</div>
@@ -231,14 +228,14 @@ body{background:#060d18;color:#dff0ff;font-family:Arial,sans-serif;font-size:14p
   </div>
 </div>
 
-<div class="s"><div class="sl">RYZYKO BURZOWE</div>
+<div class="s" style="margin-top:12px"><div class="sl">RYZYKO BURZOWE</div>
   <div class="risk r-low" id="rbox">
     <div class="rn" id="rnum" style="color:#1fde8a">--</div>
     <div><div class="rt" id="rtit" style="color:#1fde8a">Czekam...</div><div class="rs" id="rsub">Pobieranie danych</div></div>
   </div>
 </div>
 
-<div class="s"><div class="sl">PARAMETRY</div>
+<div class="s" style="margin-top:12px"><div class="sl">PARAMETRY</div>
   <div class="mg">
     <div class="met mm" id="c-tmp"><div class="ml">Temperatura</div><div class="mv" id="v-tmp">--</div><div class="mu">deg C</div><div class="mtr" id="t-tmp"></div></div>
     <div class="met mm"><div class="ml">Odczuwalna</div><div class="mv" id="v-fel">--</div><div class="mu">deg C</div></div>
@@ -249,7 +246,7 @@ body{background:#060d18;color:#dff0ff;font-family:Arial,sans-serif;font-size:14p
   </div>
 </div>
 
-<div class="s"><div class="sl">PIETRA CHMUR</div>
+<div class="s" style="margin-top:12px"><div class="sl">PIETRA CHMUR</div>
   <div class="ccard">
 
     <div class="cl cb cl-cb" id="cl-cb">
@@ -295,7 +292,7 @@ body{background:#060d18;color:#dff0ff;font-family:Arial,sans-serif;font-size:14p
   </div>
 </div>
 
-<div class="s"><div class="sl">WYLADOWANIA ATMOSFERYCZNE</div>
+<div class="s" style="margin-top:12px"><div class="sl">WYLADOWANIA ATMOSFERYCZNE</div>
   <div class="lcard">
     <div class="lbig" id="blk-counter">--</div>
     <div>
@@ -306,7 +303,7 @@ body{background:#060d18;color:#dff0ff;font-family:Arial,sans-serif;font-size:14p
   </div>
 </div>
 
-<div class="s"><div class="sl">RYZYKO GRADU</div>
+<div class="s" style="margin-top:12px"><div class="sl">RYZYKO GRADU</div>
   <div class="hcard">
     <div class="ht">SKALA GRADU</div>
     <div class="hsc" id="hsc"></div>
@@ -315,7 +312,7 @@ body{background:#060d18;color:#dff0ff;font-family:Arial,sans-serif;font-size:14p
   </div>
 </div>
 
-<div class="s"><div class="sl">WSKAZNIKI BURZOWE</div>
+<div class="s" style="margin-top:12px"><div class="sl">WSKAZNIKI BURZOWE</div>
   <div class="icard">
     <div class="ir"><div class="in">CAPE</div><div class="ibw"><div class="ib" id="ib-c" style="width:0%"></div></div><div class="iv" id="iv-c">--J</div><div class="id" id="id-c">--</div></div>
     <div class="ir"><div class="in">LIFTED IDX</div><div class="ibw"><div class="ib" id="ib-l" style="width:0%"></div></div><div class="iv" id="iv-l">--</div><div class="id" id="id-l">--</div></div>
@@ -325,11 +322,11 @@ body{background:#060d18;color:#dff0ff;font-family:Arial,sans-serif;font-size:14p
   </div>
 </div>
 
-<div class="s"><div class="sl">ALERTY</div>
+<div class="s" style="margin-top:12px"><div class="sl">ALERTY</div>
   <div id="abox"><div class="al2 ai"><div class="ah" style="color:#29d4ff">LADOWANIE...</div><div class="ab">Pobieranie danych meteorologicznych</div></div></div>
 </div>
 
-<div class="s"><div class="sl">WIATR</div>
+<div class="s" style="margin-top:12px"><div class="sl">WIATR</div>
   <div class="wcard">
     <svg viewBox="0 0 76 76">
       <circle cx="38" cy="38" r="34" fill="none" stroke="#1a2e42" stroke-width="1"/>
@@ -350,7 +347,7 @@ body{background:#060d18;color:#dff0ff;font-family:Arial,sans-serif;font-size:14p
   </div>
 </div>
 
-<div class="s"><div class="sl">PROGNOZA 7 DNI</div>
+<div class="s" style="margin-top:12px"><div class="sl">PROGNOZA 7 DNI</div>
   <div class="fsc" id="fbox"></div>
 </div>
 
@@ -358,105 +355,14 @@ body{background:#060d18;color:#dff0ff;font-family:Arial,sans-serif;font-size:14p
   <div class="foot">RADAR: <span style="color:#29d4ff">RainViewer</span> | DANE: <span style="color:#29d4ff">Open-Meteo</span> | GPS: <span style="color:#29d4ff">Nominatim</span><br>Aktualizacja: <span style="color:#dff0ff" id="upd">--</span></div>
 </div>
 <div class="mb0"></div>
-  </div><!-- /col-left -->
-
-  <!-- PRAWA KOLUMNA: mapa -->
-  <div class="col-right">
-<div class="s"><div class="sl">MAPA NA ZYWO</div></div>
-<div id="mapbox">
-  <div id="map"></div>
-  <div class="mbtns">
-    <div class="lyr-panel">
-      <div class="lyr-title">⚙ WARSTWY MAPY</div>
-
-      <!-- SATELITA IR -->
-      <div class="lyr-row" onclick="toggleLayer('sat')" id="row-sat">
-        <div class="lyr-chk on" id="chk-sat" style="color:#a0d0f0"></div>
-        <div class="lyr-dot" style="background:linear-gradient(#c8e8ff,#4080c0)"></div>
-        <div class="lyr-label">Satelita IR<small>EUMETSAT podczerwień</small></div>
-      </div>
-
-      <!-- RADAR OPADÓW -->
-      <div class="lyr-row" onclick="toggleLayer('radar')" id="row-radar">
-        <div class="lyr-chk on" id="chk-radar" style="color:#29d4ff"></div>
-        <div class="lyr-dot" style="background:linear-gradient(#29d4ff,#1a6fa8)"></div>
-        <div class="lyr-label">Radar opadów<small>RainViewer live</small></div>
-      </div>
-
-      <div class="lyr-sep"></div>
-
-      <!-- WIATR -->
-      <div class="lyr-row" onclick="toggleLayer('wind')" id="row-wind">
-        <div class="lyr-chk" id="chk-wind" style="color:#1fde8a"></div>
-        <div class="lyr-dot" style="background:linear-gradient(#1fde8a,#0a6640)"></div>
-        <div class="lyr-label">Wiatr<small>OpenWeatherMap</small></div>
-      </div>
-
-      <!-- TEMPERATURA -->
-      <div class="lyr-row" onclick="toggleLayer('temp')" id="row-temp">
-        <div class="lyr-chk" id="chk-temp" style="color:#ff6b35"></div>
-        <div class="lyr-dot" style="background:linear-gradient(#ff3a3a,#ffaa00)"></div>
-        <div class="lyr-label">Temperatura<small>OpenWeatherMap</small></div>
-      </div>
-
-      <!-- CIŚNIENIE -->
-      <div class="lyr-row" onclick="toggleLayer('pres')" id="row-pres">
-        <div class="lyr-chk" id="chk-pres" style="color:#a78bfa"></div>
-        <div class="lyr-dot" style="background:linear-gradient(#a78bfa,#5b21b6)"></div>
-        <div class="lyr-label">Ciśnienie<small>OpenWeatherMap</small></div>
-      </div>
-
-      <!-- WYŁADOWANIA -->
-      <div class="lyr-row" onclick="toggleLayer('blitz')" id="row-blitz">
-        <div class="lyr-chk on" id="chk-blitz" style="color:#ffe033"></div>
-        <div class="lyr-dot" style="background:linear-gradient(#ffe033,#cc8800)"></div>
-        <div class="lyr-label">Wyładowania<small>Blitzortung live</small></div>
-      </div>
-
-      <div class="lyr-sep"></div>
-
-      <!-- MAPA BAZOWA -->
-      <div class="lyr-title" style="margin-top:2px;margin-bottom:4px">🗺 MAPA BAZOWA</div>
-      <div class="base-row">
-        <button class="base-btn on" id="base-street" onclick="setBase('street')">Jasna</button>
-        <button class="base-btn" id="base-dark" onclick="setBase('dark')">Ciemna</button>
-        <button class="base-btn" id="base-sat" onclick="setBase('sat')">Satelita</button>
-      </div>
-
-      <div class="lyr-sep"></div>
-
-      <!-- TEST WYŁADOWAŃ -->
-      <div class="lyr-title" style="margin-top:2px;margin-bottom:4px">⚡ TEST</div>
-      <button onclick="testBlitz()" style="width:100%;font-size:.6rem;padding:5px;border-radius:4px;border:1px solid rgba(255,224,51,0.4);background:rgba(255,224,51,0.08);color:#ffe033;cursor:pointer;letter-spacing:1px">
-        SYMULUJ WYŁADOWANIE
-      </button>
-    </div>
-  </div>
-  <div class="mbadge" id="mbadge">RADAR...</div>
-  <!-- Licznik wyladowan widocznych na mapie -->
-  <div id="blitz-map-counter" style="
-    position:absolute;bottom:48px;left:8px;z-index:500;
-    background:rgba(6,13,24,0.88);border:1px solid rgba(255,224,51,0.5);
-    border-radius:6px;padding:5px 10px;pointer-events:none;
-    display:flex;flex-direction:column;align-items:center;gap:1px;">
-    <div style="font-family:monospace;font-size:1.4rem;font-weight:700;color:#ffe033;line-height:1" id="blitz-view-count">0</div>
-    <div style="font-family:monospace;font-size:0.55rem;color:#5a8aaa;letter-spacing:1px">BŁK W WIDOKU</div>
-    <div style="display:flex;gap:4px;margin-top:3px;font-size:0.5rem;font-family:monospace">
-      <span style="color:#ff0000">●0-5min</span>
-      <span style="color:#ff8800">●5-10</span>
-      <span style="color:#ffff00">●10-30</span>
-    </div>
-  </div>
-  <button class="mrecenter" onclick="rc()" title="Moja pozycja">&#x25CE;</button>
-  <button class="mresize" id="mresize-btn" title="Powieksz/zmniejsz mape">&#x2195;</button>
-</div>
-  </div><!-- /col-right -->
-
-</div><!-- /layout -->
 
 <script>
 // Leaflet jest juz zaladowany w head synchronicznie
 var uLat=null,uLon=null,mapObj=null,gpsMkr=null,rvLyr=null,lMk=[],lIt=null,pT=null,pP=null,gpsHadFix=false;
+var timeOffset = 0; // sekundowy offset czasu (-1800 do +3600)
+var animInterval = null;
+var predictionMarkers = [];
+var stormArrow = null;
 var DAYS=["ND","PN","WT","SR","CZW","PT","SOB"];
 var DIRS=["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"];
 var HC=[{l:"<5mm",c:"#64b5f6"},{l:"5-10",c:"#29d4ff"},{l:"10-20",c:"#1fde8a"},{l:"20-30",c:"#ffaa00"},{l:"30-50",c:"#ff6b35"},{l:">50",c:"#ff3a3a"}];
@@ -478,34 +384,34 @@ var satLyr=null, rvLyr=null, extraLyr=null, blitzWS=null, blitzMarkers=[];
 
 function initMap(lt,ln){
   if(mapObj)return;
-  mapObj=L.map("map",{zoomControl:false,attributionControl:false,doubleClickZoom:false}).setView([lt,ln],6);
-  // Zoom w prawym górnym rogu - nad legendą po lewej
-  L.control.zoom({position:'topright'}).addTo(mapObj);
+  mapObj=L.map("map",{zoomControl:true,attributionControl:false}).setView([lt,ln],6);
   L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",{
     maxZoom:12, minZoom:1
   }).addTo(mapObj);
 
   var ic=L.divIcon({className:"",html:"<div class='gpin'><div class='gpin-r'></div><div class='gpin-c'></div></div>",iconSize:[16,16],iconAnchor:[8,8]});
   gpsMkr=L.marker([lt,ln],{icon:ic,zIndexOffset:1000}).addTo(mapObj);
-  setTimeout(function(){mapObj.invalidateSize();},200);
-  setTimeout(function(){mapObj.invalidateSize();},600);
-
-  // Aktualizuj licznik przy kazdym ruchu/zoomie mapy
-  mapObj.on("moveend zoomend", updateViewCounter);
+  setTimeout(function(){mapObj.invalidateSize();},300);
 
   // Laduj radar I satelite z jednego API call
   loadRVandSat();
   setupMapClick();
-  // Inicjalizuj bazę i warstwy
-  setTimeout(function(){
-    setBase('street');
-    applyAllLayers();
-  }, 800);
+  setTimeout(function(){ setL("c"); },1800);
 }
 
 function rc(){if(mapObj&&uLat)mapObj.setView([uLat,uLon],7);}
 
 var mapBig=false;
+document.addEventListener("DOMContentLoaded",function(){
+  var btn=document.getElementById("mresize-btn");
+  if(btn) btn.addEventListener("click",function(){
+    var box=document.getElementById("mapbox");
+    mapBig=!mapBig;
+    box.style.height=mapBig?"85vh":"500px";
+    setTimeout(function(){if(mapObj)mapObj.invalidateSize();},150);
+    btn.innerHTML=mapBig?"&#x2B06;":"&#x2195;";
+  });
+});
 
 // Jeden fetch dla radaru I satelity - RainViewer API zwraca obydwa
 function loadRVandSat(){
@@ -519,12 +425,14 @@ function loadRVandSat(){
     var rf=d.radar&&d.radar.past?d.radar.past:[];
     if(rf.length){
       var rl=rf[rf.length-1];
-      if(rvLyr&&mapObj.hasLayer(rvLyr))mapObj.removeLayer(rvLyr);
-      rvLyr=L.tileLayer(host+rl.path+"/512/{z}/{x}/{y}/6/1_1.png",{
-        opacity: 0.85, tileSize:512, zoomOffset:-1,
-        maxNativeZoom:6, maxZoom:12, zIndex:3
+      var wasOn=rvLyr&&mapObj.hasLayer(rvLyr);
+      if(rvLyr)mapObj.removeLayer(rvLyr);
+      // POPRAWNY URL: tileSize 512, zoomOffset -1 (wymagane dla 512px kafli)
+      rvLyr=L.tileLayer(host+rl.path+"/512/{z}/{x}/{y}/2/1_1.png",{
+        opacity:0.85, tileSize:512, zoomOffset:-1,
+        maxNativeZoom:6, maxZoom:12, zIndex:4
       });
-      if(layers.radar&&layers.radar.on) rvLyr.addTo(mapObj);
+      if(wasOn)rvLyr.addTo(mapObj);
       var rt=new Date(rl.time*1000);
       document.getElementById("mbadge").textContent="RADAR "+pd(rt.getHours())+":"+pd(rt.getMinutes())+" UTC";
     }
@@ -533,15 +441,14 @@ function loadRVandSat(){
     var sf=d.satellite&&d.satellite.infrared?d.satellite.infrared:[];
     if(sf.length){
       var sl=sf[sf.length-1];
-      if(satLyr&&mapObj.hasLayer(satLyr))mapObj.removeLayer(satLyr);
-      // Satelita IR - wysoka rozdzielczosc, najnowsza klatka
+      var satWasOn=satLyr&&mapObj.hasLayer(satLyr);
+      if(satLyr)mapObj.removeLayer(satLyr);
+      // Satelita nie ma zoomOffset, tileSize 256
       satLyr=L.tileLayer(host+sl.path+"/256/{z}/{x}/{y}/0/0_0.png",{
-        opacity: 0.80,
-        tileSize:256,
-        maxNativeZoom:5, maxZoom:12, zIndex:2,
-        crossOrigin:true
+        opacity:0.7, tileSize:256,
+        maxNativeZoom:4, maxZoom:12, zIndex:2
       });
-      if(layers.sat&&layers.sat.on) satLyr.addTo(mapObj);
+      if(satWasOn)satLyr.addTo(mapObj);
     } else {
       // Fallback - OWM clouds jesli nie ma satelity
       satLyr=L.tileLayer("https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid="+OWM_KEY,{
@@ -579,48 +486,54 @@ function connectBlitz(servers, idx, tries) {
         };
         
         blitzWS.onmessage = function(e) {
-            try {
-                var d = JSON.parse(e.data);
-                if (!mapObj || typeof d.lat === "undefined") return;
+		
+try {
+var d = JSON.parse(e.data);
+if (!mapObj || typeof d.lat === "undefined") return;
 
-                // Blitzortung wysyla lat/lon w nanosekundach (np. 520000000)
-                // trzeba podzielic przez 1e9 aby uzyskac stopnie
-                var lt2 = d.lat / 1e9;
-                var ln2 = d.lon / 1e9;
+```
+    var now = Date.now();
 
-                // Walidacja zakresu
-                if(isNaN(lt2)||isNaN(ln2)||Math.abs(lt2)>90||Math.abs(ln2)>180) return;
+    // ŚWIEŻE = większe i czerwone
+    var m = L.circleMarker([d.lat, d.lon], {
+        radius: 8,
+        color: "#ff0000",
+        fillColor: "#ff0000",
+        fillOpacity: 1,
+        weight: 1
+    }).addTo(mapObj);
 
-                var now = Date.now();
+    m.timestamp = now;
+    blitzMarkers.push(m);
 
-                // SWIEŻE = większe i czerwone
-                var m = L.circleMarker([lt2, ln2], {
-                    radius: 8,
-                    color: "#ff0000",
-                    fillColor: "#ff0000",
-                    fillOpacity: 1,
-                    weight: 1
-                });
-                if(layers.blitz&&layers.blitz.on) m.addTo(mapObj);
+    // licznik
+    var cntEl = document.getElementById("blk-counter");
+    if(cntEl){
+        var currentCnt = parseInt(cntEl.textContent) || 0;
+        cntEl.textContent = currentCnt + 1;
+    }
 
-                m.timestamp = now;
-                blitzMarkers.push(m);
+} catch (err) { console.error("Blitz parsing error", err); }
+```
 
-                // Liczniki
-                var cntEl = document.getElementById("blk-counter");
-                if(cntEl){ cntEl.textContent = (parseInt(cntEl.textContent)||0) + 1; }
-                var cntEl2 = document.getElementById("lgnt-cnt");
-                if(cntEl2){ cntEl2.textContent = (parseInt(cntEl2.textContent)||0) + 1; }
+};
 
-                // Aktualizuj licznik widoku natychmiast
-                updateViewCounter();
+
+var m = L.circleMarker([d.lat, d.lon], {
+    radius: 6,
+    color: "#ff0000",
+    fillColor: "#ff0000",
+    fillOpacity: 1,
+    weight: 1
+}).addTo(mapObj);
+
+// zapis czasu
+m.timestamp = now;
+
+// dodaj do listy
+blitzMarkers.push(m);
 
             } catch (err) { console.error("Blitz parsing error", err); }
-        };
-
-        blitzWS.onerror = function(e) {
-            console.warn("Blitzortung WS error:", e);
-            blitzWS = null;
         };
 
         blitzWS.onclose = function() {
@@ -635,212 +548,98 @@ function connectBlitz(servers, idx, tries) {
 var blitzPath = null;
 
 setInterval(function() {
-    if(!mapObj) return;
-    var now = Date.now();
-    var points = [];
+var now = Date.now();
+var points = [];
 
-    blitzMarkers.forEach(function(m) {
-        var age = (now - m.timestamp) / 1000;
-        var blitzOn = layers.blitz && layers.blitz.on;
+```
+blitzMarkers.forEach(function(m) {
+    var age = ((now + timeOffset*1000) - m.timestamp) / 1000;
 
-        if (age <= 300) {
-            m.setStyle({ color: "#ff0000", fillColor: "#ff0000", fillOpacity: 1, radius: 8 });
-            if(blitzOn && !mapObj.hasLayer(m)) m.addTo(mapObj);
-        } else if (age <= 600) {
-            m.setStyle({ color: "#ff8800", fillColor: "#ff8800", fillOpacity: 0.8, radius: 6 });
-            if(blitzOn && !mapObj.hasLayer(m)) m.addTo(mapObj);
-        } else if (age <= 1800) {
-            m.setStyle({ color: "#ffff00", fillColor: "#ffff00", fillOpacity: 0.5, radius: 4 });
-            if(blitzOn && !mapObj.hasLayer(m)) m.addTo(mapObj);
-        } else {
-            if (mapObj.hasLayer(m)) { mapObj.removeLayer(m); }
+    if (age <= 300) {
+        // 0–5 min
+        m.setStyle({
+            color: "#ff0000",
+            fillColor: "#ff0000",
+            fillOpacity: 1,
+            radius: 8
+        });
+    } else if (age <= 600) {
+        // 5–10 min
+        m.setStyle({
+            color: "#ff8800",
+            fillColor: "#ff8800",
+            fillOpacity: 0.8,
+            radius: 6
+        });
+    } else if (age <= 1800) {
+        // 10–30 min
+        m.setStyle({
+            color: "#ffff00",
+            fillColor: "#ffff00",
+            fillOpacity: 0.5,
+            radius: 4
+        });
+    } else {
+        if (mapObj.hasLayer(m)) {
+            mapObj.removeLayer(m);
         }
-
-        if (age <= 1800) { points.push(m.getLatLng()); }
-    });
-
-    // Usuń stare z tablicy
-    blitzMarkers = blitzMarkers.filter(function(m) {
-        return (now - m.timestamp) <= 1800000;
-    });
-
-    // Rysowanie ścieżki burzy
-    if (blitzPath) { mapObj.removeLayer(blitzPath); blitzPath = null; }
-    if (points.length > 2) {
-        blitzPath = L.polyline(points, {
-            color: "#ffaa00", weight: 2, opacity: 0.6
-        }).addTo(mapObj);
     }
 
-    // Aktualizuj licznik widoku po każdym cyklu
-    updateViewCounter();
+    // do rysowania ścieżki
+    if (age <= 1800) {
+        points.push(m.getLatLng());
+    }
+});
+
+// usuń stare z tablicy
+blitzMarkers = blitzMarkers.filter(function(m) {
+    return (now - m.timestamp) <= 1800000;
+});
+
+// RYSOWANIE ŚCIEŻKI BURZY
+if (blitzPath) {
+    mapObj.removeLayer(blitzPath);
+}
+
+if (points.length > 2) {
+    blitzPath = L.polyline(points, {
+        color: "#ffaa00",
+        weight: 2,
+        opacity: 0.6
+    }).addTo(mapObj);
+}
+```
+drawStormDirection();
+drawPrediction();
 }, 10000);
 
-// TEST - symulacja wyładowań wokół aktualnej pozycji
-function testBlitz(){
-  if(!mapObj) return;
-  var center=(uLat&&uLon)?{lat:uLat,lng:uLon}:mapObj.getCenter();
-  for(var i=0;i<5;i++){
-    (function(d){
-      setTimeout(function(){
-        var lt2=center.lat+(Math.random()-.5)*4;
-        var ln2=center.lng+(Math.random()-.5)*6;
-        var now=Date.now();
-        var m=L.circleMarker([lt2,ln2],{radius:8,color:"#ff0000",fillColor:"#ff0000",fillOpacity:1,weight:1});
-        if(layers.blitz&&layers.blitz.on)m.addTo(mapObj);
-        m.timestamp=now;
-        blitzMarkers.push(m);
-        var c1=document.getElementById("blk-counter");if(c1)c1.textContent=(parseInt(c1.textContent)||0)+1;
-        var c2=document.getElementById("lgnt-cnt");if(c2)c2.textContent=(parseInt(c2.textContent)||0)+1;
-        updateViewCounter();
-      },d*300);
-    })(i);
+function setL(n){
+  ["r","c","w","t"].forEach(function(x){var e=document.getElementById("lb-"+x);if(e)e.classList.remove("ac");});
+  var b=document.getElementById("lb-"+n);if(b)b.classList.add("ac");
+  if(rvLyr&&mapObj.hasLayer(rvLyr))mapObj.removeLayer(rvLyr);
+  if(satLyr&&mapObj.hasLayer(satLyr))mapObj.removeLayer(satLyr);
+  if(extraLyr){mapObj.removeLayer(extraLyr);extraLyr=null;}
+
+  if(n==="r"){
+    if(rvLyr)rvLyr.addTo(mapObj);
+    document.getElementById("mbadge").textContent="RADAR - RainViewer";
+  }else if(n==="c"){
+    if(satLyr)satLyr.addTo(mapObj);
+    if(rvLyr)rvLyr.addTo(mapObj);
+    document.getElementById("mbadge").textContent="CHMURY + RADAR";
+  }else if(n==="w"){
+    if(satLyr)satLyr.addTo(mapObj);
+    extraLyr=L.tileLayer("https://tile.openweathermap.org/map/wind_new/{z}/{x}/{y}.png?appid="+OWM_KEY,
+      {opacity:0.9,maxNativeZoom:12,maxZoom:12,zIndex:4,tileSize:256});
+    extraLyr.addTo(mapObj);
+    document.getElementById("mbadge").textContent="WIATR - OWM";
+  }else if(n==="t"){
+    extraLyr=L.tileLayer("https://tile.openweathermap.org/map/temp_new/{z}/{x}/{y}.png?appid="+OWM_KEY,
+      {opacity:0.9,maxNativeZoom:12,maxZoom:12,zIndex:4,tileSize:256});
+    extraLyr.addTo(mapObj);
+    document.getElementById("mbadge").textContent="TEMPERATURA - OWM";
   }
-  document.getElementById("mbadge").textContent="TEST: 5 wyladowan";
 }
-
-// Licznik wyladowan widocznych w aktualnym widoku mapy
-function updateViewCounter(){
-    if(!mapObj) return;
-    var bounds = mapObj.getBounds();
-    var count = 0;
-    var now = Date.now();
-    blitzMarkers.forEach(function(m){
-        var age = (now - m.timestamp) / 1000;
-        if(age > 1800) return; // tylko ostatnie 30 min
-        var ll = m.getLatLng();
-        if(bounds.contains(ll)) count++;
-    });
-    var el = document.getElementById("blitz-view-count");
-    if(el) el.textContent = count;
-}
-
-// ═══════════════════════════════════════════════════
-// SYSTEM WARSTW - checkboxy z nakładaniem
-// ═══════════════════════════════════════════════════
-var layers = {
-  sat:   {on:true,  lyr:null, zIndex:2},
-  radar: {on:true,  lyr:null, zIndex:3},
-  wind:  {on:false, lyr:null, zIndex:5},
-  temp:  {on:false, lyr:null, zIndex:6},
-  pres:  {on:false, lyr:null, zIndex:7},
-  blitz: {on:true,  lyr:null, zIndex:10}
-};
-
-// Mapa bazowa
-var baseLyr = null;
-var baseTiles = {
-  street: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
-  dark:   "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
-  sat:    "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-};
-var baseOptions = {
-  street: {maxZoom:12,minZoom:1,subdomains:[]},
-  dark:   {maxZoom:12,minZoom:1,subdomains:'abcd'},
-  sat:    {maxZoom:12,minZoom:1,subdomains:[]}
-};
-var currentBase = 'street';
-
-function setBase(name){
-  // Przyciski
-  ['street','dark','sat'].forEach(function(b){
-    var el=document.getElementById('base-'+b);
-    if(el) el.classList.toggle('on', b===name);
-  });
-  currentBase = name;
-  if(baseLyr) mapObj.removeLayer(baseLyr);
-  var opts = Object.assign({}, baseOptions[name]);
-  if(name==='dark') opts.subdomains = 'abcd';
-  baseLyr = L.tileLayer(baseTiles[name], opts).addTo(mapObj);
-  // Na ciemnej mapie zwiększ kontrast warstw
-  applyAllLayers();
-}
-
-function buildLayerTile(key){
-  var K = OWM_KEY;
-  if(key==='sat'){
-    // Satelita IR - pobieramy z RainViewer API dynamicznie
-    return null; // ustawiana przez loadRVandSat
-  }
-  if(key==='radar'){
-    return null; // ustawiana przez loadRVandSat
-  }
-  var dark = (currentBase==='dark');
-  var configs = {
-    wind: {url:"https://tile.openweathermap.org/map/wind_new/{z}/{x}/{y}.png?appid="+K,
-           op: dark?1.0:0.85, zi:5},
-    temp: {url:"https://tile.openweathermap.org/map/temp_new/{z}/{x}/{y}.png?appid="+K,
-           op: dark?0.9:0.75, zi:6},
-    pres: {url:"https://tile.openweathermap.org/map/pressure_new/{z}/{x}/{y}.png?appid="+K,
-           op: dark?0.9:0.75, zi:7}
-  };
-  var cfg = configs[key];
-  if(!cfg) return null;
-  return L.tileLayer(cfg.url,{opacity:cfg.op,maxNativeZoom:12,maxZoom:12,zIndex:cfg.zi,tileSize:256});
-}
-
-function applyAllLayers(){
-  if(!mapObj) return;
-  var active = [];
-  Object.keys(layers).forEach(function(key){
-    var info = layers[key];
-    // Usuń jeśli ma warstwę i jest OFF lub przebudowujemy
-    if(info.lyr && mapObj.hasLayer(info.lyr)){
-      if(!info.on || key==='wind'||key==='temp'||key==='pres'){
-        mapObj.removeLayer(info.lyr);
-        if(key!=='sat'&&key!=='radar') info.lyr=null;
-      }
-    }
-    if(info.on){
-      if(key==='sat'&&satLyr){
-        if(!mapObj.hasLayer(satLyr)) satLyr.addTo(mapObj);
-        satLyr.setOpacity((currentBase==='dark')?0.85:0.70);
-      } else if(key==='radar'&&rvLyr){
-        if(!mapObj.hasLayer(rvLyr)) rvLyr.addTo(mapObj);
-        rvLyr.setOpacity((currentBase==='dark')?0.90:0.80);
-      } else if(key!=='sat'&&key!=='radar'&&key!=='blitz'){
-        if(info.lyr) mapObj.removeLayer(info.lyr);
-        info.lyr = buildLayerTile(key);
-        if(info.lyr) info.lyr.addTo(mapObj);
-      }
-      // Wyładowania - zawsze widoczne gdy on (to są markery, nie tile)
-      active.push(key);
-    } else {
-      if(key==='sat'&&satLyr&&mapObj.hasLayer(satLyr)) mapObj.removeLayer(satLyr);
-      if(key==='radar'&&rvLyr&&mapObj.hasLayer(rvLyr)) mapObj.removeLayer(rvLyr);
-    }
-  });
-  // Aktualizuj badge
-  document.getElementById("mbadge").textContent = active.map(function(k){
-    return {sat:'SAT',radar:'RADAR',wind:'WIATR',temp:'TEMP',pres:'CISN',blitz:'BŁK'}[k]||k;
-  }).join(' + ') || 'BRAK';
-}
-
-function toggleLayer(key){
-  if(!layers[key]) return;
-  layers[key].on = !layers[key].on;
-  // Aktualizuj checkbox
-  var chk = document.getElementById('chk-'+key);
-  if(chk) chk.classList.toggle('on', layers[key].on);
-  // Wyładowania - tylko ukryj/pokaż markery
-  if(key==='blitz'){
-    blitzMarkers.forEach(function(m){
-      if(layers.blitz.on){if(!mapObj.hasLayer(m))m.addTo(mapObj);}
-      else{if(mapObj.hasLayer(m))mapObj.removeLayer(m);}
-    });
-    if(blitzPath){
-      if(layers.blitz.on){if(!mapObj.hasLayer(blitzPath))blitzPath.addTo(mapObj);}
-      else{if(mapObj.hasLayer(blitzPath))mapObj.removeLayer(blitzPath);}
-    }
-    document.getElementById("mbadge").textContent = layers.blitz.on?"BŁK LIVE":"BŁK OFF";
-    return;
-  }
-  applyAllLayers();
-}
-
-// Stara funkcja setL - compatibility (nieużywana ale zostawiamy)
-function setL(n){ toggleLayer(n==='r'?'radar':n==='c'?'sat':n==='w'?'wind':'temp'); }
-
 
 
 // GPS - ciagla obserwacja + znacznik lokalizacji zawsze aktywny
@@ -864,6 +663,25 @@ function startGPS(){
     pi("p-gps","wn","GPS niedostepny");
   },{enableHighAccuracy:true, maximumAge:10000});
 }
+// TIMELINE STEROWANIE
+setTimeout(function(){
+  var slider = document.getElementById("timeSlider");
+  var label  = document.getElementById("timeLabel");
+
+  if(!slider) return;
+
+  slider.oninput = function(){
+    timeOffset = parseInt(this.value);
+
+    if(timeOffset === 0){
+      label.textContent = "LIVE";
+    } else if(timeOffset < 0){
+      label.textContent = (Math.abs(timeOffset)/60)+" min temu";
+    } else {
+      label.textContent = "+"+(timeOffset/60)+" min";
+    }
+  };
+}, 1000);
 
 function onGPSPos(pos){
   uLat=pos.coords.latitude;
@@ -887,7 +705,6 @@ function onGPSPos(pos){
 function setupMapClick(){
   if(!mapObj)return;
   mapObj.on("dblclick", function(e){
-    e.originalEvent.preventDefault();
     var lt=e.latlng.lat, ln=e.latlng.lng;
 
     // Usun stary marker klikniecia
@@ -1154,13 +971,89 @@ function updFC(d){
 
 // START - bez overlay, od razu
 window.onload = function(){ startGPS(); };
+function playTimeline(){
+  if(animInterval) return;
 
-// Map fills flex container - just invalidate on window resize
-window.addEventListener("resize", function(){
-  if(typeof mapObj !== "undefined" && mapObj) {
-    setTimeout(function(){ mapObj.invalidateSize(); }, 100);
-  }
-});
+  animInterval = setInterval(function(){
+    timeOffset += 60;
+    if(timeOffset > 3600) timeOffset = -1800;
+
+    var slider = document.getElementById("timeSlider");
+    if(slider){
+      slider.value = timeOffset;
+      slider.oninput();
+    }
+  }, 400);
+}
+
+function stopTimeline(){
+  clearInterval(animInterval);
+  animInterval = null;
+}
+function calcStormVector(){
+  var now = Date.now();
+
+  var pts = blitzMarkers
+    .filter(m => (now - m.timestamp) < 900000)
+    .sort((a,b)=>a.timestamp-b.timestamp);
+
+  if(pts.length < 5) return null;
+
+  var first = pts[0].getLatLng();
+  var last  = pts[pts.length-1].getLatLng();
+
+  return {
+    dLat: last.lat - first.lat,
+    dLon: last.lng - first.lng
+  };
+}
+function drawStormDirection(){
+  if(!mapObj) return;
+
+  if(stormArrow) mapObj.removeLayer(stormArrow);
+
+  var vec = calcStormVector();
+  if(!vec) return;
+
+  var center = mapObj.getCenter();
+
+  var end = [
+    center.lat + vec.dLat * 8,
+    center.lng + vec.dLon * 8
+  ];
+
+  stormArrow = L.polyline([center,end],{
+    color:"#00ffff",
+    weight:3,
+    opacity:0.8
+  }).addTo(mapObj);
+}
+function drawPrediction(){
+  if(!mapObj) return;
+
+  predictionMarkers.forEach(m=>mapObj.removeLayer(m));
+  predictionMarkers = [];
+
+  var vec = calcStormVector();
+  if(!vec) return;
+
+  blitzMarkers.forEach(function(m){
+    var p = [
+      m.getLatLng().lat + vec.dLat * 6,
+      m.getLatLng().lng + vec.dLon * 6
+    ];
+
+    var pm = L.circleMarker(p,{
+      radius:4,
+      color:"#00ffff",
+      fillColor:"#00ffff",
+      fillOpacity:0.25,
+      weight:1
+    }).addTo(mapObj);
+
+    predictionMarkers.push(pm);
+  });
+}
 </script>
 </body>
 </html>
