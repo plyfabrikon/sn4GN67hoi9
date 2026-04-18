@@ -707,24 +707,62 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
 
 <!-- ══════ SEKCJA: SAT24 ══════ -->
 <div class="section" id="sec-sat24">
-  <div class="sat-wrap">
-    <div id="map-sat24"></div>
-    <!-- Layer panel SAT -->
-    <div class="lyr-panel" style="top:8px;left:8px">
-      <div class="lyr-head">🛰 SAT24 — Chmury IR</div>
-      <div style="font-size:.65rem;color:var(--text2);line-height:1.5;margin-bottom:8px">
-        Satelitarne zdjęcia podczerwieni z EUMETSAT. Białe = zimne chmury wysokie (burzowe). Ciemne = ciepłe niskie.
+  <div style="display:flex;flex:1;flex-direction:column;overflow:hidden">
+    <!-- Pasek kontrolny SAT24 -->
+    <div style="flex-shrink:0;background:var(--bg2);border-bottom:1px solid var(--border);padding:8px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <span style="font-size:.6rem;font-weight:700;letter-spacing:2px;color:var(--text2);text-transform:uppercase;white-space:nowrap">🛰 SAT24 — Zdjęcia satelitarne</span>
+      <!-- Region -->
+      <div style="display:flex;align-items:center;gap:4px">
+        <span style="font-size:.58rem;color:var(--text2)">Region:</span>
+        <select id="sat-region" onchange="sat24Reload()" style="font-size:.58rem;background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:4px;padding:2px 4px;cursor:pointer">
+          <option value="EU">Europa</option>
+          <option value="PL">Polska</option>
+          <option value="DE">Niemcy</option>
+          <option value="ALPS">Alpy</option>
+          <option value="SCAN">Skandynawia</option>
+          <option value="FR">Francja</option>
+          <option value="IT">Włochy</option>
+          <option value="GB">W.Brytania</option>
+        </select>
       </div>
-      <div class="lyr-sep"></div>
-      <div class="lyr-sub">Animacja</div>
-      <div style="display:flex;gap:4px;margin-bottom:6px">
-        <button class="base-btn" id="sat-anim-btn" onclick="toggleSatAnim()" style="flex:2">▶ Animuj</button>
-        <button class="base-btn" onclick="satNow()" style="flex:1">Live</button>
+      <!-- Kanał -->
+      <div style="display:flex;align-items:center;gap:4px">
+        <span style="font-size:.58rem;color:var(--text2)">Kanał:</span>
+        <select id="sat-channel" onchange="sat24Reload()" style="font-size:.58rem;background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:4px;padding:2px 4px;cursor:pointer">
+          <option value="infraPolair">IR Podczerwień</option>
+          <option value="visual5hdcomplete">VIS Widzialny</option>
+          <option value="rainTMC">Opady (TMC)</option>
+          <option value="snow">Śnieg</option>
+        </select>
       </div>
-      <div style="font-size:.55rem;color:var(--text2);font-family:monospace" id="sat-time-lbl">--:-- UTC</div>
+      <!-- Animacja -->
+      <div style="display:flex;align-items:center;gap:4px">
+        <span style="font-size:.58rem;color:var(--text2)">Tryb:</span>
+        <button id="sat24-play-btn" onclick="sat24ToggleAnim()" style="font-size:.58rem;padding:2px 10px;border-radius:4px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--text2);cursor:pointer">▶ Animuj</button>
+        <button onclick="sat24Reload()" style="font-size:.58rem;padding:2px 8px;border-radius:4px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--text2);cursor:pointer">🔄</button>
+      </div>
+      <!-- Legenda -->
+      <div style="margin-left:auto;font-size:.58rem;color:var(--text2);display:flex;gap:8px;align-items:center">
+        <span style="color:#fff">⬜ Chmury wysokie (Cb)</span>
+        <span style="color:#888">⬜ Chmury niskie</span>
+        <span style="color:#4a9eff">⬜ Opady</span>
+      </div>
+      <a href="https://sat24.com" target="_blank" style="font-size:.58rem;color:var(--blue2);text-decoration:none">↗ sat24.com</a>
     </div>
-    <div class="map-badge" id="sat-badge">SAT IR — EUMETSAT</div>
-    <button class="btn-rc" onclick="if(mapSat)mapSat.setView(mapObj?mapObj.getCenter():[52,20],5)">⊙</button>
+    <!-- Obraz satelitarny -->
+    <div style="flex:1;background:#000;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden">
+      <div id="sat24-loading" style="position:absolute;z-index:2;text-align:center;color:var(--text2)">
+        <div style="font-size:2rem;margin-bottom:8px">🛰</div>
+        <div style="font-size:.8rem">Ładowanie obrazu satelitarnego...</div>
+      </div>
+      <img id="sat24-img" style="max-width:100%;max-height:100%;object-fit:contain;display:none" alt="SAT24 satellite image" onload="sat24ImgLoaded()" onerror="sat24ImgError()">
+    </div>
+    <!-- Pasek dolny: czas + legenda -->
+    <div style="flex-shrink:0;background:var(--bg2);border-top:1px solid var(--border);padding:4px 14px;display:flex;align-items:center;gap:12px">
+      <span style="font-size:.6rem;color:var(--accent);font-family:monospace;font-weight:700" id="sat24-time">--:-- UTC</span>
+      <span style="font-size:.58rem;color:var(--text2)" id="sat24-status">Pobieranie obrazu...</span>
+      <span style="font-size:.55rem;color:var(--text2);margin-left:auto">Źródło: EUMETSAT via sat24.com · Aktualizacja co 15 min</span>
+    </div>
   </div>
 </div><!-- /sec-sat24 -->
 
@@ -751,18 +789,57 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
     </div>
   </div>
   <div class="prognoza-right">
+    <!-- Karty szybkich statystyk dnia -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+      <div class="wind-stat" style="background:linear-gradient(135deg,#1a2a40,#0d1826)">
+        <div style="font-size:.55rem;color:#ffe033;text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">☀ UV Index</div>
+        <div class="wind-stat-val" id="prog-uv" style="color:#ffe033;font-size:1.4rem">--</div>
+        <div class="wind-stat-lbl" id="prog-uv-lbl">--</div>
+      </div>
+      <div class="wind-stat" style="background:linear-gradient(135deg,#1a2a40,#0d1826)">
+        <div style="font-size:.55rem;color:#ff8800;text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">🌅 Wschód</div>
+        <div class="wind-stat-val" id="prog-sunrise" style="color:#ff8800;font-size:1.1rem">--:--</div>
+        <div class="wind-stat-lbl" id="prog-sunset">Zachód: --:--</div>
+      </div>
+      <div class="wind-stat" style="background:linear-gradient(135deg,#1a2a40,#0d1826)">
+        <div style="font-size:.55rem;color:#29d4ff;text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">💧 Szansa deszczu</div>
+        <div class="wind-stat-val" id="prog-pp" style="color:#29d4ff;font-size:1.4rem">--%</div>
+        <div class="wind-stat-lbl">maks. dziś</div>
+      </div>
+      <div class="wind-stat" style="background:linear-gradient(135deg,#1a2a40,#0d1826)">
+        <div style="font-size:.55rem;color:#1fde8a;text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">🌡 Odczuwalna</div>
+        <div class="wind-stat-val" id="prog-feel" style="color:#1fde8a;font-size:1.4rem">--°</div>
+        <div class="wind-stat-lbl">temperatura</div>
+      </div>
+    </div>
+
+    <!-- Wykresy podstawowe -->
     <div class="chart-card">
-      <div class="chart-title">🌡 Temperatura — następne 48h</div>
-      <div class="chart-wrap"><canvas id="chart-temp"></canvas></div>
+      <div class="chart-title">🌡 Temperatura + odczuwalna — 48h</div>
+      <div class="chart-wrap" style="height:140px"><canvas id="chart-temp"></canvas></div>
     </div>
     <div class="chart-card">
-      <div class="chart-title">🌧 Opady — następne 48h</div>
-      <div class="chart-wrap"><canvas id="chart-rain"></canvas></div>
+      <div class="chart-title">🌧 Opady + szansa deszczu — 48h</div>
+      <div class="chart-wrap" style="height:130px"><canvas id="chart-rain"></canvas></div>
     </div>
     <div class="chart-card">
-      <div class="chart-title">💨 Wiatr — następne 48h</div>
-      <div class="chart-wrap"><canvas id="chart-wind"></canvas></div>
+      <div class="chart-title">💨 Wiatr + porywy — 48h</div>
+      <div class="chart-wrap" style="height:130px"><canvas id="chart-wind"></canvas></div>
     </div>
+
+    <!-- Wilgotność + ciśnienie -->
+    <div class="chart-card">
+      <div class="chart-title">💧 Wilgotność względna — 48h</div>
+      <div class="chart-wrap" style="height:120px"><canvas id="chart-hum"></canvas></div>
+    </div>
+
+    <!-- UV index -->
+    <div class="chart-card">
+      <div class="chart-title">☀ Indeks UV — 48h (chroń się gdy > 3)</div>
+      <div class="chart-wrap" style="height:110px"><canvas id="chart-uv"></canvas></div>
+    </div>
+
+    <!-- 7 dni -->
     <div class="chart-card">
       <div class="chart-title">📅 Prognoza 7 dni — kliknij po szczegóły</div>
       <div class="fc7-grid" id="fc7-grid"></div>
@@ -1097,63 +1174,103 @@ var windLayerMap={wind:null,pres:null},windBaseLyr=null;
 var satAnimInt=null,satFrames=[],satFrameIdx=0,satAnimRunning=false;
 
 
-// ── SAT24 ──────────────────────────────────
+// ── SAT24 — api.sat24.com ─────────────────────────────────
+// Używamy oficjalnego API SAT24 z animowanymi GIF-ami
+// Endpoint: https://api.sat24.com/animated/{region}/{channel}/{size}/
+// Region: EU, PL, DE, ALPS, SCAN, FR, IT, GB
+// Channel: infraPolair, visual5hdcomplete, rainTMC, snow
+// Size: 1=mały, 2=średni, 3=duży
+
 var sat24Init=false;
+var sat24AnimRunning=false;
+var sat24AnimInt=null;
+
 function initSat24(){
   if(sat24Init)return;
   sat24Init=true;
-  var ctr=mapObj?mapObj.getCenter():{lat:52,lng:20};
-  var zm=mapObj?mapObj.getZoom():5;
-  mapSat=L.map('map-sat24',{zoomControl:true,attributionControl:false,doubleClickZoom:false}).setView([ctr.lat,ctr.lng],zm);
-  // Ciemna mapa bazowa dla satelity
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',
-    {maxZoom:12,subdomains:'abcd'}).addTo(mapSat);
-
-  // Pobierz ramki satelitarne i pokaż ostatnią
-  fetch('https://api.rainviewer.com/public/weather-maps.json')
-  .then(function(r){return r.json();})
-  .then(function(d){
-    var host=d.host||'https://tilecache.rainviewer.com';
-    var sf=d.satellite&&d.satellite.infrared?d.satellite.infrared:[];
-    satFrames=sf.map(function(f){return host+f.path;});
-    if(satFrames.length){
-      satLyrSat=L.tileLayer(satFrames[satFrames.length-1]+'/256/{z}/{x}/{y}/0/0_0.png',
-        {opacity:0.92,tileSize:256,maxNativeZoom:5,maxZoom:12,zIndex:2}).addTo(mapSat);
-      satFrameIdx=satFrames.length-1;
-      var t=new Date(sf[satFrameIdx].time*1000);
-      document.getElementById('sat-time-lbl').textContent=pd(t.getUTCHours())+':'+pd(t.getUTCMinutes())+' UTC';
-    }
-  }).catch(function(){});
-  setTimeout(function(){mapSat.invalidateSize();},200);
+  sat24LoadImage();
 }
 
-function toggleSatAnim(){
-  var btn=document.getElementById('sat-anim-btn');
-  if(satAnimRunning){
-    clearInterval(satAnimInt);satAnimRunning=false;
-    if(btn)btn.textContent='▶ Animuj';
-    satNow();
+function sat24GetUrl(animated){
+  var region=document.getElementById('sat-region')?document.getElementById('sat-region').value:'EU';
+  var channel=document.getElementById('sat-channel')?document.getElementById('sat-channel').value:'infraPolair';
+  var base='https://api.sat24.com/';
+  if(animated){
+    // GIF animowany
+    return base+'animated/'+region+'/'+channel+'/2/';
   } else {
-    if(!satFrames.length)return;
-    satFrameIdx=0;satAnimRunning=true;
-    if(btn)btn.textContent='⏹ Stop';
-    satAnimInt=setInterval(function(){
-      satFrameIdx=(satFrameIdx+1)%satFrames.length;
-      if(satLyrSat&&mapSat){
-        mapSat.removeLayer(satLyrSat);
-        satLyrSat=L.tileLayer(satFrames[satFrameIdx]+'/256/{z}/{x}/{y}/0/0_0.png',
-          {opacity:0.92,tileSize:256,maxNativeZoom:5,maxZoom:12,zIndex:2}).addTo(mapSat);
-      }
-    },600);
+    // Ostatni obraz PNG
+    return base+'mostrecent/'+region+'/'+channel;
   }
 }
-function satNow(){
-  if(!satFrames.length||!mapSat)return;
-  satFrameIdx=satFrames.length-1;
-  if(satLyrSat)mapSat.removeLayer(satLyrSat);
-  satLyrSat=L.tileLayer(satFrames[satFrameIdx]+'/256/{z}/{x}/{y}/0/0_0.png',
-    {opacity:0.92,tileSize:256,maxNativeZoom:5,maxZoom:12,zIndex:2}).addTo(mapSat);
+
+function sat24LoadImage(){
+  var img=document.getElementById('sat24-img');
+  var loading=document.getElementById('sat24-loading');
+  var status=document.getElementById('sat24-status');
+  var timeEl=document.getElementById('sat24-time');
+  if(!img)return;
+  img.style.display='none';
+  if(loading)loading.style.display='flex';
+  if(status)status.textContent='Pobieranie obrazu...';
+  // Dodaj timestamp żeby uniknąć cache przy odświeżeniu
+  var url=sat24GetUrl(false)+'?t='+Date.now();
+  img.src=url;
+  if(timeEl)timeEl.textContent=new Date().toUTCString().substring(17,22)+' UTC';
 }
+
+function sat24ImgLoaded(){
+  var img=document.getElementById('sat24-img');
+  var loading=document.getElementById('sat24-loading');
+  var status=document.getElementById('sat24-status');
+  if(img)img.style.display='block';
+  if(loading)loading.style.display='none';
+  if(status)status.textContent='Obraz aktualny · Kanał: '+
+    (document.getElementById('sat-channel')?document.getElementById('sat-channel').options[document.getElementById('sat-channel').selectedIndex].text:'IR');
+}
+
+function sat24ImgError(){
+  var status=document.getElementById('sat24-status');
+  var loading=document.getElementById('sat24-loading');
+  if(loading)loading.style.display='none';
+  if(status)status.textContent='⚠ Błąd pobierania — sat24.com może być niedostępne';
+  // Fallback: pokaż animowany GIF bezpośrednio
+  var img=document.getElementById('sat24-img');
+  if(img){img.src=sat24GetUrl(true);img.style.display='block';}
+}
+
+function sat24Reload(){
+  if(sat24AnimRunning)sat24ToggleAnim();
+  sat24LoadImage();
+}
+
+function sat24ToggleAnim(){
+  var btn=document.getElementById('sat24-play-btn');
+  var img=document.getElementById('sat24-img');
+  if(sat24AnimRunning){
+    sat24AnimRunning=false;
+    if(btn)btn.textContent='▶ Animuj';
+    // Wróć do statycznego obrazu
+    sat24LoadImage();
+  } else {
+    sat24AnimRunning=true;
+    if(btn)btn.textContent='⏹ Stop';
+    // Załaduj animowany GIF — SAT24 sam animuje
+    if(img){
+      img.style.display='block';
+      img.src=sat24GetUrl(true)+'?t='+Date.now();
+      var loading=document.getElementById('sat24-loading');
+      if(loading)loading.style.display='none';
+      var status=document.getElementById('sat24-status');
+      if(status)status.textContent='Animacja live (GIF) · Aktualizuje się automatycznie';
+    }
+  }
+}
+
+// Auto-refresh co 15 min
+setInterval(function(){
+  if(!sat24AnimRunning&&sat24Init)sat24LoadImage();
+},15*60*1000);
 
 // ── PROGNOZA ───────────────────────────────
 var progInit=false;
@@ -1187,49 +1304,137 @@ function syncProgPanel(){
 
 function fetchProgData(lt,ln){
   fetch('https://api.open-meteo.com/v1/forecast?latitude='+lt+'&longitude='+ln
-    +'&hourly=temperature_2m,precipitation,wind_speed_10m,wind_direction_10m'
+    +'&hourly=temperature_2m,apparent_temperature,precipitation,precipitation_probability'
+    +',wind_speed_10m,wind_gusts_10m,relative_humidity_2m,uv_index'
     +'&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max'
+    +',uv_index_max,sunrise,sunset,apparent_temperature_max,apparent_temperature_min'
     +'&wind_speed_unit=kmh&timezone=auto&forecast_days=7')
   .then(function(r){return r.json();})
   .then(function(d){
     buildCharts(d);
     buildFc7(d.daily);
+    updateProgStats(d);
   }).catch(function(){});
 }
 
+function updateProgStats(d){
+  var h=d.hourly||{}, daily=d.daily||{};
+  // UV dziś maks
+  var uvMax=daily.uv_index_max?daily.uv_index_max[0]:0;
+  var uvEl=document.getElementById('prog-uv');
+  if(uvEl)uvEl.textContent=uvMax?uvMax.toFixed(1):'--';
+  var uvLbl=document.getElementById('prog-uv-lbl');
+  if(uvLbl)uvLbl.textContent=uvMax>=11?'Ekstremalny':uvMax>=8?'Bardzo wysoki':uvMax>=6?'Wysoki':uvMax>=3?'Umiarkowany':'Niski';
+  // Wschód/zachód
+  var sr=daily.sunrise?daily.sunrise[0]:'';
+  var ss=daily.sunset?daily.sunset[0]:'';
+  var srEl=document.getElementById('prog-sunrise');
+  var ssEl=document.getElementById('prog-sunset');
+  if(srEl)srEl.textContent=sr?sr.substring(11,16):'--:--';
+  if(ssEl)ssEl.textContent='Zachód: '+(ss?ss.substring(11,16):'--:--');
+  // Szansa deszczu maks
+  var pp=daily.precipitation_probability_max?daily.precipitation_probability_max[0]:0;
+  var ppEl=document.getElementById('prog-pp');
+  if(ppEl)ppEl.textContent=(pp||0)+'%';
+  // Odczuwalna maks
+  var feel=daily.apparent_temperature_max?daily.apparent_temperature_max[0]:null;
+  var feelEl=document.getElementById('prog-feel');
+  if(feelEl)feelEl.textContent=feel!==null?Math.round(feel)+'°':'--°';
+}
+
 function buildCharts(d){
-  var h=d.hourly;
-  var labels48=h.time.slice(0,48).map(function(t){
+  var h=d.hourly||{};
+  var labels48=(h.time||[]).slice(0,48).map(function(t){
+    var dt=new Date(t);
+    return dt.getHours()===0?['Dziś','Jutro','Poju.'][Math.floor((h.time.indexOf(t))/24)||0]:pd(dt.getHours())+':00';
+  });
+  var labels48s=(h.time||[]).slice(0,48).map(function(t){
     var dt=new Date(t);return pd(dt.getHours())+':00';
   });
-  var tmp48=h.temperature_2m.slice(0,48);
-  var prc48=h.precipitation.slice(0,48);
-  var wsp48=h.wind_speed_10m.slice(0,48);
+  var tmp48=(h.temperature_2m||[]).slice(0,48);
+  var feel48=(h.apparent_temperature||[]).slice(0,48);
+  var prc48=(h.precipitation||[]).slice(0,48);
+  var pp48=(h.precipitation_probability||[]).slice(0,48);
+  var wsp48=(h.wind_speed_10m||[]).slice(0,48);
+  var gst48=(h.wind_gusts_10m||[]).slice(0,48);
+  var hum48=(h.relative_humidity_2m||[]).slice(0,48);
+  var uv48=(h.uv_index||[]).slice(0,48);
 
-  var cfg={responsive:true,maintainAspectRatio:false,
-    plugins:{legend:{display:false}},
-    scales:{x:{ticks:{color:'#6b90b0',font:{size:9},maxTicksLimit:12},grid:{color:'rgba(26,53,80,.4)'}},
-            y:{ticks:{color:'#6b90b0',font:{size:9}},grid:{color:'rgba(26,53,80,.4)'}}}};
+  var scalesCfg=function(yLabel,min){return{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:true,labels:{color:'#6b90b0',font:{size:9},boxWidth:12}}},
+    scales:{
+      x:{ticks:{color:'#6b90b0',font:{size:8},maxTicksLimit:12},grid:{color:'rgba(26,53,80,.3)'}},
+      y:{ticks:{color:'#6b90b0',font:{size:8}},grid:{color:'rgba(26,53,80,.3)'},min:min!==undefined?min:undefined}
+    }};};
 
-  if(chartTemp){chartTemp.destroy();}
+  // Temperatura + odczuwalna
+  if(chartTemp)chartTemp.destroy();
   chartTemp=new Chart(document.getElementById('chart-temp'),{
-    type:'line',data:{labels:labels48,datasets:[{data:tmp48,
-      borderColor:'#ff6b35',backgroundColor:'rgba(255,107,53,.15)',
-      borderWidth:2,pointRadius:0,fill:true,tension:.3}]},options:cfg});
+    type:'line',
+    data:{labels:labels48s,datasets:[
+      {label:'Temp °C',data:tmp48,borderColor:'#ff6b35',backgroundColor:'rgba(255,107,53,.1)',borderWidth:2,pointRadius:0,fill:true,tension:.3},
+      {label:'Odczuw.',data:feel48,borderColor:'#ffaa55',backgroundColor:'transparent',borderWidth:1.5,pointRadius:0,fill:false,tension:.3,borderDash:[4,3]}
+    ]},options:scalesCfg()});
 
-  if(chartRain){chartRain.destroy();}
+  // Opady + szansa deszczu (dwie osie)
+  if(chartRain)chartRain.destroy();
   chartRain=new Chart(document.getElementById('chart-rain'),{
-    type:'bar',data:{labels:labels48,datasets:[{data:prc48,
-      backgroundColor:'rgba(41,212,255,.6)',borderColor:'var(--blue2)',
-      borderWidth:1,borderRadius:2}]},
-    options:Object.assign({},cfg,{scales:{x:cfg.scales.x,
-      y:Object.assign({},cfg.scales.y,{min:0})}})});
+    type:'bar',
+    data:{labels:labels48s,datasets:[
+      {label:'Opady mm',data:prc48,backgroundColor:'rgba(41,212,255,.65)',borderColor:'#29d4ff',borderWidth:0,borderRadius:2,yAxisID:'y'},
+      {label:'Szansa %',data:pp48,type:'line',borderColor:'rgba(255,220,50,.8)',backgroundColor:'transparent',borderWidth:1.5,pointRadius:0,fill:false,tension:.3,yAxisID:'y2'}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:true,labels:{color:'#6b90b0',font:{size:9},boxWidth:12}}},
+      scales:{
+        x:{ticks:{color:'#6b90b0',font:{size:8},maxTicksLimit:12},grid:{color:'rgba(26,53,80,.3)'}},
+        y:{min:0,ticks:{color:'#6b90b0',font:{size:8}},grid:{color:'rgba(26,53,80,.3)'},title:{display:true,text:'mm',color:'#4a7090',font:{size:8}}},
+        y2:{min:0,max:100,position:'right',ticks:{color:'#6b90b0',font:{size:8},callback:function(v){return v+'%';}},grid:{display:false}}
+      }}});
 
-  if(chartWindChart){chartWindChart.destroy();}
+  // Wiatr + porywy
+  if(chartWindChart)chartWindChart.destroy();
   chartWindChart=new Chart(document.getElementById('chart-wind'),{
-    type:'line',data:{labels:labels48,datasets:[{data:wsp48,
-      borderColor:'#1fde8a',backgroundColor:'rgba(31,222,138,.1)',
-      borderWidth:2,pointRadius:0,fill:true,tension:.3}]},options:cfg});
+    type:'line',
+    data:{labels:labels48s,datasets:[
+      {label:'Wiatr km/h',data:wsp48,borderColor:'#1fde8a',backgroundColor:'rgba(31,222,138,.1)',borderWidth:2,pointRadius:0,fill:true,tension:.3},
+      {label:'Porywy km/h',data:gst48,borderColor:'rgba(255,107,53,.8)',backgroundColor:'transparent',borderWidth:1.5,pointRadius:0,fill:false,tension:.3,borderDash:[3,3]}
+    ]},options:scalesCfg('km/h',0)});
+
+  // Wilgotność
+  var chartHumInst=Chart.getChart('chart-hum');
+  if(chartHumInst)chartHumInst.destroy();
+  new Chart(document.getElementById('chart-hum'),{
+    type:'line',
+    data:{labels:labels48s,datasets:[{
+      label:'Wilgotność %',data:hum48,
+      borderColor:'#4a9eff',backgroundColor:'rgba(74,158,255,.15)',
+      borderWidth:2,pointRadius:0,fill:true,tension:.3}]},
+    options:scalesCfg('%',0)});
+
+  // UV index — kolorowane słupki
+  var uvColors=uv48.map(function(v){
+    return v>=11?'#cc00ff':v>=8?'#ff3300':v>=6?'#ff8800':v>=3?'#ffe033':'#1fde8a';
+  });
+  var chartUVInst=Chart.getChart('chart-uv');
+  if(chartUVInst)chartUVInst.destroy();
+  new Chart(document.getElementById('chart-uv'),{
+    type:'bar',
+    data:{labels:labels48s,datasets:[{
+      label:'UV Index',data:uv48,
+      backgroundColor:uvColors,borderColor:uvColors,borderWidth:0,borderRadius:2}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},
+        tooltip:{callbacks:{label:function(ctx){
+          var v=ctx.parsed.y;
+          var risk=v>=11?'Ekstremalny':v>=8?'B.Wysoki':v>=6?'Wysoki':v>=3?'Umiarkowany':'Niski';
+          return 'UV '+v+' ('+ risk+')';
+        }}}},
+      scales:{
+        x:{ticks:{color:'#6b90b0',font:{size:8},maxTicksLimit:12},grid:{color:'rgba(26,53,80,.3)'}},
+        y:{min:0,ticks:{color:'#6b90b0',font:{size:8}},grid:{color:'rgba(26,53,80,.3)'}}
+      }}});
 }
 
 function buildFc7(daily){
@@ -1737,6 +1942,8 @@ function startGPS(){
 
 function onGPSPos(pos){
   uLat=pos.coords.latitude;uLon=pos.coords.longitude;
+  // Aktualizuj markery GPS na wszystkich mapach
+  updateGPSOnAllMaps();
   var acc=Math.round(pos.coords.accuracy);
   document.getElementById("l-lat").textContent=uLat.toFixed(5)+"°N";
   document.getElementById("l-lon").textContent=uLon.toFixed(5)+"°E";
@@ -1745,8 +1952,38 @@ function onGPSPos(pos){
   pi("p-gps","ok","GPS ±"+acc+"m");
   if(mapObj){gpsMkr.setLatLng([uLat,uLon]);if(!gpsHadFix){mapObj.setView([uLat,uLon],8);gpsHadFix=true;}}
   geo(uLat,uLon);
-  fetchWx(uLat,uLon);
+  fetchWx(uLat,uLon);}
+
+var gpsMkrSat=null, gpsMkrWiatr=null, gpsMkrBurze=null;
+function makeGPSIcon(){
+  return L.divIcon({className:"",html:"<div class='gpin'><div class='gpin-r'></div><div class='gpin-c'></div></div>",iconSize:[16,16],iconAnchor:[8,8]});
 }
+function updateGPSOnAllMaps(){
+  if(!uLat)return;
+  var ll=[uLat,uLon];
+  // Mapa SAT24
+  if(mapSat){
+    if(!gpsMkrSat){gpsMkrSat=L.marker(ll,{icon:makeGPSIcon(),zIndexOffset:1000}).addTo(mapSat);}
+    else gpsMkrSat.setLatLng(ll);
+  }
+  // Mapa WIATR
+  if(mapWiatr){
+    if(!gpsMkrWiatr){gpsMkrWiatr=L.marker(ll,{icon:makeGPSIcon(),zIndexOffset:1000}).addTo(mapWiatr);}
+    else gpsMkrWiatr.setLatLng(ll);
+  }
+  // Mapa BURZE
+  if(mapBurze){
+    if(!gpsMkrBurze){gpsMkrBurze=L.marker(ll,{icon:makeGPSIcon(),zIndexOffset:1000}).addTo(mapBurze);}
+    else gpsMkrBurze.setLatLng(ll);
+  }
+}
+// Dodaj marker GPS po inicjalizacji każdej mapy
+var _origInitSat24=initSat24;
+initSat24=function(){_origInitSat24();setTimeout(updateGPSOnAllMaps,500);};
+var _origInitWiatr=initWiatr;
+initWiatr=function(){_origInitWiatr();setTimeout(updateGPSOnAllMaps,500);};
+var _origInitBurze=initBurze;
+initBurze=function(){_origInitBurze();setTimeout(updateGPSOnAllMaps,1000);}
 
 // ═══════════════════════════════════════════
 // KLIKNIĘCIE W MAPĘ
