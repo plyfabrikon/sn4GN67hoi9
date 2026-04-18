@@ -1454,10 +1454,10 @@ function updateBadge(){
 // ═══════════════════════════════════════════
 function startBlitz(){
   if(blitzWS)return;
-  var servers=["wss://ws1.blitzortung.org:7979/","wss://ws2.blitzortung.org:7979/",
-    "wss://ws3.blitzortung.org:7979/","wss://ws4.blitzortung.org:7979/",
-    "wss://ws5.blitzortung.org:7979/","wss://ws6.blitzortung.org:7979/",
-    "wss://ws7.blitzortung.org:7979/","wss://ws8.blitzortung.org:7979/"];
+  var servers=["wss://ws1.blitzortung.org:3000/","wss://ws2.blitzortung.org:3000/",
+    "wss://ws3.blitzortung.org:3000/","wss://ws4.blitzortung.org:3000/",
+    "wss://ws5.blitzortung.org:3000/","wss://ws6.blitzortung.org:3000/",
+    "wss://ws7.blitzortung.org:3000/","wss://ws8.blitzortung.org:3000/"];
   connectBlitz(servers,Math.floor(Math.random()*servers.length),0);
 }
 
@@ -1467,16 +1467,30 @@ function connectBlitz(servers,idx,tries){
     blitzWS=new WebSocket(servers[idx%servers.length]);
     blitzWS.onopen=function(){
       pi("p-blk","ok","BŁK LIVE");
+      // Port 3000 - nowy protokol Blitzortung
+      // Wyslij subskrypcje regionu (Europa)
       blitzWS.send(JSON.stringify({west:-30,east:50,north:75,south:30}));
+      console.log("Blitzortung connected:", servers[idx%servers.length]);
     };
     blitzWS.onmessage=function(e){
       try{
         var d=JSON.parse(e.data);
-        if(!mapObj||typeof d.lat==="undefined")return;
-        var lt2=d.lat/1e9,ln2=d.lon/1e9;
-        if(isNaN(lt2)||isNaN(ln2)||Math.abs(lt2)>90||Math.abs(ln2)>180)return;
-        addBlitzMarker(lt2,ln2);
-      }catch(x){}
+        if(!mapObj)return;
+        // Blitzortung format: {time, lat, lon, alt, pol, mds, mcg, sig, delay}
+        // lat/lon w nanosekundach (1e9 = 1 stopień)
+        var lt2,ln2;
+        if(typeof d.lat==="number"&&typeof d.lon==="number"){
+          // Sprawdź czy to nanosekundy czy stopnie
+          if(Math.abs(d.lat)>90){
+            lt2=d.lat/1e9; ln2=d.lon/1e9;
+          } else {
+            lt2=d.lat; ln2=d.lon;
+          }
+          if(isNaN(lt2)||isNaN(ln2)||Math.abs(lt2)>90||Math.abs(ln2)>180)return;
+          console.log("⚡ Blitz:", lt2.toFixed(3), ln2.toFixed(3));
+          addBlitzMarker(lt2,ln2);
+        }
+      }catch(x){console.warn("Blitz parse err:",x);}
     };
     blitzWS.onerror=function(){blitzWS=null;};
     blitzWS.onclose=function(){
