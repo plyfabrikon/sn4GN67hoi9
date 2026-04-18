@@ -708,60 +708,53 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
 <!-- ══════ SEKCJA: SAT24 ══════ -->
 <div class="section" id="sec-sat24">
   <div style="display:flex;flex:1;flex-direction:column;overflow:hidden">
-    <!-- Pasek kontrolny SAT24 -->
-    <div style="flex-shrink:0;background:var(--bg2);border-bottom:1px solid var(--border);padding:8px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-      <span style="font-size:.6rem;font-weight:700;letter-spacing:2px;color:var(--text2);text-transform:uppercase;white-space:nowrap">🛰 SAT24 — Zdjęcia satelitarne</span>
-      <!-- Region -->
-      <div style="display:flex;align-items:center;gap:4px">
-        <span style="font-size:.58rem;color:var(--text2)">Region:</span>
-        <select id="sat-region" onchange="sat24Reload()" style="font-size:.58rem;background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:4px;padding:2px 4px;cursor:pointer">
-          <option value="EU">Europa</option>
-          <option value="PL">Polska</option>
-          <option value="DE">Niemcy</option>
-          <option value="ALPS">Alpy</option>
-          <option value="SCAN">Skandynawia</option>
-          <option value="FR">Francja</option>
-          <option value="IT">Włochy</option>
-          <option value="GB">W.Brytania</option>
-        </select>
-      </div>
+    <!-- Pasek kontrolny -->
+    <div style="flex-shrink:0;background:var(--bg2);border-bottom:1px solid var(--border);padding:6px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <span style="font-size:.6rem;font-weight:700;letter-spacing:2px;color:var(--text2);text-transform:uppercase;white-space:nowrap">🛰 Satelita — RainViewer IR</span>
       <!-- Kanał -->
       <div style="display:flex;align-items:center;gap:4px">
         <span style="font-size:.58rem;color:var(--text2)">Kanał:</span>
-        <select id="sat-channel" onchange="sat24Reload()" style="font-size:.58rem;background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:4px;padding:2px 4px;cursor:pointer">
-          <option value="infraPolair">IR Podczerwień</option>
-          <option value="visual5hdcomplete">VIS Widzialny</option>
-          <option value="rainTMC">Opady (TMC)</option>
-          <option value="snow">Śnieg</option>
+        <select id="sat-channel" onchange="sat24ChangeChannel()" style="font-size:.58rem;background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:4px;padding:2px 5px;cursor:pointer">
+          <option value="infrared">☁ IR — Podczerwień</option>
+          <option value="visible">☀ VIS — Widzialny</option>
         </select>
       </div>
       <!-- Animacja -->
+      <button id="sat24-play-btn" onclick="sat24ToggleAnim()" style="font-size:.58rem;padding:3px 10px;border-radius:4px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--text2);cursor:pointer">▶ Animuj</button>
+      <button onclick="sat24Reload()" style="font-size:.58rem;padding:3px 8px;border-radius:4px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--text2);cursor:pointer">🔄</button>
+      <!-- Suwak klatki -->
+      <div style="display:flex;align-items:center;gap:6px;flex:1;min-width:120px">
+        <input type="range" id="sat24-slider" min="0" max="0" value="0"
+          style="-webkit-appearance:none;appearance:none;flex:1;height:3px;background:var(--border);border-radius:2px;outline:none;cursor:pointer"
+          oninput="sat24SliderChange(this.value)">
+        <span id="sat24-frame-lbl" style="font-size:.55rem;color:var(--accent);font-family:monospace;white-space:nowrap">--:--</span>
+      </div>
+      <!-- Opacity -->
       <div style="display:flex;align-items:center;gap:4px">
-        <span style="font-size:.58rem;color:var(--text2)">Tryb:</span>
-        <button id="sat24-play-btn" onclick="sat24ToggleAnim()" style="font-size:.58rem;padding:2px 10px;border-radius:4px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--text2);cursor:pointer">▶ Animuj</button>
-        <button onclick="sat24Reload()" style="font-size:.58rem;padding:2px 8px;border-radius:4px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--text2);cursor:pointer">🔄</button>
+        <span style="font-size:.55rem;color:var(--text2)">Opacity:</span>
+        <input type="range" id="sat24-opacity" min="20" max="100" value="85"
+          style="-webkit-appearance:none;appearance:none;width:60px;height:3px;background:var(--border);border-radius:2px;outline:none;cursor:pointer"
+          oninput="sat24SetOpacity(this.value)">
       </div>
-      <!-- Legenda -->
-      <div style="margin-left:auto;font-size:.58rem;color:var(--text2);display:flex;gap:8px;align-items:center">
-        <span style="color:#fff">⬜ Chmury wysokie (Cb)</span>
-        <span style="color:#888">⬜ Chmury niskie</span>
-        <span style="color:#4a9eff">⬜ Opady</span>
-      </div>
-      <a href="https://sat24.com" target="_blank" style="font-size:.58rem;color:var(--blue2);text-decoration:none">↗ sat24.com</a>
+      <span id="sat24-status" style="font-size:.55rem;color:var(--text2)">Ładowanie...</span>
     </div>
-    <!-- Obraz satelitarny -->
-    <div style="flex:1;background:#000;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden">
-      <div id="sat24-loading" style="position:absolute;z-index:2;text-align:center;color:var(--text2)">
-        <div style="font-size:2rem;margin-bottom:8px">🛰</div>
-        <div style="font-size:.8rem">Ładowanie obrazu satelitarnego...</div>
+    <!-- Mapa satelitarna -->
+    <div style="flex:1;position:relative;overflow:hidden">
+      <div id="map-sat24" style="width:100%;height:100%"></div>
+      <!-- Loading overlay -->
+      <div id="sat24-loading" style="display:none;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(5,16,30,.85);padding:16px 24px;border-radius:8px;border:1px solid var(--border);text-align:center;color:var(--text2);z-index:1000">
+        <div style="font-size:1.5rem;margin-bottom:6px">🛰</div>
+        <div style="font-size:.75rem" id="sat24-load-txt">Pobieranie klatek...</div>
       </div>
-      <img id="sat24-img" style="max-width:100%;max-height:100%;object-fit:contain;display:none" alt="SAT24 satellite image" onload="sat24ImgLoaded()" onerror="sat24ImgError()">
     </div>
-    <!-- Pasek dolny: czas + legenda -->
-    <div style="flex-shrink:0;background:var(--bg2);border-top:1px solid var(--border);padding:4px 14px;display:flex;align-items:center;gap:12px">
+    <!-- Pasek dolny -->
+    <div style="flex-shrink:0;background:var(--bg2);border-top:1px solid var(--border);padding:4px 14px;display:flex;align-items:center;gap:10px">
       <span style="font-size:.6rem;color:var(--accent);font-family:monospace;font-weight:700" id="sat24-time">--:-- UTC</span>
-      <span style="font-size:.58rem;color:var(--text2)" id="sat24-status">Pobieranie obrazu...</span>
-      <span style="font-size:.55rem;color:var(--text2);margin-left:auto">Źródło: EUMETSAT via sat24.com · Aktualizacja co 15 min</span>
+      <div style="display:flex;gap:6px;align-items:center;font-size:.58rem;color:var(--text2)">
+        <span>⬜ Zimne chmury (burze)</span>
+        <span style="color:#555">⬛ Ciepłe/czyste</span>
+      </div>
+      <span style="margin-left:auto;font-size:.52rem;color:var(--text2)">EUMETSAT Meteosat · RainViewer · co 15 min</span>
     </div>
   </div>
 </div><!-- /sec-sat24 -->
@@ -1156,7 +1149,11 @@ function showSec(el,s){
   document.querySelectorAll('.section').forEach(function(x){x.classList.remove('active');});
   var sec=document.getElementById('sec-'+s);if(sec)sec.classList.add('active');
   currentSection=s;
-  if(s==='sat24')initSat24();
+  if(s==='sat24'){
+    initSat24();
+    // Leaflet potrzebuje chwili po display:flex żeby zmierzyć rozmiar
+    setTimeout(function(){if(sat24Map){sat24Map.invalidateSize();sat24Map.invalidateSize();}},300);
+  }
   if(s==='wyladowania'){
     setTimeout(function(){initBlitzIframe();},100);
     reloadBlitzIframe();
@@ -1174,103 +1171,202 @@ var windLayerMap={wind:null,pres:null},windBaseLyr=null;
 var satAnimInt=null,satFrames=[],satFrameIdx=0,satAnimRunning=false;
 
 
-// ── SAT24 — api.sat24.com ─────────────────────────────────
-// Używamy oficjalnego API SAT24 z animowanymi GIF-ami
-// Endpoint: https://api.sat24.com/animated/{region}/{channel}/{size}/
-// Region: EU, PL, DE, ALPS, SCAN, FR, IT, GB
-// Channel: infraPolair, visual5hdcomplete, rainTMC, snow
-// Size: 1=mały, 2=średni, 3=duży
+// ═══════════════════════════════════════════════════════════
+// SAT24 — Mapa Leaflet + warstwy satelitarne z RainViewer
+// Animacja przez klatki IR/VIS z api.rainviewer.com
+// ═══════════════════════════════════════════════════════════
 
-var sat24Init=false;
-var sat24AnimRunning=false;
-var sat24AnimInt=null;
+var sat24Init=false, sat24Map=null;
+var sat24IrLyr=null, sat24VisLyr=null, sat24CurLyr=null;
+var sat24Frames=[], sat24FrameIdx=0;
+var sat24AnimRunning=false, sat24AnimTimer=null;
+var sat24AnimSpeed=500; // ms między klatkami
+var sat24RvData=null;   // cache RainViewer JSON
+var sat24Opacity=0.85;
+var sat24Channel='infrared'; // infrared | visible
 
 function initSat24(){
   if(sat24Init)return;
   sat24Init=true;
-  sat24LoadImage();
+
+  var ctr=mapObj?mapObj.getCenter():{lat:52,lng:16};
+  var zm=mapObj?Math.min(mapObj.getZoom(),6):5;
+
+  // Inicjalizuj mapę z opóźnieniem — sekcja musi być widoczna
+  setTimeout(function(){
+    sat24Map=L.map('map-sat24',{
+      zoomControl:true,attributionControl:false,doubleClickZoom:false
+    }).setView([ctr.lat||52,ctr.lng||16],zm);
+
+    // Ciemna mapa bazowa
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',
+      {maxZoom:12,subdomains:'abcd',opacity:0.7}).addTo(sat24Map);
+
+    // Granice i nazwy państw — kluczowe!
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png',
+      {maxZoom:12,subdomains:'abcd',zIndex:20}).addTo(sat24Map);
+
+    sat24Map.invalidateSize();
+    setTimeout(updateGPSOnAllMaps,300);
+    sat24LoadRV();
+  }, 100);
 }
 
-function sat24GetUrl(animated){
-  var region=document.getElementById('sat-region')?document.getElementById('sat-region').value:'EU';
-  var channel=document.getElementById('sat-channel')?document.getElementById('sat-channel').value:'infraPolair';
-  var base='https://api.sat24.com/';
-  if(animated){
-    // GIF animowany
-    return base+'animated/'+region+'/'+channel+'/2/';
+function sat24LoadRV(){
+  var loading=document.getElementById('sat24-loading');
+  var loadTxt=document.getElementById('sat24-load-txt');
+  var status=document.getElementById('sat24-status');
+  if(loading)loading.style.display='block';
+  if(loadTxt)loadTxt.textContent='Pobieranie klatek satelitarnych...';
+
+  fetch('https://api.rainviewer.com/public/weather-maps.json')
+  .then(function(r){return r.json();})
+  .then(function(d){
+    sat24RvData=d;
+    console.log('RainViewer sat keys:', Object.keys(d.satellite||{}));
+    sat24BuildFrames();
+    if(loading)loading.style.display='none';
+    if(sat24Frames.length>0){
+      sat24ShowFrame(sat24Frames.length-1);
+    } else {
+      if(status)status.textContent='⚠ Brak klatek satelitarnych w RainViewer';
+      if(loadTxt)loadTxt.textContent='Brak danych satelitarnych';
+    }
+  })
+  .catch(function(e){
+    console.error('RainViewer error:',e);
+    if(loading)loading.style.display='none';
+    if(status)status.textContent='⚠ Błąd: '+e.message;
+  });
+}
+
+function sat24BuildFrames(){
+  if(!sat24RvData)return;
+  var host=sat24RvData.host||'https://tilecache.rainviewer.com';
+  var sat=sat24RvData.satellite||{};
+
+  // RainViewer: satellite.infrared lub satellite.visible
+  var frames=[];
+  if(sat24Channel==='infrared'){
+    frames=sat.infrared||[];
   } else {
-    // Ostatni obraz PNG
-    return base+'mostrecent/'+region+'/'+channel;
+    frames=sat.visible||sat.infrared||[];
   }
+
+  console.log('Frames for',sat24Channel,':',frames.length);
+
+  sat24Frames=frames.map(function(f){
+    return {
+      // Format URL: host + path + /size/{z}/{x}/{y}/colorScheme/options.png
+      // Dla satelity: size=256, colorScheme=0, options=0_0
+      url: host+f.path,
+      time: f.time
+    };
+  });
+
+  var slider=document.getElementById('sat24-slider');
+  if(slider){
+    slider.max=Math.max(0,sat24Frames.length-1);
+    slider.value=sat24Frames.length-1;
+  }
+  sat24FrameIdx=Math.max(0,sat24Frames.length-1);
 }
 
-function sat24LoadImage(){
-  var img=document.getElementById('sat24-img');
-  var loading=document.getElementById('sat24-loading');
-  var status=document.getElementById('sat24-status');
-  var timeEl=document.getElementById('sat24-time');
-  if(!img)return;
-  img.style.display='none';
-  if(loading)loading.style.display='flex';
-  if(status)status.textContent='Pobieranie obrazu...';
-  // Dodaj timestamp żeby uniknąć cache przy odświeżeniu
-  var url=sat24GetUrl(false)+'?t='+Date.now();
-  img.src=url;
-  if(timeEl)timeEl.textContent=new Date().toUTCString().substring(17,22)+' UTC';
+function sat24ShowFrame(idx){
+  if(!sat24Map||!sat24Frames.length)return;
+  idx=Math.max(0,Math.min(idx,sat24Frames.length-1));
+  sat24FrameIdx=idx;
+  var frame=sat24Frames[idx];
+  var url=frame.url+'/256/{z}/{x}/{y}/0/0_0.png';
+
+  // Usuń poprzednią warstwę
+  if(sat24CurLyr){sat24Map.removeLayer(sat24CurLyr);sat24CurLyr=null;}
+
+  sat24CurLyr=L.tileLayer(url,{
+    opacity:sat24Opacity,
+    tileSize:256,
+    maxNativeZoom:5,
+    maxZoom:12,
+    zIndex:5
+  }).addTo(sat24Map);
+
+  // Aktualizuj UI
+  var t=new Date(frame.time*1000);
+  var ts=String(t.getUTCHours()).padStart(2,'0')+':'+String(t.getUTCMinutes()).padStart(2,'0')+' UTC';
+  var date=t.getUTCDate()+'.'+(t.getUTCMonth()+1)+'.'+t.getUTCFullYear();
+  var el=document.getElementById('sat24-time');
+  if(el)el.textContent=ts;
+  var lbl=document.getElementById('sat24-frame-lbl');
+  if(lbl)lbl.textContent=date+' '+ts;
+  var sl=document.getElementById('sat24-slider');
+  if(sl)sl.value=idx;
+
+  var n=sat24Frames.length;
+  var s=document.getElementById('sat24-status');
+  if(s)s.textContent='Klatka '+(idx+1)+'/'+n+' · '+(sat24Channel==='infrared'?'IR Podczerwień':'VIS Widzialny');
 }
 
-function sat24ImgLoaded(){
-  var img=document.getElementById('sat24-img');
-  var loading=document.getElementById('sat24-loading');
-  var status=document.getElementById('sat24-status');
-  if(img)img.style.display='block';
-  if(loading)loading.style.display='none';
-  if(status)status.textContent='Obraz aktualny · Kanał: '+
-    (document.getElementById('sat-channel')?document.getElementById('sat-channel').options[document.getElementById('sat-channel').selectedIndex].text:'IR');
-}
-
-function sat24ImgError(){
-  var status=document.getElementById('sat24-status');
-  var loading=document.getElementById('sat24-loading');
-  if(loading)loading.style.display='none';
-  if(status)status.textContent='⚠ Błąd pobierania — sat24.com może być niedostępne';
-  // Fallback: pokaż animowany GIF bezpośrednio
-  var img=document.getElementById('sat24-img');
-  if(img){img.src=sat24GetUrl(true);img.style.display='block';}
-}
-
-function sat24Reload(){
-  if(sat24AnimRunning)sat24ToggleAnim();
-  sat24LoadImage();
+function sat24SliderChange(val){
+  if(sat24AnimRunning)sat24StopAnim();
+  sat24ShowFrame(parseInt(val));
 }
 
 function sat24ToggleAnim(){
   var btn=document.getElementById('sat24-play-btn');
-  var img=document.getElementById('sat24-img');
   if(sat24AnimRunning){
-    sat24AnimRunning=false;
-    if(btn)btn.textContent='▶ Animuj';
-    // Wróć do statycznego obrazu
-    sat24LoadImage();
+    sat24StopAnim();
   } else {
     sat24AnimRunning=true;
     if(btn)btn.textContent='⏹ Stop';
-    // Załaduj animowany GIF — SAT24 sam animuje
-    if(img){
-      img.style.display='block';
-      img.src=sat24GetUrl(true)+'?t='+Date.now();
-      var loading=document.getElementById('sat24-loading');
-      if(loading)loading.style.display='none';
-      var status=document.getElementById('sat24-status');
-      if(status)status.textContent='Animacja live (GIF) · Aktualizuje się automatycznie';
-    }
+    sat24FrameIdx=0; // zacznij od najstarszej
+    sat24Animate();
   }
 }
 
+function sat24StopAnim(){
+  sat24AnimRunning=false;
+  clearTimeout(sat24AnimTimer);
+  var btn=document.getElementById('sat24-play-btn');
+  if(btn)btn.textContent='▶ Animuj';
+  // Pokaż najnowszą
+  sat24ShowFrame(sat24Frames.length-1);
+}
+
+function sat24Animate(){
+  if(!sat24AnimRunning)return;
+  sat24ShowFrame(sat24FrameIdx);
+  var isLast=sat24FrameIdx>=sat24Frames.length-1;
+  // Pauza na ostatniej klatce
+  var delay=isLast?1500:sat24AnimSpeed;
+  sat24FrameIdx=isLast?0:sat24FrameIdx+1;
+  sat24AnimTimer=setTimeout(sat24Animate,delay);
+}
+
+function sat24ChangeChannel(){
+  var ch=document.getElementById('sat-channel');
+  sat24Channel=ch?ch.value:'infrared';
+  sat24BuildFrames();
+  sat24ShowFrame(sat24Frames.length-1);
+}
+
+function sat24Reload(){
+  if(sat24AnimRunning)sat24StopAnim();
+  sat24RvData=null;
+  sat24LoadRV();
+}
+
+function sat24SetOpacity(val){
+  sat24Opacity=val/100;
+  if(sat24CurLyr)sat24CurLyr.setOpacity(sat24Opacity);
+}
+
+// Funkcje legacy — nieużywane ale zapobiegają błędom
+function sat24ImgLoaded(){}
+function sat24ImgError(){}
+
 // Auto-refresh co 15 min
-setInterval(function(){
-  if(!sat24AnimRunning&&sat24Init)sat24LoadImage();
-},15*60*1000);
+setInterval(function(){if(sat24Init&&!sat24AnimRunning)sat24Reload();},15*60*1000);
+
 
 // ── PROGNOZA ───────────────────────────────
 var progInit=false;
@@ -1978,8 +2074,7 @@ function updateGPSOnAllMaps(){
   }
 }
 // Dodaj marker GPS po inicjalizacji każdej mapy
-var _origInitSat24=initSat24;
-initSat24=function(){_origInitSat24();setTimeout(updateGPSOnAllMaps,500);};
+// GPS dodany bezpośrednio w initSat24
 var _origInitWiatr=initWiatr;
 initWiatr=function(){_origInitWiatr();setTimeout(updateGPSOnAllMaps,500);};
 var _origInitBurze=initBurze;
@@ -2639,113 +2734,101 @@ function probToRGBA(p, alpha) {
 }
 
 // ── Główny draw na canvas ─────────────────────────────────────────
-// Trick: rysujemy na offscreen canvas, potem blitujemy — 0 flicker
 function drawFrame(gridInterp) {
   if(!burzeCanvas||!mapBurze) return;
 
-  var map  = mapBurze;
+  var map = mapBurze;
   var size = map.getSize();
   var W = size.x, H = size.y;
 
-  // Lazy resize
   if(burzeCanvas.width!==W||burzeCanvas.height!==H) {
     burzeCanvas.width=W; burzeCanvas.height=H;
-    if(bufA){bufA.width=W;bufA.height=H;}
-    if(bufB){bufB.width=W;bufB.height=H;}
   }
 
-  // Oblicz transform geo → pixel
-  var sw = map.latLngToContainerPoint([GEO_MIN_LAT,GEO_MIN_LON]);
-  var ne = map.latLngToContainerPoint([GEO_MAX_LAT,GEO_MAX_LON]);
+  var ctx = burzeCanvas.getContext('2d');
+  ctx.clearRect(0,0,W,H);
 
-  var iW = Math.max(1, Math.ceil(Math.abs(ne.x-sw.x)) + 4);
-  var iH = Math.max(1, Math.ceil(Math.abs(sw.y-ne.y)) + 4);
+  // ── Krok 1: rysuj piksel po pikselu na ImageData ──────────────────
+  // Każdy piksel canvas → współrzędna geo → interpolacja gridu
+  // Mgławica modulowana wg współrzędnych GEO (nie pikseli) → stabilna przy zoom/pan
+  var imgData = ctx.createImageData(W, H);
+  var data = imgData.data;
 
-  // Rysuj na offscreen buffer (double-buffer trick)
-  var offCtx = showBuf==='A' ? bufB.getContext('2d') : bufA.getContext('2d');
-  offCtx.clearRect(0,0,iW,iH);
+  // Zakresy geo widocznego obszaru mapy
+  var mapBounds = map.getBounds();
+  var latMin = mapBounds.getSouth();
+  var latMax = mapBounds.getNorth();
+  var lonMin = mapBounds.getWest();
+  var lonMax = mapBounds.getEast();
+  var latRange = latMax - latMin;
+  var lonRange = lonMax - lonMin;
+  if(latRange<=0||lonRange<=0) return;
 
-  var imgData = offCtx.createImageData(iW, iH);
-  var data    = imgData.data;
+  for(var py=0; py<H; py++) {
+    for(var px=0; px<W; px++) {
 
-  // Mgławica — organic drift używając dwóch sin faz
-  var f1 = Math.sin(fogOffset*0.7);
-  var f2 = Math.cos(fogOffset*0.4);
+      // Piksel → współrzędna geograficzna
+      var lat = latMax - (py/H)*latRange;
+      var lon = lonMin + (px/W)*lonRange;
 
-  for(var j=0; j<iH; j++) {
-    for(var i=0; i<iW; i++) {
-      var gx = i/(iW-1)*(GRID_W-1);
-      var gy = j/(iH-1)*(GRID_H-1);
+      // Geo → indeks gridu
+      var gx = (lon - GEO_MIN_LON)/(GEO_MAX_LON-GEO_MIN_LON) * (GRID_W-1);
+      var gy = (GEO_MAX_LAT - lat)/(GEO_MAX_LAT-GEO_MIN_LAT) * (GRID_H-1);
 
-      // Bilinearna interpolacja
+      // Poza zakresem siatki
+      if(gx<0||gx>=GRID_W||gy<0||gy>=GRID_H) continue;
+
+      // Bilinearna interpolacja gridu
       var gx0=gx|0, gx1=Math.min(gx0+1,GRID_W-1);
       var gy0=gy|0, gy1=Math.min(gy0+1,GRID_H-1);
       var fx=gx-gx0, fy=gy-gy0;
-
       var pa=gridInterp[gy0*GRID_W+gx0], pb=gridInterp[gy0*GRID_W+gx1];
       var pc=gridInterp[gy1*GRID_W+gx0], pd=gridInterp[gy1*GRID_W+gx1];
       var prob=(pa*(1-fx)+pb*fx)*(1-fy)+(pc*(1-fx)+pd*fx)*fy;
 
       if(prob<STORM_THRESHOLD) continue;
 
-      // Mgławica: płynna modulacja opacity z dwóch faz
-      var fog = 0.80
-        + 0.10*Math.sin(fogOffset*1.3 + i*0.15 + j*0.11)
-        + 0.10*Math.cos(fogOffset*0.8 + i*0.07 - j*0.13 + f1 + f2);
+      // Mgławica: modulacja wg współrzędnych GEO → stabilna przy zoom/pan
+      // lat/lon są stałe dla danego miejsca na mapie
+      var fog = 0.82
+        + 0.10*Math.sin(fogOffset*1.2 + lat*8.0 + lon*3.0)
+        + 0.08*Math.cos(fogOffset*0.7 + lat*5.0 - lon*4.5);
 
-      var alpha = Math.min(210, (prob/100)*210*fog)|0;
+      var alpha = Math.min(220, (prob/100)*220*fog)|0;
       var col   = probToRGBA(prob, alpha);
-      var idx   = (j*iW+i)*4;
-      data[idx  ]=col[0]; data[idx+1]=col[1];
-      data[idx+2]=col[2]; data[idx+3]=col[3];
+      var idx4  = (py*W+px)*4;
+      data[idx4  ]=col[0]; data[idx4+1]=col[1];
+      data[idx4+2]=col[2]; data[idx4+3]=col[3];
     }
   }
 
-  offCtx.putImageData(imgData,0,0);
+  // ── Krok 2: nałóż ImageData z rozmyciem ──────────────────────────
+  // Użyj tymczasowego canvasa żeby ctx.filter blur działał
+  var tmp = document.createElement('canvas');
+  tmp.width=W; tmp.height=H;
+  tmp.getContext('2d').putImageData(imgData,0,0);
 
-  // Blur na offscreen — rozmycie mgławicowe
-  // Trick: rysuj 3 razy z niewielkim przesunięciem i mniejszą opacity
-  // (szybsze niż ctx.filter='blur' na dużych canvas)
-  var mainCtx = burzeCanvas.getContext('2d');
-  mainCtx.clearRect(0,0,W,H);
+  ctx.filter='blur(8px)';
+  ctx.globalAlpha=0.9;
+  ctx.drawImage(tmp,0,0);
+  ctx.filter='none';
+  ctx.globalAlpha=1.0;
 
-  var startX = Math.min(sw.x,ne.x)-2;
-  var startY = Math.min(ne.y,sw.y)-2;
-  var offCanvas = showBuf==='A' ? bufB : bufA;
-
-  // Trik: natywny blur CSS na canvas przed drawImage
-  mainCtx.filter = 'blur(7px)';
-  mainCtx.globalAlpha = 0.75;
-  mainCtx.drawImage(offCanvas, startX, startY, iW, iH);
-
-  // Drugi pass — ostrzejszy, mniejszy obszar (wzmocnienie centrum)
-  mainCtx.filter = 'blur(3px)';
-  mainCtx.globalAlpha = 0.55;
-  mainCtx.drawImage(offCanvas, startX+1, startY+1, iW-2, iH-2);
-
-  mainCtx.filter = 'none';
-  mainCtx.globalAlpha = 1.0;
-
-  // Swap buffer
-  showBuf = showBuf==='A' ? 'B' : 'A';
-
-  // ⚡ Ikony na wierzchu (bez blur)
+  // ── Krok 3: ikony ⚡ ──────────────────────────────────────────────
+  var sf = stepToHourFrac(curStep);
+  var h1 = sf.h, h2 = Math.min(h1+1,71), sub = sf.sub;
   STORM_GRID.forEach(function(pt,idx) {
-    // Interpoluj prob dla tego punktu
-    var sf = stepToHourFrac(curStep);
-    var h1 = sf.h, h2 = Math.min(h1+1,71), sub = sf.sub;
-    var p1 = (burzeData[idx]&&burzeData[idx][h1]) ? burzeData[idx][h1].prob : 0;
-    var p2 = (burzeData[idx]&&burzeData[idx][h2]) ? burzeData[idx][h2].prob : 0;
-    var prob = p1*(1-sub)+p2*sub;
+    var p1=(burzeData[idx]&&burzeData[idx][h1])?burzeData[idx][h1].prob:0;
+    var p2=(burzeData[idx]&&burzeData[idx][h2])?burzeData[idx][h2].prob:0;
+    var prob=p1*(1-sub)+p2*sub;
     if(prob<60) return;
-    var px = map.latLngToContainerPoint([pt[0],pt[1]]);
-    var fs = prob>=80 ? 20 : 14;
-    // Pulsacja ⚡ zsynchronizowana z fogOffset
-    var pulse = 0.6 + 0.4*Math.abs(Math.sin(fogOffset*2.5));
-    mainCtx.globalAlpha = pulse;
-    mainCtx.font = fs+'px sans-serif';
-    mainCtx.fillText('⚡', px.x-fs/2, px.y+fs/2);
-    mainCtx.globalAlpha = 1;
+    var px2=map.latLngToContainerPoint([pt[0],pt[1]]);
+    var fs=prob>=80?20:14;
+    var pulse=0.65+0.35*Math.abs(Math.sin(fogOffset*2.5));
+    ctx.globalAlpha=pulse;
+    ctx.font=fs+'px sans-serif';
+    ctx.fillText('⚡',px2.x-fs/2,px2.y+fs/2);
+    ctx.globalAlpha=1;
   });
 }
 
