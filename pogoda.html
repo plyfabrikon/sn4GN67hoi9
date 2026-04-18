@@ -749,8 +749,8 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
   <div style="display:flex;flex:1;overflow:hidden;flex-direction:column">
     <!-- Pasek info -->
     <div style="flex-shrink:0;height:32px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 14px;gap:10px">
-      <span style="font-size:.6rem;font-weight:700;letter-spacing:2px;color:var(--text2);text-transform:uppercase">⚡ Wyładowania atmosferyczne — LightningMaps.org</span>
-      <span style="font-size:.58rem;color:var(--accent);background:rgba(232,130,26,.1);border:1px solid rgba(232,130,26,.3);padding:1px 7px;border-radius:3px">Blitzortung data · Live</span>
+      <span style="font-size:.6rem;font-weight:700;letter-spacing:2px;color:var(--text2);text-transform:uppercase">⚡ Wyładowania atmosferyczne — Windy.com</span>
+      <span style="font-size:.58rem;color:var(--accent);background:rgba(232,130,26,.1);border:1px solid rgba(232,130,26,.3);padding:1px 7px;border-radius:3px">ECMWF · Live lightning</span>
       <span style="font-size:.58rem;color:var(--text2);margin-left:auto">🔴 &lt;10min · 🟠 10-20min · 🟡 20-40min</span>
       <button onclick="reloadBlitzIframe()" style="font-size:.58rem;padding:2px 8px;border-radius:4px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--text2);cursor:pointer">🔄 Odśwież</button>
     </div>
@@ -1476,22 +1476,51 @@ function initBlitzIframe(){
   var box=document.getElementById("blitz-iframe-box");
   if(!box||box.dataset.init)return;
   box.dataset.init="1";
-  // Centrum mapy — Twoja pozycja lub domyślnie Polska
-  var lat=uLat||52.0, lon=uLon||20.0, zoom=5;
-  // URL lightningmaps.org z parametrami centrum i zoom
-  var url="https://www.lightningmaps.org/?lang=pl#m=oss;t=3;s=0;o=0;b=;ts=0;z="+zoom+";y="+lat.toFixed(2)+";x="+lon.toFixed(2)+";";
+  var lat=uLat||52.0, lon=uLon||20.0;
+  // Windy.com - oficjalny darmowy widget, pozwala na iframe,
+  // pokazuje wyładowania + radar + chmury satelitarne
+  var url="https://embed.windy.com/embed2.html"
+    +"?lat="+lat.toFixed(2)
+    +"&lon="+lon.toFixed(2)
+    +"&detailLat="+lat.toFixed(2)
+    +"&detailLon="+lon.toFixed(2)
+    +"&width=650&height=450"
+    +"&zoom=5"
+    +"&level=surface"
+    +"&overlay=lightning"
+    +"&product=ecmwf"
+    +"&menu=&message=true&marker=true"
+    +"&calendar=now&pressure=true"
+    +"&type=map&location=coordinates"
+    +"&detail=true&metricWind=km%2Fh&metricTemp=%C2%B0C"
+    +"&radarRange=-1";
   var iframe=document.createElement("iframe");
   iframe.src=url;
   iframe.style.cssText="width:100%;height:100%;border:none;display:block";
   iframe.allow="geolocation";
+  iframe.frameBorder="0";
   box.innerHTML="";
   box.appendChild(iframe);
 }
 
 
 function reloadBlitzIframe(){
-  var lat=uLat||52.0, lon=uLon||20.0, zoom=5;
-  var url="https://www.lightningmaps.org/?lang=pl#m=oss;t=3;s=0;o=0;b=;ts=0;z="+zoom+";y="+lat.toFixed(2)+";x="+lon.toFixed(2)+";";
+  var lat=uLat||52.0, lon=uLon||20.0;
+  var url="https://embed.windy.com/embed2.html"
+    +"?lat="+lat.toFixed(2)
+    +"&lon="+lon.toFixed(2)
+    +"&detailLat="+lat.toFixed(2)
+    +"&detailLon="+lon.toFixed(2)
+    +"&width=650&height=450"
+    +"&zoom=5"
+    +"&level=surface"
+    +"&overlay=lightning"
+    +"&product=ecmwf"
+    +"&menu=&message=true&marker=true"
+    +"&calendar=now&pressure=true"
+    +"&type=map&location=coordinates"
+    +"&detail=true&metricWind=km%2Fh&metricTemp=%C2%B0C"
+    +"&radarRange=-1";
   var box=document.getElementById("blitz-iframe-box");
   if(!box)return;
   var existing=box.querySelector("iframe");
