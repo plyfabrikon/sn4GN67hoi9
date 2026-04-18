@@ -1991,41 +1991,42 @@ var burzeRefreshInt=null;
 function calcStormProb(cape,li,cin,prc,wmo,shr){
   var prob=0;
 
-  // CAPE (najważniejszy — waga 40%)
-  if(cape>3000)      prob+=40;
-  else if(cape>2000) prob+=32;
-  else if(cape>1500) prob+=24;
-  else if(cape>1000) prob+=16;
-  else if(cape>500)  prob+=8;
-  else if(cape>200)  prob+=3;
+  // ── WMO CODE — PRIORYTET (model wprost mówi czy jest burza) ──
+  if(wmo>=95)       { prob=Math.max(prob,90); }  // 95=burza, 96=grad, 99=duży grad
+  else if(wmo>=91)  { prob=Math.max(prob,70); }  // burza słaba
+  else if(wmo>=80)  { prob=Math.max(prob,40); }  // deszcz nawalny/przelotny
+  else if(wmo>=61)  { prob=Math.max(prob,18); }  // deszcz — możliwa konwekcja
+  else if(wmo>=51)  { prob=Math.max(prob,10); }  // mżawka
 
-  // Lifted Index (waga 25%)
-  if(li<-6)      prob+=25;
-  else if(li<-4) prob+=20;
-  else if(li<-2) prob+=14;
-  else if(li<0)  prob+=7;
-  else if(li<1)  prob+=2;
+  // ── CAPE — obniżone progi ──
+  if(cape>2500)      prob+=35;
+  else if(cape>1500) prob+=28;
+  else if(cape>800)  prob+=20;
+  else if(cape>300)  prob+=12;
+  else if(cape>100)  prob+=5;
+  else if(cape>30)   prob+=2;
 
-  // WMO kod aktywnej burzy (waga 20%)
-  if(wmo>=95)    prob+=20;
-  else if(wmo>=80) prob+=10;
-  else if(wmo>=61) prob+=5;
+  // ── Lifted Index ──
+  if(li<-5)      prob+=20;
+  else if(li<-3) prob+=14;
+  else if(li<-1) prob+=7;
+  else if(li<0)  prob+=3;
 
-  // Opady konwekcyjne (waga 10%)
-  if(prc>10)     prob+=10;
-  else if(prc>5) prob+=7;
-  else if(prc>2) prob+=4;
-  else if(prc>0.5) prob+=2;
+  // ── Opady ──
+  if(prc>8)        prob+=15;
+  else if(prc>3)   prob+=10;
+  else if(prc>1)   prob+=6;
+  else if(prc>0.2) prob+=3;
 
-  // CIN — hamowanie konwekcji (odejmuje)
-  if(cin<-200)   prob-=15;
-  else if(cin<-100) prob-=8;
-  else if(cin<-50)  prob-=3;
+  // ── CIN — tylko przy bardzo wysokim hamowaniu ──
+  if(cin<-300)      prob-=20;
+  else if(cin<-150) prob-=10;
+  else if(cin<-80)  prob-=4;
 
-  // Wind Shear — zwiększa ryzyko superceli (waga 5%)
-  if(shr>50)     prob+=5;
-  else if(shr>30) prob+=3;
-  else if(shr>15) prob+=1;
+  // ── Wind Shear ──
+  if(shr>60)      prob+=8;
+  else if(shr>35) prob+=4;
+  else if(shr>15) prob+=2;
 
   return Math.max(0, Math.min(100, Math.round(prob)));
 }
@@ -2138,7 +2139,7 @@ function loadBurzeData(force){
 // Używamy prostokątów (polygonów) zamiast kółek
 // Wyświetlamy TYLKO gdy prob >= STORM_THRESHOLD
 
-var STORM_THRESHOLD = 15; // % minimalny próg wyświetlania
+var STORM_THRESHOLD = 10; // % minimalny próg wyświetlania
 
 function renderBurzeHour(hIdx){
   if(!mapBurze||!burzeLoaded)return;
