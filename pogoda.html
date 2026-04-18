@@ -2137,86 +2137,241 @@ function loadBurzeData(force){
 
 // ── RENDEROWANIE GODZINY NA MAPIE ────────────────────────────────────
 // Używamy prostokątów (polygonów) zamiast kółek
-// Wyświetlamy TYLKO gdy prob >= STORM_THRESHOLD
+// ═══════════════════════════════════════════════════════════
+// HALO OVERLAY — SVG z sub-podziałem 3×3 i interpolacją
+// ═══════════════════════════════════════════════════════════
+var STORM_THRESHOLD = 10;
 
-var STORM_THRESHOLD = 10; // % minimalny próg wyświetlania
+// Sub-siatka: każdy punkt główny dzieli się na 3×3 = 9 sub-komórek
+// Sub-komórka = STORM_CELL_LAT/3 × STORM_CELL_LON/3
+var SUB  = 3;                              // podział każdej komórki
+var SLAT = 0; // wypełniane po init
+var SLON = 0;
 
-function renderBurzeHour(hIdx){
-  if(!mapBurze||!burzeLoaded)return;
-  burzeHourIdx=hIdx;
+// Overlay SVG Leaflet
+var burzeSVGOverlay = null;
+var burzeSVGEl = null;
 
-  // Usuń stare markery
-  burzeMarkers.forEach(function(m){try{mapBurze.removeLayer(m);}catch(e){}});
-  burzeMarkers=[];
+// Stan animacji — interpolacja między godzinami
+var animFrameId = null;
+var animFromHour = 0;
+var animToHour   = 1;
+var animProgress = 1.0;   // 0..1, 1 = w pełni pokazuje toHour
+var animDuration = 600;   // ms przejścia między godzinami
+var animInterval = null;
+var animSpeed    = 800;   // ms między godzinami (czas postoju)
 
-  var maxProb=0, maxProbData=null;
-  var halfLat=STORM_CELL_LAT/2, halfLon=STORM_CELL_LON/2;
+// Zapamiętane wartości prob dla każdego sub-punktu (interpolowane)
+// Klucz: "idx_sr_sc" → prob
+var subProbCache = {};
 
-  STORM_GRID.forEach(function(pt,idx){
-    var data=burzeData[idx];
-    if(!data||!data[hIdx])return;
-    var d=data[hIdx];
-
-    // Nie pokazuj gdy ryzyko za małe
-    if(d.prob < STORM_THRESHOLD) return;
-
-    var col=probToColor(d.prob);
-
-    // Prostokąt (polygon) obejmujący komórkę siatki
-    var bounds=[
-      [pt[0]-halfLat, pt[1]-halfLon],
-      [pt[0]-halfLat, pt[1]+halfLon],
-      [pt[0]+halfLat, pt[1]+halfLon],
-      [pt[0]+halfLat, pt[1]-halfLon]
-    ];
-
-    var opacity=d.prob>=80?0.65:d.prob>=60?0.52:d.prob>=40?0.40:d.prob>=20?0.28:0.18;
-
-    var poly=L.polygon(bounds,{
-      color:col.stroke,
-      fillColor:col.fill,
-      fillOpacity:opacity,
-      weight:0.5,
-      opacity:0.6
-    }).addTo(mapBurze);
-
-    // Tooltip z danymi
-    poly.bindTooltip(
-      '<div style="font-size:.78rem">'+
-      '<b style="color:'+col.fill+';font-size:.9rem">'+d.prob+'% ryzyko burzy</b><br>'+
-      'CAPE: <b>'+d.cape+'</b> J/kg &nbsp; LI: <b>'+d.li+'</b><br>'+
-      'CIN: '+d.cin+' &nbsp; Opady: '+d.prc+'mm/h<br>'+
-      '<span style="color:#6b90b0;font-size:.65rem">'+pt[0]+'°N '+pt[1]+'°E</span>'+
-      '</div>',
-      {sticky:true,className:'storm-tooltip',opacity:.97}
-    );
-    burzeMarkers.push(poly);
-
-    // Ikona ⚡ gdy prob >= 60%
-    if(d.prob>=60){
-      var sz=d.prob>=80?'1.6rem':'1.2rem';
-      var clr=d.prob>=80?'#cc00ff':'#ff3300';
-      var spd=d.prob>=80?'.4s':'.7s';
-      var icon=L.divIcon({
-        className:'',
-        html:'<div style="font-size:'+sz+';text-shadow:0 0 10px '+clr+',0 0 20px '+clr+';animation:blink '+spd+' infinite;pointer-events:none">⚡</div>',
-        iconSize:[24,24],iconAnchor:[12,12]
-      });
-      var mk=L.marker([pt[0],pt[1]],{icon:icon,zIndexOffset:200,interactive:false}).addTo(mapBurze);
-      burzeMarkers.push(mk);
-    }
-
-    if(d.prob>maxProb){maxProb=d.prob;maxProbData=d;}
+// ── Oblicz prob sub-komórki interpolując sąsiadów ─────────────────
+function getSubProb(hIdx, mainIdx, sr, sc) {
+  var pt   = STORM_GRID[mainIdx];
+  // Środek sub-komórki
+  var lat  = pt[0] - STORM_CELL_LAT/2 + SLAT*(sr+0.5);
+  var lon  = pt[1] - STORM_CELL_LON/2 + SLON*(sc+0.5);
+  var base = burzeData[mainIdx] && burzeData[mainIdx][hIdx]
+             ? burzeData[mainIdx][hIdx].prob : 0;
+  // Ważona interpolacja z sąsiednimi punktami głównymi
+  var wSum=0, pSum=0;
+  STORM_GRID.forEach(function(npt, nidx) {
+    var dlat = lat - npt[0], dlon = lon - npt[1];
+    var dist = Math.sqrt(dlat*dlat + dlon*dlon);
+    if(dist < 0.001) dist = 0.001;
+    var w    = 1/(dist*dist);
+    var p    = burzeData[nidx] && burzeData[nidx][hIdx]
+               ? burzeData[nidx][hIdx].prob : 0;
+    wSum += w; pSum += w*p;
   });
+  return wSum > 0 ? pSum/wSum : base;
+}
 
-  var myData=getMyLocationData(hIdx)||maxProbData||{prob:0,cape:0,li:0,cin:0,prc:0,shr:0,wmo:0};
+// Interpoluj prob między dwiema godzinami
+function interpProb(idx, sr, sc, h1, h2, t) {
+  var p1 = getSubProb(h1, idx, sr, sc);
+  var p2 = getSubProb(h2, idx, sr, sc);
+  return p1 + (p2-p1)*t;
+}
+
+// ── Kolor halo ─────────────────────────────────────────────────────
+function probToRGB(p) {
+  if(p>=80) return [180,  0,255];
+  if(p>=60) return [255, 30, 30];
+  if(p>=40) return [255,130,  0];
+  if(p>=20) return [255,220,  0];
+  return            [ 30,220,100];
+}
+
+// ── Tworzy/aktualizuje SVG overlay na mapie ────────────────────────
+function initSVGOverlay() {
+  if(!mapBurze) return;
+  SLAT = STORM_CELL_LAT / SUB;
+  SLON = STORM_CELL_LON / SUB;
+
+  // Oblicz bbox całego obszaru
+  var lats = STORM_GRID.map(function(p){return p[0];});
+  var lons = STORM_GRID.map(function(p){return p[1];});
+  var minLat=Math.min.apply(null,lats)-STORM_CELL_LAT*0.6;
+  var maxLat=Math.max.apply(null,lats)+STORM_CELL_LAT*0.6;
+  var minLon=Math.min.apply(null,lons)-STORM_CELL_LON*0.6;
+  var maxLon=Math.max.apply(null,lons)+STORM_CELL_LON*0.6;
+
+  if(burzeSVGOverlay) { mapBurze.removeLayer(burzeSVGOverlay); }
+
+  var bounds=[[minLat,minLon],[maxLat,maxLon]];
+  var svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('xmlns','http://www.w3.org/2000/svg');
+  svg.style.cssText='width:100%;height:100%;overflow:visible;pointer-events:none';
+
+  var defs=document.createElementNS('http://www.w3.org/2000/svg','defs');
+  svg.appendChild(defs);
+  burzeSVGEl=svg;
+
+  burzeSVGOverlay=L.svgOverlay(svg,bounds,{interactive:false,zIndex:5}).addTo(mapBurze);
+
+  // Dodaj interaktywność kliknięcia na polygon
+  mapBurze.on('click', function(e) {
+    var lt=e.latlng.lat, ln=e.latlng.lng;
+    var best=null, bd=999;
+    STORM_GRID.forEach(function(pt,idx){
+      var d=Math.sqrt(Math.pow(pt[0]-lt,2)+Math.pow(pt[1]-ln,2));
+      if(d<bd){bd=d;best=idx;}
+    });
+    if(best===null) return;
+    var d2=burzeData[best]&&burzeData[best][burzeHourIdx];
+    if(!d2) return;
+    var col=probToColor(d2.prob);
+    L.popup().setLatLng(e.latlng)
+      .setContent('<div style="font-size:.78rem;line-height:1.6">'+
+        '<b style="color:'+col.fill+'">'+d2.prob+'% ryzyko burzy</b><br>'+
+        'CAPE: <b>'+d2.cape+'</b> J/kg &nbsp; LI: <b>'+d2.li+'</b><br>'+
+        'Opady: '+d2.prc+'mm/h &nbsp; CIN: '+d2.cin+'</div>')
+      .openOn(mapBurze);
+  });
+}
+
+// ── Rysuj SVG wg aktualnego stanu interpolacji ─────────────────────
+function drawHaloSVG(h1, h2, t) {
+  if(!burzeSVGEl||!burzeLoaded) return;
+
+  var svg = burzeSVGEl;
+  // Usuń stare elementy (poza defs)
+  while(svg.childNodes.length > 1) svg.removeChild(svg.lastChild);
+
+  var bounds   = burzeSVGOverlay.getBounds();
+  var sw       = mapBurze.latLngToLayerPoint(bounds.getSouthWest());
+  var ne       = mapBurze.latLngToLayerPoint(bounds.getNorthEast());
+  var totalW   = ne.x - sw.x;
+  var totalH   = sw.y - ne.y;
+
+  // viewBox = rozmiar w pikselach
+  svg.setAttribute('viewBox','0 0 '+Math.round(totalW)+' '+Math.round(totalH));
+
+  function ll2xy(lat, lon) {
+    var pt = mapBurze.latLngToLayerPoint([lat, lon]);
+    return [pt.x - sw.x, pt.y - ne.y];
+  }
+
+  STORM_GRID.forEach(function(mainPt, mainIdx) {
+    for(var sr=0; sr<SUB; sr++) {
+      for(var sc=0; sc<SUB; sc++) {
+        var prob = interpProb(mainIdx, sr, sc, h1, h2, t);
+        if(prob < STORM_THRESHOLD) continue;
+
+        var clamp = Math.min(100, Math.max(0, prob));
+        var rgb   = probToRGB(clamp);
+        var r=rgb[0],g=rgb[1],b=rgb[2];
+
+        // Środek sub-komórki (geo)
+        var cLat = mainPt[0] - STORM_CELL_LAT/2 + SLAT*(sr+0.5);
+        var cLon = mainPt[1] - STORM_CELL_LON/2 + SLON*(sc+0.5);
+        var cXY  = ll2xy(cLat, cLon);
+        var cx   = cXY[0], cy = cXY[1];
+
+        // Rozmiar halo proporcjonalny do prob — większa burza = większy obszar
+        var halfLat = SLAT * (0.5 + clamp/100 * 1.2);
+        var halfLon = SLON * (0.5 + clamp/100 * 1.2);
+        var corners = [
+          ll2xy(cLat+halfLat, cLon-halfLon),
+          ll2xy(cLat+halfLat, cLon+halfLon),
+          ll2xy(cLat-halfLat, cLon+halfLon),
+          ll2xy(cLat-halfLat, cLon-halfLon)
+        ];
+        var w = Math.abs(corners[1][0]-corners[0][0]);
+        var h = Math.abs(corners[0][1]-corners[2][1]);
+        var rx = w/2, ry = h/2;
+
+        // ID gradientu (unikalny per sub-komórka)
+        var gid = 'hg_'+mainIdx+'_'+sr+'_'+sc;
+        var defs = svg.querySelector('defs');
+
+        // Radialny gradient — halo effect
+        var rg = document.createElementNS('http://www.w3.org/2000/svg','radialGradient');
+        rg.id = gid;
+        rg.setAttribute('cx','50%'); rg.setAttribute('cy','50%');
+        rg.setAttribute('r','50%');  rg.setAttribute('fx','50%'); rg.setAttribute('fy','50%');
+
+        var a1 = (0.55 + clamp/150).toFixed(2);  // centrum — intensywniejsze przy wyższym prob
+        var a2 = (0.20 + clamp/200).toFixed(2);  // środek
+        var a3 = '0';                              // krawędź — zawsze 0 (efekt halo)
+
+        [[0,   'rgba('+r+','+g+','+b+','+a1+')'],
+         [0.5, 'rgba('+r+','+g+','+b+','+a2+')'],
+         [1.0, 'rgba('+r+','+g+','+b+','+a3+')']
+        ].forEach(function(s) {
+          var stop=document.createElementNS('http://www.w3.org/2000/svg','stop');
+          stop.setAttribute('offset', s[0]);
+          stop.setAttribute('stop-color', s[1]);
+          rg.appendChild(stop);
+        });
+        defs.appendChild(rg);
+
+        // Elipsa z gradientem
+        var el=document.createElementNS('http://www.w3.org/2000/svg','ellipse');
+        el.setAttribute('cx', cx.toFixed(1));
+        el.setAttribute('cy', cy.toFixed(1));
+        el.setAttribute('rx', rx.toFixed(1));
+        el.setAttribute('ry', ry.toFixed(1));
+        el.setAttribute('fill', 'url(#'+gid+')');
+        svg.appendChild(el);
+
+        // Ikona ⚡ przy prob>=60
+        if(clamp>=60 && sr===1 && sc===1) {
+          var txt=document.createElementNS('http://www.w3.org/2000/svg','text');
+          var fs = clamp>=80?'18':'14';
+          txt.setAttribute('x', cx.toFixed(1));
+          txt.setAttribute('y', cy.toFixed(1));
+          txt.setAttribute('text-anchor','middle');
+          txt.setAttribute('dominant-baseline','central');
+          txt.setAttribute('font-size', fs);
+          txt.setAttribute('fill','rgba('+r+','+g+','+b+',0.95)');
+          txt.setAttribute('pointer-events','none');
+          txt.textContent='⚡';
+          svg.appendChild(txt);
+        }
+      }
+    }
+  });
+}
+
+// ── renderBurzeHour — natychmiastowy skok bez animacji ─────────────
+function renderBurzeHour(hIdx) {
+  if(!mapBurze||!burzeLoaded) return;
+  burzeHourIdx = hIdx;
+  animFromHour = hIdx;
+  animToHour   = hIdx;
+  animProgress = 1.0;
+  if(!burzeSVGEl) initSVGOverlay();
+  drawHaloSVG(hIdx, hIdx, 1.0);
+  mapBurze.on('zoom move', function(){ drawHaloSVG(animFromHour,animToHour,animProgress); });
+  var myData=getMyLocationData(hIdx)||{prob:0,cape:0,li:0,cin:0,prc:0,shr:0,wmo:0};
   updateBurzePanel(myData);
   updateBurzeTimeLabel(hIdx);
 }
 
 function getMyLocationData(hIdx){
   if(!uLat||!uLon)return null;
-  // Znajdź najbliższy punkt siatki
   var best=null,bestDist=999;
   STORM_GRID.forEach(function(pt,idx){
     var d=Math.sqrt(Math.pow(pt[0]-uLat,2)+Math.pow(pt[1]-uLon,2));
@@ -2250,24 +2405,19 @@ function updateBurzeTimeLabel(hIdx){
   var el=document.getElementById('burze-time-label');
   if(!el)return;
   if(hIdx===0){el.textContent='Teraz';return;}
-  var t=burzeHours[hIdx];
-  if(!t){el.textContent='h+'+hIdx;return;}
-  var dt=new Date(t);
-  var now=new Date();
-  var diff=Math.round((dt-now)/3600000);
-  var dayStr=dt.getDay()===new Date().getDay()?'Dziś':
-    dt.getDay()===(new Date().getDay()+1)%7?'Jutro':
-    ['Nd','Pn','Wt','Śr','Czw','Pt','Sob'][dt.getDay()];
-  el.textContent=dayStr+' '+
-    String(dt.getHours()).padStart(2,'0')+':00'+
-    ' (+'+(diff>0?diff:0)+'h)';
+  var t2=burzeHours[hIdx];
+  if(!t2){el.textContent='h+'+hIdx;return;}
+  var dt=new Date(t2);
+  var days=['Nd','Pn','Wt','Śr','Czw','Pt','Sob'];
+  var today=new Date().getDay();
+  var dn=dt.getDay()===today?'Dziś':dt.getDay()===(today+1)%7?'Jutro':days[dt.getDay()];
+  el.textContent=dn+' '+String(dt.getHours()).padStart(2,'0')+':00 (h+'+(hIdx)+')';
 }
 
 // ── WYKRES CHART.JS ──────────────────────────────────────────────────
 function buildStormChart(){
   var canvas=document.getElementById('chart-storm');
   if(!canvas)return;
-  // Pobierz dane dla najbliższego punktu do GPS
   var myIdx=0;
   if(uLat&&uLon){
     var bestDist=999;
@@ -2278,78 +2428,80 @@ function buildStormChart(){
   }
   var myData=burzeData[myIdx]||[];
   var labels=myData.map(function(d,i){
-    if(i%6===0){
-      var dt=new Date(d.time||'');
-      return isNaN(dt)?'h'+i:String(dt.getHours()).padStart(2,'0')+':00';
-    }return '';
+    if(i%6===0){var dt=new Date(d.time||'');return isNaN(dt)?'h'+i:String(dt.getHours()).padStart(2,'0')+':00';}
+    return '';
   });
   var probs=myData.map(function(d){return d.prob;});
-  var colors=myData.map(function(d){
-    var c=probToColor(d.prob);return c.fill;
-  });
-
+  var colors=myData.map(function(d){return probToColor(d.prob).fill;});
   if(burzeChartInst)burzeChartInst.destroy();
   burzeChartInst=new Chart(canvas,{
     type:'bar',
-    data:{
-      labels:labels,
-      datasets:[{
-        data:probs,
-        backgroundColor:colors,
-        borderColor:colors,
-        borderWidth:0,
-        borderRadius:2
-      }]
-    },
+    data:{labels:labels,datasets:[{data:probs,backgroundColor:colors,borderColor:colors,borderWidth:0,borderRadius:2}]},
     options:{
       responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},
-        tooltip:{callbacks:{label:function(ctx){return ctx.parsed.y+'% ryzyko';}}}},
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:function(ctx){return ctx.parsed.y+'% ryzyko';}}}},
       scales:{
-        x:{ticks:{color:'#6b90b0',font:{size:8},maxRotation:0},
-           grid:{color:'rgba(26,53,80,.3)'}},
-        y:{min:0,max:100,ticks:{color:'#6b90b0',font:{size:8},
-           callback:function(v){return v+'%';}},
-           grid:{color:'rgba(26,53,80,.3)'}}
+        x:{ticks:{color:'#6b90b0',font:{size:8},maxRotation:0},grid:{color:'rgba(26,53,80,.3)'}},
+        y:{min:0,max:100,ticks:{color:'#6b90b0',font:{size:8},callback:function(v){return v+'%';}},grid:{color:'rgba(26,53,80,.3)'}}
       },
-      onClick:function(e,els){
-        if(els.length){
-          var idx=els[0].index;
-          document.getElementById('burze-slider').value=idx;
-          onBurzeSlider(idx);
-        }
-      }
+      onClick:function(e,els){if(els.length){var idx=els[0].index;document.getElementById('burze-slider').value=idx;onBurzeSlider(idx);}}
     }
   });
 }
 
-// ── KONTROLKI SUWAKA ─────────────────────────────────────────────────
+// ── SUWAK — płynne przejście między godzinami ─────────────────────
 function onBurzeSlider(val){
-  burzeHourIdx=parseInt(val);
-  renderBurzeHour(burzeHourIdx);
-  // Zaznacz na wykresie
+  var newH=parseInt(val);
+  if(newH===burzeHourIdx){return;}
+  startInterp(burzeHourIdx,newH);
   if(burzeChartInst){
     burzeChartInst.data.datasets[0].borderWidth=
-      burzeChartInst.data.datasets[0].data.map(function(_,i){return i===burzeHourIdx?3:0;});
+      burzeChartInst.data.datasets[0].data.map(function(_,i){return i===newH?3:0;});
     burzeChartInst.update('none');
   }
 }
 
+// Interpolacja płynna requestAnimationFrame
+function startInterp(h1,h2){
+  animFromHour=h1; animToHour=h2; animProgress=0;
+  burzeHourIdx=h2;
+  updateBurzeTimeLabel(h2);
+  var myData=getMyLocationData(h2)||{prob:0,cape:0,li:0,cin:0,prc:0,shr:0,wmo:0};
+  updateBurzePanel(myData);
+  if(animFrameId)cancelAnimationFrame(animFrameId);
+  var startTime=null;
+  function step(ts){
+    if(!startTime)startTime=ts;
+    var elapsed=ts-startTime;
+    animProgress=Math.min(1,elapsed/animDuration);
+    // Ease in-out cubic
+    var t2=animProgress<0.5?4*animProgress*animProgress*animProgress:1-Math.pow(-2*animProgress+2,3)/2;
+    if(!burzeSVGEl)initSVGOverlay();
+    drawHaloSVG(h1,h2,t2);
+    if(animProgress<1)animFrameId=requestAnimationFrame(step);
+  }
+  animFrameId=requestAnimationFrame(step);
+}
+
+// ── ANIMACJA GODZINOWA ─────────────────────────────────────────────
 function toggleBurzeAnim(){
   var btn=document.getElementById('burze-play-btn');
   if(burzeAnimRunning){
-    clearInterval(burzeAnimInt);
+    clearTimeout(animInterval); animInterval=null;
     burzeAnimRunning=false;
     if(btn)btn.textContent='▶';
   } else {
     if(!burzeLoaded)return;
     burzeAnimRunning=true;
     if(btn)btn.textContent='⏹';
-    burzeAnimInt=setInterval(function(){
+    function step(){
+      if(!burzeAnimRunning)return;
       var next=(burzeHourIdx+1)%72;
       document.getElementById('burze-slider').value=next;
-      onBurzeSlider(next);
-    },300);
+      startInterp(burzeHourIdx,next);
+      animInterval=setTimeout(step, animSpeed);
+    }
+    step();
   }
 }
 
