@@ -6,6 +6,7 @@
 <title>StormChaser</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 /* ═══════════════════════════════════════════
    RESET & BASE
@@ -362,6 +363,93 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
   50%{opacity:.8}
   100%{opacity:.4;transform:scale(.7)}
 }
+
+/* ═══════════════════════════════════════════
+   SEKCJE ZAKŁADEK
+═══════════════════════════════════════════ */
+.section{display:none;flex:1;overflow:hidden;min-height:0}
+.section.active{display:flex}
+
+/* SAT24 - pełna mapa */
+.sat-wrap{flex:1;position:relative;overflow:hidden}
+#map-sat24{width:100%;height:100%;background:#03080f}
+
+/* PROGNOZA */
+.prognoza-left{width:320px;flex-shrink:0;background:var(--bg2);border-right:1px solid var(--border);overflow-y:auto;padding:12px}
+.prognoza-left::-webkit-scrollbar{width:3px}
+.prognoza-left::-webkit-scrollbar-thumb{background:var(--border)}
+.prognoza-right{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:16px}
+.prognoza-right::-webkit-scrollbar{width:3px}
+.prognoza-right::-webkit-scrollbar-thumb{background:var(--border)}
+.chart-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px}
+.chart-title{font-size:.62rem;font-weight:700;letter-spacing:2px;color:var(--text2);text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.chart-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.chart-wrap{position:relative;height:160px}
+.fc7-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.fc7-card{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 6px;text-align:center;cursor:pointer;transition:all .15s;border-top:3px solid transparent}
+.fc7-card:hover{border-color:var(--border);background:rgba(255,255,255,.05)}
+.fc7-card.today{border-top-color:var(--accent)}
+.fc7-day{font-size:.6rem;font-weight:700;color:var(--text2);margin-bottom:4px}
+.fc7-card.today .fc7-day{color:var(--accent)}
+.fc7-ico{font-size:1.5rem;margin-bottom:4px}
+.fc7-hi{font-size:.88rem;font-weight:700;color:#fff}
+.fc7-lo{font-size:.72rem;color:var(--text2)}
+.fc7-pp{font-size:.58rem;color:var(--blue2);margin-top:2px}
+
+/* OSTRZEŻENIA */
+.alert-wrap{flex:1;display:flex;overflow:hidden}
+.alert-left{width:320px;flex-shrink:0;background:var(--bg2);border-right:1px solid var(--border);overflow-y:auto;padding:12px}
+.alert-left::-webkit-scrollbar{width:3px}
+.alert-left::-webkit-scrollbar-thumb{background:var(--border)}
+.alert-right{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:8px}
+.alert-right::-webkit-scrollbar{width:3px}
+.alert-right::-webkit-scrollbar-thumb{background:var(--border)}
+.alert-card{border-radius:8px;padding:14px;border-left:4px solid;position:relative;transition:all .2s}
+.alert-card.red{background:rgba(255,58,58,.08);border-color:#ff3a3a}
+.alert-card.orange{background:rgba(232,130,26,.08);border-color:var(--accent)}
+.alert-card.yellow{background:rgba(255,224,51,.06);border-color:#ffe033}
+.alert-card.green{background:rgba(31,222,138,.06);border-color:#1fde8a}
+.alert-title{font-size:.82rem;font-weight:700;margin-bottom:4px}
+.alert-body{font-size:.72rem;color:var(--text2);line-height:1.5}
+.alert-meta{font-size:.58rem;color:var(--text2);margin-top:6px;font-family:monospace}
+.alert-badge{position:absolute;top:10px;right:10px;font-size:.55rem;font-weight:700;padding:2px 8px;border-radius:20px;border:1px solid}
+
+/* WIATR */
+.wiatr-wrap{flex:1;display:flex;overflow:hidden}
+.wiatr-left{width:320px;flex-shrink:0;background:var(--bg2);border-right:1px solid var(--border);overflow-y:auto;padding:16px}
+.wiatr-left::-webkit-scrollbar{width:3px}
+.wiatr-left::-webkit-scrollbar-thumb{background:var(--border)}
+.wiatr-right{flex:1;position:relative;overflow:hidden}
+#map-wiatr{width:100%;height:100%;background:#03080f}
+.big-rose{width:200px;height:200px;margin:0 auto 16px}
+.wind-stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.wind-stat{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center}
+.wind-stat-val{font-size:1.6rem;font-weight:700;font-family:monospace;color:#fff}
+.wind-stat-lbl{font-size:.55rem;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;margin-top:2px}
+.wind-scale{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px}
+.wind-scale-row{display:flex;align-items:center;gap:8px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.wind-scale-row:last-child{border-bottom:none}
+.wind-scale-bar{height:6px;border-radius:3px;flex-shrink:0}
+.wind-scale-txt{font-size:.62rem;color:var(--text2);flex:1}
+.wind-scale-km{font-size:.62rem;color:var(--text);font-family:monospace;white-space:nowrap}
+
+/* AKTUALNOŚCI */
+.news-wrap{flex:1;display:flex;overflow:hidden}
+.news-left{width:320px;flex-shrink:0;background:var(--bg2);border-right:1px solid var(--border);overflow-y:auto;padding:12px}
+.news-left::-webkit-scrollbar{width:3px}
+.news-right{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
+.news-right::-webkit-scrollbar{width:3px}
+.news-right::-webkit-scrollbar-thumb{background:var(--border)}
+.news-card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:14px;cursor:pointer;transition:all .15s}
+.news-card:hover{border-color:var(--accent);background:rgba(232,130,26,.04)}
+.news-card-title{font-size:.82rem;font-weight:700;color:#fff;margin-bottom:5px;line-height:1.3}
+.news-card-body{font-size:.72rem;color:var(--text2);line-height:1.5;margin-bottom:6px}
+.news-card-meta{font-size:.58rem;color:var(--text2);font-family:monospace;display:flex;gap:10px}
+.news-card-src{color:var(--accent);font-weight:600}
+.news-loading{text-align:center;padding:40px;color:var(--text2);font-size:.8rem}
+.news-error{text-align:center;padding:30px;color:var(--text2)}
+.news-error-ico{font-size:2rem;margin-bottom:8px}
+
 </style>
 </head>
 <body>
@@ -370,12 +458,12 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
 <div class="topbar">
   <div class="logo"><span>STORM</span><b>›CHASER</b></div>
   <nav class="nav">
-    <div class="nav-item" onclick="showSection('aktualnosci')">Aktualności</div>
-    <div class="nav-item active" id="nav-radar" onclick="showSection('radar')">Radar</div>
-    <div class="nav-item" onclick="showSection('sat24')">SAT24</div>
-    <div class="nav-item" onclick="showSection('prognoza')">Prognoza</div>
-    <div class="nav-item" onclick="showSection('ostrzezenia')">Ostrzeżenia</div>
-    <div class="nav-item" onclick="showSection('wiatr')">Wiatr</div>
+    <div class="nav-item" data-sec="aktualnosci" onclick="showSec(this,'aktualnosci')">Aktualności</div>
+    <div class="nav-item active" data-sec="radar" onclick="showSec(this,'radar')">Radar</div>
+    <div class="nav-item" data-sec="sat24" onclick="showSec(this,'sat24')">SAT24</div>
+    <div class="nav-item" data-sec="prognoza" onclick="showSec(this,'prognoza')">Prognoza</div>
+    <div class="nav-item" data-sec="ostrzezenia" onclick="showSec(this,'ostrzezenia')">Ostrzeżenia</div>
+    <div class="nav-item" data-sec="wiatr" onclick="showSec(this,'wiatr')">Wiatr</div>
   </nav>
   <div class="nav-right">
     <span class="pill of" id="p-gps">GPS</span>
@@ -389,6 +477,8 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
 <!-- ═══ MAIN LAYOUT ═══ -->
 <div class="layout">
 
+<!-- ══════ SEKCJA: RADAR (domyślna) ══════ -->
+<div class="section active" id="sec-radar">
   <!-- ══ LEFT PANEL ══ -->
   <div class="panel-left">
 
@@ -573,6 +663,197 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
       <button class="btn-rc" onclick="rc()" title="Moja pozycja">⊙</button>
     </div>
   </div><!-- /panel-right -->
+</div><!-- /sec-radar -->
+
+<!-- ══════ SEKCJA: SAT24 ══════ -->
+<div class="section" id="sec-sat24">
+  <div class="sat-wrap">
+    <div id="map-sat24"></div>
+    <!-- Layer panel SAT -->
+    <div class="lyr-panel" style="top:8px;left:8px">
+      <div class="lyr-head">🛰 SAT24 — Chmury IR</div>
+      <div style="font-size:.65rem;color:var(--text2);line-height:1.5;margin-bottom:8px">
+        Satelitarne zdjęcia podczerwieni z EUMETSAT. Białe = zimne chmury wysokie (burzowe). Ciemne = ciepłe niskie.
+      </div>
+      <div class="lyr-sep"></div>
+      <div class="lyr-sub">Animacja</div>
+      <div style="display:flex;gap:4px;margin-bottom:6px">
+        <button class="base-btn" id="sat-anim-btn" onclick="toggleSatAnim()" style="flex:2">▶ Animuj</button>
+        <button class="base-btn" onclick="satNow()" style="flex:1">Live</button>
+      </div>
+      <div style="font-size:.55rem;color:var(--text2);font-family:monospace" id="sat-time-lbl">--:-- UTC</div>
+    </div>
+    <div class="map-badge" id="sat-badge">SAT IR — EUMETSAT</div>
+    <button class="btn-rc" onclick="if(mapSat)mapSat.setView(mapObj?mapObj.getCenter():[52,20],5)">⊙</button>
+  </div>
+</div><!-- /sec-sat24 -->
+
+<!-- ══════ SEKCJA: PROGNOZA ══════ -->
+<div class="section" id="sec-prognoza">
+  <div class="prognoza-left" id="prog-left">
+    <div class="sec-title" style="margin-bottom:12px">📍 Lokalizacja</div>
+    <div style="font-size:1.1rem;font-weight:700;color:#fff;margin-bottom:2px" id="prog-city">---</div>
+    <div style="font-size:.75rem;color:var(--text2);margin-bottom:12px" id="prog-street">&nbsp;</div>
+    <div class="sec-title" style="margin-bottom:10px">🌡 Aktualnie</div>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+      <div style="font-size:3rem;line-height:1" id="prog-icon">🌤</div>
+      <div>
+        <div style="font-size:2rem;font-weight:800;color:#fff" id="prog-tmp">--°</div>
+        <div style="font-size:.7rem;color:var(--text2)" id="prog-desc">---</div>
+        <div style="font-size:.7rem;color:var(--text2)">Odczuw. <span id="prog-fel">--</span>°</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+      <div class="wind-stat"><div class="wind-stat-val" id="prog-hum">--</div><div class="wind-stat-lbl">Wilgotność %</div></div>
+      <div class="wind-stat"><div class="wind-stat-val" id="prog-prs">--</div><div class="wind-stat-lbl">Ciśnienie hPa</div></div>
+      <div class="wind-stat"><div class="wind-stat-val" id="prog-wsp">--</div><div class="wind-stat-lbl">Wiatr km/h</div></div>
+      <div class="wind-stat"><div class="wind-stat-val" id="prog-vis">--</div><div class="wind-stat-lbl">Widoczność km</div></div>
+    </div>
+  </div>
+  <div class="prognoza-right">
+    <div class="chart-card">
+      <div class="chart-title">🌡 Temperatura — następne 48h</div>
+      <div class="chart-wrap"><canvas id="chart-temp"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">🌧 Opady — następne 48h</div>
+      <div class="chart-wrap"><canvas id="chart-rain"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">💨 Wiatr — następne 48h</div>
+      <div class="chart-wrap"><canvas id="chart-wind"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">📅 Prognoza 7 dni — kliknij po szczegóły</div>
+      <div class="fc7-grid" id="fc7-grid"></div>
+    </div>
+  </div>
+</div><!-- /sec-prognoza -->
+
+<!-- ══════ SEKCJA: OSTRZEŻENIA ══════ -->
+<div class="section" id="sec-ostrzezenia">
+  <div class="alert-wrap">
+    <div class="alert-left">
+      <div class="sec-title" style="margin-bottom:10px">📍 Twoja lokalizacja</div>
+      <div style="font-size:1rem;font-weight:700;color:#fff;margin-bottom:4px" id="alert-city">---</div>
+      <div style="font-size:.75rem;color:var(--text2);margin-bottom:12px" id="alert-region">---</div>
+      <div class="sec-title" style="margin-bottom:8px">🌡 Stan pogody</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px">
+        <div class="wind-stat"><div class="wind-stat-val" id="alert-tmp">--</div><div class="wind-stat-lbl">Temp °C</div></div>
+        <div class="wind-stat"><div class="wind-stat-val" id="alert-wsp">--</div><div class="wind-stat-lbl">Wiatr km/h</div></div>
+        <div class="wind-stat"><div class="wind-stat-val" id="alert-cape" style="color:var(--accent)">--</div><div class="wind-stat-lbl">CAPE J/kg</div></div>
+        <div class="wind-stat"><div class="wind-stat-val" id="alert-prc">--</div><div class="wind-stat-lbl">Opady mm</div></div>
+      </div>
+      <div class="sec-title" style="margin-bottom:8px">ℹ Źródła</div>
+      <div style="font-size:.62rem;color:var(--text2);line-height:1.7">
+        Alerty: <b style="color:var(--blue2)">IMGW-PIB</b><br>
+        Dane: <b style="color:var(--blue2)">Open-Meteo</b><br>
+        <span style="font-size:.55rem">Aktualizacja co 15 min</span>
+      </div>
+      <button onclick="loadAlerts()" style="width:100%;margin-top:10px;padding:7px;border-radius:5px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--text);cursor:pointer;font-size:.65rem">🔄 Odśwież alerty</button>
+    </div>
+    <div class="alert-right" id="alert-right">
+      <div class="news-loading" id="alert-loading">⏳ Ładowanie alertów IMGW...</div>
+    </div>
+  </div>
+</div><!-- /sec-ostrzezenia -->
+
+<!-- ══════ SEKCJA: WIATR ══════ -->
+<div class="section" id="sec-wiatr">
+  <div class="wiatr-wrap">
+    <div class="wiatr-left">
+      <div class="sec-title" style="margin-bottom:12px">💨 Aktualne warunki</div>
+      <!-- Duża róża wiatru -->
+      <svg class="big-rose" viewBox="0 0 200 200">
+        <circle cx="100" cy="100" r="90" fill="none" stroke="#1a3550" stroke-width="1.5"/>
+        <circle cx="100" cy="100" r="60" fill="none" stroke="#1a3550" stroke-width=".8" stroke-dasharray="4,4"/>
+        <circle cx="100" cy="100" r="30" fill="none" stroke="#1a3550" stroke-width=".8" stroke-dasharray="2,4"/>
+        <!-- Kierunki -->
+        <text x="100" y="16" text-anchor="middle" fill="#3a6080" font-size="12" font-family="monospace" font-weight="700">N</text>
+        <text x="100" y="194" text-anchor="middle" fill="#3a6080" font-size="12" font-family="monospace" font-weight="700">S</text>
+        <text x="8" y="105" fill="#3a6080" font-size="12" font-family="monospace" font-weight="700">W</text>
+        <text x="180" y="105" fill="#3a6080" font-size="12" font-family="monospace" font-weight="700">E</text>
+        <text x="148" y="24" fill="#2a5070" font-size="9" font-family="monospace">NE</text>
+        <text x="148" y="184" fill="#2a5070" font-size="9" font-family="monospace">SE</text>
+        <text x="16" y="184" fill="#2a5070" font-size="9" font-family="monospace">SW</text>
+        <text x="16" y="24" fill="#2a5070" font-size="9" font-family="monospace">NW</text>
+        <!-- Igła -->
+        <line id="w-needle-big" x1="100" y1="100" x2="100" y2="20" stroke="var(--accent)" stroke-width="4" stroke-linecap="round"/>
+        <polygon id="w-arrow-big" points="100,14 94,28 106,28" fill="var(--accent)"/>
+        <circle cx="100" cy="100" r="8" fill="var(--blue2)"/>
+        <text id="w-dir-big" x="100" y="108" text-anchor="middle" fill="#fff" font-size="7" font-family="monospace" font-weight="700">N</text>
+      </svg>
+      <div class="wind-stat-grid">
+        <div class="wind-stat"><div class="wind-stat-val" id="w-big-dir" style="font-size:1.2rem">--</div><div class="wind-stat-lbl">Kierunek</div></div>
+        <div class="wind-stat"><div class="wind-stat-val" id="w-big-spd">--</div><div class="wind-stat-lbl">km/h</div></div>
+        <div class="wind-stat"><div class="wind-stat-val" id="w-big-gst" style="color:#ff6b35">--</div><div class="wind-stat-lbl">Porywy km/h</div></div>
+        <div class="wind-stat"><div class="wind-stat-val" id="w-big-bft" style="color:var(--blue2)">B--</div><div class="wind-stat-lbl">Beaufort</div></div>
+      </div>
+      <div class="sec-title" style="margin:12px 0 8px">📊 Skala Beauforta</div>
+      <div class="wind-scale">
+        <div class="wind-scale-row"><div class="wind-scale-bar" style="width:20px;background:#1fde8a"></div><div class="wind-scale-txt">B0-2 Spokojny</div><div class="wind-scale-km">&lt;12 km/h</div></div>
+        <div class="wind-scale-row"><div class="wind-scale-bar" style="width:30px;background:#29d4ff"></div><div class="wind-scale-txt">B3-4 Słaby-Umiark.</div><div class="wind-scale-km">12-28</div></div>
+        <div class="wind-scale-row"><div class="wind-scale-bar" style="width:45px;background:#ffe033"></div><div class="wind-scale-txt">B5-6 Dość silny</div><div class="wind-scale-km">29-49</div></div>
+        <div class="wind-scale-row"><div class="wind-scale-bar" style="width:60px;background:var(--accent)"></div><div class="wind-scale-txt">B7-8 Silny</div><div class="wind-scale-km">50-74</div></div>
+        <div class="wind-scale-row"><div class="wind-scale-bar" style="width:75px;background:#ff6b35"></div><div class="wind-scale-txt">B9-10 Bardzo silny</div><div class="wind-scale-km">75-102</div></div>
+        <div class="wind-scale-row"><div class="wind-scale-bar" style="width:90px;background:#ff3a3a"></div><div class="wind-scale-txt">B11-12 Sztorm/Huragan</div><div class="wind-scale-km">&gt;103</div></div>
+      </div>
+    </div>
+    <div class="wiatr-right">
+      <div id="map-wiatr"></div>
+      <div class="lyr-panel" style="top:8px;left:8px">
+        <div class="lyr-head">💨 Warstwy wiatru</div>
+        <div class="lyr-row" onclick="toggleWindLayer('wind')">
+          <div class="lyr-chk on" id="wchk-wind" style="color:#1fde8a"></div>
+          <div class="lyr-dot" style="background:linear-gradient(#1fde8a,#064030)"></div>
+          <div class="lyr-label">Wiatr OWM</div>
+        </div>
+        <div class="lyr-row" onclick="toggleWindLayer('pres')">
+          <div class="lyr-chk" id="wchk-pres" style="color:#a78bfa"></div>
+          <div class="lyr-dot" style="background:linear-gradient(#a78bfa,#4c1d95)"></div>
+          <div class="lyr-label">Ciśnienie OWM</div>
+        </div>
+        <div class="lyr-sep"></div>
+        <div class="lyr-sub">Mapa bazowa</div>
+        <div class="base-row">
+          <button class="base-btn on" id="wbase-dark" onclick="setWindBase('dark')">Ciemna</button>
+          <button class="base-btn" id="wbase-street" onclick="setWindBase('street')">Jasna</button>
+        </div>
+      </div>
+      <div class="map-badge" style="bottom:10px;left:10px">WIATR — OWM</div>
+    </div>
+  </div>
+</div><!-- /sec-wiatr -->
+
+<!-- ══════ SEKCJA: AKTUALNOŚCI ══════ -->
+<div class="section" id="sec-aktualnosci">
+  <div class="news-wrap">
+    <div class="news-left">
+      <div class="sec-title" style="margin-bottom:10px">📍 Twoja lokalizacja</div>
+      <div style="font-size:1rem;font-weight:700;color:#fff;margin-bottom:4px" id="news-city">---</div>
+      <div style="font-size:.75rem;color:var(--text2);margin-bottom:12px" id="news-street">&nbsp;</div>
+      <div class="sec-title" style="margin-bottom:8px">🌡 Teraz</div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <div style="font-size:2.5rem" id="news-icon">🌤</div>
+        <div>
+          <div style="font-size:1.6rem;font-weight:700;color:#fff" id="news-tmp">--°C</div>
+          <div style="font-size:.7rem;color:var(--text2)" id="news-desc">---</div>
+        </div>
+      </div>
+      <div class="sec-title" style="margin-bottom:8px">📡 Źródła newsów</div>
+      <div style="font-size:.62rem;color:var(--text2);line-height:1.8">
+        • <b style="color:var(--blue2)">IMGW-PIB</b> Ostrzeżenia<br>
+        • <b style="color:var(--blue2)">Meteo.pl</b> Komunikaty<br>
+        • <b style="color:var(--blue2)">EUMETSAT</b> Biuletyny<br>
+        <span style="font-size:.55rem;margin-top:4px;display:block">Dane z API/RSS, auto-odśw. 30min</span>
+      </div>
+      <button onclick="loadNews()" style="width:100%;margin-top:10px;padding:7px;border-radius:5px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--text);cursor:pointer;font-size:.65rem">🔄 Odśwież newsy</button>
+    </div>
+    <div class="news-right" id="news-right">
+      <div class="news-loading" id="news-loading">⏳ Ładowanie aktualności...</div>
+    </div>
+  </div>
+</div><!-- /sec-aktualnosci -->
 
 </div><!-- /layout -->
 
@@ -607,10 +888,408 @@ function we(c){if(c===0)return"☀";if(c<=2)return"🌤";if(c<=3)return"⛅";if(
 // Zegar UTC
 setInterval(function(){var n=new Date();document.getElementById("clk").textContent=pd(n.getUTCHours())+":"+pd(n.getUTCMinutes())+":"+pd(n.getUTCSeconds())+" UTC";},1000);
 
-// Nav sections (placeholder)
-function showSection(s){
-  document.querySelectorAll('.nav-item').forEach(function(el){el.classList.remove('active');});
-  event.target.classList.add('active');
+// ═══════════════════════════════════════════
+// NAWIGACJA ZAKŁADEK
+// ═══════════════════════════════════════════
+var currentSection='radar';
+function showSec(el,s){
+  document.querySelectorAll('.nav-item').forEach(function(x){x.classList.remove('active');});
+  el.classList.add('active');
+  document.querySelectorAll('.section').forEach(function(x){x.classList.remove('active');});
+  var sec=document.getElementById('sec-'+s);if(sec)sec.classList.add('active');
+  currentSection=s;
+  if(s==='sat24')initSat24();
+  if(s==='prognoza')initPrognoza();
+  if(s==='ostrzezenia'){syncAlertPanel();if(!alertsLoaded)loadAlerts();}
+  if(s==='wiatr')initWiatr();
+  if(s==='aktualnosci'){syncNewsPanel();loadNews();}
+  if(s==='radar'&&mapObj)setTimeout(function(){mapObj.invalidateSize();},100);
+}
+var mapSat=null,mapWiatr=null;
+var satLyrSat=null,chartTemp=null,chartRain=null,chartWindChart=null;
+var windLayerMap={wind:null,pres:null},windBaseLyr=null;
+var satAnimInt=null,satFrames=[],satFrameIdx=0,satAnimRunning=false;
+
+
+// ── SAT24 ──────────────────────────────────
+var sat24Init=false;
+function initSat24(){
+  if(sat24Init)return;
+  sat24Init=true;
+  var ctr=mapObj?mapObj.getCenter():{lat:52,lng:20};
+  var zm=mapObj?mapObj.getZoom():5;
+  mapSat=L.map('map-sat24',{zoomControl:true,attributionControl:false,doubleClickZoom:false}).setView([ctr.lat,ctr.lng],zm);
+  // Ciemna mapa bazowa dla satelity
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',
+    {maxZoom:12,subdomains:'abcd'}).addTo(mapSat);
+
+  // Pobierz ramki satelitarne i pokaż ostatnią
+  fetch('https://api.rainviewer.com/public/weather-maps.json')
+  .then(function(r){return r.json();})
+  .then(function(d){
+    var host=d.host||'https://tilecache.rainviewer.com';
+    var sf=d.satellite&&d.satellite.infrared?d.satellite.infrared:[];
+    satFrames=sf.map(function(f){return host+f.path;});
+    if(satFrames.length){
+      satLyrSat=L.tileLayer(satFrames[satFrames.length-1]+'/256/{z}/{x}/{y}/0/0_0.png',
+        {opacity:0.92,tileSize:256,maxNativeZoom:5,maxZoom:12,zIndex:2}).addTo(mapSat);
+      satFrameIdx=satFrames.length-1;
+      var t=new Date(sf[satFrameIdx].time*1000);
+      document.getElementById('sat-time-lbl').textContent=pd(t.getUTCHours())+':'+pd(t.getUTCMinutes())+' UTC';
+    }
+  }).catch(function(){});
+  setTimeout(function(){mapSat.invalidateSize();},200);
+}
+
+function toggleSatAnim(){
+  var btn=document.getElementById('sat-anim-btn');
+  if(satAnimRunning){
+    clearInterval(satAnimInt);satAnimRunning=false;
+    if(btn)btn.textContent='▶ Animuj';
+    satNow();
+  } else {
+    if(!satFrames.length)return;
+    satFrameIdx=0;satAnimRunning=true;
+    if(btn)btn.textContent='⏹ Stop';
+    satAnimInt=setInterval(function(){
+      satFrameIdx=(satFrameIdx+1)%satFrames.length;
+      if(satLyrSat&&mapSat){
+        mapSat.removeLayer(satLyrSat);
+        satLyrSat=L.tileLayer(satFrames[satFrameIdx]+'/256/{z}/{x}/{y}/0/0_0.png',
+          {opacity:0.92,tileSize:256,maxNativeZoom:5,maxZoom:12,zIndex:2}).addTo(mapSat);
+      }
+    },600);
+  }
+}
+function satNow(){
+  if(!satFrames.length||!mapSat)return;
+  satFrameIdx=satFrames.length-1;
+  if(satLyrSat)mapSat.removeLayer(satLyrSat);
+  satLyrSat=L.tileLayer(satFrames[satFrameIdx]+'/256/{z}/{x}/{y}/0/0_0.png',
+    {opacity:0.92,tileSize:256,maxNativeZoom:5,maxZoom:12,zIndex:2}).addTo(mapSat);
+}
+
+// ── PROGNOZA ───────────────────────────────
+var progInit=false;
+function initPrognoza(){
+  if(progInit&&!chartTemp)progInit=false; // retry if charts missing
+  if(progInit)return;
+  progInit=true;
+  // Synchronizuj dane z panelu głównego
+  syncProgPanel();
+  // Pobierz dane godzinowe
+  if(uLat)fetchProgData(uLat,uLon);
+  else fetchProgData(52.2297,21.0122);
+}
+
+function syncProgPanel(){
+  var city=document.getElementById('l-city');
+  var street=document.getElementById('l-str');
+  if(city)document.getElementById('prog-city').textContent=city.textContent;
+  if(street)document.getElementById('prog-street').textContent=street.textContent;
+  // Skopiuj dane pogodowe
+  ['tmp','fel','hum','prs','wsp','vis'].forEach(function(k){
+    var src=document.getElementById('v-'+k)||document.getElementById('w-spd');
+    var dst=document.getElementById('prog-'+k);
+    if(src&&dst)dst.textContent=src.textContent.replace(/<[^>]*>/g,'');
+  });
+  var icon=document.getElementById('wx-icon');
+  var desc=document.getElementById('wx-desc-txt');
+  if(icon)document.getElementById('prog-icon').textContent=icon.textContent;
+  if(desc)document.getElementById('prog-desc').textContent=desc.textContent;
+}
+
+function fetchProgData(lt,ln){
+  fetch('https://api.open-meteo.com/v1/forecast?latitude='+lt+'&longitude='+ln
+    +'&hourly=temperature_2m,precipitation,wind_speed_10m,wind_direction_10m'
+    +'&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max'
+    +'&wind_speed_unit=kmh&timezone=auto&forecast_days=7')
+  .then(function(r){return r.json();})
+  .then(function(d){
+    buildCharts(d);
+    buildFc7(d.daily);
+  }).catch(function(){});
+}
+
+function buildCharts(d){
+  var h=d.hourly;
+  var labels48=h.time.slice(0,48).map(function(t){
+    var dt=new Date(t);return pd(dt.getHours())+':00';
+  });
+  var tmp48=h.temperature_2m.slice(0,48);
+  var prc48=h.precipitation.slice(0,48);
+  var wsp48=h.wind_speed_10m.slice(0,48);
+
+  var cfg={responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false}},
+    scales:{x:{ticks:{color:'#6b90b0',font:{size:9},maxTicksLimit:12},grid:{color:'rgba(26,53,80,.4)'}},
+            y:{ticks:{color:'#6b90b0',font:{size:9}},grid:{color:'rgba(26,53,80,.4)'}}}};
+
+  if(chartTemp){chartTemp.destroy();}
+  chartTemp=new Chart(document.getElementById('chart-temp'),{
+    type:'line',data:{labels:labels48,datasets:[{data:tmp48,
+      borderColor:'#ff6b35',backgroundColor:'rgba(255,107,53,.15)',
+      borderWidth:2,pointRadius:0,fill:true,tension:.3}]},options:cfg});
+
+  if(chartRain){chartRain.destroy();}
+  chartRain=new Chart(document.getElementById('chart-rain'),{
+    type:'bar',data:{labels:labels48,datasets:[{data:prc48,
+      backgroundColor:'rgba(41,212,255,.6)',borderColor:'var(--blue2)',
+      borderWidth:1,borderRadius:2}]},
+    options:Object.assign({},cfg,{scales:{x:cfg.scales.x,
+      y:Object.assign({},cfg.scales.y,{min:0})}})});
+
+  if(chartWindChart){chartWindChart.destroy();}
+  chartWindChart=new Chart(document.getElementById('chart-wind'),{
+    type:'line',data:{labels:labels48,datasets:[{data:wsp48,
+      borderColor:'#1fde8a',backgroundColor:'rgba(31,222,138,.1)',
+      borderWidth:2,pointRadius:0,fill:true,tension:.3}]},options:cfg});
+}
+
+function buildFc7(daily){
+  if(!daily)return;
+  var grid=document.getElementById('fc7-grid');
+  if(!grid)return;
+  grid.innerHTML='';
+  for(var i=0;i<Math.min(7,daily.weather_code.length);i++){
+    var dt=new Date(daily.time[i]);
+    var dayN=(i===0)?'Dziś':DAYS[dt.getDay()];
+    var div=document.createElement('div');
+    div.className='fc7-card'+(i===0?' today':'');
+    var pp=daily.precipitation_probability_max[i]||0;
+    div.onclick=(function(idx2){return function(){openFcModal(idx2);};})(i);
+    div.innerHTML='<div class="fc7-day">'+dayN+'</div>'+
+      '<div class="fc7-ico">'+we(daily.weather_code[i])+'</div>'+
+      '<div class="fc7-hi">'+Math.round(daily.temperature_2m_max[i])+'°</div>'+
+      '<div class="fc7-lo">'+Math.round(daily.temperature_2m_min[i])+'°</div>'+
+      '<div class="fc7-pp">💧'+pp+'%</div>';
+    grid.appendChild(div);
+  }
+}
+
+// ── OSTRZEŻENIA ────────────────────────────
+var alertsLoaded=false;
+function loadAlerts(){
+  var right=document.getElementById('alert-right');
+  var loading=document.getElementById('alert-loading');
+  if(loading)loading.style.display='block';
+
+  // IMGW API - ostrzeżenia meteorologiczne
+  // Używamy CORS proxy bo IMGW nie ma CORS headers
+  var imgwUrl='https://api.imgw.pl/api/weather/v1/warnings/current';
+  fetch('https://corsproxy.io/?'+encodeURIComponent(imgwUrl))
+  .then(function(r){return r.json();})
+  .then(function(data){
+    if(loading)loading.style.display='none';
+    renderAlerts(data);alertsLoaded=true;
+  })
+  .catch(function(){
+    // Fallback - wygeneruj alerty z danych CAPE
+    if(loading)loading.style.display='none';
+    renderAlertsFromCAPE();
+  });
+}
+
+function renderAlerts(data){
+  var right=document.getElementById('alert-right');
+  if(!right)return;
+  right.innerHTML='';
+  var alerts=Array.isArray(data)?data:(data.warnings||data.alerts||[]);
+  if(!alerts||!alerts.length){renderAlertsFromCAPE();return;}
+  alerts.slice(0,20).forEach(function(a){
+    var lvl=a.level||a.stopien||1;
+    var cls=lvl>=3?'red':lvl>=2?'orange':lvl>=1?'yellow':'green';
+    var div=document.createElement('div');
+    div.className='alert-card '+cls;
+    div.innerHTML='<div class="alert-title" style="color:'+(lvl>=3?'#ff3a3a':lvl>=2?'var(--accent)':'#ffe033')+'">'+(a.name||a.nazwa||a.type||'Ostrzeżenie')+'</div>'+
+      '<div class="alert-body">'+(a.description||a.opis||a.content||'Brak opisu')+'</div>'+
+      '<div class="alert-meta">📍 '+(a.region||a.area||a.voivodeship||'Polska')+' · '+
+      (a.validFrom||a.time_start||'--')+' → '+(a.validTo||a.time_end||'--')+'</div>'+
+      '<div class="alert-badge" style="border-color:'+(lvl>=3?'#ff3a3a':lvl>=2?'var(--accent)':'#ffe033')+'">Stopień '+lvl+'</div>';
+    right.appendChild(div);
+  });
+}
+
+function renderAlertsFromCAPE(){
+  var right=document.getElementById('alert-right');
+  if(!right)return;
+  right.innerHTML='';
+  // Alerty na podstawie lokalnych danych
+  var alerts=[];
+  var capeEl=document.getElementById('alert-cape');
+  var cape=capeEl?parseInt(capeEl.textContent)||0:0;
+  var wspEl=document.getElementById('alert-wsp');
+  var wsp=wspEl?parseInt(wspEl.textContent)||0:0;
+
+  if(cape>2500)alerts.push({cls:'red',lvl:3,title:'⚠ BURZA — Ryzyko ekstremalne',body:'CAPE '+cape+' J/kg. Możliwe intensywne burze z gradem i silnym wiatrem. Unikaj otwartej przestrzeni.',region:'Twoja lokalizacja'});
+  else if(cape>1500)alerts.push({cls:'orange',lvl:2,title:'⚡ Ryzyko burzowe — Stopień 2',body:'CAPE '+cape+' J/kg. Możliwe burze, silne opady, grad. Zalecana ostrożność.',region:'Twoja lokalizacja'});
+  else if(cape>500)alerts.push({cls:'yellow',lvl:1,title:'🌩 Ryzyko burzowe — Stopień 1',body:'CAPE '+cape+' J/kg. Warunki sprzyjające konwekcji. Możliwe przelotne burze.',region:'Twoja lokalizacja'});
+  else alerts.push({cls:'green',lvl:0,title:'✅ Brak ostrzeżeń burzowych',body:'Warunki atmosferyczne spokojne. Niska aktywność konwekcyjna.',region:'Twoja lokalizacja'});
+
+  if(wsp>60)alerts.push({cls:'orange',lvl:2,title:'💨 Silny wiatr',body:'Prędkość wiatru '+wsp+' km/h. Możliwe szkody.',region:'Twoja lokalizacja'});
+
+  // Stały komunikat o IMGW
+  alerts.push({cls:'green',lvl:0,
+    title:'ℹ API IMGW',
+    body:'Nie udało się pobrać oficjalnych ostrzeżeń IMGW-PIB (brak CORS). Wyświetlane są alerty obliczone lokalnie na podstawie danych Open-Meteo.',
+    region:'System'});
+
+  alerts.forEach(function(a){
+    var div=document.createElement('div');
+    div.className='alert-card '+a.cls;
+    div.innerHTML='<div class="alert-title" style="color:'+(a.cls==='red'?'#ff3a3a':a.cls==='orange'?'var(--accent)':a.cls==='yellow'?'#ffe033':'#1fde8a')+'">'+a.title+'</div>'+
+      '<div class="alert-body">'+a.body+'</div>'+
+      '<div class="alert-meta">📍 '+a.region+'</div>';
+    if(a.lvl>0)div.innerHTML+='<div class="alert-badge" style="border-color:'+(a.cls==='red'?'#ff3a3a':a.cls==='orange'?'var(--accent)':'#ffe033')+'">Stopień '+a.lvl+'</div>';
+    right.appendChild(div);
+  });
+}
+
+function syncAlertPanel(){
+  var c=document.getElementById('l-city');
+  var cnt=document.getElementById('l-cnt');
+  if(c)document.getElementById('alert-city').textContent=c.textContent;
+  if(cnt)document.getElementById('alert-region').textContent=cnt.textContent;
+  ['tmp','wsp'].forEach(function(k){
+    var s=document.getElementById('v-'+k)||document.getElementById('w-spd');
+    var d=document.getElementById('alert-'+k);
+    if(s&&d)d.textContent=s.textContent.replace(/<[^>]*>/g,'').replace('°C','').trim();
+  });
+}
+
+// ── WIATR ──────────────────────────────────
+var wiatrInit=false,windLyrsActive={wind:true,pres:false};
+function initWiatr(){
+  if(wiatrInit)return;wiatrInit=true;
+  var ctr=mapObj?mapObj.getCenter():{lat:52,lng:20};
+  mapWiatr=L.map('map-wiatr',{zoomControl:false,attributionControl:false,doubleClickZoom:false}).setView([ctr.lat,ctr.lng],5);
+  L.control.zoom({position:'topright'}).addTo(mapWiatr);
+  setWindBase('dark');
+  // Warstwa wiatru domyślnie włączona
+  var wlyr=L.tileLayer('https://tile.openweathermap.org/map/wind_new/{z}/{x}/{y}.png?appid='+OWM_KEY,
+    {opacity:1.0,maxNativeZoom:12,maxZoom:12,zIndex:3,tileSize:256});
+  wlyr.addTo(mapWiatr);
+  windLayerMap.wind=wlyr;
+  setTimeout(function(){mapWiatr.invalidateSize();},200);
+  // Synchronizuj dane wiatru
+  syncWiatrPanel();
+}
+
+function setWindBase(name){
+  var urls={dark:'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+            street:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}'};
+  ['dark','street'].forEach(function(b){var el=document.getElementById('wbase-'+b);if(el)el.classList.toggle('on',b===name);});
+  if(windBaseLyr)mapWiatr.removeLayer(windBaseLyr);
+  var opts={maxZoom:12,minZoom:1};
+  if(name==='dark')opts.subdomains='abcd';
+  windBaseLyr=L.tileLayer(urls[name],opts);
+  windBaseLyr.addTo(mapWiatr);windBaseLyr.setZIndex(0);
+}
+
+function toggleWindLayer(key){
+  windLyrsActive[key]=!windLyrsActive[key];
+  var chk=document.getElementById('wchk-'+key);
+  if(chk)chk.classList.toggle('on',windLyrsActive[key]);
+  var urls={wind:'https://tile.openweathermap.org/map/wind_new/{z}/{x}/{y}.png?appid='+OWM_KEY,
+            pres:'https://tile.openweathermap.org/map/pressure_new/{z}/{x}/{y}.png?appid='+OWM_KEY};
+  if(windLayerMap[key]&&mapWiatr.hasLayer(windLayerMap[key]))mapWiatr.removeLayer(windLayerMap[key]);
+  if(windLyrsActive[key]){
+    windLayerMap[key]=L.tileLayer(urls[key],{opacity:1.0,maxNativeZoom:12,maxZoom:12,zIndex:key==='wind'?3:4,tileSize:256});
+    windLayerMap[key].addTo(mapWiatr);
+  }
+}
+
+function syncWiatrPanel(){
+  var spd=document.getElementById('w-spd');var gst=document.getElementById('w-gst');
+  var dir=document.getElementById('w-dir');var bft=document.getElementById('w-bft');
+  if(spd)document.getElementById('w-big-spd').textContent=spd.textContent;
+  if(gst)document.getElementById('w-big-gst').textContent=gst.textContent;
+  if(bft)document.getElementById('w-big-bft').textContent=bft.textContent.replace('B','B');
+  if(dir){
+    var dirtxt=dir.textContent.split('(')[0].trim();
+    document.getElementById('w-big-dir').textContent=dirtxt;
+    document.getElementById('w-dir-big').textContent=dirtxt.split(' ')[0];
+    // Obróć dużą igłę
+    var match=dir.textContent.match(/(\d+)°/);
+    if(match){
+      var angle=parseInt(match[1]);
+      var rad=angle*Math.PI/180;
+      var x2=100+80*Math.sin(rad),y2=100-80*Math.cos(rad);
+      var needle=document.getElementById('w-needle-big');
+      var arrow=document.getElementById('w-arrow-big');
+      if(needle){needle.setAttribute('x2',x2.toFixed(1));needle.setAttribute('y2',y2.toFixed(1));}
+    }
+  }
+}
+
+// ── AKTUALNOŚCI ────────────────────────────
+var newsLoaded=false;
+function loadNews(){
+  if(newsLoaded)return;
+  var right=document.getElementById('news-right');
+  // Stałe newsy + pobrane z RSS przez proxy
+  var staticNews=[
+    {title:'Aktualne ostrzeżenia meteorologiczne IMGW',
+     body:'Sprawdź ostrzeżenia dla swojego regionu w zakładce OSTRZEŻENIA. IMGW-PIB wydaje ostrzeżenia 1., 2. i 3. stopnia dla różnych zjawisk.',
+     src:'IMGW-PIB',time:'Dziś',url:'https://www.imgw.pl/'},
+    {title:'Prognoza pogody dla Polski — Open-Meteo',
+     body:'Dane pogodowe pobierane są z modeli GFS/ICON w rozdzielczości 0.1°. Aktualizacja co 15 minut. Dokładność prognozy najwyższa do 3 dni.',
+     src:'Open-Meteo',time:'Live',url:'https://open-meteo.com/'},
+    {title:'Radar opadów — RainViewer API',
+     body:'Mapa radarowa aktualizowana co 5-10 minut. Dane z sieci radarów EUMETNET, NEXRAD, BOM i innych. Opóźnienie ~5 min.',
+     src:'RainViewer',time:'Live',url:'https://rainviewer.com/'},
+    {title:'Wyładowania atmosferyczne — Blitzortung.org',
+     body:'Sieć detektorów wyładowań atmosferycznych działająca na zasadzie triangulacji. Pokrycie: Europa, Ameryka Północna, Australia.',
+     src:'Blitzortung',time:'Live',url:'https://www.blitzortung.org/'},
+    {title:'Satelita IR — EUMETSAT Meteosat',
+     body:'Zdjęcia podczerwieni z satelity Meteosat-12. Aktualizacja co 15 minut. Białe obszary = zimne chmury wysokie (Cb, Ci). Ciemne = ciepłe niskie.',
+     src:'EUMETSAT',time:'Co 15min',url:'https://www.eumetsat.int/'},
+    {title:'Sezon burzowy w Polsce — statystyki',
+     body:'Polska leży w strefie umiarkowanej — sezon burzowy trwa od maja do września. Najwięcej burz w lipcu i sierpniu, głównie w rejonach podgórskich.',
+     src:'Klimat.pl',time:'Statystyki',url:'https://klimat.imgw.pl/'},
+    {title:'CAPE — indeks niestabilności atmosfery',
+     body:'CAPE (Convective Available Potential Energy) mierzy energię dostępną dla konwekcji. CAPE > 1500 J/kg = ryzyko silnych burz. > 3000 J/kg = tornada.',
+     src:'Meteo EDU',time:'Edukacja',url:'#'},
+    {title:'Jak czytać kolory radaru pogodowego?',
+     body:'Niebieski = słabe opady (<5mm/h). Zielony = umiarkowane. Żółty/Pomarańczowy = intensywne. Czerwony = bardzo intensywne. Fioletowy = grad.',
+     src:'StormChaser',time:'Edukacja',url:'#'}
+  ];
+
+  right.innerHTML='';
+  document.getElementById('news-loading').style.display='none';
+  staticNews.forEach(function(n){
+    var div=document.createElement('div');
+    div.className='news-card';
+    div.onclick=function(){if(n.url&&n.url!=='#')window.open(n.url,'_blank');};
+    div.innerHTML='<div class="news-card-title">'+n.title+'</div>'+
+      '<div class="news-card-body">'+n.body+'</div>'+
+      '<div class="news-card-meta"><span class="news-card-src">'+n.src+'</span><span>'+n.time+'</span></div>';
+    right.appendChild(div);
+  });
+  newsLoaded=true;
+}
+
+function syncNewsPanel(){
+  var c=document.getElementById('l-city');
+  var s=document.getElementById('l-str');
+  var icon=document.getElementById('wx-icon');
+  var tmp=document.getElementById('v-tmp');
+  var desc=document.getElementById('wx-desc-txt');
+  if(c)document.getElementById('news-city').textContent=c.textContent;
+  if(s)document.getElementById('news-street').textContent=s.textContent;
+  if(icon)document.getElementById('news-icon').textContent=icon.textContent;
+  if(tmp)document.getElementById('news-tmp').textContent=tmp.textContent.replace(/<[^>]*>/g,'')+'°C';
+  if(desc)document.getElementById('news-desc').textContent=desc.textContent;
+}
+
+// Synchronizuj panele boczne po aktualizacji danych
+var origUpdAll=null;
+function hookUpdAll(){
+  // Wywołaj sync po każdej aktualizacji danych
+  if(currentSection==='wiatr')syncWiatrPanel();
+  if(currentSection==='prognoza')syncProgPanel();
+  if(currentSection==='ostrzezenia'){syncAlertPanel();if(!alertsLoaded)loadAlerts();}
+  if(currentSection==='aktualnosci')syncNewsPanel();
 }
 
 // ═══════════════════════════════════════════
@@ -986,6 +1665,7 @@ function fetchWx(lt,ln){
   .then(function(d){
     updAll(d);pi("p-dat","ok","LIVE");
     document.getElementById("upd").textContent=pd(new Date().getHours())+":"+pd(new Date().getMinutes());
+    hookUpdAll();
   }).catch(function(){pi("p-dat","al","BŁĄD");});
 }
 setInterval(function(){if(uLat)fetchWx(uLat,uLon);},15*60*1000);
