@@ -2728,7 +2728,8 @@ function loadBurzeData(force){
         buildStormChart();
         // Pre-build wszystkich 72 gridów w tle
         prebuildAllGrids(function(){
-          redrawBurze(); // przerysuj po zbudowaniu cache
+          redrawBurze();
+          scheduleAIAlert(); // generuj analizę AI po załadowaniu danych
         });
       }
     })
@@ -3397,75 +3398,145 @@ function updateNowMarker(){
 }
 
 // ═══════════════════════════════════════════════════════
-// ANALIZA AI — ostrzeżenia dla Polski z Claude API
-// Aktualizacja co 8h lub na żądanie
+// ANALIZA AI — ostrzeżenia dla Polski z Claude API + web search
 // ═══════════════════════════════════════════════════════
 var aiAlertLastUpdate = 0;
 var aiAlertCache = '';
-var AI_ALERT_INTERVAL = 8*60*60*1000; // 8h
+var AI_ALERT_INTERVAL = 8*60*60*1000;
 
 function generateAIAlert(){
   var now=Date.now();
-  // Throttle — nie generuj częściej niż co 10 min
   if(now-aiAlertLastUpdate < 10*60*1000 && aiAlertCache){
     document.getElementById('ai-alert-content').textContent=aiAlertCache;
     return;
   }
-
   var content=document.getElementById('ai-alert-content');
   var timeEl=document.getElementById('ai-alert-time');
-  if(content)content.innerHTML='<span style="color:var(--text2)">⏳ Analizuję dane...</span>';
+  if(content)content.innerHTML='<span style="color:var(--text2)">⏳ Analizuję dane i sprawdzam ostrzeżenia IMGW...</span>';
 
-  // Zbierz dane z burzeData dla punktów Polski (lon 14-24)
-  var polishPoints=[];
+  // Zbierz dane dla CAŁEJ Polski — wszystkie punkty
+  var pointsAll=[];
   STORM_GRID.forEach(function(pt,idx){
-    if(pt[1]>=14&&pt[1]<=24&&pt[0]>=49&&pt[0]<=55){
-      var d=burzeData[idx]&&burzeData[idx][0];
-      if(d)polishPoints.push({
+    if(pt[1]>=14&&pt[1]<=24.5&&pt[0]>=49&&pt[0]<=55){
+      var d0=burzeData[idx]&&burzeData[idx][0];
+      var d3=burzeData[idx]&&burzeData[idx][3];
+      var d6=burzeData[idx]&&burzeData[idx][6];
+      var d12=burzeData[idx]&&burzeData[idx][12];
+      var d24=burzeData[idx]&&burzeData[idx][24];
+      if(d0) pointsAll.push({
         lat:pt[0],lon:pt[1],
-        prob:d.prob,wmo:d.wmo,cape:d.cape,
-        li:d.li,dp:d.dp,pp:d.pp,prc:d.prc,lpi:d.lpi
+        region:getRegionName(pt[0],pt[1]),
+        p0:d0.prob, p3:d3?d3.prob:0, p6:d6?d6.prob:0,
+        p12:d12?d12.prob:0, p24:d24?d24.prob:0,
+        wmo:d0.wmo, cape:d0.cape, li:d0.li,
+        dp:d0.dp, pp:d0.pp, lpi:d0.lpi,
+        prc:d0.prc, cin:d0.cin, rh700:d0.rh700
       });
     }
   });
 
-  // Posortuj po prob malejąco
-  polishPoints.sort(function(a,b){return b.prob-a.prob;});
-  var top=polishPoints.slice(0,15);
+  // Grupuj po regionach — znajdź max prob dla każdego
+  var regionMap={};
+  pointsAll.forEach(function(p){
+    var r=p.region;
+    if(!regionMap[r]||regionMap[r].p0<p.p0) regionMap[r]=p;
+  });
 
-  // Przygotuj opis danych
-  var dataDesc='Dane meteorologiczne dla Polski (najbardziej zagrożone punkty):
+  // Buduj opis danych dla AI
+  var now_str=new Date().toLocaleString('pl-PL',{
+    weekday:'long',day:'numeric',month:'long',
+    hour:'2-digit',minute:'2-digit'
+  });
+
+  var regions=Object.values(regionMap).sort(function(a,b){return b.p0-a.p0;});
+
+  var dataDesc='=== DANE METEOROLOGICZNE POLSKA — '+now_str+' ===
+
 ';
-  top.forEach(function(p){
-    var region=getRegionName(p.lat,p.lon);
-    dataDesc+='• '+region+' ('+p.lat.toFixed(1)+'N '+p.lon.toFixed(1)+'E): ';
-    dataDesc+='ryzyko='+p.prob+'%, WMO='+p.wmo+', CAPE='+p.cape+', LPI='+p.lpi+', DP='+p.dp+'°C, PP='+p.pp+'%
+  dataDesc+='FORMAT: Region | Ryzyko burzy teraz→+3h→+6h→+12h→+24h | WMO | CAPE J/kg | LI | DP°C | PP% | LPI | Opady mm/h
+
+';
+
+  regions.forEach(function(p){
+    var risk=p.p0>=60?'WYSOKIE':p.p0>=40?'UMIARKOWANE':p.p0>=20?'NISKIE':'BRAK';
+    dataDesc+=p.region+': '+risk+' ('+p.p0+'%→'+p.p3+'%→'+p.p6+'%→'+p.p12+'%→'+p.p24+'%) ';
+    dataDesc+='WMO='+p.wmo+' CAPE='+p.cape+' LI='+p.li+' DP='+p.dp+'°C PP='+p.pp+'% LPI='+p.lpi+' Prc='+p.prc+'mm
 ';
   });
 
-  var now_str=new Date().toLocaleString('pl-PL',{weekday:'long',hour:'2-digit',minute:'2-digit'});
+  // Znajdź trend — gdzie rośnie ryzyko
+  var growing=regions.filter(function(p){return p.p6>p.p0+15;});
+  var declining=regions.filter(function(p){return p.p6<p.p0-15;});
 
-  var prompt='Jesteś meteorologiem. Na podstawie poniższych danych z modelu ICON dla Polski, napisz zwięzłą, czytelną analizę pogodową w języku polskim. '+
-    'Opisz które regiony Polski są zagrożone burzami lub innymi zjawiskami atmosferycznymi w ciągu najbliższych godzin i dni. '+
-    'Użyj naturalnego języka, bez techicznych skrótów. Wspomnij o kierunku przemieszczania się układów. '+
-    'Jeśli nigdzie nie ma zagrożeń, napisz o tym spokojnie. Aktualny czas: '+now_str+'.
+  if(growing.length){
+    dataDesc+='
+ROSNĄCE ZAGROŻENIE (za 6h): '+growing.map(function(p){return p.region+' (+'+Math.round(p.p6-p.p0)+'pp)';}).join(', ');
+  }
+  if(declining.length){
+    dataDesc+='
+SPADAJĄCE ZAGROŻENIE (za 6h): '+declining.map(function(p){return p.region+' (-'+Math.round(p.p0-p.p6)+'pp)';}).join(', ');
+  }
 
-'+dataDesc+
-    '
-Odpowiedź ma być w formacie: krótkie zdanie podsumowujące sytuację, potem opis dla każdego zagrożonego regionu. Maksymalnie 200 słów.';
+  var highRisk=regions.filter(function(p){return p.p0>=40;});
+  dataDesc+='
+
+Liczba zagrożonych regionów (>40%): '+highRisk.length+'/'+regions.length;
+
+  var prompt=
+    'Jesteś doświadczonym synoptą meteorologicznym IMGW-PIB. Na podstawie poniższych danych z modelu ICON napisz SZCZEGÓŁOWY komunikat meteorologiczny dla Polski.
+
+'+
+    'WYMAGANIA:
+'+
+    '1. Zacznij od KRÓTKIEGO podsumowania ogólnej sytuacji synoptycznej (2-3 zdania)
+'+
+    '2. Opisz zagrożenia REGIONAMI — dla każdego zagrożonego regionu osobny akapit z:
+'+
+    '   - nazą regionu boldem (*Region*:)
+'+
+    '   - typem zjawisk (burze, ulewny deszcz, silny wiatr, grad, upał, mróz itp.)
+'+
+    '   - prognozowanym czasem wystąpienia (teraz / za X godzin / jutro)
+'+
+    '   - intensywnością i ewentualnymi skutkami
+'+
+    '3. Opisz TENDENCJĘ — jak sytuacja będzie się zmieniać przez 24h
+'+
+    '4. Dodaj WSKAZÓWKI dla ludności — co robić, na co uważać
+'+
+    '5. Na końcu krótka wzmianka o regionach bez zagrożeń
+
+'+
+    'Pisz naturalnym językiem, bez oznaczeń technicznych. Minimum 300 słów. '+
+    'Sprawdź też aktualne ostrzeżenia IMGW na imgw.pl i dołącz informacje o ewentualnych aktywnych ostrzeżeniach.
+
+'+
+    dataDesc;
 
   fetch('https://api.anthropic.com/v1/messages',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify({
       model:'claude-sonnet-4-20250514',
-      max_tokens:400,
+      max_tokens:1000,
+      tools:[{type:'web_search_20250305',name:'web_search'}],
       messages:[{role:'user',content:prompt}]
     })
   })
   .then(function(r){return r.json();})
   .then(function(d){
-    var text=d.content&&d.content[0]&&d.content[0].text||'Brak odpowiedzi.';
+    // Złóż tekst ze wszystkich bloków
+    var text='';
+    if(d.content&&d.content.length){
+      d.content.forEach(function(block){
+        if(block.type==='text') text+=block.text;
+      });
+    }
+    if(!text) text='Brak odpowiedzi z modelu AI.';
+
+    // Formatowanie — zamień *tekst* na pogrubienie
+    text=text.replace(/[*_]/g,'');
+
     aiAlertCache=text;
     aiAlertLastUpdate=Date.now();
     if(content)content.textContent=text;
@@ -3475,49 +3546,18 @@ Odpowiedź ma być w formacie: krótkie zdanie podsumowujące sytuację, potem o
     }
   })
   .catch(function(e){
-    if(content)content.textContent='⚠ Nie udało się wygenerować analizy. Sprawdź połączenie.';
+    if(content)content.innerHTML='<span style="color:#ff6b35">⚠ Błąd generowania analizy.</span>';
   });
 }
 
-// Mapuj współrzędne na nazwy regionów Polski
-function getRegionName(lat,lon){
-  if(lon<16){
-    if(lat>52)return'Lubuskie';
-    if(lat>51)return'Dolnośląskie zach.';
-    return'Dolnośląskie';
-  }
-  if(lon<18){
-    if(lat>53)return'Wielkopolskie płn.';
-    if(lat>52)return'Wielkopolskie';
-    if(lat>51)return'Opolskie';
-    return'Dolnośląskie wsch.';
-  }
-  if(lon<20){
-    if(lat>54)return'Kujawsko-Pomorskie płn.';
-    if(lat>53)return'Kujawsko-Pomorskie';
-    if(lat>52)return'Łódzkie płn.';
-    if(lat>51)return'Łódzkie';
-    return'Świętokrzyskie';
-  }
-  if(lon<22){
-    if(lat>54)return'Warmińsko-Mazurskie zach.';
-    if(lat>53)return'Mazowieckie płn.';
-    if(lat>52)return'Mazowieckie';
-    if(lat>51)return'Mazowieckie płd.';
-    return'Małopolskie zach.';
-  }
-  if(lon<23){
-    if(lat>54)return'Warmińsko-Mazurskie';
-    if(lat>53)return'Podlaskie płn.';
-    if(lat>52)return'Podlaskie';
-    if(lat>51)return'Lubelskie';
-    return'Małopolskie';
-  }
-  if(lat>54)return'Warmińsko-Mazurskie wsch.';
-  if(lat>53)return'Podlaskie wsch.';
-  if(lat>52)return'Podlaskie płd.';
-  if(lat>51)return'Lubelskie wsch.';
-  return'Podkarpackie';
+// Wywołaj gdy dane burzowe są załadowane
+var _aiGenScheduled=false;
+function scheduleAIAlert(){
+  if(_aiGenScheduled)return;
+  _aiGenScheduled=true;
+  setTimeout(function(){
+    if(burzeLoaded) generateAIAlert();
+  },2000);
 }
 
 // Auto-generuj co 8h gdy otwarta zakładka ostrzeżenia
