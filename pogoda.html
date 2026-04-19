@@ -2982,17 +2982,7 @@ function initCanvasOverlay() {
   SLON = (GEO_MAX_LON-GEO_MIN_LON)/(GRID_W-1);
 
   var size = mapBurze.getSize();
-  if(!size||size.x===0){
-    // Mapa niewidoczna - ponawia az do skutku
-    setTimeout(initCanvasOverlay,300); return;
-  }
-
-  // ── Rozwiązanie przesunięcia przy zoom ────────────────────────────
-  // Leaflet podczas animacji zomu nakłada CSS transform na mapPane
-  // i wszystkie warstwy wewnątrz. Jedyne miejsce które NIE dostaje
-  // transform to sam mapContainer (div.leaflet-container).
-  // Dlatego canvas musi siedzieć bezpośrednio w mapContainer
-  // I resetować transform=none przy każdej klatce animacji zomu.
+  if(!size||size.x===0){ setTimeout(initCanvasOverlay,200); return; }
 
   burzeCanvas = document.createElement('canvas');
   burzeCanvas.width  = size.x;
@@ -3004,14 +2994,12 @@ function initCanvasOverlay() {
   burzeCanvas.style.height = size.y+'px';
   burzeCanvas.style.pointerEvents = 'none';
   burzeCanvas.style.zIndex = '400';
-  burzeCanvas.style.transform = 'none'; // blokuj dziedziczenie transform
+  burzeCanvas.style.transform = 'none';
 
-  // Dodaj do mapContainer — jedyne miejsce bez Leaflet-transform
   mapBurze.getContainer().appendChild(burzeCanvas);
 
   function fixCanvas(){
     var s = mapBurze.getSize();
-    // Wyzeruj transform (Leaflet może go przestawić)
     burzeCanvas.style.transform = 'none';
     burzeCanvas.style.top = '0px';
     burzeCanvas.style.left = '0px';
@@ -3023,7 +3011,6 @@ function initCanvasOverlay() {
     }
   }
 
-  // Resetuj przy każdym zdarzeniu zomu/panu — w tym podczas animacji
   mapBurze.on('zoom zoomanim move', fixCanvas);
   mapBurze.on('zoomend moveend resize', function(){
     fixCanvas();
