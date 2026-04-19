@@ -2729,8 +2729,8 @@ function loadBurzeData(force){
         // Pre-build wszystkich 72 gridów w tle
         prebuildAllGrids(function(){
           redrawBurze();
-          // Generuj analizę AI po załadowaniu danych (z opóźnieniem żeby dane były gotowe)
-          setTimeout(function(){if(typeof generateAIAlert==='function'){generateAIAlert();if(currentSection==='ostrzezenia')generateAIAlert();}},1500);
+          // Generuj komunikat natychmiast po zaladowaniu danych
+          setTimeout(generateAIAlert, 500);
         });
       }
     })
@@ -3432,7 +3432,8 @@ function generateAIAlert(){
   }
 
   STORM_GRID.forEach(function(pt,idx){
-    if(pt[1]>=14&&pt[1]<=24.5&&pt[0]>=49&&pt[0]<=55){
+    // Szersza Polska: lon 14-24.5, lat 49-55.5
+    if(pt[1]>=14&&pt[1]<=24.5&&pt[0]>=49&&pt[0]<=55.5){
       // d0 = TERAZ (aktualny indeks godziny), nie pierwsza godzina danych
       var d0=burzeData[idx]&&burzeData[idx][nowHIdx];
       var d3=burzeData[idx]&&burzeData[idx][Math.min(nowHIdx+3,71)];
@@ -3532,14 +3533,19 @@ function generateAIAlert(){
   var trend24=regions.length>0?Math.round(regions.reduce(function(s,r){return s+r.p24;},0)/regions.length):0;
 
   // Punkty z opadami aktualnymi -- wyciagnij tez spoza Polski dla kontekstu
+  // Zbierz punkty z opadami - prog 0.05mm/h zeby lapac slabe opady
   var rainPoints=[];
   pointsAll.forEach(function(p){
-    if(p.prc>0.1||p.pp>30) rainPoints.push(p);
+    if(p.prc>0.05||p.pp>25) rainPoints.push(p);
   });
   rainPoints.sort(function(a,b){return b.prc-a.prc;});
 
+  // Sprawdz czy sa w ogole opady
+  var totalRainNow=rainPoints.reduce(function(s,p){return s+p.prc;},0);
+  var hasRainNow=totalRainNow>0.1;
+
   var lines=[];
-  lines.push('KOMUNIKAT METEOROLOGICZNY -- IMGW-PIB');
+  lines.push('KOMUNIKAT METEOROLOGICZNY');
   lines.push(dateStr+', godz. '+timeStr);
   lines.push('Sytuacja biezaca -- godz. '+timeStr+' | Dane: ICON/DWD icon_seamless | Aktualizacja co 1h');
   lines.push('');
@@ -3549,7 +3555,7 @@ function generateAIAlert(){
   if(extreme.length>0){
     lines.push('UWAGA: Bardzo niebezpieczna sytuacja burzowa nad Polska. Aktywne sa gwaltowne burze z mozliwoscia ekstremalnych zjawisk. Zagrozenie obejmuje '+extreme.length+' region(ow) na poziomie ekstremalnym.');
     lines.push('');
-    lines.push('Nad Polska dominuje silnie niestabilna masa powietrza. Wysoka energia konwekcyjna (CAPE do '+Math.max.apply(null,extreme.map(function(r){return r.cape;}))+' J/kg) oraz korzystny skrot wiatru sprzyjaja tworzeniu sie zorganizowanych komorek burzowych, w tym potencjalnych superceli. Sytuacja wymaga bezwzglednej uwagi i sledzenia komunikatow IMGW-PIB.');
+    lines.push('Nad Polska dominuje silnie niestabilna masa powietrza. Wysoka energia konwekcyjna (CAPE do '+Math.max.apply(null,extreme.map(function(r){return r.cape;}))+' J/kg) oraz korzystny skrot wiatru sprzyjaja tworzeniu sie zorganizowanych komorek burzowych, w tym potencjalnych superceli. Sytuacja wymaga bezwzglednej uwagi i sledzenia komunikatow sluzbami meteorologicznymi.');
   } else if(high.length>0){
     lines.push('Nad Polska utrzymuje sie niestabilna masa powietrza z podwyzszona aktywnoscia burzowa. Zagrozenie koncentruje sie w '+high.length+' regionach. Mozliwe gwaltowne zjawiska konwekcyjne, w tym lokalne ulewne opady, silne porywy wiatru oraz grad. Sytuacja bedzie ulegac zmianom w ciagu dnia.');
   } else if(moderate.length>0){
@@ -3591,8 +3597,10 @@ function generateAIAlert(){
   }
 
   // Sekcja opadow (takze lekkich)
-  if(rainPoints.length>0){
-    lines.push('=== OPADY NA OBSZARZE POLSKI ===');
+  // Sekcja opadow - zawsze pokazuj
+  {
+    lines.push('=== OPADY AKTUALNE I PROGNOZOWANE (model ICON) ===');
+  if(!hasRainNow)lines.push('   Brak istotnych opadow w biezacej godzinie na obszarze Polski.');
     lines.push('');
     var heavyRain=rainPoints.filter(function(p){return p.prc>=5;});
     var modRain=rainPoints.filter(function(p){return p.prc>=2&&p.prc<5;});
