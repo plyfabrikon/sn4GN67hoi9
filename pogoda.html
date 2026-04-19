@@ -1017,8 +1017,6 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
           <!-- Legenda -->
           <div style="font-size:.58rem;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Legenda mapy</div>
           <div class="storm-legend">
-            <div class="storm-legend-row">
-            <div class="storm-legend-row">
             <div class="storm-legend-row"><div class="storm-legend-dot" style="background:#ff8800;box-shadow:0 0 6px #ff8800"></div>40–60% Umiarkowane</div>
             <div class="storm-legend-row"><div class="storm-legend-dot" style="background:#ff3a3a;box-shadow:0 0 6px #ff3a3a"></div>60–80% Wysokie ⚡</div>
             <div class="storm-legend-row"><div class="storm-legend-dot" style="background:#cc00ff;box-shadow:0 0 8px #cc00ff"></div>80–100% Ekstremalne ⚡⚡</div>
@@ -1196,7 +1194,19 @@ function showSec(el,s){
     reloadBlitzIframe();
   }
   if(s==='prognoza')initPrognoza();
-  if(s==='burze'){initBurze();if(mapBurze)setTimeout(function(){mapBurze.invalidateSize();},100);}
+  if(s==='burze'){
+    initBurze();
+    setTimeout(function(){
+      if(mapBurze){
+        mapBurze.invalidateSize();
+        setTimeout(function(){
+          mapBurze.invalidateSize();
+          if(!burzeCanvas) initCanvasOverlay();
+          else redrawBurze();
+        },300);
+      }
+    },50);
+  }
   if(s==='ostrzezenia'){syncAlertPanel();if(!alertsLoaded)loadAlerts();if(burzeLoaded&&typeof generateAIAlert==='function'){setTimeout(generateAIAlert,300);}else{var _elAI=document.getElementById('ai-alert-content');if(_elAI)_elAI.textContent='Oczekiwanie na dane modelu... Komunikat pojawi sie automatycznie.';} }
   if(s==='wiatr')initWiatr();
   if(s==='aktualnosci'){syncNewsPanel();loadNews();}
@@ -2582,10 +2592,14 @@ function initMapBurze(){
   }).setView([ctr.lat||ctr[0],ctr.lng||ctr[1]],zm);
   L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
     {maxZoom:10,subdomains:'abcd'}).addTo(mapBurze);
+  // Czekaj az sekcja bedzie widoczna (display:flex) zanim zmierzysz rozmiar
   setTimeout(function(){
     mapBurze.invalidateSize();
-    initCanvasOverlay(); // canvas zawsze po invalidateSize
-  },300);
+    setTimeout(function(){
+      mapBurze.invalidateSize();
+      initCanvasOverlay();
+    },200);
+  },150);
 }
 
 // ── POBIERANIE DANYCH ────────────────────────────────────────────────
@@ -2987,7 +3001,10 @@ function initCanvasOverlay() {
   SLON = (GEO_MAX_LON-GEO_MIN_LON)/(GRID_W-1);
 
   var size = mapBurze.getSize();
-  if(!size||size.x===0){ setTimeout(initCanvasOverlay,200); return; }
+  if(!size||size.x===0){
+    // Mapa niewidoczna - ponawia az do skutku
+    setTimeout(initCanvasOverlay,300); return;
+  }
 
   // ── Rozwiązanie przesunięcia przy zoom ────────────────────────────
   // Leaflet podczas animacji zomu nakłada CSS transform na mapPane
@@ -3682,7 +3699,13 @@ setInterval(function(){
   }
 },AI_ALERT_INTERVAL);
 
-window.onload=function(){startGPS();};
+window.onload=function(){
+  // Inicjalizuj mape burz z opoznieniem zeby DOM byl gotowy
+  setTimeout(function(){
+    if(typeof initMapBurze==='function') initMapBurze();
+  },500);
+  startGPS();
+};
 </script>
 </body>
 </html>
