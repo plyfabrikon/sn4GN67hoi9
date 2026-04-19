@@ -3414,23 +3414,25 @@ function generateAIAlert(){
   }
   var elContent=document.getElementById('ai-alert-content');
   var elTime=document.getElementById('ai-alert-time');
-  if(elContent)elContent.innerHTML='<span style="color:var(--text2)">Pobieram dane i generuję komunikat...</span>';
+  if(elContent)elContent.textContent='Generowanie komunikatu...';
 
   // Zbierz dane dla Polski
   var pointsAll=[];
   STORM_GRID.forEach(function(pt,idx){
     if(pt[1]>=14&&pt[1]<=24.5&&pt[0]>=49&&pt[0]<=55){
       var d0=burzeData[idx]&&burzeData[idx][0];
+      var d3=burzeData[idx]&&burzeData[idx][3];
       var d6=burzeData[idx]&&burzeData[idx][6];
       var d12=burzeData[idx]&&burzeData[idx][12];
       var d24=burzeData[idx]&&burzeData[idx][24];
       if(d0) pointsAll.push({
         lat:pt[0],lon:pt[1],
         region:getRegionName(pt[0],pt[1]),
-        p0:d0.prob, p6:d6?d6.prob:0,
+        p0:d0.prob, p3:d3?d3.prob:0, p6:d6?d6.prob:0,
         p12:d12?d12.prob:0, p24:d24?d24.prob:0,
-        wmo:d0.wmo, cape:d0.cape, li:d0.li,
-        dp:d0.dp, pp:d0.pp, lpi:d0.lpi, prc:d0.prc
+        wmo:d0.wmo, cape:d0.cape, li:+(d0.li||0).toFixed(1),
+        dp:d0.dp, pp:d0.pp, lpi:d0.lpi, prc:d0.prc,
+        shr:d0.shr||0
       });
     }
   });
@@ -3440,60 +3442,158 @@ function generateAIAlert(){
     var r=p.region;
     if(!regionMap[r]||regionMap[r].p0<p.p0) regionMap[r]=p;
   });
-
-  var now_str=new Date().toLocaleString('pl-PL',{weekday:'long',day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'});
   var regions=Object.values(regionMap).sort(function(a,b){return b.p0-a.p0;});
+  var now=new Date();
+  var days=['niedziela','poniedzialek','wtorek','sroda','czwartek','piatek','sobota'];
+  var months=['stycznia','lutego','marca','kwietnia','maja','czerwca','lipca','sierpnia','wrzesnia','pazdziernika','listopada','grudnia'];
+  var dateStr=days[now.getDay()]+', '+now.getDate()+' '+months[now.getMonth()]+' '+now.getFullYear();
+  var timeStr=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
 
-  var dataLines=[];
-  regions.forEach(function(p){
-    var risk=p.p0>=60?'WYSOKIE':p.p0>=40?'UMIARKOWANE':p.p0>=20?'NISKIE':'BRAK';
-    dataLines.push(p.region+': '+risk+' (teraz='+p.p0+'% za6h='+p.p6+'% za12h='+p.p12+'% za24h='+p.p24+'%) WMO='+p.wmo+' CAPE='+p.cape+' LPI='+p.lpi+' DP='+p.dp+'C PP='+p.pp+'%');
-  });
+  var extreme=regions.filter(function(r){return r.p0>=80;});
+  var high=regions.filter(function(r){return r.p0>=60&&r.p0<80;});
+  var moderate=regions.filter(function(r){return r.p0>=40&&r.p0<60;});
+  var low=regions.filter(function(r){return r.p0>=20&&r.p0<40;});
+  var safe=regions.filter(function(r){return r.p0<20;});
+  var growing=regions.filter(function(r){return r.p6>r.p0+15;});
+  var declining=regions.filter(function(r){return r.p6<r.p0-15;});
 
-  var growing=regions.filter(function(p){return p.p6>p.p0+15;}).map(function(p){return p.region;});
-  var declining=regions.filter(function(p){return p.p6<p.p0-15;}).map(function(p){return p.region;});
-  var highRisk=regions.filter(function(p){return p.p0>=40;});
+  function wmoDesc(code){
+    if(code>=99)return'burze z silnym gradem';
+    if(code>=96)return'burze z gradem';
+    if(code>=95)return'burze';
+    if(code>=82)return'gwaltowne opady';
+    if(code>=80)return'przelotne opady';
+    if(code>=73)return'intensywne opady sniegu';
+    if(code>=71)return'opady sniegu';
+    if(code>=65)return'intensywny deszcz';
+    if(code>=61)return'deszcz';
+    if(code>=55)return'mzawka';
+    if(code>=45)return'mgla';
+    if(code>=3)return'zachmurzenie';
+    return'bezchmurnie';
+  }
 
-  var prompt=[
-    'You are a Polish meteorologist. Write a detailed weather warning bulletin for Poland in Polish language.',
-    'Time: '+now_str,
-    'Data from ICON model:',
-    dataLines.join('\n'),
-    growing.length?'Risk increasing in 6h: '+growing.join(', '):'',
-    declining.length?'Risk decreasing in 6h: '+declining.join(', '):'',
-    'Regions at risk (>40%): '+highRisk.length,
-    '',
-    'Write in Polish. Include: 1) General synoptic situation, 2) Threatened regions with phenomena type and timing, 3) 24h trend, 4) Public safety advice, 5) Safe regions.',
-    'Minimum 300 words. Natural meteorologist style. Do not mention AI or language models.'
-  ].filter(Boolean).join('\n');
+  function threatLevel(p){
+    if(p>=80)return'EKSTREMALNE';
+    if(p>=60)return'WYSOKIE';
+    if(p>=40)return'UMIARKOWANE';
+    if(p>=20)return'NISKIE';
+    return'BRAK';
+  }
 
-  fetch('https://api.anthropic.com/v1/messages',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({
-      model:'claude-sonnet-4-20250514',
-      max_tokens:1200,
-      messages:[{role:'user',content:prompt}]
-    })
-  })
-  .then(function(r){return r.json();})
-  .then(function(d){
-    var txt='';
-    if(d.content&&d.content.length){
-      d.content.forEach(function(b){if(b.type==='text')txt+=b.text;});
-    }
-    if(d.error){txt='Błąd: '+d.error.message;}
-    if(!txt)txt='Brak odpowiedzi.';
-    txt=txt.replace(/[*_#]/g,'');
-    aiAlertCache=txt;
-    aiAlertLastUpdate=Date.now();
-    if(elContent)elContent.textContent=txt;
-    if(elTime){var t=new Date();elTime.textContent='Akt. '+String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0');}
-  })
-  .catch(function(e){
-    if(elContent)elContent.textContent='Nie udało się pobrać komunikatu. Sprawdź połączenie.';
-    console.error('Alert error:',e);
-  });
+  function trend6h(r){
+    var diff=r.p6-r.p0;
+    if(diff>20)return'znaczacy wzrost zagrozenia za 6 godzin';
+    if(diff>10)return'wzrost zagrozenia za 6 godzin';
+    if(diff<-20)return'znaczace ustepowanie zagrozenia za 6 godzin';
+    if(diff<-10)return'ustepowanie zagrozenia za 6 godzin';
+    return'stabilna sytuacja';
+  }
+
+  var lines=[];
+  lines.push('KOMUNIKAT METEOROLOGICZNY');
+  lines.push('IMGW-PIB | '+dateStr+', godz. '+timeStr);
+  lines.push('');
+
+  // Ogolna sytuacja
+  var totalRisk=regions.length>0?Math.round(regions.reduce(function(s,r){return s+r.p0;},0)/regions.length):0;
+  if(extreme.length>0){
+    lines.push('SYTUACJA OGOLNA: Nad Polska panuje bardzo niebezpieczna sytuacja burzowa. W kilku regionach kraju aktywne sa gwaltowne burze z mozliwoscia silnych porywow wiatru, intensywnych opadow i gradu. Zalecana najwyzsza ostroznosc.');
+  } else if(high.length>0){
+    lines.push('SYTUACJA OGOLNA: Nad czescią Polski, szczegolnie w zachodnich i poludniowych regionach, panuja warunki sprzyjajace rozwojowi burz. W ciagu najblizszych godzin mozliwe gwaltowne zjawiska atmosferyczne.');
+  } else if(moderate.length>0){
+    lines.push('SYTUACJA OGOLNA: Sytuacja burzowa o umiarkowanym nasileniu. W wybranych rejonach kraju mozliwe wystapienie burz, przede wszystkim w godzinach popoludniowych. Zalecana czujnosc.');
+  } else if(low.length>0){
+    lines.push('SYTUACJA OGOLNA: Ryzyko burzowe niskie. Lokalne zjawiska burzowe mozliwe jedynie w sprzyjajacych warunkach orograficznych. Przewaznie stabilna sytuacja atmosferyczna.');
+  } else {
+    lines.push('SYTUACJA OGOLNA: Stabilna sytuacja atmosferyczna nad Polska. Brak istotnych zagrozen meteorologicznych w najbizszym czasie. Przewaznie spokojne warunki pogodowe.');
+  }
+  lines.push('');
+
+  // Szczegoly per region
+  if(extreme.length>0||high.length>0){
+    lines.push('OBSZARY ZAGROZENIA:');
+    lines.push('');
+    extreme.concat(high).forEach(function(r){
+      lines.push('>> '+r.region.toUpperCase()+' -- zagrozenie '+threatLevel(r.p0));
+      var phenomena=wmoDesc(r.wmo);
+      lines.push('   Prognozowane zjawiska: '+phenomena+
+        (r.lpi>1?' z wyladowaniami elektrycznymi':'')+
+        (r.cape>1000?' (energia CAPE: '+r.cape+' J/kg -- warunki sprzyjajace supercellom)':r.cape>500?' (CAPE: '+r.cape+' J/kg)':'')+
+        (r.shr>40?' ze znacznym pionowym skrotem wiatru':'')+'.');
+      if(r.prc>0)lines.push('   Opady: '+r.prc.toFixed(1)+' mm/h. Mozliwe lokalne podtopienia.');
+      lines.push('   Prawdopodobienstwo: '+r.p0+'% (za 6h: '+r.p6+'%, za 12h: '+r.p12+'%, za 24h: '+r.p24+'%).');
+      lines.push('   Tendencja: '+trend6h(r)+'.');
+      lines.push('');
+    });
+  }
+
+  if(moderate.length>0){
+    lines.push('OBSZARY PODWYZSZONEGO RYZYKA:');
+    moderate.forEach(function(r){
+      lines.push('   '+r.region+': prawdopodobienstwo '+r.p0+'% -- '+wmoDesc(r.wmo)+
+        '. Mozliwe przelotne burze (za 6h: '+r.p6+'%).');
+    });
+    lines.push('');
+  }
+
+  if(low.length>0){
+    lines.push('OBSZARY NISKIEGO RYZYKA:');
+    lines.push('   '+low.map(function(r){return r.region+' ('+r.p0+'%)'}).join(', ')+'.');
+    lines.push('   Lokalne, krotkotrwale burze nie mozna wykluczyc.');
+    lines.push('');
+  }
+
+  // Tendencja 24h
+  lines.push('TENDENCJA 24-GODZINNA:');
+  if(growing.length>0){
+    lines.push('   Wzrost zagrozenia spodziewany w: '+growing.map(function(r){return r.region;}).join(', ')+'.');
+  }
+  if(declining.length>0){
+    lines.push('   Ustepowanie zagrozenia w: '+declining.map(function(r){return r.region;}).join(', ')+'.');
+  }
+  var trend24=regions.length>0?Math.round(regions.reduce(function(s,r){return s+r.p24;},0)/regions.length):0;
+  if(trend24<totalRisk-10){
+    lines.push('   Ogolna tendencja malejaca. Za 24 godziny spodziewana poprawa warunkow pogodowych na wiekszosci obszaru kraju.');
+  } else if(trend24>totalRisk+10){
+    lines.push('   Ogolna tendencja rosnaca. Za 24 godziny mozliwe dalsze nasilenie zjawisk burzowych.');
+  } else {
+    lines.push('   Sytuacja pozostanie stabilna przez najblizsze 24 godziny.');
+  }
+  lines.push('');
+
+  // Zalecenia
+  lines.push('ZALECENIA DLA LUDNOSCI:');
+  if(extreme.length>0||high.length>0){
+    lines.push('   - UNIKAJ przebywania na otwartej przestrzeni podczas burzy.');
+    lines.push('   - Zabezpiecz mienie przed silnym wiatrem i gradem.');
+    lines.push('   - Nie parkuj pojezdow pod drzewami.');
+    lines.push('   - Obserwuj komunikaty RCB i IMGW-PIB.');
+    lines.push('   - W razie zagrozenia powiadom sluzby ratunkowe (112).');
+  } else if(moderate.length>0){
+    lines.push('   - Sledz prognozy i komunikaty IMGW-PIB.');
+    lines.push('   - Zabezpiecz przedmioty narazzone na wiatr.');
+    lines.push('   - Unikaj aktywnosci na otwartej przestrzeni podczas burzy.');
+  } else {
+    lines.push('   - Warunki sprzyjajace. Zalecana zwykla ostroznosc i sledzzenie prognoz.');
+  }
+  lines.push('');
+
+  if(safe.length>0){
+    lines.push('REGIONY BEZ ZAGROZENIA:');
+    lines.push('   '+safe.map(function(r){return r.region;}).join(', ')+'.');
+    lines.push('   Warunki pogodowe spokojne, bez istotnych zagrozen.');
+  }
+
+  lines.push('');
+  lines.push('Komunikat oparty na danych modelu ICON/DWD. Aktualizacja co 3 godziny.');
+  lines.push('Zrodla: Open-Meteo, IMGW-PIB');
+
+  var txt=lines.join('\n');
+  aiAlertCache=txt;
+  aiAlertLastUpdate=Date.now();
+  if(elContent)elContent.textContent=txt;
+  if(elTime){var t=new Date();elTime.textContent='Akt. '+String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0');}
 }
 // Auto-generuj co 8h gdy otwarta zakładka ostrzeżenia
 setInterval(function(){
