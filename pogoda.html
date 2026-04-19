@@ -1254,6 +1254,7 @@ function initSat24(){
     sat24Map=L.map('map-sat24',{
       zoomControl:true,attributionControl:false,doubleClickZoom:false
     }).setView([ctr.lat||52,ctr.lng||16],zm);
+    mapSat=sat24Map;
 
     // Baza — ciemna mapa bez etykiet
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',
@@ -1289,7 +1290,7 @@ function sat24LoadData(){
       // RainViewer ma satellite — użyj ich
       sat24Frames=frames.map(function(f){return{url:host+f.path,time:f.time};});
       var sl=document.getElementById('sat24-slider');
-      if(sl){sl.max=frames.length-1;sl.value=frames.length-1;}
+      if(sl){sl.max=frames.length-1;sl.value=frames.length-1;sl.style.opacity='1';}
       sat24FrameIdx=frames.length-1;
       sat24ShowRVFrame(sat24FrameIdx);
       if(status)status.textContent='RainViewer IR . '+frames.length+' klatek';
@@ -2150,8 +2151,9 @@ function updateGPSOnAllMaps(){
   if(!uLat)return;
   var ll=[uLat,uLon];
   // Mapa SAT24
-  if(mapSat){
-    if(!gpsMkrSat){gpsMkrSat=L.marker(ll,{icon:makeGPSIcon(),zIndexOffset:1000}).addTo(mapSat);}
+  var satMap=sat24Map||mapSat;
+  if(satMap){
+    if(!gpsMkrSat){gpsMkrSat=L.marker(ll,{icon:makeGPSIcon(),zIndexOffset:1000}).addTo(satMap);}
     else gpsMkrSat.setLatLng(ll);
   }
   // Mapa WIATR
