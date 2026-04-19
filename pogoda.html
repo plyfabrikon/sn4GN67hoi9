@@ -1196,16 +1196,16 @@ function showSec(el,s){
   if(s==='prognoza')initPrognoza();
   if(s==='burze'){
     initBurze();
-    setTimeout(function(){
-      if(mapBurze){
-        mapBurze.invalidateSize();
-        setTimeout(function(){
-          mapBurze.invalidateSize();
-          if(!burzeCanvas) initCanvasOverlay();
-          else redrawBurze();
-        },300);
-      }
-    },50);
+    // Ponow invalidateSize kilkukrotnie i wymus redraw
+    var _bTries=0;
+    function _tryBurze(){
+      if(!mapBurze){if(_bTries++<10)setTimeout(_tryBurze,200);return;}
+      mapBurze.invalidateSize();
+      if(!burzeCanvas){initCanvasOverlay();}
+      if(burzeLoaded){redrawBurze();}
+      if(_bTries++<5) setTimeout(_tryBurze,300);
+    }
+    setTimeout(_tryBurze,80);
   }
   if(s==='ostrzezenia'){syncAlertPanel();if(!alertsLoaded)loadAlerts();if(burzeLoaded&&typeof generateAIAlert==='function'){setTimeout(generateAIAlert,300);}else{var _elAI=document.getElementById('ai-alert-content');if(_elAI)_elAI.textContent='Oczekiwanie na dane modelu... Komunikat pojawi sie automatycznie.';} }
   if(s==='wiatr')initWiatr();
@@ -2768,7 +2768,7 @@ function loadBurzeData(force){
 // ═══════════════════════════════════════════════════════════
 // HALO OVERLAY — SVG z sub-podziałem 3×3 i interpolacją
 // ═══════════════════════════════════════════════════════════
-var STORM_THRESHOLD = 40;
+var STORM_THRESHOLD = 35;
 
 // Sub-siatka: każdy punkt główny dzieli się na 3×3 = 9 sub-komórek
 // Sub-komórka = STORM_CELL_LAT/3 × STORM_CELL_LON/3
@@ -2921,6 +2921,9 @@ function probToRGBA(p, alpha) {
 // Zero IDW interpolacji → zero przesunięcia
 function drawFrame(gridIgnored) {
   if(!burzeCanvas||!mapBurze) return;
+  // debug
+  if(window._dbgDraw===undefined){window._dbgDraw=0;}
+  window._dbgDraw++;
 
   var map = mapBurze;
   var size = map.getSize();
@@ -2988,10 +2991,18 @@ function fogLoop(ts) { /* wyłączone — rysujemy tylko przy zmianie */ }
 function redrawBurze() {
   if(!burzeLoaded) return;
   if(!burzeCanvas) {
+    // Jesli mapa nie ma rozmiaru (sekcja ukryta) - sprobuj pozniej
+    if(mapBurze) {
+      var sz=mapBurze.getSize();
+      if(!sz||sz.x===0) {
+        setTimeout(redrawBurze, 400);
+        return;
+      }
+    }
     initCanvasOverlay();
-    if(!burzeCanvas) { setTimeout(redrawBurze,300); return; }
+    if(!burzeCanvas) { setTimeout(redrawBurze, 300); return; }
   }
-  drawFrame(null); // grid nie używany — rysujemy bezpośrednio z STORM_GRID
+  drawFrame(null);
 }
 
 // ── Canvas Layer init ─────────────────────────────────────────────
@@ -3109,19 +3120,38 @@ function updateChartHighlight(hIdx){
 
 // ── Czas label z minutami ──────────────────────────────────────────
 function updateBurzeTimeLabel15(step){
-  var el=document.getElementById('burze-time-label');
-  if(!el)return;
   var sf=stepToHourFrac(step);
-  if(step===0){el.textContent='Teraz';return;}
-  var t2=burzeHours[sf.h];
-  if(!t2){el.textContent='h+'+sf.h+(sf.sub>0?':'+Math.round(sf.sub*60).toString().padStart(2,'0'):'');return;}
-  var dt=new Date(t2);
-  // Dodaj minuty
-  dt.setMinutes(dt.getMinutes()+Math.round(sf.sub*60));
-  var days=['Nd','Pn','Wt','Śr','Czw','Pt','Sob'];
-  var today=new Date().getDay();
-  var dn=dt.getDay()===today?'Dziś':dt.getDay()===(today+1)%7?'Jutro':days[dt.getDay()];
-  el.textContent=dn+' '+String(dt.getHours()).padStart(2,'0')+':'+String(dt.getMinutes()).padStart(2,'0');
+  var days=['Nd','Pn','Wt','Sr','Czw','Pt','Sob'];
+  var now=new Date();
+
+  function fmtStep(s){
+    var t2=burzeHours&&burzeHours[s.h];
+    if(!t2){
+      // burzeHours jeszcze nie zaladowane - oblicz z teraz
+      var dt2=new Date(now.getTime()+(s.h*60+Math.round(s.sub*60))*60000);
+      return formatDt(dt2);
+    }
+    var dt2=new Date(t2);
+    dt2.setMinutes(dt2.getMinutes()+Math.round(s.sub*60));
+    return formatDt(dt2);
+  }
+
+  function formatDt(dt){
+    var dn=dt.getDay()===now.getDay()?'Dzis':dt.getDay()===(now.getDay()+1)%7?'Jutro':days[dt.getDay()];
+    return dn+' '+String(dt.getHours()).padStart(2,'0')+':'+String(dt.getMinutes()).padStart(2,'0');
+  }
+
+  var label=fmtStep(sf);
+
+  // Maly label
+  var el=document.getElementById('burze-time-label');
+  if(el)el.textContent=label;
+
+  // Duzy label
+  var big=document.getElementById('burze-time-big');
+  if(big)big.textContent=label;
+
+  updateNowMarker();
 }
 
 function updateBurzeTimeLabel(hIdx){ updateBurzeTimeLabel15(hIdx*STEPS_PER_HOUR); }
