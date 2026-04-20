@@ -73,6 +73,15 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
 .pill.wn{border-color:var(--accent);color:var(--accent);background:rgba(232,130,26,.08)}
 .pill.al{border-color:#ff3a3a;color:#ff3a3a}
 .pill.of{border-color:#1a3550;color:#3a6080}
+.pill-btn{
+  display:none;align-items:center;justify-content:center;
+  width:22px;height:22px;border-radius:50%;
+  border:1px solid rgba(255,58,58,.45);
+  background:rgba(255,58,58,.10);color:#ff9c9c;
+  cursor:pointer;font-size:.78rem;line-height:1;flex-shrink:0
+}
+.pill-btn.show{display:inline-flex}
+.pill-btn:hover{background:rgba(255,58,58,.18);color:#fff}
 .clk{font-size:.78rem;color:var(--blue2);font-family:monospace;font-weight:700;margin-left:8px;letter-spacing:1px}
 
 /* ═══════════════════════════════════════════
@@ -554,7 +563,8 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
   </nav>
   <div class="nav-right">
     <span class="pill of" id="p-gps">GPS</span>
-    <span class="pill of" id="p-dat">DANE</span>
+    <span class="pill of" id="p-dat" title="Status danych pogodowych Open-Meteo" onmouseenter="refreshDataErrorTooltip()">DANE</span>
+    <button class="pill-btn" id="p-dat-reset" onclick="resetDataServices()" title="Ponow pobieranie danych Open-Meteo i Burze 72h">↻</button>
     <span class="pill of" id="p-rsk">RYZYKO</span>
     <span class="pill of" id="p-blk">BŁK</span>
     <span style="font-size:.5rem;color:var(--text2);white-space:nowrap;border-left:1px solid var(--border);padding-left:8px;line-height:1.4;text-align:right">
@@ -1216,9 +1226,57 @@ var DAYS=["Niedz","Pon","Wt","Śr","Czw","Pt","Sob"];
 var DIRS=["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"];
 var WMO={0:"Bezchmurnie",1:"Prawie bezchmurnie",2:"Częściowe zachmurzenie",3:"Całkowite zachmurzenie",45:"Mgła",51:"Mżawka",61:"Deszcz słaby",63:"Deszcz",65:"Deszcz silny",80:"Deszcz przelotny",82:"Nawalnica",95:"Burza",96:"Burza z gradem",99:"Burza -- duży grad"};
 var fcData=null; // przechowuje dane prognozy
+var wxLastError="";
 
 function pd(n){return String(n).padStart(2,"0");}
-function pi(id,c,t){var e=document.getElementById(id);if(e){e.className="pill "+c;e.textContent=t;}}
+function pi(id,c,t){
+  var e=document.getElementById(id);
+  if(e){
+    e.className="pill "+c;
+    e.textContent=t;
+    if(id==="p-dat"){
+      var reset=document.getElementById("p-dat-reset");
+      if(c==="al"){
+        e.title=wxLastError||"Blad danych Open-Meteo";
+      } else if(c==="wn"){
+        e.title="Trwa pobieranie danych Open-Meteo";
+      } else if(c==="ok"){
+        e.title="Dane Open-Meteo pobrane poprawnie";
+      } else {
+        e.title="Status danych pogodowych Open-Meteo";
+      }
+      if(reset) reset.className="pill-btn"+(c==="al"?" show":"");
+    }
+  }
+}
+function setDataStatus(cls,text,detail){
+  var el=document.getElementById("p-dat");
+  var reset=document.getElementById("p-dat-reset");
+  pi("p-dat",cls,text);
+  if(el) el.title=detail||"Status danych pogodowych Open-Meteo";
+  if(reset) reset.className="pill-btn"+(cls==="al"?" show":"");
+  wxLastError=cls==="al"?(detail||"Blad danych Open-Meteo"):"";
+}
+function refreshDataErrorTooltip(){
+  var el=document.getElementById("p-dat");
+  var desc=document.getElementById("wx-desc-txt");
+  if(!el) return;
+  if(wxLastError){
+    el.title=wxLastError;
+    return;
+  }
+  if(desc&&desc.textContent&&desc.textContent.indexOf("Open-Meteo:")===0){
+    el.title=desc.textContent.replace("Open-Meteo: ","");
+  }
+}
+function resetDataServices(){
+  setDataStatus("wn","RESET","Ponawiam polaczenie z Open-Meteo...");
+  if(uLat!=null&&uLon!=null) fetchWx(uLat,uLon);
+  if(typeof loadBurzeData==="function"){
+    burzeLoaded=false;
+    loadBurzeData(true);
+  }
+}
 function dc(d){return DIRS[Math.round(d/22.5)%16];}
 function bf(k){var t=[1,6,12,20,29,39,50,62,75,89,103,117];for(var i=0;i<t.length;i++)if(k<t[i])return i;return 12;}
 function we(c){if(c===0)return"☀";if(c<=2)return"🌤";if(c<=3)return"⛅";if(c<=48)return"🌥";if(c<=65)return"🌧";if(c<=77)return"❄";if(c<=82)return"🌦";if(c>=95)return"⛈";return"🌡";}
@@ -2324,8 +2382,13 @@ function isValidWxPayload(d){
 function requestWxData(lt,ln,onSuccess,onError){
   function fetchJson(url){
     return fetch(url).then(function(r){
-      if(!r.ok)throw new Error("HTTP "+r.status);
-      return r.json();
+      return r.json().then(function(d){
+        if(!r.ok) throw new Error((d&&d.reason)?d.reason:("HTTP "+r.status));
+        return d;
+      },function(){
+        if(!r.ok) throw new Error("HTTP "+r.status);
+        throw new Error("Nieprawidlowa odpowiedz API");
+      });
     }).then(function(d){
       d=normalizeWxPayload(d);
       if(!isValidWxPayload(d))throw new Error((d&&d.reason)||"Brak danych current");
@@ -2341,11 +2404,12 @@ function requestWxData(lt,ln,onSuccess,onError){
 }
 
 function fetchWxForPoint(lt,ln){
-  pi("p-dat","wn","PUNKT...");
+  setDataStatus("wn","PUNKT...","Pobieranie danych dla wskazanego punktu...");
   requestWxData(lt,ln,function(d){
     updAll(d);
-    pi("p-dat","ok","PUNKT LIVE");
+    setDataStatus("ok","PUNKT LIVE","Dane Open-Meteo pobrane poprawnie");
   },function(err){
+    wxLastError=(err&&err.message)?err.message:"Brak danych pogodowych";
     pi("p-dat","al","BŁĄD");
     var desc=document.getElementById("wx-desc-txt");
     if(desc)desc.textContent="Open-Meteo: "+((err&&err.message)?err.message:"Brak danych pogodowych");
@@ -2987,6 +3051,8 @@ function loadBurzeData(force){
   if(!burzeInit)return;
   if(burzeLoaded&&!force)return;
   document.getElementById('burze-loading').style.display='block';
+  var previousBurzeData=burzeData&&burzeData.length?burzeData.slice():[];
+  var previousBurzeHours=burzeHours&&burzeHours.length?burzeHours.slice():[];
   burzeData=[];
   burzeHours=[];
   rainGridCache={};
@@ -3005,6 +3071,14 @@ function loadBurzeData(force){
   var progEl=document.getElementById('burze-progress');
 
   var rateLimited = false;
+  function restoreBatchFromCache(batch,startIdx){
+    batch.forEach(function(_,localIdx){
+      burzeData[startIdx+localIdx]=previousBurzeData[startIdx+localIdx]||[];
+      loaded++;
+    });
+    if(!burzeHours.length&&previousBurzeHours.length) burzeHours=previousBurzeHours.slice();
+    if(progEl) progEl.textContent=loaded+'/'+total;
+  }
 
   batches.forEach(function(batch, bIdx){
     var startIdx=bIdx*BATCH;
@@ -3024,8 +3098,7 @@ function loadBurzeData(force){
       if(r.status===429||r.status===403||r.status===503){
         if(!rateLimited){ rateLimited=true; show429Error(); }
         // Mimo błędu zlicz batch żeby onAllBatchesDone mógł się wywołać
-        batch.forEach(function(_,localIdx){ burzeData[startIdx+localIdx]=[]; loaded++; });
-        if(progEl) progEl.textContent=loaded+'/'+total;
+        restoreBatchFromCache(batch,startIdx);
         batchesDone++;
         if(batchesDone===batches.length) onAllBatchesDone();
         return null;
@@ -3037,8 +3110,7 @@ function loadBurzeData(force){
       // Sprawdź czy Open-Meteo zwróciło błąd w JSON
       if(resp&&resp.error){
         if(!rateLimited){ rateLimited=true; show429Error(); }
-        batch.forEach(function(_,localIdx){ burzeData[startIdx+localIdx]=[]; loaded++; });
-        if(progEl) progEl.textContent=loaded+'/'+total;
+        restoreBatchFromCache(batch,startIdx);
         batchesDone++;
         if(batchesDone===batches.length) onAllBatchesDone();
         return;
@@ -3060,11 +3132,7 @@ function loadBurzeData(force){
     })
     .catch(function(){
       // Błąd sieciowy — wypełnij puste i licz dalej
-      batch.forEach(function(_,localIdx){
-        burzeData[startIdx+localIdx]=[];
-        loaded++;
-      });
-      if(progEl) progEl.textContent=loaded+'/'+total;
+      restoreBatchFromCache(batch,startIdx);
       batchesDone++;
       if(batchesDone===batches.length) onAllBatchesDone();
     });
@@ -3387,7 +3455,6 @@ function renderBurzeMarkers(hIdx){
   if(!mapBurze)return;
   burzeMarkers.forEach(function(m){mapBurze.removeLayer(m);});
   burzeMarkers=[];
-  if(burzeLayerMode==='rainanim') return;
 
   STORM_GRID.forEach(function(pt,idx){
     var d=burzeData[idx]&&burzeData[idx][hIdx];
