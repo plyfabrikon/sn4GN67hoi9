@@ -1077,9 +1077,15 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
       <div class="burze-right">
         <div id="map-burze"></div>
         <div class="burze-loading" id="burze-loading">
-          <div class="burze-loading-spinner"></div>
-          <div style="font-size:.75rem">Pobieranie danych dla 40 punktów...</div>
-          <div style="font-size:.6rem;margin-top:4px;color:var(--text2)" id="burze-progress">0/40</div>
+          <div class="burze-loading-spinner" id="burze-spinner"></div>
+          <div style="font-size:.75rem" id="burze-loading-msg">Pobieranie danych pogodowych...</div>
+          <div style="font-size:.6rem;margin-top:4px;color:var(--text2)" id="burze-progress"></div>
+          <div id="burze-429-info" style="display:none;margin-top:12px;padding:10px 14px;border-radius:8px;border:1px solid rgba(255,58,58,.4);background:rgba(255,58,58,.1);max-width:280px;text-align:left">
+            <div style="font-size:.72rem;font-weight:700;color:#ff6b6b;margin-bottom:5px">⚠ Przekroczono limit API</div>
+            <div style="font-size:.63rem;color:var(--text2);line-height:1.5">Serwer Open-Meteo chwilowo zablokował Twoje IP (zbyt wiele zapytań).<br>Limit resetuje się automatycznie — zazwyczaj po <b style="color:var(--text)">kilku minutach</b>.</div>
+            <button onclick="retryBurzeLoad()" style="margin-top:10px;width:100%;padding:6px;border-radius:5px;border:1px solid rgba(255,100,100,.4);background:rgba(255,58,58,.15);color:#ff9090;font-size:.65rem;font-weight:700;cursor:pointer;letter-spacing:.5px">↻ SPRÓBUJ PONOWNIE</button>
+            <div style="font-size:.55rem;color:var(--text2);margin-top:6px;text-align:center">Jeśli błąd się powtarza, odczekaj kilka minut i odśwież stronę</div>
+          </div>
         </div>
       </div>
     </div>
@@ -3008,8 +3014,21 @@ function loadBurzeData(force){
       +'&models=icon_seamless';
 
     fetch(url)
-    .then(function(r){return r.json();})
+    .then(function(r){
+      if(r.status===429||r.status===403){
+        show429Error();
+        throw new Error('rate_limit_'+r.status);
+      }
+      return r.json();
+    })
     .then(function(resp){
+      if(resp&&resp.error){
+        // Open-Meteo zwraca {error:true, reason:"..."} przy blokadzie
+        if(resp.reason&&(resp.reason.indexOf('limit')!==-1||resp.reason.indexOf('exceed')!==-1)){
+          show429Error();
+          throw new Error('api_limit');
+        }
+      }
       // Open-Meteo zwraca array gdy wiele lokalizacji, obiekt gdy jedna
       var items=Array.isArray(resp)?resp:[resp];
       items.forEach(function(d,localIdx){
@@ -3025,8 +3044,10 @@ function loadBurzeData(force){
       batchesDone++;
       if(batchesDone===batches.length) onAllBatchesDone();
     })
-    .catch(function(){
-      // Wypełnij puste dane dla tej partii
+    .catch(function(err){
+      if(err&&err.message&&err.message.indexOf('rate_limit')===0) return;
+      if(err&&err.message&&err.message==='api_limit') return;
+      // Inny błąd sieciowy — wypełnij puste dane
       batch.forEach(function(_,localIdx){
         burzeData[startIdx+localIdx]=[];
         loaded++;
@@ -3036,6 +3057,31 @@ function loadBurzeData(force){
       if(batchesDone===batches.length) onAllBatchesDone();
     });
   });
+}
+
+function show429Error(){
+  var spinner=document.getElementById('burze-spinner');
+  var msg=document.getElementById('burze-loading-msg');
+  var info=document.getElementById('burze-429-info');
+  var prog=document.getElementById('burze-progress');
+  if(spinner) spinner.style.display='none';
+  if(msg) msg.textContent='Brak danych — limit API';
+  if(prog) prog.textContent='';
+  if(info) info.style.display='block';
+  document.getElementById('burze-loading').style.display='block';
+}
+
+function retryBurzeLoad(){
+  var spinner=document.getElementById('burze-spinner');
+  var msg=document.getElementById('burze-loading-msg');
+  var info=document.getElementById('burze-429-info');
+  var prog=document.getElementById('burze-progress');
+  if(spinner) spinner.style.display='block';
+  if(msg) msg.textContent='Pobieranie danych pogodowych...';
+  if(info) info.style.display='none';
+  if(prog) prog.textContent='';
+  burzeLoaded=false;
+  loadBurzeData(true);
 }
 
 // ── RENDEROWANIE GODZINY NA MAPIE ────────────────────────────────────
