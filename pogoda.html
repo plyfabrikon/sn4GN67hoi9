@@ -441,9 +441,7 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
 .storm-chart-wrap{height:120px;position:relative;padding:8px 12px 0;border-top:1px solid var(--border)}
 .storm-chart-title{font-size:.55rem;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;padding:8px 12px 0}
 
-/* SAT24 - pełna mapa */
 .sat-wrap{flex:1;position:relative;overflow:hidden}
-#map-sat24{width:100%;height:100%;background:#03080f}
 
 /* PROGNOZA */
 .prognoza-left{width:320px;flex-shrink:0;background:var(--bg2);border-right:1px solid var(--border);overflow-y:auto;padding:12px}
@@ -554,7 +552,7 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
   <nav class="nav">
     <div class="nav-item" data-sec="aktualnosci" onclick="showSec(this,'aktualnosci')">Aktualności</div>
     <div class="nav-item active" data-sec="radar" onclick="showSec(this,'radar')">Radar</div>
-    <div class="nav-item" data-sec="sat24" onclick="showSec(this,'sat24')">SAT24</div>
+    <div class="nav-item" data-sec="eumetsat" onclick="showSec(this,'eumetsat')">EUMETSAT</div>
     <div class="nav-item" data-sec="prognoza" onclick="showSec(this,'prognoza')">Prognoza</div>
     <div class="nav-item" data-sec="ostrzezenia" onclick="showSec(this,'ostrzezenia')">Ostrzeżenia</div>
     <div class="nav-item" data-sec="wyladowania" onclick="showSec(this,'wyladowania')">⚡ Wyładowania</div>
@@ -751,59 +749,64 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
   </div><!-- /panel-right -->
 </div><!-- /sec-radar -->
 
-<!-- ══════ SEKCJA: SAT24 ══════ -->
-<div class="section" id="sec-sat24">
-  <div style="display:flex;flex:1;flex-direction:column;overflow:hidden">
-    <!-- Pasek kontrolny -->
-    <div style="flex-shrink:0;background:var(--bg2);border-bottom:1px solid var(--border);padding:6px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-      <span style="font-size:.6rem;font-weight:700;letter-spacing:2px;color:var(--text2);text-transform:uppercase;white-space:nowrap">🛰 Satelita — RainViewer IR</span>
-      <!-- Kanał -->
-      <div style="display:flex;align-items:center;gap:4px">
-        <span style="font-size:.58rem;color:var(--text2)">Kanał:</span>
-        <select id="sat-channel" onchange="sat24ChangeChannel()" style="font-size:.58rem;background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:4px;padding:2px 5px;cursor:pointer">
-          <option value="infrared">☁ IR — Podczerwień</option>
-          <option value="visible">☀ VIS — Widzialny</option>
-        </select>
+
+
+<!-- ══════ SEKCJA: EUMETSAT ══════ -->
+<div class="section" id="sec-eumetsat">
+  <div style="display:flex;flex:1;flex-direction:column;overflow:hidden;min-height:0">
+    <div style="flex-shrink:0;background:var(--bg2);border-bottom:1px solid var(--border);padding:8px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <span style="font-size:.65rem;font-weight:700;letter-spacing:1.5px;color:var(--text2);text-transform:uppercase;white-space:nowrap">🛰 EUMETSAT Meteosat</span>
+      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+        <button id="eum-layer-natural" onclick="eumSetLayer('natural')" class="base-btn on" style="min-width:76px">Natural</button>
+        <button id="eum-layer-ir108" onclick="eumSetLayer('ir108')" class="base-btn" style="min-width:76px">IR 10.8</button>
+        <button id="eum-layer-dust" onclick="eumSetLayer('dust')" class="base-btn" style="min-width:76px">Dust RGB</button>
       </div>
-      <!-- Animacja -->
-      <button id="sat24-play-btn" onclick="sat24ToggleAnim()" style="font-size:.58rem;padding:3px 10px;border-radius:4px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--text2);cursor:pointer">▶ Animuj</button>
-      <button onclick="sat24Reload()" style="font-size:.58rem;padding:3px 8px;border-radius:4px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--text2);cursor:pointer">🔄</button>
-      <!-- Suwak klatki -->
-      <div style="display:flex;align-items:center;gap:6px;flex:1;min-width:120px">
-        <input type="range" id="sat24-slider" min="0" max="0" value="0"
-          style="-webkit-appearance:none;appearance:none;flex:1;height:3px;background:var(--border);border-radius:2px;outline:none;cursor:pointer"
-          oninput="sat24SliderChange(this.value)">
-        <span id="sat24-frame-lbl" style="font-size:.55rem;color:var(--accent);font-family:monospace;white-space:nowrap">--:--</span>
+      <button id="eum-play-btn" onclick="eumToggleAnim()" style="font-size:.58rem;padding:3px 10px;border-radius:4px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--text2);cursor:pointer">▶ Animuj</button>
+      <button onclick="eumStepFrame(-1)" style="font-size:.58rem;padding:3px 8px;border-radius:4px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--text2);cursor:pointer">◀</button>
+      <button onclick="eumStepFrame(1)" style="font-size:.58rem;padding:3px 8px;border-radius:4px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--text2);cursor:pointer">▶</button>
+      <button onclick="eumReload()" style="font-size:.58rem;padding:3px 8px;border-radius:4px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--text2);cursor:pointer">↻</button>
+      <div style="display:flex;align-items:center;gap:6px;flex:1;min-width:180px">
+        <input type="range" id="eum-slider" min="0" max="0" value="0" style="-webkit-appearance:none;appearance:none;flex:1;height:3px;background:var(--border);border-radius:2px;outline:none;cursor:pointer" oninput="eumSliderChange(this.value)">
+        <span id="eum-frame-lbl" style="font-size:.55rem;color:var(--accent);font-family:monospace;white-space:nowrap;min-width:116px">--:-- UTC</span>
       </div>
-      <!-- Opacity -->
-      <div style="display:flex;align-items:center;gap:4px">
-        <span style="font-size:.55rem;color:var(--text2)">Opacity:</span>
-        <input type="range" id="sat24-opacity" min="20" max="100" value="85"
-          style="-webkit-appearance:none;appearance:none;width:60px;height:3px;background:var(--border);border-radius:2px;outline:none;cursor:pointer"
-          oninput="sat24SetOpacity(this.value)">
-      </div>
-      <span id="sat24-status" style="font-size:.55rem;color:var(--text2)">Ładowanie...</span>
+      <span id="eum-status" style="font-size:.55rem;color:var(--text2)">Historia 24h · opóźnienie 1h</span>
     </div>
-    <!-- Mapa satelitarna -->
-    <div style="flex:1;position:relative;overflow:hidden">
-      <div id="map-sat24" style="width:100%;height:100%"></div>
-      <!-- Loading overlay -->
-      <div id="sat24-loading" style="display:none;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(5,16,30,.85);padding:16px 24px;border-radius:8px;border:1px solid var(--border);text-align:center;color:var(--text2);z-index:1000">
-        <div style="font-size:1.5rem;margin-bottom:6px">🛰</div>
-        <div style="font-size:.75rem" id="sat24-load-txt">Pobieranie klatek...</div>
+
+    <div style="flex:1;position:relative;overflow:hidden;background:#03080f">
+      <div id="map-eumetsat" style="width:100%;height:100%;background:#03080f"></div>
+
+      <div id="eum-loading" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(5,16,30,.92);padding:18px 26px;border-radius:8px;border:1px solid var(--border);text-align:center;color:var(--text2);z-index:1000">
+        <div style="font-size:1.8rem;margin-bottom:8px">🛰</div>
+        <div style="font-size:.75rem">Ładowanie klatek EUMETSAT...</div>
+        <div style="font-size:.58rem;margin-top:4px;color:var(--text2)" id="eum-load-progress">Historia 24h · krok 15 min</div>
+      </div>
+
+      <div style="position:absolute;top:8px;left:8px;z-index:500;background:rgba(5,16,30,.82);border:1px solid rgba(41,212,255,.18);border-radius:10px;padding:10px 12px;max-width:290px">
+        <div style="font-size:.62rem;font-weight:700;letter-spacing:1px;color:var(--blue2);text-transform:uppercase;margin-bottom:4px">Warstwy</div>
+        <div style="font-size:.64rem;line-height:1.55;color:var(--text2)">
+          Historia satelitarna Meteosat dla Europy z oknem <b style="color:#fff">24h</b>. Dane są przesunięte o około <b style="color:#fff">1h</b>, żeby zakładka pozostała w bezpiecznym wariancie bez feedu quasi-live.
+        </div>
+        <div id="eum-motion-note" style="margin-top:8px;font-size:.6rem;line-height:1.5;color:var(--text2)">
+          Predykcja ruchu chmur nie jest jeszcze renderowana. Do sensownej prognozy trzeba dodać analizę kolejnych klatek lub optical flow.
+        </div>
+      </div>
+
+      <div style="position:absolute;top:8px;right:8px;z-index:500;background:rgba(5,16,30,.82);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:8px 10px;min-width:150px">
+        <div style="font-size:.55rem;color:var(--text2);text-transform:uppercase;letter-spacing:1px">Zakres czasu</div>
+        <div id="eum-range-lbl" style="font-size:.7rem;color:#fff;font-family:monospace;margin-top:4px">--</div>
+        <div style="font-size:.55rem;color:var(--text2);margin-top:4px">Krok: 15 min · 97 klatek</div>
       </div>
     </div>
-    <!-- Pasek dolny -->
-    <div style="flex-shrink:0;background:var(--bg2);border-top:1px solid var(--border);padding:4px 14px;display:flex;align-items:center;gap:10px">
-      <span style="font-size:.6rem;color:var(--accent);font-family:monospace;font-weight:700" id="sat24-time">--:-- UTC</span>
-      <div style="display:flex;gap:6px;align-items:center;font-size:.58rem;color:var(--text2)">
-        <span>⬜ Zimne chmury (burze)</span>
-        <span style="color:#555">⬛ Ciepłe/czyste</span>
-      </div>
-      <span style="margin-left:auto;font-size:.52rem;color:var(--text2)">EUMETSAT Meteosat · RainViewer · co 15 min</span>
+
+    <div style="flex-shrink:0;background:var(--bg2);border-top:1px solid var(--border);padding:5px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <span style="font-size:.6rem;color:var(--accent);font-family:monospace;font-weight:700" id="eum-time-lbl">--:-- UTC</span>
+      <span id="eum-date-lbl" style="font-size:.58rem;color:var(--text2)"></span>
+      <span id="eum-layer-lbl" style="font-size:.58rem;color:var(--text2)">Natural Colour RGB</span>
+      <span style="margin-left:auto;font-size:.52rem;color:var(--text2)">Źródło: EUMETSAT / EUMETView · Meteosat · historia 24h</span>
     </div>
   </div>
-</div><!-- /sec-sat24 -->
+</div><!-- /sec-eumetsat -->
+
 
 <!-- ══════ SEKCJA: PROGNOZA ══════ -->
 <div class="section" id="sec-prognoza">
@@ -1173,6 +1176,8 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
   </div>
 </div><!-- /sec-wiatr -->
 
+
+
 <!-- ══════ SEKCJA: AKTUALNOŚCI ══════ -->
 <div class="section" id="sec-aktualnosci">
   <div class="news-wrap">
@@ -1294,11 +1299,6 @@ function showSec(el,s){
   document.querySelectorAll('.section').forEach(function(x){x.classList.remove('active');});
   var sec=document.getElementById('sec-'+s);if(sec)sec.classList.add('active');
   currentSection=s;
-  if(s==='sat24'){
-    initSat24();
-    // Leaflet potrzebuje chwili po display:flex żeby zmierzyć rozmiar
-    setTimeout(function(){if(sat24Map){sat24Map.invalidateSize();sat24Map.invalidateSize();}},300);
-  }
   if(s==='wyladowania'){
     setTimeout(function(){initBlitzIframe();},100);
     reloadBlitzIframe();
@@ -1320,193 +1320,193 @@ function showSec(el,s){
   if(s==='ostrzezenia'){syncAlertPanel();if(!alertsLoaded)loadAlerts();if(burzeLoaded&&typeof generateAIAlert==='function'){setTimeout(generateAIAlert,300);}else{var _elAI=document.getElementById('ai-alert-content');if(_elAI)_elAI.textContent='Oczekiwanie na dane modelu... Komunikat pojawi sie automatycznie.';} }
   if(s==='wiatr')initWiatr();
   if(s==='aktualnosci'){syncNewsPanel();loadNews();}
+  if(s==='eumetsat'){
+    if(!eumInit)initEumetsat();
+    else setTimeout(function(){if(eumMap)eumMap.invalidateSize();},150);
+  }
   if(s==='radar'&&mapObj)setTimeout(function(){mapObj.invalidateSize();},100);
 }
 var mapSat=null,mapWiatr=null;
 var satLyrSat=null,chartTemp=null,chartRain=null,chartWindChart=null;
 var windLayerMap={wind:null,pres:null},windBaseLyr=null;
-var satAnimInt=null,satFrames=[],satFrameIdx=0,satAnimRunning=false;
-
-
-// ═══════════════════════════════════════════════════════════
-// SAT24 — Mapa Leaflet z warstwami satelitarnymi
-// Źródła: OWM clouds (live) + RainViewer satellite (gdy dostępne)
-// ═══════════════════════════════════════════════════════════
-
-var sat24Init=false, sat24Map=null, sat24CurLyr=null;
-var sat24AnimRunning=false, sat24AnimTimer=null;
-var sat24Frames=[], sat24FrameIdx=0;
-var sat24Opacity=0.85;
-var sat24Channel='infrared';
-
-// Warstwy OWM — zawsze dostępne
-var OWM_SAT_LAYERS = {
-  infrared: {
-    url: 'https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid='+'{KEY}',
-    label: 'Zachmurzenie (OWM Live)'
-  },
-  visible: {
-    url: 'https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid='+'{KEY}',
-    label: 'Zachmurzenie (OWM Live)'
-  }
+var eumInit=false,eumMap=null,eumBaseLyr=null,eumLabelLyr=null,eumCurrentLyr=null;
+var eumFrames=[],eumFrameIdx=0,eumAnimRunning=false,eumAnimTimer=null;
+var eumLayerKey='natural';
+var EUM_WMS_URL='https://view.eumetsat.int/geoserver/wms';
+var EUM_DELAY_MIN=60;
+var EUM_STEP_MIN=15;
+var EUM_LAYER_CFG={
+  natural:{label:'Natural Colour RGB',layer:'mumi:wideareacoverage_rgb_natural',opacity:0.96},
+  ir108:{label:'IR 10.8 μm',layer:'mumi:worldcloudmap_ir108',opacity:0.92},
+  dust:{label:'Dust RGB',layer:'mumi:wideareacoverage_rgb_dust',opacity:0.96}
 };
 
-function initSat24(){
-  if(sat24Init)return;
-  sat24Init=true;
 
-  var ctr=mapObj?mapObj.getCenter():{lat:52,lng:16};
-  var zm=mapObj?Math.min(mapObj.getZoom(),6):5;
-
-  // Opóźnienie — sekcja musi być display:flex zanim Leaflet zmierzy rozmiar
-  setTimeout(function(){
-    sat24Map=L.map('map-sat24',{
-      zoomControl:true,attributionControl:false,doubleClickZoom:false
-    }).setView([ctr.lat||52,ctr.lng||16],zm);
-    mapSat=sat24Map;
-
-    // Baza — ciemna mapa bez etykiet
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',
-      {maxZoom:12,subdomains:'abcd',opacity:0.7,zIndex:1}).addTo(sat24Map);
-
-    // Granice i nazwy państw — zIndex wysoki żeby były nad satelitą
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png',
-      {maxZoom:12,subdomains:'abcd',zIndex:30,opacity:1}).addTo(sat24Map);
-
-    sat24Map.invalidateSize();
-    setTimeout(updateGPSOnAllMaps,300);
-
-    // Załaduj dane satelitarne
-    sat24LoadData();
-  }, 150);
+// ═══════════════════════════════════════════════════════════
+// EUMETSAT
+// ═══════════════════════════════════════════════════════════
+function eumFloorTime(d){
+  var ms=EUM_STEP_MIN*60*1000;
+  return new Date(Math.floor(d.getTime()/ms)*ms);
 }
-
-function sat24LoadData(){
-  var status=document.getElementById('sat24-status');
-  var loading=document.getElementById('sat24-loading');
-  if(loading)loading.style.display='block';
-
-  // Pobierz RainViewer — może mieć satellite gdy na GitHub Pages
-  fetch('https://api.rainviewer.com/public/weather-maps.json')
-  .then(function(r){return r.json();})
-  .then(function(d){
-    var host=d.host||'https://tilecache.rainviewer.com';
-    var sat=d.satellite||{};
-    var frames=sat.infrared||[];
-    if(loading)loading.style.display='none';
-
-    if(frames.length>0){
-      // RainViewer ma satellite — użyj ich
-      sat24Frames=frames.map(function(f){return{url:host+f.path,time:f.time};});
-      var sl=document.getElementById('sat24-slider');
-      if(sl){sl.max=frames.length-1;sl.value=frames.length-1;sl.style.opacity='1';}
-      sat24FrameIdx=frames.length-1;
-      sat24ShowRVFrame(sat24FrameIdx);
-      if(status)status.textContent='RainViewer IR . '+frames.length+' klatek';
-    } else {
-      // Brak RainViewer satellite — użyj OWM clouds
-      sat24ShowOWM();
-      if(status)status.textContent='OWM Clouds Live (brak RainViewer sat)';
-    }
-  })
-  .catch(function(){
-    if(loading)loading.style.display='none';
-    // Fallback — OWM clouds
-    sat24ShowOWM();
-    if(status)status.textContent='OWM Clouds Live';
+function eumBuildFrames(hoursBack){
+  var frames=[];
+  var latest=eumFloorTime(new Date(Date.now()-EUM_DELAY_MIN*60*1000));
+  var total=Math.floor(hoursBack*60/EUM_STEP_MIN);
+  for(var i=total;i>=0;i--){
+    var t=new Date(latest.getTime()-i*EUM_STEP_MIN*60*1000);
+    frames.push({
+      time:t,
+      iso:t.getUTCFullYear()+'-'+String(t.getUTCMonth()+1).padStart(2,'0')+'-'+String(t.getUTCDate()).padStart(2,'0')+'T'+String(t.getUTCHours()).padStart(2,'0')+':'+String(t.getUTCMinutes()).padStart(2,'0')+':00.000Z',
+      label:String(t.getUTCHours()).padStart(2,'0')+':'+String(t.getUTCMinutes()).padStart(2,'0')+' UTC',
+      date:String(t.getUTCDate()).padStart(2,'0')+'.'+String(t.getUTCMonth()+1).padStart(2,'0')+'.'+t.getUTCFullYear()
+    });
+  }
+  return frames;
+}
+function eumBuildLayer(frame){
+  var cfg=EUM_LAYER_CFG[eumLayerKey]||EUM_LAYER_CFG.natural;
+  return L.tileLayer.wms(EUM_WMS_URL,{
+    layers:cfg.layer,
+    format:'image/png',
+    transparent:true,
+    styles:'',
+    version:'1.1.1',
+    time:frame.iso,
+    opacity:cfg.opacity,
+    tiled:true,
+    uppercase:true
   });
 }
-
-// RainViewer satellite frame
-function sat24ShowRVFrame(idx){
-  if(!sat24Map||!sat24Frames.length)return;
-  idx=Math.max(0,Math.min(idx,sat24Frames.length-1));
-  sat24FrameIdx=idx;
-  var f=sat24Frames[idx];
-  if(sat24CurLyr){sat24Map.removeLayer(sat24CurLyr);sat24CurLyr=null;}
-  sat24CurLyr=L.tileLayer(f.url+'/256/{z}/{x}/{y}/0/0_0.png',{
-    opacity:sat24Opacity,tileSize:256,maxNativeZoom:5,maxZoom:12,zIndex:10
-  }).addTo(sat24Map);
-  var t=new Date(f.time*1000);
-  var ts=String(t.getUTCHours()).padStart(2,'0')+':'+String(t.getUTCMinutes()).padStart(2,'0');
-  var dt=t.getUTCDate()+'.'+(t.getUTCMonth()+1)+'.';
-  var te=document.getElementById('sat24-time');if(te)te.textContent=ts+' UTC';
-  var lb=document.getElementById('sat24-frame-lbl');if(lb)lb.textContent=dt+' '+ts;
-  var sl=document.getElementById('sat24-slider');if(sl)sl.value=idx;
+function initEumetsat(){
+  if(eumInit)return;
+  eumInit=true;
+  var ctr=(uLat!=null&&uLon!=null)?[uLat,uLon]:[52.1,19.4];
+  var zm=(uLat!=null&&uLon!=null)?5:4;
+  setTimeout(function(){
+    eumMap=L.map('map-eumetsat',{zoomControl:false,attributionControl:false,doubleClickZoom:false}).setView(ctr,zm);
+    L.control.zoom({position:'topright'}).addTo(eumMap);
+    eumBaseLyr=L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',{
+      subdomains:'abcd',maxZoom:12,minZoom:2,opacity:0.85
+    }).addTo(eumMap);
+    eumLabelLyr=L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png',{
+      subdomains:'abcd',maxZoom:12,minZoom:2,opacity:0.95
+    }).addTo(eumMap);
+    setTimeout(function(){if(eumMap)eumMap.invalidateSize();},180);
+    eumReload();
+  },120);
 }
-
-// OWM clouds jako fallback
-function sat24ShowOWM(){
-  if(!sat24Map)return;
-  if(sat24CurLyr){sat24Map.removeLayer(sat24CurLyr);sat24CurLyr=null;}
-  sat24CurLyr=L.tileLayer(
-    'https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid='+OWM_KEY,
-    {opacity:sat24Opacity,maxZoom:12,zIndex:10,tileSize:256}
-  ).addTo(sat24Map);
-  var n=new Date();
-  var te=document.getElementById('sat24-time');
-  if(te)te.textContent=String(n.getUTCHours()).padStart(2,'0')+':'+String(n.getUTCMinutes()).padStart(2,'0')+' UTC';
-  var lb=document.getElementById('sat24-frame-lbl');if(lb)lb.textContent='Live';
-  // Ukryj suwak bo nie ma klatek
-  var sl=document.getElementById('sat24-slider');if(sl)sl.style.opacity='0.3';
+function eumUpdateRangeLabel(){
+  var el=document.getElementById('eum-range-lbl');
+  if(!el||!eumFrames.length)return;
+  el.textContent=eumFrames[0].date+' '+eumFrames[0].label.replace(' UTC','')+' → '+eumFrames[eumFrames.length-1].date+' '+eumFrames[eumFrames.length-1].label.replace(' UTC','');
 }
-
-function sat24SliderChange(val){
-  if(sat24AnimRunning)sat24StopAnim();
-  sat24ShowRVFrame(parseInt(val));
-}
-
-function sat24ToggleAnim(){
-  var btn=document.getElementById('sat24-play-btn');
-  if(sat24AnimRunning){
-    sat24StopAnim();
-  } else if(sat24Frames.length>1){
-    sat24AnimRunning=true;
-    if(btn)btn.textContent='⏹ Stop';
-    sat24FrameIdx=0;
-    sat24Animate();
+function eumReload(){
+  if(!eumMap)return;
+  var loading=document.getElementById('eum-loading');
+  var status=document.getElementById('eum-status');
+  var progress=document.getElementById('eum-load-progress');
+  var slider=document.getElementById('eum-slider');
+  if(loading)loading.style.display='block';
+  if(status)status.textContent='Pobieranie osi czasu EUMETSAT...';
+  eumFrames=eumBuildFrames(24);
+  if(slider){
+    slider.min=0;
+    slider.max=Math.max(0,eumFrames.length-1);
+    slider.value=Math.max(0,eumFrames.length-1);
   }
+  eumFrameIdx=Math.max(0,eumFrames.length-1);
+  if(progress)progress.textContent=eumFrames.length+' klatek · krok '+EUM_STEP_MIN+' min · opóźnienie '+EUM_DELAY_MIN+' min';
+  if(status)status.textContent='Historia 24h · '+eumFrames.length+' klatek · opóźnienie '+EUM_DELAY_MIN+' min';
+  eumUpdateRangeLabel();
+  eumShowFrame(eumFrameIdx,true);
 }
-
-function sat24StopAnim(){
-  sat24AnimRunning=false;
-  clearTimeout(sat24AnimTimer);
-  var btn=document.getElementById('sat24-play-btn');
+function eumShowFrame(idx,hideLoading){
+  if(!eumMap||!eumFrames.length)return;
+  idx=Math.max(0,Math.min(idx,eumFrames.length-1));
+  eumFrameIdx=idx;
+  var frame=eumFrames[idx];
+  var prev=eumCurrentLyr;
+  var next=eumBuildLayer(frame);
+  next.addTo(eumMap);
+  next.once('load',function(){
+    if(prev&&eumMap.hasLayer(prev))eumMap.removeLayer(prev);
+    var loading=document.getElementById('eum-loading');
+    if(hideLoading&&loading)loading.style.display='none';
+  });
+  setTimeout(function(){
+    if(prev&&eumMap&&eumMap.hasLayer(prev))eumMap.removeLayer(prev);
+    var loading=document.getElementById('eum-loading');
+    if(hideLoading&&loading)loading.style.display='none';
+  },2200);
+  eumCurrentLyr=next;
+  if(eumLabelLyr)eumLabelLyr.bringToFront();
+  var slider=document.getElementById('eum-slider');
+  var frameLbl=document.getElementById('eum-frame-lbl');
+  var timeLbl=document.getElementById('eum-time-lbl');
+  var dateLbl=document.getElementById('eum-date-lbl');
+  var layerLbl=document.getElementById('eum-layer-lbl');
+  if(slider)slider.value=idx;
+  if(frameLbl)frameLbl.textContent=frame.label;
+  if(timeLbl)timeLbl.textContent=frame.label;
+  if(dateLbl)dateLbl.textContent=frame.date;
+  if(layerLbl)layerLbl.textContent=(EUM_LAYER_CFG[eumLayerKey]||EUM_LAYER_CFG.natural).label;
+}
+function eumSliderChange(val){
+  if(eumAnimRunning)eumStopAnim(false);
+  eumShowFrame(parseInt(val,10),false);
+}
+function eumStepFrame(dir){
+  if(eumAnimRunning)eumStopAnim(false);
+  eumShowFrame(eumFrameIdx+dir,false);
+}
+function eumToggleAnim(){
+  if(eumAnimRunning){eumStopAnim(true);return;}
+  if(!eumFrames.length)return;
+  eumAnimRunning=true;
+  var btn=document.getElementById('eum-play-btn');
+  if(btn)btn.textContent='⏹ Stop';
+  eumFrameIdx=0;
+  eumAnimate();
+}
+function eumStopAnim(resetToLast){
+  eumAnimRunning=false;
+  clearTimeout(eumAnimTimer);
+  var btn=document.getElementById('eum-play-btn');
   if(btn)btn.textContent='▶ Animuj';
-  sat24ShowRVFrame(sat24Frames.length-1);
+  if(resetToLast&&eumFrames.length)eumShowFrame(eumFrames.length-1,false);
 }
-
-function sat24Animate(){
-  if(!sat24AnimRunning)return;
-  sat24ShowRVFrame(sat24FrameIdx);
-  var last=sat24FrameIdx>=sat24Frames.length-1;
-  sat24AnimTimer=setTimeout(sat24Animate, last?1500:500);
-  sat24FrameIdx=last?0:sat24FrameIdx+1;
+function eumAnimate(){
+  if(!eumAnimRunning)return;
+  eumShowFrame(eumFrameIdx,false);
+  var isLast=eumFrameIdx>=eumFrames.length-1;
+  eumAnimTimer=setTimeout(eumAnimate,isLast?1400:450);
+  eumFrameIdx=isLast?0:eumFrameIdx+1;
 }
-
-function sat24ChangeChannel(){
-  var ch=document.getElementById('sat-channel');
-  sat24Channel=ch?ch.value:'infrared';
-  sat24Reload();
+function eumSetLayer(key){
+  if(!EUM_LAYER_CFG[key])return;
+  eumLayerKey=key;
+  ['natural','ir108','dust'].forEach(function(k){
+    var btn=document.getElementById('eum-layer-'+k);
+    if(btn)btn.classList.toggle('on',k===key);
+  });
+  if(eumAnimRunning)eumStopAnim(false);
+  if(eumCurrentLyr&&eumMap&&eumMap.hasLayer(eumCurrentLyr)){
+    eumMap.removeLayer(eumCurrentLyr);
+    eumCurrentLyr=null;
+  }
+  if(eumFrames.length)eumShowFrame(eumFrameIdx,true);
 }
+setInterval(function(){
+  if(eumInit&&!eumAnimRunning&&currentSection==='eumetsat'){
+    eumReload();
+  }
+},15*60*1000);
 
-function sat24Reload(){
-  if(sat24AnimRunning)sat24StopAnim();
-  sat24Frames=[];
-  if(sat24CurLyr&&sat24Map){sat24Map.removeLayer(sat24CurLyr);sat24CurLyr=null;}
-  if(sat24Map){sat24LoadData();}
-}
 
-function sat24SetOpacity(val){
-  sat24Opacity=val/100;
-  if(sat24CurLyr)sat24CurLyr.setOpacity(sat24Opacity);
-}
 
-function sat24ImgLoaded(){}
-function sat24ImgError(){}
 
-setInterval(function(){if(sat24Init&&!sat24AnimRunning)sat24Reload();},15*60*1000);
-
+// ═══════════════════════════════════════════════════════════
 
 // ── PROGNOZA ───────────────────────────────
 var progInit=false;
@@ -2032,7 +2032,6 @@ function setBase(name){
   baseLyr=L.tileLayer(baseTiles[name],opts);
   baseLyr.addTo(mapObj);
   baseLyr.setZIndex(0);
-  // Ustaw opacity warstw pod ciemną bazę
   if(satLyr)satLyr.setOpacity((name==='dark'||name==='night')?0.85:0.70);
   if(rvLyr) rvLyr.setOpacity((name==='dark'||name==='night')?0.90:0.82);
 }
@@ -2259,8 +2258,7 @@ function makeGPSIcon(){
 function updateGPSOnAllMaps(){
   if(!uLat)return;
   var ll=[uLat,uLon];
-  // Mapa SAT24
-  var satMap=sat24Map||mapSat;
+  var satMap=mapSat;
   if(satMap){
     if(!gpsMkrSat){gpsMkrSat=L.marker(ll,{icon:makeGPSIcon(),zIndexOffset:1000}).addTo(satMap);}
     else gpsMkrSat.setLatLng(ll);
@@ -2277,7 +2275,6 @@ function updateGPSOnAllMaps(){
   }
 }
 // Dodaj marker GPS po inicjalizacji każdej mapy
-// GPS dodany bezpośrednio w initSat24
 var _origInitWiatr=initWiatr;
 initWiatr=function(){_origInitWiatr();setTimeout(updateGPSOnAllMaps,500);};
 var _origInitBurze=initBurze;
@@ -4328,3 +4325,4 @@ window.onload=function(){startGPS();};
 </script>
 </body>
 </html>
+
