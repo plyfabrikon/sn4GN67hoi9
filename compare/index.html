@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Porównywarka Laserów 2026 | LaserProfit.eu</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0d1b2e;--card:#132237;--card2:#1a2f47;--orange:#ff6b2b;--navy:#1e3a5f;--text:#e8f0fe;--muted:#7a91b0;--border:#1e3352;--input-bg:#0a1624;--font:'Poppins',sans-serif;--green:#34d399;--red:#f87171;--blue:#38bdf8;--purple:#a855f7}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;font-size:13px;overflow-x:hidden}
+nav{background:rgba(13,27,46,.97);padding:12px 0;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:300;backdrop-filter:blur(12px)}
+.nav-content{max-width:1300px;margin:0 auto;padding:0 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.logo{font-weight:700;font-size:.9rem;color:var(--orange);text-decoration:none;letter-spacing:1.5px;white-space:nowrap}
+.back{font-size:.7rem;color:var(--muted);text-decoration:none;border:1px solid var(--border);padding:5px 12px;border-radius:20px;transition:.2s;white-space:nowrap}
+.back:hover{border-color:var(--orange);color:var(--orange)}
+.compare-bar{display:none;align-items:center;gap:10px;background:rgba(255,107,43,.12);border:1px solid var(--orange);padding:6px 14px;border-radius:8px;font-size:.72rem}
+.compare-bar.show{display:flex}
+.compare-bar strong{color:var(--orange)}
+.btn-compare-show{background:var(--orange);color:#fff;border:none;padding:5px 12px;border-radius:6px;font-size:.7rem;font-weight:700;cursor:pointer;font-family:var(--font)}
+.btn-compare-clear{background:none;border:1px solid var(--border);color:var(--muted);padding:5px 10px;border-radius:6px;font-size:.7rem;cursor:pointer;font-family:var(--font)}
+.hero{max-width:1300px;margin:0 auto;padding:32px 16px 20px;text-align:center}
+.hero h1{font-size:clamp(1.2rem,2.5vw,1.8rem);color:var(--orange);margin-bottom:6px}
+.hero p{color:var(--muted);font-size:.8rem;max-width:600px;margin:0 auto}
+.rate-info{font-size:.68rem;color:var(--muted);margin-top:6px}
+.rate-info span{color:var(--green)}
+.data-status{font-size:.62rem;padding:3px 8px;border-radius:4px;margin-top:4px;display:inline-block}
+.data-status.live{background:rgba(52,211,153,.1);color:var(--green);border:1px solid rgba(52,211,153,.2)}
+.data-status.fallback{background:rgba(251,191,36,.08);color:#fbbf24;border:1px solid rgba(251,191,36,.2)}
+
+.brand-header{max-width:1300px;margin:0 auto 20px;padding:0 16px;display:flex;flex-wrap:wrap;justify-content:center;gap:12px}
+.brand-badge{background:var(--card);border:1px solid var(--border);padding:8px 20px;border-radius:10px;font-weight:700;font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;transition:all .3s ease;cursor:default;display:flex;align-items:center;justify-content:center}
+.brand-badge:hover{border-color:var(--orange);color:#fff;transform:translateY(-2px);box-shadow:0 4px 15px rgba(255,107,43,.1)}
+.brand-badge.highlight{border-color:var(--orange);color:var(--orange);background:rgba(255,107,43,.05)}
+
+.filters{max-width:1300px;margin:0 auto;padding:0 16px 18px;display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end}
+.fg{display:flex;flex-direction:column;gap:3px}
+.fg label{font-size:.6rem;color:var(--orange);text-transform:uppercase;letter-spacing:.9px;font-weight:700}
+.fg select,.fg input[type=text]{background:var(--card);border:1px solid var(--border);color:var(--text);padding:6px 9px;border-radius:7px;font-family:var(--font);font-size:.72rem;cursor:pointer;min-width:130px}
+.fg input[type=text]{min-width:180px}
+.fg select:focus,.fg input:focus{outline:none;border-color:var(--orange)}
+.results-count{font-size:.7rem;color:var(--muted);margin-left:auto;align-self:center}
+
+.table-wrap{max-width:1300px;margin:0 auto;padding:0 16px 60px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;min-width:900px;border-collapse:collapse;background:var(--card);border-radius:12px;overflow:hidden;table-layout:fixed}
+thead tr{background:var(--navy);border-bottom:2px solid var(--orange)}
+th{padding:5px 4px;text-align:left;font-size:.58rem;color:var(--orange);text-transform:uppercase;letter-spacing:.6px;font-weight:700;cursor:pointer;white-space:nowrap;user-select:none}
+th:hover{color:#fff}
+td{padding:2px 3px;border-bottom:1px solid var(--border);vertical-align:middle;font-size:.72rem;line-height:1.35;overflow:hidden;word-break:break-word}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:rgba(255,107,43,.03)}
+tbody tr.in-compare td{background:rgba(255,107,43,.05);border-left:3px solid var(--orange)}
+
+.power-cell{font-weight:700;color:var(--orange);font-size:.82rem;line-height:1.3;white-space:nowrap}
+.cat-badge{display:inline-block;padding:1px 6px;border-radius:8px;font-size:.55rem;font-weight:700;letter-spacing:.5px;margin-top:2px;width:fit-content}
+.cat-diode{background:rgba(56,189,248,.12);color:var(--blue);border:1px solid rgba(56,189,248,.2)}
+.cat-fiber{background:rgba(168,85,247,.12);color:var(--purple);border:1px solid rgba(168,85,247,.2)}
+.cat-combo{background:rgba(52,211,153,.1);color:var(--green);border:1px solid rgba(52,211,153,.2)}
+
+.mat-btn{position:relative;display:inline-block;border:none;border-radius:4px;padding:2px 7px;font-size:.58rem;font-weight:700;cursor:default;font-family:var(--font);margin:1px}
+.mat-btn-cut{background:rgba(52,211,153,.15);color:#34d399;border:1px solid rgba(52,211,153,.3)}
+.mat-btn-eng{background:rgba(56,189,248,.12);color:#38bdf8;border:1px solid rgba(56,189,248,.25)}
+.mat-btn .mat-tooltip{display:none;position:fixed;z-index:9999;background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-size:.6rem;color:var(--text);white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.4);pointer-events:none;line-height:1.7;min-width:120px}
+.mat-btn:hover .mat-tooltip{display:block}
+
+.conn-chips{display:flex;gap:2px;flex-wrap:wrap}
+.conn-chip{padding:2px 5px;border-radius:4px;font-size:.58rem;font-weight:600;background:rgba(56,189,248,.1);color:var(--blue);border:1px solid rgba(56,189,248,.25)}
+
+.expand-btn{background:none;border:1px solid var(--border);color:var(--muted);padding:3px 7px;border-radius:4px;font-size:.58rem;cursor:pointer;font-family:var(--font);transition:.2s;margin-top:3px}
+.expand-btn:hover{border-color:var(--orange);color:var(--orange)}
+
+.detail-row td{background:rgba(14,30,52,.6);padding:4px 6px;border-top:1px solid var(--border)}
+.detail-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:3px}
+.di{background:var(--card2);border-radius:6px;padding:3px 5px;border:1px solid var(--border)}
+.di-lbl{font-size:.58rem;color:var(--orange);text-transform:uppercase;letter-spacing:.7px;margin-bottom:3px}
+.di-val{font-size:.76rem;color:var(--text);font-weight:600}
+
+.action-cell{display:flex;flex-direction:column;gap:3px}
+.btn-aff{display:inline-block;background:var(--orange);color:#fff;text-decoration:none;padding:5px 10px;border-radius:6px;font-size:.64rem;font-weight:700;font-family:var(--font);transition:.2s;border:none;cursor:pointer;text-align:center}
+.btn-aff:hover{opacity:.85}
+.btn-add-compare{background:none;border:1px solid var(--border);color:var(--muted);padding:4px 8px;border-radius:5px;font-size:.6rem;cursor:pointer;font-family:var(--font);transition:.2s;text-align:center}
+.btn-add-compare:hover{border-color:var(--orange);color:var(--orange)}
+.btn-add-compare.added{border-color:var(--orange);background:rgba(255,107,43,.12);color:var(--orange)}
+
+.popup-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1000;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto}
+.popup-bg.open{display:flex}
+.popup{background:var(--card);border-radius:14px;border:1px solid var(--orange);max-width:1200px;width:100%;padding:24px;position:relative}
+.popup-close{position:absolute;top:12px;right:14px;background:none;border:none;color:var(--muted);font-size:1.2rem;cursor:pointer}
+.popup h2{color:var(--orange);font-size:.95rem;margin-bottom:18px;font-weight:700}
+.cmp-table{width:100%;border-collapse:collapse;overflow-x:auto;display:block}
+.cmp-table th{background:var(--navy);padding:8px 10px;font-size:.6rem;color:var(--orange);text-transform:uppercase;letter-spacing:.6px;text-align:left;white-space:nowrap}
+.cmp-table td{padding:7px 10px;border-bottom:1px solid var(--border);font-size:.72rem;vertical-align:top}
+.cmp-table .row-label{color:var(--muted);font-size:.62rem;font-weight:700;background:rgba(30,58,95,.2);white-space:nowrap}
+
+.no-results{text-align:center;padding:50px 20px;color:var(--muted);font-size:.82rem}
+.loading{text-align:center;padding:40px;color:var(--muted);font-size:.78rem}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-content">
+    <a href="https://laserprofit.eu" class="logo">⚡ LASERPROFIT.EU</a>
+    <div class="compare-bar" id="compareBar">
+      <strong id="compareCount">0</strong> lasery do porównania
+      <button class="btn-compare-show" onclick="openCompare()">⚖️ Porównaj</button>
+      <button class="btn-compare-clear" onclick="clearCompare()">✕ Wyczyść</button>
+    </div>
+    <a href="https://laserprofit.eu" class="back">← Kalkulator</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <h1>🔬 Porównywarka Laserów 2026</h1>
+  <p>Lasery diodowe i fiber — moc, obszar, materiały, ceny, wysyłka i gwarancja. Dane aktualizowane na bieżąco.</p>
+  <p class="rate-info" id="rateInfo">Kursy walut: ładowanie...</p>
+  <div id="dataStatus"></div>
+</div>
+
+<div class="brand-header">
+  <div class="brand-badge">xTool</div>
+  <div class="brand-badge">Creality</div>
+  <div class="brand-badge">Sculpfun</div>
+  <div class="brand-badge highlight">Ortur</div>
+  <div class="brand-badge">Atomstack</div>
+  <div class="brand-badge">Two Trees</div>
+  <div class="brand-badge">Acmer</div>
+  <div class="brand-badge">Longer</div>
+  <div class="brand-badge">ComMarker</div>
+</div>
+
+<div class="filters">
+  <div class="fg"><label>🔍 Szukaj</label><input type="text" id="search" placeholder="xTool, D1 Pro, Atomstack..." oninput="applyFilters()"></div>
+  <div class="fg"><label>⚡ Typ</label>
+    <select id="fType" onchange="applyFilters()">
+      <option value="">Wszystkie</option>
+      <option value="diode">Diodowy</option>
+      <option value="fiber">Fiber</option>
+      <option value="combo">Diode+Fiber</option>
+    </select>
+  </div>
+  <div class="fg"><label>⚡ Min. moc (W)</label>
+    <select id="fPower" onchange="applyFilters()">
+      <option value="">Każda</option>
+      <option value="1.3">1.3W (IR)</option>
+      <option value="5">5W</option>
+      <option value="5.5">5.5W</option>
+      <option value="10">10W</option>
+      <option value="20">20W</option>
+      <option value="22">22W</option>
+      <option value="24">24W</option>
+      <option value="30">30W</option>
+      <option value="33">33W</option>
+      <option value="40">40W</option>
+      <option value="48">48W</option>
+      <option value="55">55W</option>
+      <option value="60">60W</option>
+      <option value="70">70W</option>
+      <option value="120">120W</option>
+    </select>
+  </div>
+  <div class="fg"><label>📦 Wysyłka z EU</label>
+    <select id="fEU" onchange="applyFilters()">
+      <option value="">Nieważne</option>
+      <option value="yes">Tylko z EU</option>
+    </select>
+  </div>
+  <div class="fg"><label>🔌 Rozszerzalność</label>
+    <select id="fExp" onchange="applyFilters()">
+      <option value="">Nieważne</option>
+      <option value="yes">Można powiększyć</option>
+    </select>
+  </div>
+  <div class="fg"><label>📷 Kamera</label>
+    <select id="fCam" onchange="applyFilters()">
+      <option value="">Nieważne</option>
+      <option value="yes">Z kamerą</option>
+    </select>
+  </div>
+  <div class="fg"><label>↕️ Sortuj</label>
+    <select id="fSort" onchange="applyFilters()">
+      <option value="power_desc">Moc ↓</option>
+      <option value="power_asc">Moc ↑</option>
+      <option value="area_desc">Obszar ↓</option>
+      <option value="speed_desc">Prędkość ↓</option>
+      <option value="brand_asc">Marka A-Z</option>
+    </select>
+  </div>
+  <span class="results-count" id="resCount"></span>
+</div>
+
+<div class="table-wrap">
+<table id="laserTable">
+<colgroup>
+  <col style="width:9%">
+  <col style="width:13%">
+  <col style="width:7%">
+  <col style="width:6%">
+  <col style="width:10%">
+  <col style="width:8%">
+  <col style="width:12%">
+  <col style="width:10%">
+  <col style="width:10%">
+  <col style="width:15%">
+</colgroup>
+<thead>
+  <tr>
+    <th>MARKA</th>
+    <th>NAZWA</th>
+    <th>TYP</th>
+    <th>MOC</th>
+    <th>POLE CIĘCIA</th>
+    <th>PRĘDKOŚĆ</th>
+    <th>MATERIAŁY</th>
+    <th>POŁĄCZENIE</th>
+    <th>WYSYŁKA</th>
+    <th>AKCJA</th>
+  </tr>
+</thead>
+<tbody id="tbody">
+  <tr><td colspan="10" class="loading">⏳ Ładowanie danych...</td></tr>
+</tbody>
+</table>
+<div class="no-results" id="noResults" style="display:none">Brak laserów spełniających kryteria.</div>
+</div>
+
+<!-- COMPARE POPUP -->
+<div class="popup-bg" id="popupBg" onclick="if(event.target===this)closeCompare()">
+  <div class="popup">
+    <button class="popup-close" onclick="closeCompare()">✕</button>
+    <h2>⚖️ Porównanie laserów</h2>
+    <div id="cmpContent" style="overflow-x:auto"></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+<script>
+// ═══════════════════════════════════════════════════════════
+// KONFIGURACJA
+// ═══════════════════════════════════════════════════════════
+const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTPmn9gQumk_QDGRqfBdl1gSPKJ2wP8kRARb5UZc0NdQglJA-Y3e1Wpv96YvcpJkonVNJk9RXKbXboM/pub?gid=1210054405&single=true&output=csv';
+
+// ═══════════════════════════════════════════════════════════
+// DANE WBUDOWANE (fallback gdy Google Sheets niedostępne)
+// ═══════════════════════════════════════════════════════════
+const FALLBACK_DATA = [{"id": "", "Marka": "xTool", "Nazwa": "D1 Pro 2 20W", "Rodzaj lasera": "diode", "Moc": "20", "Wielkość": "430", "WielkośćH": "406", "Możliwość powiększenia": "FALSE", "Max Prędkość": "24000", "Materiały - cięcie": "sklejka;HDF;drewno;bambus;czarna plexa", "Materiały - grawerowanie": "sklejka;HDF;drewno;ceramika (malowana na czarno);szkło (malowane na czarno);plastik", "Połączenie": "USB;WiFi", "Powietrze": "builtin", "Obudowa": "FALSE", "Wysyłka": "Niemcy (EU)", "Wielkość plamki lasera": "0.08x0.10mm", "Długość fali": "455nm", "Gwarancja": "12", "Rodzaj prowadnic": "Szyny liniowe", "Bezpieczeństwo": "Flame, Tilt, Limits", "Wbudowana kamera": "FALSE", "Link afiliacyjny jak doatępny": "#"}, {"id": "", "Marka": "xTool", "Nazwa": "S1 20W", "Rodzaj lasera": "diode", "Moc": "20", "Wielkość": "498", "WielkośćH": "319", "Możliwość powiększenia": "FALSE", "Max Prędkość": "36000", "Materiały - cięcie": "sklejka;HDF;drewno;korek;skóra", "Materiały - grawerowanie": "sklejka;HDF;drewno;łupek;ceramika (malowana na czarno);plastik", "Połączenie": "USB;WiFi", "Powietrze": "builtin", "Obudowa": "TRUE", "Wysyłka": "Niemcy (EU)", "Wielkość plamki lasera": "0.08x0.06mm", "Długość fali": "455nm", "Gwarancja": "12", "Rodzaj prowadnic": "Szyny liniowe", "Bezpieczeństwo": "Flame, Tilt, Cover, Lid", "Wbudowana kamera": "TRUE", "Link afiliacyjny jak doatępny": "#"}, {"id": "", "Marka": "xTool", "Nazwa": "F1 Ultra 20W Fiber", "Rodzaj lasera": "fiber", "Moc": "20", "Wielkość": "220", "WielkośćH": "220", "Możliwość powiększenia": "FALSE", "Max Prędkość": "600000", "Materiały - cięcie": "stal nierdzewna (0.1mm);aluminium (0.2mm);mosiądz", "Materiały - grawerowanie": "stal nierdzewna;złoto;srebro;tytan;miedź;platyna", "Połączenie": "USB;WiFi", "Powietrze": "na", "Obudowa": "TRUE", "Wysyłka": "Niemcy (EU)", "Wielkość plamki lasera": "0.8x0.1mm", "Długość fali": "1064nm", "Gwarancja": "12", "Rodzaj prowadnic": "Galvo", "Bezpieczeństwo": "Flame, Tilt, Cover", "Wbudowana kamera": "TRUE", "Link afiliacyjny jak doatępny": "#"}, {"id": "", "Marka": "Creality", "Nazwa": "Falcon A1 10W", "Rodzaj lasera": "diode", "Moc": "10", "Wielkość": "381", "WielkośćH": "381", "Możliwość powiększenia": "FALSE", "Max Prędkość": "36000", "Materiały - cięcie": "sklejka;HDF;drewno;filc;skóra", "Materiały - grawerowanie": "sklejka;HDF;drewno;płyta granitowa;szkło (malowane na czarno)", "Połączenie": "USB;WiFi", "Powietrze": "builtin", "Obudowa": "TRUE", "Wysyłka": "EU (różne kraje)", "Wielkość plamki lasera": "0.06x0.08mm", "Długość fali": "455nm", "Gwarancja": "12", "Rodzaj prowadnic": "Szyny liniowe", "Bezpieczeństwo": "Flame, Lid, Emergency", "Wbudowana kamera": "TRUE", "Link afiliacyjny jak doatępny": "#"}, {"id": "", "Marka": "Creality", "Nazwa": "Falcon A1 Pro 20W", "Rodzaj lasera": "diode", "Moc": "20", "Wielkość": "400", "WielkośćH": "358", "Możliwość powiększenia": "FALSE", "Max Prędkość": "36000", "Materiały - cięcie": "sklejka;HDF;bambus;karton;czarna plexa;drewno", "Materiały - grawerowanie": "sklejka;HDF;drewno;ceramika (malowana na czarno);kamień;filc", "Połączenie": "USB;WiFi", "Powietrze": "builtin", "Obudowa": "FALSE", "Wysyłka": "EU (różne kraje)", "Wielkość plamki lasera": "0.08x0.10mm", "Długość fali": "455nm", "Gwarancja": "12", "Rodzaj prowadnic": "Szyny liniowe", "Bezpieczeństwo": "Flame, Lid, Emergency", "Wbudowana kamera": "TRUE", "Link afiliacyjny jak doatępny": "#"}, {"id": "", "Marka": "Creality", "Nazwa": "Falcon 2 22W", "Rodzaj lasera": "diode", "Moc": "22", "Wielkość": "400", "WielkośćH": "415", "Możliwość powiększenia": "FALSE", "Max Prędkość": "30000", "Materiały - cięcie": "sklejka;HDF;skóra;drewno;bambus", "Materiały - grawerowanie": "sklejka;HDF;drewno;szkło (malowane na czarno);kamień;plastik", "Połączenie": "USB;WiFi", "Powietrze": "builtin", "Obudowa": "FALSE", "Wysyłka": "EU (różne kraje)", "Wielkość plamki lasera": "0.08x0.10mm", "Długość fali": "455nm", "Gwarancja": "12", "Rodzaj prowadnic": "V-slot", "Bezpieczeństwo": "Flame, Tilt", "Wbudowana kamera": "FALSE", "Link afiliacyjny jak doatępny": "#"}, {"id": "", "Marka": "Creality", "Nazwa": "Falcon 2 Pro Max 60W", "Rodzaj lasera": "diode", "Moc": "60", "Wielkość": "400", "WielkośćH": "415", "Możliwość powiększenia": "FALSE", "Max Prędkość": "36000", "Materiały - cięcie": "sklejka;HDF;bambus;czarna plexa;skóra", "Materiały - grawerowanie": "sklejka;HDF;drewno;kamień;bambus;PCB", "Połączenie": "USB;WiFi", "Powietrze": "builtin", "Obudowa": "FALSE", "Wysyłka": "EU (różne kraje)", "Wielkość plamki lasera": "0.01mm", "Długość fali": "455nm", "Gwarancja": "12", "Rodzaj prowadnic": "V-slot", "Bezpieczeństwo": "Flame, Tilt", "Wbudowana kamera": "FALSE", "Link afiliacyjny jak doatępny": "#"}, {"id": "", "Marka": "Sculpfun", "Nazwa": "S9", "Rodzaj lasera": "diode", "Moc": "5.5", "Wielkość": "410", "WielkośćH": "420", "Możliwość powiększenia": "FALSE", "Max Prędkość": "10000", "Materiały - cięcie": "sklejka;HDF;MDF;bambus", "Materiały - grawerowanie": "sklejka;HDF;drewno;łupek", "Połączenie": "USB", "Powietrze": "No", "Obudowa": "FALSE", "Wysyłka": "Niemcy / Hiszpania", "Wielkość plamki lasera": "0.06x0.06mm", "Długość fali": "455nm", "Gwarancja": "12", "Rodzaj prowadnic": "V-slot", "Bezpieczeństwo": "", "Wbudowana kamera": "FALSE", "Link afiliacyjny jak doatępny": "#"}, {"id": "", "Marka": "Sculpfun", "Nazwa": "SF-A9 Ultra", "Rodzaj lasera": "diode", "Moc": "40", "Wielkość": "400", "WielkośćH": "400", "Możliwość powiększenia": "FALSE", "Max Prędkość": "36000", "Materiały - cięcie": "sklejka;HDF;MDF;bambus;korek;filc", "Materiały - grawerowanie": "sklejka;HDF;drewno;płyta granitowa;plastik;łupek", "Połączenie": "USB;WiFi", "Powietrze": "Yes (Auto)", "Obudowa": "FALSE", "Wysyłka": "Niemcy / Hiszpania", "Wielkość plamki lasera": "0.1/0.05mm", "Długość fali": "450nm/1064nm", "Gwarancja": "12", "Rodzaj prowadnic": "Szyny liniowe", "Bezpieczeństwo": "", "Wbudowana kamera": "FALSE", "Link afiliacyjny jak doatępny": "#"}, {"id": "", "Marka": "Sculpfun", "Nazwa": "S30 Pro 10W", "Rodzaj lasera": "diode", "Moc": "10", "Wielkość": "400", "WielkośćH": "400", "Możliwość powiększenia": "TRUE", "Max Prędkość": "24000", "Materiały - cięcie": "sklejka;HDF;bambus;skóra;filc", "Materiały - grawerowanie": "sklejka;HDF;drewno;ceramika (malowana na czarno);filc;kamień", "Połączenie": "USB;WiFi", "Powietrze": "option", "Obudowa": "FALSE", "Wysyłka": "Niemcy / Hiszpania", "Wielkość plamki lasera": "0.06x0.06mm", "Długość fali": "455nm", "Gwarancja": "12", "Rodzaj prowadnic": "Szyny liniowe", "Bezpieczeństwo": "Limits", "Wbudowana kamera": "FALSE", "Link afiliacyjny jak doatępny": "#"}, {"id": "", "Marka": "Sculpfun", "Nazwa": "S30 Pro Max 20W", "Rodzaj lasera": "diode", "Moc": "20", "Wielkość": "410", "WielkośćH": "400", "Możliwość powiększenia": "TRUE", "Max Prędkość": "30000", "Materiały - cięcie": "sklejka;HDF;filc;karton;MDF;korek", "Materiały - grawerowanie": "sklejka;HDF;drewno;plastik;filc;PCB", "Połączenie": "USB;WiFi", "Powietrze": "builtin", "Obudowa": "FALSE", "Wysyłka": "Niemcy / Hiszpania", "Wielkość plamki lasera": "0.08x0.10mm", "Długość fali": "455nm", "Gwarancja": "12", "Rodzaj prowadnic": "Szyny liniowe", "Bezpieczeństwo": "Limits", "Wbudowana kamera": "FALSE", "Link afiliacyjny jak doatępny": "#"}, {"id": "", "Marka": "Sculpfun", "Nazwa": "S30 Ultra 33W", "Rodzaj lasera": "diode", "Moc": "33", "Wielkość": "590", "WielkośćH": "595", "Możliwość powiększenia": "TRUE", "Max Prędkość": "30000", "Materiały - cięcie": "sklejka;HDF;czarna plexa;MDF;drewno;korek", "Materiały - grawerowanie": "sklejka;HDF;drewno;szkło (malowane na czarno);bambus;PCB", "Połączenie": "USB;WiFi", "Powietrze": "builtin", "Obudowa": "FALSE", "Wysyłka": "Niemcy / Hiszpania", "Wielkość plamki lasera": "0.08x0.10mm", "Długość fali": "455nm", "Gwarancja": "12", "Rodzaj prowadnic": "Szyny liniowe", "Bezpieczeństwo": "Limits", "Wbudowana kamera": "FALSE", "Link afiliacyjny jak doatępny": "#"}, {"id": "", "Marka": "Sculpfun", "Nazwa": "SF-A9 20W Enclosed", "Rodzaj lasera": "diode", "Moc": "20", "Wielkość": "400", "WielkośćH": "400", "Możliwość powiększenia": "FALSE", "Max Prędkość": "30000", "Materiały - cięcie": "sklejka;HDF;drewno;karton;czarna plexa", "Materiały - grawerowanie": "sklejka;HDF;drewno;ceramika (malowana na czarno);PCB;płyta granitowa", "Połączenie": "USB;WiFi", "Powietrze": "option", "Obudowa": "TRUE", "Wysyłka": "Niemcy / Hiszpania", "Wielkość plamki lasera": "0.08x0.10mm", "Długość fali": "455nm", "Gwarancja": "12", "Rodzaj prowadnic": "Szyny liniowe", "Bezpieczeństwo": "Flame, Lid", "Wbudowana kamera": "FALSE", "Link afiliacyjny jak doatępny": "#"}, {"id": "", "Marka": "Atomstack", "Nazwa": "P1 5W (mini)", "Rodzaj lasera": "diode", "Moc": "5", "Wielkość": "110", "WielkośćH": "110", "Możliwość powiększenia": "FALSE", "Max Prędkość": "10000", "Materiały - cięcie": "sklejka;HDF;korek", "Materiały - grawerowanie": "sklejka;HDF;drewno;kamień;ceramika (malowana na czarno)", "Połączenie": "USB;WiFi", "Powietrze": "none", "Obudowa": "TRUE", "Wysyłka": "Niemcy / Hiszpania", "Wielkość plamki lasera": "0.08x0.10mm", "Długość fali": "455nm", "Gwarancja": "12", "Rodzaj prowadnic": "V-slot", "Bezpieczeństwo": "", "Wbudowana kamera": "FALSE", "Link afiliacyjny jak doatępny": "#"}, {"id": "", "Marka": "Atomstack", "Nazwa": "A24 Pro 24W", "Rodzaj lasera": "diode", "Moc": "24", "Wielkość": "365", "WielkośćH": "305", "Możliwość powiększenia": "FALSE", "Max Prędkość": "36000", "Materiały - cięcie": "sklejka;HDF;MDF;drewno;filc", "Materiały - grawerowanie": "sklejka;HDF;drewno;ceramika (malowana na czarno);płyta granitowa;łupek", "Połączenie": "USB;WiFi", "Powietrze": "option", "Obudowa": "FALSE", "Wysyłka": "Niemcy / Hiszpania", "Wielkość plamki lasera": "0.01mm", "Długość fali": "1064nm", "Gwarancja": "12", "Rodzaj prowadnic": "Szyny liniowe", "Bezpieczeństwo": "Tilt, Limits", "Wbudowana kamera": "FALSE", "Link afiliacyjny jak doatępny": "#"}, {"id": "", "Marka": "Atomstack", "Nazwa": "A40 Pro V2", "Rodzaj lasera": "diode", "Moc": "48", "Wielkość": "400", "WielkośćH": "385", "Możliwość powiększenia": "TRUE", "Max Prędkość": "30000", "Materiały - cięcie": "sklejka;HDF;czarna plexa;bambus;karton", "Materiały - grawerowanie": "sklejka;HDF;drewno;plastik;łupek;bambus", "Połączenie": "USB;WiFi", "Powietrze": "builtin", "Obudowa": "FALSE", "Wysyłka": "Niemcy / Hiszpania", "Wielkość plamki lasera": "0.08x0.10mm", "Długość fali": "455nm", "Gwarancja": "12", "Rodzaj prowadnic": "Szyny liniowe", "Bezpieczeństwo": "Tilt, Limits", "Wbudowana kamera": "FALSE", "Link afiliacyjny jak doatępny": "#"}, {"id": "", "Marka": "Ortur", "Nazwa": "LM3 10W", "Rodzaj lasera": "diode", "Moc": "10", "Wielkość": "400", "WielkośćH": "400", "Możliwość powiększenia": "FALSE", "Max Prędkość": "15000", "Materiały - cięcie": "sklejka;HDF;filc;MDF;korek", "Materiały - grawerowanie": "sklejka;HDF;drewno;PCB;ceramika (malowana na czarno)", "Połączenie": "USB;WiFi;APP", "Powietrze": "option", "Obudowa": "FALSE", "Wysyłka": "Niemcy / Czechy", "Wielkość plamki lasera": "", "Długość fali": "455nm", "Gwarancja": "24", "Rodzaj prowadnic": "V-slot", "Bezpieczeństwo": "Tilt, Timer, USB Monitor", "Wbudowana kamera": "FALSE", "Link afiliacyjny jak doatępny": "https://ortur.net/?ref=nskubuaw"}, {"id": "", "Marka": "Ortur", "Nazwa": "LM3 20W", "Rodzaj lasera": "diode", "Moc": "20", "Wielkość": "400", "WielkośćH": "380", "Możliwość powiększenia": "TRUE", "Max Prędkość": "20000", "Materiały - cięcie": "sklejka;HDF;czarna plexa;MDF;skóra;korek", "Materiały - grawerowanie": "sklejka;HDF;drewno;łupek;kamień;ceramika (malowana na czarno)", "Połączenie": "USB;WiFi;APP", "Powietrze": "option", "Obudowa": "FALSE", "Wysyłka": "Niemcy / Czechy", "Wielkość plamki lasera": "", "Długość fali": "455nm", "Gwarancja": "24", "Rodzaj prowadnic": "V-slot", "Bezpieczeństwo": "Tilt, Timer, USB Monitor, Emergency", "Wbudowana kamera": "FALSE", "Link afiliacyjny jak doatępny": "https://ortur.net/?ref=nskubuaw"}, {"id": "", "Marka": "Ortur", "Nazwa": "LM3 40W", "Rodzaj lasera": "diode", "Moc": "40", "Wielkość": "400", "WielkośćH": "380", "Możliwość powiększenia": "TRUE", "Max Prędkość": "20000", "Materiały - cięcie": "sklejka;HDF;czarna plexa;MDF;skóra;korek", "Materiały - grawerowanie": "sklejka;HDF;drewno;łupek;kamień;ceramika (malowana na czarno)", "Połączenie": "USB;WiFi;APP", "Powietrze": "option", "Obudowa": "FALSE", "Wysyłka": "Niemcy / Czechy", "Wielkość plamki lasera": "", "Długość fali": "455nm", "Gwarancja": "24", "Rodzaj prowadnic": "V-slot", "Bezpieczeństwo": "Tilt, Timer, USB Monitor, Emergency", "Wbudowana kamera": "FALSE", "Link afiliacyjny jak doatępny": "https://ortur.net/?ref=nskubuaw"}, {"id": "", "Marka": "Ortur", "Nazwa": "R2 10W", "Rodzaj lasera": "diode", "Moc": "10", "Wielkość": "300", "WielkośćH": "210", "Możliwość powiększenia": "FALSE", "Max Prędkość": "20000", "Materiały - cięcie": "sklejka;drewno;skóra", "Materiały - grawerowanie": "drewno;skóra;ceramika (malowana);szkło;metal powlekany", "Połączenie": "USB;WiFi;SD", "Powietrze": "option", "Obudowa": "TRUE", "Wysyłka": "Niemcy / Hiszpania", "Wielkość plamki lasera": "", "Długość fali": "455nm", "Gwarancja": "12", "Rodzaj prowadnic": "Szyny liniowe", "Bezpieczeństwo": "Flame (5-point), Tilt, E-Stop, Lid-stop", "Wbudowana kamera": "TRUE", "Link afiliacyjny jak doatępny": "https://ortur.net/products/ortur-r2-smart-laser-engraver?variant=48448427491561?ref=nskubuaw"}, {"id": "", "Marka": "Ortur", "Nazwa": "R2 20W", "Rodzaj lasera": "diode", "Moc": "20", "Wielkość": "300", "WielkośćH": "190", "Możliwość powiększenia": "FALSE", "Max Prędkość": "20000", "Materiały - cięcie": "sklejka;drewno;skóra", "Materiały - grawerowanie": "drewno;skóra;ceramika (malowana);szkło;metal powlekany", "Połączenie": "USB;WiFi;SD", "Powietrze": "builtin", "Obudowa": "TRUE", "Wysyłka": "Niemcy / Hiszpania", "Wielkość plamki lasera": "", "Długość fali": "455nm", "Gwarancja": "12", "Rodzaj prowadnic": "Szyny liniowe", "Bezpieczeństwo": "Flame (5-point), Tilt, E-Stop, Lid-stop", "Wbudowana kamera": "TRUE", "Link afiliacyjny jak doatępny": "https://ortur.net/products/ortur-r2-smart-laser-engraver?variant=48448427524329?ref=nskubuaw"}, {"id": "", "Marka": "Ortur", "Nazwa": "R2 20W + 2W IR", "Rodzaj lasera": "diode+fiber", "Moc": "20", "Wielkość": "400", "WielkośćH": "400", "Możliwość powiększenia": "FALSE", "Max Prędkość": "20000", "Materiały - cięcie": "sklejka (do 12-15mm);drewno;akryl;tektura;skóra;plastik", "Materiały - grawerowanie": "drewno;akryl;szkło;ceramika;stal;aluminium;złoto;srebro;miedź;plastik;kamień;skóra", "Połączenie": "USB;Wi-Fi;Karta SD;APP", "Powietrze": "builtin", "Obudowa": "TRUE", "Wysyłka": "Niemcy / Hiszpania", "Wielkość plamki lasera": "0.08x0.10mm (20W) / 0.03x0.03mm (IR)", "Długość fali": "455nm + 1064nm", "Gwarancja": "12", "Rodzaj prowadnic": "Szyny liniowe", "Bezpieczeństwo": "Flame Detector; Tilt Sensor; Emergency Stop; Active Position Protection", "Wbudowana kamera": "TRUE", "Link afiliacyjny jak doatępny": "https://ortur.net/products/ortur-r2-smart-laser-engraver?variant=48937768943849?ref=nskubuaw"}, {"id": "", "Marka": "Ortur", "Nazwa": "R2 10W + 1.3W IR", "Rodzaj lasera": "diode+fiber", "Moc": "10", "Wielkość": "300", "WielkośćH": "190", "Możliwość powiększenia": "FALSE", "Max Prędkość": "20000", "Materiały - cięcie": "sklejka (do 8mm);drewno;akryl;tektura;skóra", "Materiały - grawerowanie": "drewno;akryl;szkło;ceramika;stal;aluminium;złoto;srebro;miedź;plastik;kamień;skóra", "Połączenie": "USB;Wi-Fi;Karta SD;APP", "Powietrze": "builtin", "Obudowa": "TRUE", "Wysyłka": "Niemcy / Hiszpania", "Wielkość plamki lasera": "", "Długość fali": "455nm + 1064nm", "Gwarancja": "12", "Rodzaj prowadnic": "Szyny liniowe", "Bezpieczeństwo": "Flame Detector; Tilt Sensor; Emergency Stop; Active Position Protection", "Wbudowana kamera": "TRUE", "Link afiliacyjny jak doatępny": "https://ortur.net/products/ortur-r2-smart-laser-engraver?variant=48937768943849?ref=nskubuaw"}, {"id": "", "Marka": "Ortur", "Nazwa": "1.3W IR", "Rodzaj lasera": "fiber", "Moc": "1.3", "Wielkość": "300", "WielkośćH": "210", "Możliwość powiększenia": "FALSE", "Max Prędkość": "20000", "Materiały - cięcie": "sklejka (do 8mm);drewno;akryl;tektura;skóra", "Materiały - grawerowanie": "drewno;akryl;szkło;ceramika;stal;aluminium;złoto;srebro;miedź;plastik;kamień;skóra", "Połączenie": "USB;Wi-Fi;Karta SD;APP", "Powietrze": "builtin", "Obudowa": "TRUE", "Wysyłka": "Niemcy / Hiszpania", "Wielkość plamki lasera": "", "Długość fali": "1064nm", "Gwarancja": "12", "Rodzaj prowadnic": "Szyny liniowe", "Bezpieczeństwo": "Flame Detector; Tilt Sensor; Emergency Stop; Active Position Protection", "Wbudowana kamera": "TRUE", "Link afiliacyjny jak doatępny": "https://ortur.net/products/ortur-r2-smart-laser-engraver?variant=48448427557097?ref=nskubuaw"}, {"id": "", "Marka": "Ortur", "Nazwa": "H20 10W + 2W IR", "Rodzaj lasera": "diode+fiber", "Moc": "10", "Wielkość": "410", "WielkośćH": "300", "Możliwość powiększenia": "FALSE", "Max Prędkość": "30000", "Materiały - cięcie": "sklejka (do 20mm);drewno;akryl;tektura;skóra;plastik", "Materiały - grawerowanie": "drewno;akryl;szkło;ceramika;stal;aluminium;złoto;srebro;miedź;plastik;kamień;skóra", "Połączenie": "USB;Wi-Fi;Karta SD", "Powietrze": "builtin", "Obudowa": "TRUE", "Wysyłka": "Niemcy / Hiszpania", "Wielkość plamki lasera": "", "Długość fali": "455nm + 1064nm", "Gwarancja": "12", "Rodzaj prowadnic": "Szyny liniowe", "Bezpieczeństwo": "Flame Detector; Tilt Sensor; Emergency Stop; Safety Lock; Lid-Stop", "Wbudowana kamera": "TRUE", "Link afiliacyjny jak doatępny": "https://ortur.net/products/ortur-h20-laser-engraver-cutter-machine?variant=48068546887913?ref=nskubuaw"}, {"id": "", "Marka": "Ortur", "Nazwa": "H20 20W + 2W IR", "Rodzaj lasera": "diode+fiber", "Moc": "20", "Wielkość": "410", "WielkośćH": "300", "Możliwość powiększenia": "FALSE", "Max Prędkość": "30000", "Materiały - cięcie": "sklejka (do 20mm);drewno;akryl;tektura;skóra;plastik", "Materiały - grawerowanie": "drewno;akryl;szkło;ceramika;stal;aluminium;złoto;srebro;miedź;plastik;kamień;skóra", "Połączenie": "USB;Wi-Fi;Karta SD", "Powietrze": "builtin", "Obudowa": "TRUE", "Wysyłka": "Niemcy / Hiszpania", "Wielkość plamki lasera": "", "Długość fali": "455nm + 1064nm", "Gwarancja": "12", "Rodzaj prowadnic": "Szyny liniowe", "Bezpieczeństwo": "Flame Detector; Tilt Sensor; Emergency Stop; Safety Lock; Lid-Stop", "Wbudowana kamera": "TRUE", "Link afiliacyjny jak doatępny": "https://ortur.net/products/ortur-h20-laser-engraver-cutter-machine?variant=48068546920681?ref=nskubuaw"}, {"id": "", "Marka": "Ortur", "Nazwa": "H20 40W + 2W IR", "Rodzaj lasera": "diode+fiber", "Moc": "40", "Wielkość": "410", "WielkośćH": "275", "Możliwość powiększenia": "FALSE", "Max Prędkość": "30000", "Materiały - cięcie": "sklejka (do 20mm);drewno;akryl;tektura;skóra;plastik", "Materiały - grawerowanie": "drewno;akryl;szkło;ceramika;stal;aluminium;złoto;srebro;miedź;plastik;kamień;skóra", "Połączenie": "USB;Wi-Fi;Karta SD", "Powietrze": "builtin", "Obudowa": "TRUE", "Wysyłka": "Niemcy / Hiszpania", "Wielkość plamki lasera": "", "Długość fali": "455nm + 1064nm", "Gwarancja": "12", "Rodzaj prowadnic": "Szyny liniowe", "Bezpieczeństwo": "Flame Detector; Tilt Sensor; Emergency Stop; Safety Lock; Lid-Stop", "Wbudowana kamera": "TRUE", "Link afiliacyjny jak doatępny": "https://ortur.net/products/ortur-h20-laser-engraver-cutter-machine?variant=48068546953449?ref=nskubuaw"}, {"id": "", "Marka": "Atomstack", "Nazwa": "A70 Max", "Rodzaj lasera": "diode", "Moc": "70", "Wielkość": "800", "WielkośćH": "850", "Możliwość powiększenia": "FALSE", "Max Prędkość": "24000", "Materiały - cięcie": "sklejka;lipa (do 25mm);drewno;czarny akryl 25 mm;tektura;skóra;stal nierdzewna (0.3mm)", "Materiały - grawerowanie": "drewno;akryl;szkło;ceramika;stal nierdzewna;metal;kamień;skóra", "Połączenie": "USB;APP;Karta SD", "Powietrze": "builtin", "Obudowa": "FALSE", "Wysyłka": "Niemcy / UE", "Wielkość plamki lasera": "0.12x0.18mm", "Długość fali": "455nm", "Gwarancja": "12", "Rodzaj prowadnic": "Szyny liniowe", "Bezpieczeństwo": "Flame Detector; Tilt Sensor; Emergency Stop; Dual Limit Switches", "Wbudowana kamera": "FALSE", "Link afiliacyjny jak doatępny": "https://atomstack.com/en-eu/products/atomstack-a70-max?variant=51539192119569"}, {"id": "", "Marka": "Two Trees", "Nazwa": "TS2 20W", "Rodzaj lasera": "diode", "Moc": "20", "Wielkość": "450", "WielkośćH": "440", "Możliwość powiększenia": "FALSE", "Max Prędkość": "30000", "Materiały - cięcie": "sklejka;HDF;karton;filc;MDF;czarna plexa", "Materiały - grawerowanie": "sklejka;HDF;drewno;plastik;szkło (malowane na czarno);ceramika (malowane na czarno)", "Połączenie": "USB;WiFi", "Powietrze": "option", "Obudowa": "FALSE", "Wysyłka": "Niemcy / Hiszpania", "Wielkość plamki lasera": "0.12x0.18mm", "Długość fali": "455nm", "Gwarancja": "12", "Rodzaj prowadnic": "V-slot", "Bezpieczeństwo": "Flame, Tilt", "Wbudowana kamera": "FALSE", "Link afiliacyjny jak doatępny": "#"}, {"id": "", "Marka": "Two Trees", "Nazwa": "TTS-55 Pro 55W", "Rodzaj lasera": "diode", "Moc": "55", "Wielkość": "400", "WielkośćH": "415", "Możliwość powiększenia": "FALSE", "Max Prędkość": "30000", "Materiały - cięcie": "sklejka;HDF;drewno;korek;karton;MDF", "Materiały - grawerowanie": "sklejka;HDF;drewno;PCB;ceramika (malowana na czarno);bambus", "Połączenie": "USB;WiFi", "Powietrze": "builtin", "Obudowa": "FALSE", "Wysyłka": "Niemcy / Hiszpania", "Wielkość plamki lasera": "0.08x0.08mm", "Długość fali": "455nm", "Gwarancja": "12", "Rodzaj prowadnic": "V-slot", "Bezpieczeństwo": "", "Wbudowana kamera": "FALSE", "Link afiliacyjny jak doatępny": "#"}, {"id": "", "Marka": "Acmer", "Nazwa": "P2 10W", "Rodzaj lasera": "diode", "Moc": "10", "Wielkość": "420", "WielkośćH": "400", "Możliwość powiększenia": "TRUE", "Max Prędkość": "30000", "Materiały - cięcie": "sklejka;HDF;filc;drewno", "Materiały - grawerowanie": "sklejka;HDF;drewno;kamień;bambus;filc", "Połączenie": "USB;WiFi", "Powietrze": "builtin", "Obudowa": "FALSE", "Wysyłka": "EU (Niemcy)", "Wielkość plamki lasera": "0.08x0.06mm", "Długość fali": "455nm", "Gwarancja": "12", "Rodzaj prowadnic": "Szyny liniowe", "Bezpieczeństwo": "Tilt, Emergency", "Wbudowana kamera": "FALSE", "Link afiliacyjny jak doatępny": "#"}, {"id": "", "Marka": "Acmer", "Nazwa": "P2 20W", "Rodzaj lasera": "diode", "Moc": "20", "Wielkość": "420", "WielkośćH": "400", "Możliwość powiększenia": "TRUE", "Max Prędkość": "30000", "Materiały - cięcie": "sklejka;HDF;MDF;czarna plexa;korek;skóra", "Materiały - grawerowanie": "sklejka;HDF;drewno;bambus;łupek;filc", "Połączenie": "USB;WiFi", "Powietrze": "builtin", "Obudowa": "FALSE", "Wysyłka": "EU (Niemcy)", "Wielkość plamki lasera": "0.08x0.06mm", "Długość fali": "455nm", "Gwarancja": "12", "Rodzaj prowadnic": "Szyny liniowe", "Bezpieczeństwo": "Tilt, Emergency", "Wbudowana kamera": "FALSE", "Link afiliacyjny jak doatępny": "#"}, {"id": "", "Marka": "Acmer", "Nazwa": "S1 30W", "Rodzaj lasera": "diode", "Moc": "30", "Wielkość": "420", "WielkośćH": "400", "Możliwość powiększenia": "TRUE", "Max Prędkość": "30000", "Materiały - cięcie": "sklejka;HDF;MDF;karton;czarna plexa", "Materiały - grawerowanie": "sklejka;HDF;drewno;filc;PCB;plastik", "Połączenie": "USB;WiFi", "Powietrze": "builtin", "Obudowa": "FALSE", "Wysyłka": "EU (Niemcy)", "Wielkość plamki lasera": "0.08x0.10mm", "Długość fali": "455nm", "Gwarancja": "12", "Rodzaj prowadnic": "Szyny liniowe", "Bezpieczeństwo": "Tilt, Emergency", "Wbudowana kamera": "FALSE", "Link afiliacyjny jak doatępny": "#"}, {"id": "", "Marka": "Longer", "Nazwa": "Ray5 20W", "Rodzaj lasera": "diode", "Moc": "20", "Wielkość": "400", "WielkośćH": "400", "Możliwość powiększenia": "FALSE", "Max Prędkość": "10000", "Materiały - cięcie": "sklejka;HDF;karton;bambus;drewno", "Materiały - grawerowanie": "sklejka;HDF;drewno;płyta granitowa;plastik;ceramika (malowana na czarno)", "Połączenie": "USB;WiFi;APP", "Powietrze": "option", "Obudowa": "FALSE", "Wysyłka": "Niemcy", "Wielkość plamki lasera": "0.08x0.10mm", "Długość fali": "455nm", "Gwarancja": "12", "Rodzaj prowadnic": "V-slot", "Bezpieczeństwo": "Flame, Tilt, Limits", "Wbudowana kamera": "TRUE", "Link afiliacyjny jak doatępny": "#"}, {"id": "", "Marka": "Longer", "Nazwa": "Ray5 Pro 40W", "Rodzaj lasera": "diode", "Moc": "40", "Wielkość": "400", "WielkośćH": "400", "Możliwość powiększenia": "FALSE", "Max Prędkość": "24000", "Materiały - cięcie": "sklejka;HDF;MDF;bambus;filc;czarna plexa", "Materiały - grawerowanie": "sklejka;HDF;drewno;ceramika (malowana na czarno);szkło (malowane na czarno);płyta granitowa", "Połączenie": "USB;WiFi;APP", "Powietrze": "builtin", "Obudowa": "FALSE", "Wysyłka": "Niemcy", "Wielkość plamki lasera": "0.08x0.10mm", "Długość fali": "455nm", "Gwarancja": "12", "Rodzaj prowadnic": "V-slot", "Bezpieczeństwo": "Flame, Tilt, Limits", "Wbudowana kamera": "FALSE", "Link afiliacyjny jak doatępny": "#"}, {"id": "", "Marka": "ComMarker", "Nazwa": "B4 20W Fiber", "Rodzaj lasera": "fiber", "Moc": "20", "Wielkość": "175", "WielkośćH": "175", "Możliwość powiększenia": "FALSE", "Max Prędkość": "900000", "Materiały - cięcie": "stal nierdzewna;aluminium;mosiądz", "Materiały - grawerowanie": "stal nierdzewna;złoto;srebro;aluminium;tytan;miedź", "Połączenie": "USB", "Powietrze": "na", "Obudowa": "FALSE", "Wysyłka": "Niemcy", "Wielkość plamki lasera": "0.08x0.10mm", "Długość fali": "1064nm", "Gwarancja": "12", "Rodzaj prowadnic": "Galvo", "Bezpieczeństwo": "Emergency", "Wbudowana kamera": "FALSE", "Link afiliacyjny jak doatępny": "#"}, {"id": "", "Marka": "ComMarker", "Nazwa": "B4 30W Fiber", "Rodzaj lasera": "fiber", "Moc": "30", "Wielkość": "175", "WielkośćH": "175", "Możliwość powiększenia": "FALSE", "Max Prędkość": "900000", "Materiały - cięcie": "stal nierdzewna;aluminium;mosiądz;tytan", "Materiały - grawerowanie": "stal nierdzewna;złoto;srebro;aluminium;tytan;plastik", "Połączenie": "USB", "Powietrze": "na", "Obudowa": "FALSE", "Wysyłka": "Niemcy", "Wielkość plamki lasera": "0.01mm", "Długość fali": "1064nm", "Gwarancja": "12", "Rodzaj prowadnic": "Galvo", "Bezpieczeństwo": "Emergency", "Wbudowana kamera": "FALSE", "Link afiliacyjny jak doatępny": "#"}, {"id": "", "Marka": "ComMarker", "Nazwa": "B4 60W Fiber", "Rodzaj lasera": "fiber", "Moc": "60", "Wielkość": "175", "WielkośćH": "175", "Możliwość powiększenia": "FALSE", "Max Prędkość": "900000", "Materiały - cięcie": "stal nierdzewna;aluminium;mosiądz;tytan;miedź", "Materiały - grawerowanie": "stal nierdzewna;złoto;srebro;aluminium;tytan;platyna", "Połączenie": "USB", "Powietrze": "na", "Obudowa": "FALSE", "Wysyłka": "Niemcy", "Wielkość plamki lasera": "0.01mm", "Długość fali": "1064nm", "Gwarancja": "12", "Rodzaj prowadnic": "Galvo", "Bezpieczeństwo": "Emergency", "Wbudowana kamera": "FALSE", "Link afiliacyjny jak doatępny": "#"}, {"id": "", "Marka": "Atomstack", "Nazwa": "Kraft Dual 20W+1.2W IR", "Rodzaj lasera": "diode", "Moc": "20", "Wielkość": "498", "WielkośćH": "320", "Możliwość powiększenia": "FALSE", "Max Prędkość": "36000", "Materiały - cięcie": "sklejka;HDF;czarna plexa;bambus;korek;skóra", "Materiały - grawerowanie": "sklejka;HDF;drewno;łupek;płyta granitowa;PCB", "Połączenie": "USB;WiFi", "Powietrze": "builtin", "Obudowa": "TRUE", "Wysyłka": "Niemcy / Hiszpania", "Wielkość plamki lasera": "0.08x0.10mm", "Długość fali": "455nm", "Gwarancja": "12", "Rodzaj prowadnic": "Szyny liniowe", "Bezpieczeństwo": "Flame, Lid, Emergency", "Wbudowana kamera": "TRUE", "Link afiliacyjny jak doatępny": "#"}, {"id": "", "Marka": "Atomstack", "Nazwa": "Glacier 120W", "Rodzaj lasera": "diode", "Moc": "120", "Wielkość": "800", "WielkośćH": "800", "Możliwość powiększenia": "FALSE", "Max Prędkość": "20000", "Materiały - cięcie": "sklejka;lipa (do 30mm);drewno;akryl;MDF;PCB;metal (cienki)", "Materiały - grawerowanie": "drewno;akryl;szkło;ceramika;stal nierdzewna;metal;kamień;skóra", "Połączenie": "USB;WiFi;APP;Touch Screen", "Powietrze": "builtin", "Obudowa": "FALSE", "Wysyłka": "Niemcy / UE", "Wielkość plamki lasera": "0.15x0.15mm", "Długość fali": "455nm", "Gwarancja": "12", "Rodzaj prowadnic": "Szyny liniowe", "Bezpieczeństwo": "Flame Detector; Tilt Sensor; Emergency Stop; Water Cooling Monitor", "Wbudowana kamera": "FALSE", "Link afiliacyjny jak doatępny": "https://atomstack.com/en-eu/products/atomstack-glacier-water-cooled-diode-laser-engraver"}, {"id": "", "Marka": "Atomstack", "Nazwa": "A20 Pro V2", "Rodzaj lasera": "diode", "Moc": "20", "Wielkość": "400", "WielkośćH": "365", "Możliwość powiększenia": "FALSE", "Max Prędkość": "24000", "Materiały - cięcie": "sklejka;drewno;akryl;tektura;skóra", "Materiały - grawerowanie": "drewno;akryl;szkło;ceramika;stal nierdzewna;metal;kamień;skóra", "Połączenie": "USB;WiFi;APP", "Powietrze": "builtin", "Obudowa": "TRUE", "Wysyłka": "Niemcy / UE", "Wielkość plamki lasera": "0.06x0.06mm", "Długość fali": "455nm", "Gwarancja": "12", "Rodzaj prowadnic": "Szyny liniowe", "Bezpieczeństwo": "Flame Detector; Tilt Sensor; Emergency Stop; Dual Limit Switches", "Wbudowana kamera": "FALSE", "Link afiliacyjny jak doatępny": "https://atomstack.com/en-eu/products/atomstack-ace-pro-v2?variant=48233388867857"}];
+
+// ═══════════════════════════════════════════════════════════
+// STAN APLIKACJI
+// ═══════════════════════════════════════════════════════════
+let LASERS = [];
+let rateEUR = 4.28;
+let compareSet = new Set();
+let laserCounter = 0;
+
+// ═══════════════════════════════════════════════════════════
+// POMOCNICZE
+// ═══════════════════════════════════════════════════════════
+function toBool(v) {
+    if (v === true || v === 1) return true;
+    if (typeof v === 'string') return v.trim().toUpperCase() === 'TRUE';
+    return false;
+}
+
+function toAirAssist(v) {
+    if (!v) return 'none';
+    const s = String(v).toLowerCase().trim();
+    if (s === 'builtin' || s.includes('auto') || s.includes('yes')) return 'builtin';
+    if (s === 'option' || s === 'optional') return 'option';
+    if (s === 'na' || s === 'n/a') return 'na';
+    return 'none';
+}
+
+function isEU(shipStr) {
+    if (!shipStr) return false;
+    const s = String(shipStr).toLowerCase();
+    return s.includes('eu') || s.includes('niemcy') || s.includes('spain') ||
+           s.includes('hiszpania') || s.includes('france') || s.includes('czechy') ||
+           s.includes('ue');
+}
+
+function getPrimaryPower(raw) {
+    if (!raw) return 0;
+    const s = String(raw).replace(/W/gi, '').trim();
+    const m = s.match(/^[\d.]+/);
+    return m ? parseFloat(m[0]) : 0;
+}
+
+function getLaserTypeClass(type) {
+    if (!type) return 'cat-diode';
+    const t = type.toLowerCase();
+    if (t.includes('+') || t.includes('fiber') && t.includes('diode')) return 'cat-combo';
+    if (t.includes('fiber')) return 'cat-fiber';
+    return 'cat-diode';
+}
+
+function getLaserTypeLabel(type) {
+    if (!type) return 'DIOD.';
+    const t = type.toLowerCase();
+    if (t.includes('+')) return 'COMBO';
+    if (t.includes('fiber')) return 'FIBER';
+    return 'DIOD.';
+}
+
+// ═══════════════════════════════════════════════════════════
+// FORMAT POWER
+// ═══════════════════════════════════════════════════════════
+function formatPower(raw, typeStr) {
+    if (!raw && raw !== 0) return '-';
+    const num = parseFloat(String(raw));
+    const isIR = typeStr && String(typeStr).toLowerCase().includes('fiber') && String(typeStr).toLowerCase().includes('diode');
+    
+    if (isIR) {
+        return `<span style="font-weight:800;color:var(--orange)">${num}W</span><br><span style="font-size:.58rem;color:#a78bfa">+ IR</span>`;
+    }
+    return isNaN(num) ? String(raw) : `<span style="font-weight:800;color:var(--orange)">${num}W</span>`;
+}
+
+function formatSpot(raw) {
+    if (!raw || raw === '-') return '-';
+    return String(raw).trim();
+}
+
+// ═══════════════════════════════════════════════════════════
+// MAPOWANIE DANYCH Z CSV
+// ═══════════════════════════════════════════════════════════
+function mapRow(l, index) {
+    return {
+        id:         index,
+        brand:      (l['Marka'] || '').trim(),
+        name:       (l['Nazwa'] || '').trim(),
+        type:       (l['Rodzaj lasera'] || 'diode').trim(),
+        powerRaw:   (l['Moc'] || '0').trim(),
+        power:      getPrimaryPower(l['Moc']),
+        areaW:      parseInt(l['Wielkość']) || 0,
+        areaH:      parseInt(l['WielkośćH'] || l['Wielkość']) || 0,
+        speed:      parseInt(l['Max Prędkość']) || 0,
+        cutMats:    l['Materiały - cięcie'] ? String(l['Materiały - cięcie']).split(';').map(s=>s.trim()).filter(Boolean) : [],
+        engMats:    l['Materiały - grawerowanie'] ? String(l['Materiały - grawerowanie']).split(';').map(s=>s.trim()).filter(Boolean) : [],
+        conn:       l['Połączenie'] ? String(l['Połączenie']).split(';').map(s=>s.trim()).filter(Boolean) : [],
+        airAssist:  toAirAssist(l['Powietrze']),
+        enclosed:   toBool(l['Obudowa']),
+        shipFrom:   (l['Wysyłka'] || 'CN').trim(),
+        shipEU:     isEU(l['Wysyłka']),
+        warranty:   l['Gwarancja'] || '-',
+        spotSize:   (l['Wielkość plamki lasera'] || '-').trim(),
+        wavelength: (l['Długość fali'] || '455nm').trim(),
+        linearRails: String(l['Rodzaj prowadnic'] || '').toLowerCase().includes('szyn'),
+        affLink:    (l['Link afiliacyjny jak doatępny'] || '').trim(),
+        safety:     (l['Bezpieczeństwo'] || '-').trim(),
+        camera:     toBool(l['Wbudowana kamera']),
+        expandable: toBool(l['Możliwość powiększenia']),
+    };
+}
+
+function processCSVData(rows) {
+    // Filtruj puste wiersze (bez marki lub nazwy)
+    LASERS = rows
+        .filter(l => l['Marka'] && l['Marka'].trim() && l['Nazwa'] && l['Nazwa'].trim())
+        .map((l, i) => mapRow(l, i));
+    console.log('✅ Załadowano laserów:', LASERS.length);
+    applyFilters();
+}
+
+// ═══════════════════════════════════════════════════════════
+// ŁADOWANIE DANYCH
+// ═══════════════════════════════════════════════════════════
+async function fetchRates() {
+    try {
+        const r = await fetch('https://api.exchangerate-api.com/v4/latest/EUR');
+        const d = await r.json();
+        rateEUR = d.rates.PLN || 4.28;
+        document.getElementById('rateInfo').innerHTML =
+            `Kursy walut (live): <span>1 EUR = ${rateEUR.toFixed(2)} zł</span>`;
+    } catch(e) {
+        document.getElementById('rateInfo').innerHTML =
+            `Kursy walut (szacowane): <span>1 EUR ≈ ${rateEUR.toFixed(2)} zł</span>`;
+    }
+}
+
+async function loadData() {
+    // 1. Natychmiast pokaż dane wbudowane
+    processCSVData(FALLBACK_DATA);
+    document.getElementById('dataStatus').innerHTML =
+        '<span class="data-status fallback">📦 Dane wbudowane</span>';
+
+    // 2. Pobierz kursy walut
+    fetchRates();
+
+    // 3. Spróbuj pobrać świeże dane z Google Sheets
+    // Używamy bezpośredniego URL — działa gdy strona jest hostowana (nie lokalnie)
+    // Lub przez PapaParse z download:true który obsługuje CORS dla Google Sheets
+    try {
+        Papa.parse(SHEET_URL, {
+            download: true,
+            header: true,
+            skipEmptyLines: true,
+            complete: function(results) {
+                if (results.data && results.data.length > 0) {
+                    const valid = results.data.filter(l => l['Marka'] && l['Marka'].trim());
+                    if (valid.length > 0) {
+                        processCSVData(results.data);
+                        document.getElementById('dataStatus').innerHTML =
+                            '<span class="data-status live">✅ Pobrano dane.</span>';
+                    }
+                }
+            },
+            error: function(err) {
+                console.warn('Google Sheets niedostępny, używam danych wbudowanych:', err);
+            }
+        });
+    } catch(e) {
+        console.warn('Błąd ładowania z GSheets:', e);
+    }
+}
+
+// ═══════════════════════════════════════════════════════════
+// RENDEROWANIE
+// ═══════════════════════════════════════════════════════════
+function showTip(el, e) {
+    const tip = el.querySelector('.mat-tooltip');
+    if (!tip) return;
+    tip.style.display = 'block';
+    const r = el.getBoundingClientRect();
+    tip.style.left = Math.min(r.left, window.innerWidth - 200) + 'px';
+    tip.style.top = (r.bottom + 6) + 'px';
+}
+function hideTip(el) {
+    const tip = el.querySelector('.mat-tooltip');
+    if (tip) tip.style.display = 'none';
+}
+function toggleDetails(id, btn) {
+    const row = document.getElementById('d' + id);
+    if (!row) return;
+    const isOpen = row.style.display !== 'none';
+    row.style.display = isOpen ? 'none' : 'table-row';
+    btn.textContent = isOpen ? '▼ Więcej' : '▲ Ukryj';
+}
+
+function renderRow(l) {
+    const inCmp = compareSet.has(l.id);
+    const isOrtur = l.brand.toLowerCase() === 'ortur';
+    const hasLink = l.affLink && l.affLink !== '#' && l.affLink !== '-';
+    const buyLink = isOrtur ? 'https://ortur.net/?ref=nskubuaw' : (hasLink ? l.affLink : null);
+    const typeClass = getLaserTypeClass(l.type);
+    const typeLabel = getLaserTypeLabel(l.type);
+
+    const cutTooltip = l.cutMats.map(m => `✂ ${m}`).join('<br>') || '-';
+    const engTooltip = l.engMats.map(m => `✦ ${m}`).join('<br>') || '-';
+    const matHtml = `
+        ${l.cutMats.length ? `<span class="mat-btn mat-btn-cut" onmouseenter="showTip(this,event)" onmouseleave="hideTip(this)" data-tip="${cutTooltip}">✂ Cięcie<span class="mat-tooltip">${cutTooltip}</span></span>` : ''}
+        ${l.engMats.length ? `<span class="mat-btn mat-btn-eng" onmouseenter="showTip(this,event)" onmouseleave="hideTip(this)" data-tip="${engTooltip}">✦ Grawer<span class="mat-tooltip">${engTooltip}</span></span>` : ''}
+    `;
+
+    const connHtml = l.conn.length
+        ? l.conn.map(c => `<span class="conn-chip">${c}</span>`).join(' ')
+        : '<span style="color:var(--muted);font-size:.62rem">USB</span>';
+
+    const airLabel = l.airAssist === 'builtin' ? '✅ Wbudowany'
+                   : l.airAssist === 'option' ? '🟡 Opcjonalny'
+                   : l.airAssist === 'na' ? 'N/D'
+                   : '❌ Brak';
+
+    return `
+    <tr class="${inCmp ? 'in-compare' : ''}" data-id="${l.id}">
+      <td style="font-weight:700;font-size:.72rem;color:${isOrtur ? 'var(--orange)' : 'var(--text)'}">${l.brand}</td>
+      <td>
+        <div style="font-weight:700;font-size:.72rem;line-height:1.2">${l.name}</div>
+        <button class="expand-btn" onclick="toggleDetails(${l.id},this)" style="margin-top:3px">▼ Więcej</button>
+      </td>
+      <td><span class="cat-badge ${typeClass}">${typeLabel}</span></td>
+      <td class="power-cell">${formatPower(l.power, l.type)}</td>
+      <td style="font-size:.68rem">
+        ${l.areaW}×${l.areaH}&nbsp;mm
+        ${l.expandable ? '<br><span style="font-size:.56rem;color:var(--green)">⚡ Powiększ.</span>' : ''}
+      </td>
+      <td style="font-size:.68rem">
+        ${l.speed ? l.speed.toLocaleString() : '-'}
+        <span style="font-size:.55rem;color:var(--muted)">mm/min</span>
+      </td>
+      <td>${matHtml}</td>
+      <td><div class="conn-chips">${connHtml}</div></td>
+      <td style="font-size:.65rem">
+        📍 ${l.shipFrom}
+        ${l.shipEU ? '<br><span style="color:var(--green);font-size:.58rem">✅ EU</span>' : ''}
+      </td>
+      <td>
+        <div class="action-cell">
+          ${buyLink ? `<a href="${buyLink}" target="_blank" rel="nofollow" class="btn-aff">KUP TERAZ →</a>` : ''}
+          ${isOrtur ? `<div style="font-size:.55rem;color:var(--orange);text-align:center;border:1px dashed var(--orange);border-radius:3px;padding:1px">Zniżka 10% przy użyciu kodu: LASERPROFIT</div>` : ''}
+          <button class="btn-add-compare ${inCmp ? 'added' : ''}" onclick="toggleCompare(${l.id})">
+            ${inCmp ? '✔ Na liście' : '⊕ Porównaj'}
+          </button>
+        </div>
+      </td>
+    </tr>
+    <tr id="d${l.id}" style="display:none">
+      <td colspan="10">
+        <div class="detail-grid">
+          <div class="di"><div class="di-lbl">Air Assist</div><div class="di-val">${airLabel}</div></div>
+          <div class="di"><div class="di-lbl">Obudowa</div><div class="di-val">${l.enclosed ? '🔒 Zamknięta' : '📂 Otwarta'}</div></div>
+          <div class="di"><div class="di-lbl">Plamka</div><div class="di-val">${formatSpot(l.spotSize)}</div></div>
+          <div class="di"><div class="di-lbl">Długość fali</div><div class="di-val">${l.wavelength}</div></div>
+          <div class="di"><div class="di-lbl">Prowadnice</div><div class="di-val">${l.linearRails ? '✅ Szyny liniowe' : '⚪ Rolki/V-slot'}</div></div>
+          <div class="di"><div class="di-lbl">Kamera</div><div class="di-val">${l.camera ? '📷 Tak' : '❌ Brak'}</div></div>
+          <div class="di"><div class="di-lbl">Bezpieczeństwo</div><div class="di-val" style="font-size:.65rem">${l.safety}</div></div>
+          <div class="di"><div class="di-lbl">Gwarancja</div><div class="di-val">${l.warranty} mies.</div></div>
+        </div>
+      </td>
+    </tr>`;
+}
+
+// ═══════════════════════════════════════════════════════════
+// FILTROWANIE I SORTOWANIE
+// ═══════════════════════════════════════════════════════════
+function applyFilters() {
+    const search  = document.getElementById('search').value.toLowerCase();
+    const fType   = document.getElementById('fType').value;
+    const fPower  = document.getElementById('fPower').value;
+    const fEU     = document.getElementById('fEU').value;
+    const fExp    = document.getElementById('fExp').value;
+    const fCam    = document.getElementById('fCam').value;
+    const fSort   = document.getElementById('fSort').value;
+
+    let data = LASERS.filter(l => {
+        if (!l.brand || !l.name) return false;
+
+        // Szukaj
+        if (search && !(l.brand + ' ' + l.name).toLowerCase().includes(search)) return false;
+
+        // Typ
+        if (fType) {
+            const t = l.type.toLowerCase();
+            if (fType === 'diode' && (t.includes('fiber') || t.includes('+'))) return false;
+            if (fType === 'fiber' && !t.includes('fiber')) return false;
+            if (fType === 'combo' && !t.includes('+')) return false;
+        }
+
+        // Moc dokładna
+        if (fPower && Math.abs(l.power - parseFloat(fPower)) > 0.1) return false;
+
+        // EU
+        if (fEU === 'yes' && !l.shipEU) return false;
+
+        // Expandable
+        if (fExp === 'yes' && !l.expandable) return false;
+
+        // Kamera
+        if (fCam === 'yes' && !l.camera) return false;
+
+        return true;
+    });
+
+    // Sortowanie
+    data.sort((a, b) => {
+        if (fSort === 'power_desc') return b.power - a.power;
+        if (fSort === 'power_asc')  return a.power - b.power;
+        if (fSort === 'area_desc')  return (b.areaW * b.areaH) - (a.areaW * a.areaH);
+        if (fSort === 'speed_desc') return b.speed - a.speed;
+        if (fSort === 'brand_asc')  return a.brand.localeCompare(b.brand, 'pl');
+        return 0;
+    });
+
+    const tbody = document.getElementById('tbody');
+    tbody.innerHTML = data.length ? data.map(renderRow).join('') : '';
+
+    document.getElementById('noResults').style.display = data.length ? 'none' : 'block';
+    document.getElementById('resCount').textContent = `Znaleziono: ${data.length} laserów`;
+
+    const bar = document.getElementById('compareBar');
+    if (compareSet.size > 0) {
+        bar.classList.add('show');
+        document.getElementById('compareCount').textContent = compareSet.size;
+    } else {
+        bar.classList.remove('show');
+    }
+}
+
+// ═══════════════════════════════════════════════════════════
+// PORÓWNYWARKA
+// ═══════════════════════════════════════════════════════════
+function toggleCompare(id) {
+    if (compareSet.has(id)) {
+        compareSet.delete(id);
+    } else {
+        if (compareSet.size >= 4) { alert('Maksymalnie 4 lasery do porównania.'); return; }
+        compareSet.add(id);
+    }
+    applyFilters();
+}
+
+function openCompare() {
+    if (compareSet.size === 0) { alert('Kliknij ⊕ Porównaj przy modelach, które chcesz zestawić.'); return; }
+    const items = LASERS.filter(l => compareSet.has(l.id));
+
+    const rows = [
+        ['Typ',          l => l.type],
+        ['Moc',          l => l.power + 'W'],
+        ['Obszar roboczy', l => `${l.areaW}×${l.areaH} mm`],
+        ['Prędkość max', l => l.speed ? l.speed.toLocaleString() + ' mm/min' : '-'],
+        ['Plamka lasera', l => l.spotSize],
+        ['Długość fali', l => l.wavelength],
+        ['Szyny liniowe', l => l.linearRails ? '✅ Tak' : '❌ Nie'],
+        ['Kamera',       l => l.camera ? '📷 Tak' : '❌ Nie'],
+        ['Air Assist',   l => l.airAssist === 'builtin' ? '✅ Wbudowany' : l.airAssist === 'option' ? '🟡 Opcja' : '❌ Brak'],
+        ['Obudowa',      l => l.enclosed ? '🔒 Tak' : '📂 Nie'],
+        ['Można powiększyć', l => l.expandable ? '✅ Tak' : '❌ Nie'],
+        ['Połączenie',   l => l.conn.join(', ') || '-'],
+        ['Wysyłka z',    l => l.shipFrom],
+        ['Magazyn EU',   l => l.shipEU ? '✅ Tak' : '❌ Nie'],
+        ['Gwarancja',    l => l.warranty + ' mies.'],
+    ];
+
+    let html = `<table class="cmp-table"><thead><tr>
+        <th style="min-width:120px">PARAMETR</th>
+        ${items.map(l => `<th><div style="color:#fff;font-weight:700">${l.brand}</div><div style="color:var(--orange);font-size:.68rem">${l.name}</div>
+            <button onclick="toggleCompare(${l.id});if(compareSet.size)openCompare();else closeCompare();" style="background:rgba(248,113,113,.1);border:1px solid var(--red);color:var(--red);font-size:.55rem;cursor:pointer;margin-top:6px;border-radius:4px;padding:2px 6px;font-family:var(--font)">Usuń</button>
+        </th>`).join('')}
+    </tr></thead><tbody>
+        ${rows.map(([label, fn]) => `<tr>
+        <td class="row-label">${label}</td>
+        ${items.map(l => `<td style="text-align:center">${fn(l)}</td>`).join('')}
+    </tr>`).join('')}
+    </tbody></table>`;
+
+    document.getElementById('cmpContent').innerHTML = html;
+    document.getElementById('popupBg').classList.add('open');
+}
+
+function closeCompare() { document.getElementById('popupBg').classList.remove('open'); }
+function clearCompare() { compareSet.clear(); applyFilters(); }
+
+// ═══════════════════════════════════════════════════════════
+// START
+// ═══════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', loadData);
+</script>
+</body>
+</html>
