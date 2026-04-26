@@ -94,6 +94,61 @@ tbody tr.in-compare td{background:rgba(255,107,43,.05);border-left:3px solid var
 
 .no-results{text-align:center;padding:50px 20px;color:var(--muted);font-size:.82rem}
 .loading{text-align:center;padding:40px;color:var(--muted);font-size:.78rem}
+
+/* ── TRANSLATOR ── */
+/* ── TRANSLATE WIDGET ── */
+/* ── TRANSLATE BAR ── */
+#translate-bar {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 10000;
+  background: var(--navy);
+  border-bottom: 2px solid var(--orange);
+  padding: 10px 20px;
+  font-family: var(--font);
+  font-size: .75rem;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  text-align: center;
+}
+#translate-bar.show { display: flex; }
+#translate-bar span { color: var(--text); font-weight: 600; }
+#translate-bar .btn-yes {
+  background: var(--orange); color: #fff;
+  border: none; border-radius: 6px;
+  padding: 5px 14px; font-size: .72rem;
+  font-family: var(--font); cursor: pointer; font-weight: 700;
+}
+#translate-bar .btn-yes:hover { opacity: .85; }
+#translate-bar .btn-no {
+  background: none; color: var(--muted);
+  border: 1px solid var(--border); border-radius: 6px;
+  padding: 5px 12px; font-size: .72rem;
+  font-family: var(--font); cursor: pointer;
+}
+#translate-bar .btn-no:hover { border-color: var(--orange); color: var(--orange); }
+#translate-widget {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+#translate-widget select {
+  background: var(--card2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-family: var(--font);
+  font-size: .72rem;
+  cursor: pointer;
+}
+#translate-widget select:focus { outline: none; border-color: var(--orange); }
+#translate-widget .flag { font-size: 1rem; }
+.goog-te-banner-frame, .skiptranslate { display: none !important; }
+body { top: 0 !important; }
 </style>
 </head>
 <body>
@@ -107,6 +162,22 @@ tbody tr.in-compare td{background:rgba(255,107,43,.05);border-left:3px solid var
       <button class="btn-compare-clear" onclick="clearCompare()">✕ Wyczyść</button>
     </div>
     <a href="https://laserprofit.eu" class="back">← Kalkulator</a>
+    <div id="translate-widget">
+      <span class="flag">🌐</span>
+      <select id="lang-select" onchange="changeLang(this.value)">
+        <option value="pl">🇵🇱 PL</option>
+        <option value="en">🇬🇧 EN</option>
+        <option value="de">🇩🇪 DE</option>
+        <option value="cs">🇨🇿 CS</option>
+        <option value="sk">🇸🇰 SK</option>
+        <option value="fr">🇫🇷 FR</option>
+        <option value="nl">🇳🇱 NL</option>
+        <option value="uk">🇺🇦 UA</option>
+        <option value="ru">🇷🇺 RU</option>
+        <option value="it">🇮🇹 IT</option>
+        <option value="es">🇪🇸 ES</option>
+      </select>
+    </div>
   </div>
 </nav>
 
@@ -635,5 +706,129 @@ function clearCompare() { compareSet.clear(); applyFilters(); }
 // ═══════════════════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', loadData);
 </script>
+
+<!-- ── PASEK SUGESTII TŁUMACZENIA ── -->
+<div id="translate-bar">
+  <span id="translate-bar-msg">🌍 Translate this page?</span>
+  <button class="btn-yes" id="translate-bar-yes" onclick="acceptTranslate()">Yes, translate</button>
+  <button class="btn-no" onclick="dismissTranslate()">No thanks</button>
+</div>
+
+<!-- Google Translate (ukryty) -->
+<div id="google_translate_element" style="display:none"></div>
+<script>
+function googleTranslateElementInit() {
+  new google.translate.TranslateElement({
+    pageLanguage: 'pl',
+    includedLanguages: 'en,de,cs,sk,fr,nl,uk,ru,it,es',
+    autoDisplay: false
+  }, 'google_translate_element');
+}
+
+function changeLang(lang) {
+  localStorage.setItem('userLang', lang);
+  localStorage.setItem('userLangChosen', '1');
+  dismissTranslate();
+  if (lang === 'pl') {
+    document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/; domain=.laserprofit.eu';
+    document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/';
+    location.reload();
+    return;
+  }
+  document.cookie = `googtrans=/pl/${lang}; path=/; domain=.laserprofit.eu`;
+  document.cookie = `googtrans=/pl/${lang}; path=/`;
+  location.reload();
+}
+
+let pendingLang = null;
+
+function acceptTranslate() {
+  if (pendingLang) changeLang(pendingLang);
+}
+
+function dismissTranslate() {
+  const bar = document.getElementById('translate-bar');
+  bar.classList.remove('show');
+  localStorage.setItem('userLangChosen', '1');
+}
+
+// Teksty paska wg języka
+const barTexts = {
+  'de': { msg: '🌍 Diese Seite übersetzen?', yes: 'Ja, übersetzen', no: 'Nein danke' },
+  'en': { msg: '🌍 Translate this page?',    yes: 'Yes, translate', no: 'No thanks' },
+  'cs': { msg: '🌍 Přeložit tuto stránku?',  yes: 'Ano, přeložit', no: 'Ne, díky' },
+  'sk': { msg: '🌍 Preložiť túto stránku?',  yes: 'Áno, preložiť', no: 'Nie, ďakujem' },
+  'fr': { msg: '🌍 Traduire cette page?',    yes: 'Oui, traduire', no: 'Non merci' },
+  'nl': { msg: '🌍 Deze pagina vertalen?',   yes: 'Ja, vertalen',  no: 'Nee bedankt' },
+  'uk': { msg: '🌍 Перекласти цю сторінку?', yes: 'Так, перекласти', no: 'Ні, дякую' },
+  'ru': { msg: '🌍 Перевести эту страницу?', yes: 'Да, перевести', no: 'Нет, спасибо' },
+  'it': { msg: '🌍 Tradurre questa pagina?', yes: 'Sì, traduci',   no: 'No grazie' },
+  'es': { msg: '🌍 ¿Traducir esta página?',  yes: 'Sí, traducir', no: 'No, gracias' },
+};
+
+// Mapa kraj → język
+const countryLang = {
+  'DE': 'de', 'AT': 'de', 'CH': 'de', 'LI': 'de',
+  'GB': 'en', 'US': 'en', 'AU': 'en', 'CA': 'en', 'IE': 'en', 'NZ': 'en',
+  'CZ': 'cs',
+  'SK': 'sk',
+  'FR': 'fr', 'BE': 'fr', 'LU': 'fr', 'MC': 'fr',
+  'NL': 'nl',
+  'UA': 'uk',
+  'RU': 'ru',
+  'IT': 'it', 'SM': 'it', 'VA': 'it',
+  'ES': 'es', 'MX': 'es', 'AR': 'es',
+};
+
+async function autoDetectLang() {
+  // Jeśli użytkownik już kiedyś wybrał — nic nie rób
+  if (localStorage.getItem('userLangChosen')) return;
+
+  // Jeśli jest już cookie tłumaczenia — ustaw select
+  const cookieMatch = document.cookie.match(/googtrans=\/pl\/([a-z]+)/);
+  if (cookieMatch) {
+    const el = document.getElementById('lang-select');
+    if (el) el.value = cookieMatch[1];
+    return;
+  }
+
+  try {
+    const res = await fetch('https://ipapi.co/json/');
+    const data = await res.json();
+    const country = data.country_code;
+    const lang = countryLang[country];
+
+    if (lang && lang !== 'pl') {
+      pendingLang = lang;
+      // Pokaż pasek z pytaniem w języku użytkownika
+      const texts = barTexts[lang] || barTexts['en'];
+      document.getElementById('translate-bar-msg').textContent = texts.msg;
+      document.getElementById('translate-bar-yes').textContent = texts.yes;
+      document.querySelector('#translate-bar .btn-no').textContent = texts.no;
+      document.getElementById('translate-bar').classList.add('show');
+      // Ustaw select na wykryty język
+      const el = document.getElementById('lang-select');
+      if (el) el.value = lang;
+    }
+  } catch(e) {
+    // Brak API — nic nie rób
+  }
+}
+
+// Init przy załadowaniu
+(function() {
+  const cookieMatch = document.cookie.match(/googtrans=\/pl\/([a-z]+)/);
+  if (cookieMatch) {
+    const el = document.getElementById('lang-select');
+    if (el) el.value = cookieMatch[1];
+  }
+  // Wykryj kraj tylko przy pierwszej wizycie
+  if (!localStorage.getItem('userLangChosen')) {
+    autoDetectLang();
+  }
+})();
+</script>
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
 </body>
 </html>
