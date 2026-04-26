@@ -51,7 +51,7 @@ tbody tr:last-child td{border-bottom:none}
 tbody tr:hover td{background:rgba(255,107,43,.03)}
 tbody tr.in-compare td{background:rgba(255,107,43,.05);border-left:3px solid var(--orange)}
 
-.power-cell{font-weight:700;color:var(--orange);font-size:.82rem;line-height:1.3;white-space:nowrap}
+.power-cell{text-align:center;padding:2px 0;}
 .cat-badge{display:inline-block;padding:1px 6px;border-radius:8px;font-size:.55rem;font-weight:700;letter-spacing:.5px;margin-top:2px;width:fit-content}
 .cat-diode{background:rgba(56,189,248,.12);color:var(--blue);border:1px solid rgba(56,189,248,.2)}
 .cat-fiber{background:rgba(168,85,247,.12);color:var(--purple);border:1px solid rgba(168,85,247,.2)}
@@ -149,6 +149,12 @@ tbody tr.in-compare td{background:rgba(255,107,43,.05);border-left:3px solid var
 #translate-widget .flag { font-size: 1rem; }
 .goog-te-banner-frame, .skiptranslate { display: none !important; }
 body { top: 0 !important; }
+.brand-opt{display:flex;align-items:center;gap:8px;padding:7px 12px;font-size:.72rem;color:var(--text);cursor:pointer;transition:.15s}
+.brand-opt:hover{background:rgba(255,107,43,.06)}
+.brand-opt input[type=checkbox]{accent-color:var(--orange);cursor:pointer;width:13px;height:13px;flex-shrink:0}
+.brand-opt span{font-family:var(--font)}
+.brand-badge{cursor:pointer;transition:all .2s}
+.brand-badge.active{border-color:var(--orange);color:var(--orange);background:rgba(255,107,43,.12)}
 </style>
 </head>
 <body>
@@ -188,20 +194,46 @@ body { top: 0 !important; }
   <div id="dataStatus"></div>
 </div>
 
-<div class="brand-header">
-  <div class="brand-badge">xTool</div>
-  <div class="brand-badge">Creality</div>
-  <div class="brand-badge">Sculpfun</div>
-  <div class="brand-badge highlight">Ortur</div>
-  <div class="brand-badge">Atomstack</div>
-  <div class="brand-badge">Two Trees</div>
-  <div class="brand-badge">Acmer</div>
-  <div class="brand-badge">Longer</div>
-  <div class="brand-badge">ComMarker</div>
+<div class="brand-header" translate="no">
+  <div class="brand-badge" onclick="toggleBrand('xTool')" id="bb-xTool">xTool</div>
+  <div class="brand-badge" onclick="toggleBrand('Creality')" id="bb-Creality">Creality</div>
+  <div class="brand-badge" onclick="toggleBrand('Sculpfun')" id="bb-Sculpfun">Sculpfun</div>
+  <div class="brand-badge highlight" onclick="toggleBrand('Ortur')" id="bb-Ortur">Ortur</div>
+  <div class="brand-badge" onclick="toggleBrand('Atomstack')" id="bb-Atomstack">Atomstack</div>
+  <div class="brand-badge" onclick="toggleBrand('Two Trees')" id="bb-TwoTrees">Two Trees</div>
+  <div class="brand-badge" onclick="toggleBrand('Acmer')" id="bb-Acmer">Acmer</div>
+  <div class="brand-badge" onclick="toggleBrand('Longer')" id="bb-Longer">Longer</div>
+  <div class="brand-badge" onclick="toggleBrand('ComMarker')" id="bb-ComMarker">ComMarker</div>
 </div>
 
 <div class="filters">
-  <div class="fg"><label>🔍 Szukaj</label><input type="text" id="search" placeholder="xTool, D1 Pro, Atomstack..." oninput="applyFilters()"></div>
+  <div class="fg" style="position:relative">
+    <label>🔍 Marka</label>
+    <div id="brand-dropdown-btn" onclick="toggleBrandDropdown()" style="
+      background:var(--card);border:1px solid var(--border);color:var(--text);
+      padding:6px 28px 6px 9px;border-radius:7px;font-family:var(--font);
+      font-size:.72rem;cursor:pointer;min-width:160px;user-select:none;
+      display:flex;align-items:center;justify-content:space-between;gap:6px;">
+      <span id="brand-dropdown-label">Wszystkie marki</span>
+      <span style="color:var(--muted);font-size:.6rem">▼</span>
+    </div>
+    <div id="brand-dropdown" style="
+      display:none;position:absolute;top:100%;left:0;z-index:500;
+      background:var(--card);border:1px solid var(--border);border-radius:8px;
+      min-width:180px;box-shadow:0 8px 24px rgba(0,0,0,.4);overflow:hidden;margin-top:3px;" translate="no">
+      <div onclick="selectAllBrands()" style="padding:7px 12px;font-size:.68rem;color:var(--orange);cursor:pointer;border-bottom:1px solid var(--border);font-weight:700">✓ Wszystkie marki</div>
+      <label class="brand-opt"><input type="checkbox" value="xTool" onchange="applyFilters();updateBrandLabel();updateBrandBadges()"><span>xTool</span></label>
+      <label class="brand-opt"><input type="checkbox" value="Creality" onchange="applyFilters();updateBrandLabel();updateBrandBadges()"><span>Creality</span></label>
+      <label class="brand-opt"><input type="checkbox" value="Sculpfun" onchange="applyFilters();updateBrandLabel();updateBrandBadges()"><span>Sculpfun</span></label>
+      <label class="brand-opt"><input type="checkbox" value="Ortur" onchange="applyFilters();updateBrandLabel();updateBrandBadges()"><span>Ortur</span></label>
+      <label class="brand-opt"><input type="checkbox" value="Atomstack" onchange="applyFilters();updateBrandLabel();updateBrandBadges()"><span>Atomstack</span></label>
+      <label class="brand-opt"><input type="checkbox" value="Two Trees" onchange="applyFilters();updateBrandLabel();updateBrandBadges()"><span>Two Trees</span></label>
+      <label class="brand-opt"><input type="checkbox" value="Acmer" onchange="applyFilters();updateBrandLabel();updateBrandBadges()"><span>Acmer</span></label>
+      <label class="brand-opt"><input type="checkbox" value="Longer" onchange="applyFilters();updateBrandLabel();updateBrandBadges()"><span>Longer</span></label>
+      <label class="brand-opt"><input type="checkbox" value="ComMarker" onchange="applyFilters();updateBrandLabel();updateBrandBadges()"><span>ComMarker</span></label>
+    </div>
+  </div>
+  <input type="hidden" id="search" value="">
   <div class="fg"><label>⚡ Typ</label>
     <select id="fType" onchange="applyFilters()">
       <option value="">Wszystkie</option>
@@ -264,9 +296,9 @@ body { top: 0 !important; }
 <table id="laserTable">
 <colgroup>
   <col style="width:9%">
-  <col style="width:13%">
-  <col style="width:7%">
+  <col style="width:12%">
   <col style="width:6%">
+  <col style="width:8%">
   <col style="width:10%">
   <col style="width:8%">
   <col style="width:12%">
@@ -376,15 +408,35 @@ function getLaserTypeLabel(type) {
 // ═══════════════════════════════════════════════════════════
 // FORMAT POWER
 // ═══════════════════════════════════════════════════════════
+function getPowerColor(w, type) {
+    const t = String(type||'').toLowerCase();
+    if (t.includes('fiber') && !t.includes('diode')) return {stroke:'#a855f7', fill:'#7c3aed', label:'FIBER',  barH:28};
+    if (t.includes('diode') && t.includes('fiber'))  return {stroke:'#a855f7', fill:'#6366f1', label:'COMBO',  barH:22};
+    if (w <= 5.5)  return {stroke:'#38bdf8', fill:'#0ea5e9', label:'DIODE', barH:8};
+    if (w <= 10)   return {stroke:'#38bdf8', fill:'#0284c7', label:'DIODE', barH:12};
+    if (w <= 22)   return {stroke:'#38bdf8', fill:'#1d4ed8', label:'DIODE', barH:18};
+    if (w <= 30)   return {stroke:'#f59e0b', fill:'#d97706', label:'DIODE', barH:22};
+    if (w <= 48)   return {stroke:'#f97316', fill:'#ea580c', label:'DIODE', barH:26};
+    if (w <= 70)   return {stroke:'#ef4444', fill:'#dc2626', label:'DIODE', barH:30};
+    return              {stroke:'#ff6b2b', fill:'#ff6b2b', label:'WATER',  barH:34};
+}
+
 function formatPower(raw, typeStr) {
     if (!raw && raw !== 0) return '-';
     const num = parseFloat(String(raw));
-    const isIR = typeStr && String(typeStr).toLowerCase().includes('fiber') && String(typeStr).toLowerCase().includes('diode');
-    
-    if (isIR) {
-        return `<span style="font-weight:800;color:var(--orange)">${num}W</span><br><span style="font-size:.58rem;color:#a78bfa">+ IR</span>`;
-    }
-    return isNaN(num) ? String(raw) : `<span style="font-weight:800;color:var(--orange)">${num}W</span>`;
+    if (isNaN(num)) return String(raw);
+    const c = getPowerColor(num, typeStr);
+    const label = String(typeStr||'').toLowerCase().includes('fiber') && !String(typeStr||'').toLowerCase().includes('diode') ? num+'W IR' : num+'W';
+    const bh = c.barH;
+    const by = 34 - bh;
+    return `<svg width="44" height="52" viewBox="0 0 44 52" style="display:block;margin:0 auto">
+      <rect x="1" y="1" width="42" height="50" rx="7" fill="#0d1b2e" stroke="${c.stroke}" stroke-width="1.5"/>
+      <rect x="5" y="${by}" width="10" height="${bh}" rx="2" fill="${c.fill}" opacity="0.9"/>
+      <line x1="19" y1="16" x2="39" y2="16" stroke="${c.stroke}" stroke-width="1.2" opacity="0.6"/>
+      <line x1="19" y1="21" x2="36" y2="21" stroke="${c.stroke}" stroke-width="0.8" opacity="0.35"/>
+      <text x="22" y="38" font-size="7" fill="#7a91b0" font-family="sans-serif" text-anchor="middle">${c.label}</text>
+      <text x="22" y="48" font-size="9" fill="${c.stroke}" font-family="sans-serif" text-anchor="middle" font-weight="700">${label}</text>
+    </svg>`;
 }
 
 function formatSpot(raw) {
@@ -534,8 +586,8 @@ function renderRow(l) {
 
     return `
     <tr class="${inCmp ? 'in-compare' : ''}" data-id="${l.id}">
-      <td style="font-weight:700;font-size:.72rem;color:${isOrtur ? 'var(--orange)' : 'var(--text)'}">${l.brand}</td>
-      <td>
+      <td translate="no" style="font-weight:700;font-size:.72rem;color:${isOrtur ? 'var(--orange)' : 'var(--text)'}">${l.brand}</td>
+      <td translate="no">
         <div style="font-weight:700;font-size:.72rem;line-height:1.2">${l.name}</div>
         <button class="expand-btn" onclick="toggleDetails(${l.id},this)" style="margin-top:3px">▼ Więcej</button>
       </td>
@@ -597,7 +649,9 @@ function applyFilters() {
         if (!l.brand || !l.name) return false;
 
         // Szukaj
-        if (search && !(l.brand + ' ' + l.name).toLowerCase().includes(search)) return false;
+        // Filtr marek z checkboxów
+        const checkedBrands = [...document.querySelectorAll('#brand-dropdown input[type=checkbox]:checked')].map(cb => cb.value);
+        if (checkedBrands.length > 0 && !checkedBrands.includes(l.brand)) return false;
 
         // Typ
         if (fType) {
@@ -646,6 +700,64 @@ function applyFilters() {
         bar.classList.remove('show');
     }
 }
+
+// ═══════════════════════════════════════════════════════════
+// DROPDOWN MAREK
+// ═══════════════════════════════════════════════════════════
+function toggleBrandDropdown() {
+    const dd = document.getElementById('brand-dropdown');
+    dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
+}
+
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.fg')) {
+        const dd = document.getElementById('brand-dropdown');
+        if (dd) dd.style.display = 'none';
+    }
+});
+
+function selectAllBrands() {
+    document.querySelectorAll('#brand-dropdown input[type=checkbox]').forEach(cb => cb.checked = false);
+    updateBrandLabel();
+    updateBrandBadges();
+    applyFilters();
+}
+
+function toggleBrand(brand) {
+    const id = 'bb-' + brand.replace(' ','');
+    const badge = document.getElementById(id);
+    // Znajdź checkbox odpowiadający tej marce
+    const cbs = document.querySelectorAll('#brand-dropdown input[type=checkbox]');
+    cbs.forEach(cb => {
+        if (cb.value === brand) {
+            cb.checked = !cb.checked;
+        }
+    });
+    updateBrandLabel();
+    updateBrandBadges();
+    applyFilters();
+}
+
+function updateBrandLabel() {
+    const checked = [...document.querySelectorAll('#brand-dropdown input[type=checkbox]:checked')].map(cb => cb.value);
+    const lbl = document.getElementById('brand-dropdown-label');
+    if (!lbl) return;
+    if (checked.length === 0) lbl.textContent = 'Wszystkie marki';
+    else if (checked.length === 1) lbl.textContent = checked[0];
+    else lbl.textContent = checked[0] + ' +' + (checked.length - 1);
+}
+
+function updateBrandBadges() {
+    const checked = [...document.querySelectorAll('#brand-dropdown input[type=checkbox]:checked')].map(cb => cb.value);
+    document.querySelectorAll('.brand-badge').forEach(b => {
+        const txt = b.textContent.trim();
+        if (checked.length === 0) b.classList.remove('active');
+        else b.classList.toggle('active', checked.includes(txt));
+    });
+}
+
+// Synchronizuj checkboxy gdy klikasz badge
+// (obsługiwane przez toggleBrand wywoływane z onclick)
 
 // ═══════════════════════════════════════════════════════════
 // PORÓWNYWARKA
