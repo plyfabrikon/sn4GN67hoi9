@@ -21,8 +21,8 @@
 <link rel="canonical" href="https://laserprofit.eu/"/>
 <link rel="alternate" hreflang="x-default" href="https://laserprofit.eu/"/>
 <link rel="alternate" hreflang="pl" href="https://laserprofit.eu/"/>
-<link rel="alternate" hreflang="en" href="https://laserprofit.eu/en/"/>
-<link rel="alternate" hreflang="de" href="https://laserprofit.eu/de/"/>
+<link rel="alternate" hreflang="en" href="https://laserprofit.eu/en"/>
+<link rel="alternate" hreflang="de" href="https://laserprofit.eu/de"/>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
 <meta name="theme-color" content="#ff6b2b">
 <meta property="og:type" content="website">
@@ -258,7 +258,7 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
 <div class="nav-content">
     <a href="https://laserprofit.eu/" class="logo">⚡ LASERPROFIT.EU</a>
     <div class="nav-links">
-        <a href="#ranking" class="nav-link" style="opacity:.6;cursor:default;" title="Wkrótce dostępne">🏆 RANKING LASERÓW <span style="font-size:.55rem;background:var(--orange);color:#fff;padding:1px 5px;border-radius:8px;margin-left:3px;vertical-align:middle;">wkrótce</span></a>
+        <a href="https://laserprofit.eu/compare/" class="nav-link" title="Porównywarka laserów diodowych 2026">🏆 RANKING LASERÓW</a>
         <a href="#kalkulator" class="nav-link" data-t="nav_calc">🧮 KALKULATOR</a>
         <a href="#zasoby" class="nav-link" data-t="nav_files">📂 DARMOWE PLIKI</a>
         <a href="#bhp" class="nav-link danger" data-t="nav_bhp">⚠️ BHP</a>
@@ -358,77 +358,99 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
 <div id="changelogBanner" style="margin:20px auto 18px;background:#0d1b2e;border:1.5px solid var(--orange);border-radius:14px;overflow:hidden;max-width:1060px;">
     <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:rgba(255,107,43,.08);cursor:pointer;gap:12px;" onclick="toggleChangelog()">
         <div style="display:flex;align-items:center;gap:10px;">
-            <span style="background:var(--orange);color:#fff;font-size:.58rem;font-weight:700;padding:2px 8px;border-radius:10px;letter-spacing:1px;white-space:nowrap;">v2.6 · kwi 2026</span>
+            <span style="background:var(--orange);color:#fff;font-size:.58rem;font-weight:700;padding:2px 8px;border-radius:10px;letter-spacing:1px;white-space:nowrap;">v2.7 · kwi 2026</span>
             <span style="font-size:.75rem;font-weight:700;color:var(--text);">📋 Release Notes – co nowego w kalkulatorze?</span>
         </div>
         <div style="display:flex;align-items:center;gap:12px;flex-shrink:0;">
-            <div style="display:flex;gap:6px;">
-                <span style="background:rgba(34,197,94,.15);color:#22c55e;font-size:.6rem;font-weight:700;padding:2px 7px;border-radius:8px;">2 nowe funkcje</span>
-            </div>
+            <span style="background:rgba(34,197,94,.15);color:#22c55e;font-size:.6rem;font-weight:700;padding:2px 7px;border-radius:8px;">1 nowa funkcja</span>
             <span id="changelogArrow" style="color:var(--orange);font-size:.9rem;transition:.2s;">▼</span>
         </div>
     </div>
     <div id="changelogBody" style="display:none;padding:16px 18px;border-top:1px solid var(--border);">
-        <!-- v2.6 -->
+
+        <!-- v2.7 NAJNOWSZA -->
         <div style="margin-bottom:16px;">
             <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
-                <span style="background:var(--orange);color:#fff;font-size:.6rem;font-weight:700;padding:2px 9px;border-radius:10px;">v2.6</span>
-                <span style="font-size:.72rem;color:var(--muted);">15 kwietnia 2026</span>
+                <span style="background:var(--orange);color:#fff;font-size:.6rem;font-weight:700;padding:2px 9px;border-radius:10px;">v2.7</span>
+                <span style="font-size:.72rem;color:var(--muted);">26 kwietnia 2026</span>
                 <span style="background:rgba(34,197,94,.12);color:#22c55e;font-size:.58rem;padding:1px 7px;border-radius:8px;margin-left:auto;">NAJNOWSZA</span>
             </div>
             <div style="display:grid;gap:7px;">
                 <div style="display:flex;gap:8px;align-items:flex-start;">
                     <span style="background:rgba(34,197,94,.15);color:#22c55e;font-size:.6rem;font-weight:700;padding:1px 6px;border-radius:6px;white-space:nowrap;margin-top:1px;">NOWE</span>
-                    <span style="font-size:.72rem;color:var(--text);line-height:1.5;">🖼️ <b>PDF z własnym logo</b> – generuj profesjonalne wyceny ze swoim brandingiem. Logo zapisywane lokalnie, obsługa Ctrl+V ze schowka.</span>
-                </div>
-                <div style="display:flex;gap:8px;align-items:flex-start;">
-                    <span style="background:rgba(34,197,94,.15);color:#22c55e;font-size:.6rem;font-weight:700;padding:1px 6px;border-radius:6px;white-space:nowrap;margin-top:1px;">NOWE</span>
-                    <span style="font-size:.72rem;color:var(--text);line-height:1.5;">💬 <b>Community Chat</b> – czat społecznościowy w czasie rzeczywistym z automatycznym tłumaczeniem EN/PL/DE.</span>
+                    <span style="font-size:.72rem;color:var(--text);line-height:1.5;">🏆 <b>Porównywarka laserów diodowych 2026</b> – zestawienie i porównanie najlepszych modeli xTool, Creality, Atomstack, Sculpfun wg mocy, ceny i zastosowania. <a href="https://laserprofit.eu/compare/" style="color:var(--orange);">Sprawdź porównywarkę →</a></span>
                 </div>
             </div>
         </div>
-        <!-- v2.5 -->
-        <div style="margin-bottom:16px;padding-top:14px;border-top:1px solid var(--border);">
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
-                <span style="background:#334155;color:#94a3b8;font-size:.6rem;font-weight:700;padding:2px 9px;border-radius:10px;">v2.5</span>
-                <span style="font-size:.72rem;color:var(--muted);">4 kwietnia 2026</span>
+
+        <!-- Przycisk "Starsze wersje" -->
+        <div style="border-top:1px solid var(--border);padding-top:12px;margin-bottom:0;">
+            <button onclick="toggleOldChangelog()" id="oldChangelogBtn"
+                style="background:none;border:1px solid var(--border);color:var(--muted);font-size:.65rem;font-family:var(--font);padding:5px 12px;border-radius:8px;cursor:pointer;transition:.2s;display:flex;align-items:center;gap:6px;">
+                <span>📂 Pokaż starsze wersje (v2.4 – v2.6)</span>
+                <span id="oldChangelogArrow" style="transition:.2s;">▼</span>
+            </button>
+        </div>
+
+        <!-- STARE WERSJE – ukryte domyślnie -->
+        <div id="oldChangelogBody" style="display:none;margin-top:12px;">
+
+            <!-- v2.6 -->
+            <div style="margin-bottom:16px;padding-top:14px;border-top:1px solid var(--border);">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+                    <span style="background:#334155;color:#94a3b8;font-size:.6rem;font-weight:700;padding:2px 9px;border-radius:10px;">v2.6</span>
+                    <span style="font-size:.72rem;color:var(--muted);">15 kwietnia 2026</span>
+                </div>
+                <div style="display:grid;gap:7px;">
+                    <div style="display:flex;gap:8px;align-items:flex-start;">
+                        <span style="background:rgba(34,197,94,.15);color:#22c55e;font-size:.6rem;font-weight:700;padding:1px 6px;border-radius:6px;white-space:nowrap;margin-top:1px;">NOWE</span>
+                        <span style="font-size:.72rem;color:var(--text);line-height:1.5;">🖼️ <b>PDF z własnym logo</b> – generuj profesjonalne wyceny ze swoim brandingiem. Logo zapisywane lokalnie, obsługa Ctrl+V ze schowka.</span>
+                    </div>
+                    <div style="display:flex;gap:8px;align-items:flex-start;">
+                        <span style="background:rgba(34,197,94,.15);color:#22c55e;font-size:.6rem;font-weight:700;padding:1px 6px;border-radius:6px;white-space:nowrap;margin-top:1px;">NOWE</span>
+                        <span style="font-size:.72rem;color:var(--text);line-height:1.5;">💬 <b>Community Chat</b> – czat społecznościowy w czasie rzeczywistym z automatycznym tłumaczeniem EN/PL/DE.</span>
+                    </div>
+                </div>
             </div>
-            <div style="display:grid;gap:7px;">
-                <div style="display:flex;gap:8px;align-items:flex-start;">
-                    <span style="background:rgba(34,197,94,.15);color:#22c55e;font-size:.6rem;font-weight:700;padding:1px 6px;border-radius:6px;white-space:nowrap;margin-top:1px;">NOWE</span>
-                    <span style="font-size:.72rem;color:var(--text);line-height:1.5;">💡 <b>Funkcje od społeczności</b> – dodano opcje wykończenia (malowanie, lakierowanie) oraz tryb ekspresowy (+30%) zgłaszane przez użytkowników z Allegro i Etsy.</span>
+
+            <!-- v2.5 -->
+            <div style="margin-bottom:16px;padding-top:14px;border-top:1px solid var(--border);">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+                    <span style="background:#334155;color:#94a3b8;font-size:.6rem;font-weight:700;padding:2px 9px;border-radius:10px;">v2.5</span>
+                    <span style="font-size:.72rem;color:var(--muted);">4 kwietnia 2026</span>
                 </div>
-                <div style="display:flex;gap:8px;align-items:flex-start;">
-                    <span style="background:rgba(34,197,94,.15);color:#22c55e;font-size:.6rem;font-weight:700;padding:1px 6px;border-radius:6px;white-space:nowrap;margin-top:1px;">NOWE</span>
-                    <span style="font-size:.72rem;color:var(--text);line-height:1.5;">📐 <b>Kalkulator zużycia materiału</b> – automatyczne przeliczanie kosztu sklejki/akrylu na podstawie wymiarów projektu.</span>
+                <div style="display:grid;gap:7px;">
+                    <div style="display:flex;gap:8px;align-items:flex-start;">
+                        <span style="background:rgba(34,197,94,.15);color:#22c55e;font-size:.6rem;font-weight:700;padding:1px 6px;border-radius:6px;white-space:nowrap;margin-top:1px;">NOWE</span>
+                        <span style="font-size:.72rem;color:var(--text);line-height:1.5;">💡 <b>Funkcje od społeczności</b> – opcje wykończenia (malowanie, lakierowanie) oraz tryb ekspresowy (+30%).</span>
+                    </div>
+                    <div style="display:flex;gap:8px;align-items:flex-start;">
+                        <span style="background:rgba(34,197,94,.15);color:#22c55e;font-size:.6rem;font-weight:700;padding:1px 6px;border-radius:6px;white-space:nowrap;margin-top:1px;">NOWE</span>
+                        <span style="font-size:.72rem;color:var(--text);line-height:1.5;">📐 <b>Kalkulator zużycia materiału</b> – automatyczne przeliczanie kosztu sklejki/akrylu.</span>
+                    </div>
                 </div>
-                <div style="display:flex;gap:8px;align-items:flex-start;">
-                    <span style="background:rgba(251,191,36,.15);color:#fbbf24;font-size:.6rem;font-weight:700;padding:1px 6px;border-radius:6px;white-space:nowrap;margin-top:1px;">ZMIANA</span>
-                    <span style="font-size:.72rem;color:var(--muted);line-height:1.5;">Zaktualizowano 14 tłumaczeń – poprawiono błędy językowe w wersji norweskiej, szwedzkiej i czeskiej.</span>
+            </div>
+
+            <!-- v2.4 -->
+            <div style="padding-top:14px;border-top:1px solid var(--border);">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+                    <span style="background:#334155;color:#94a3b8;font-size:.6rem;font-weight:700;padding:2px 9px;border-radius:10px;">v2.4</span>
+                    <span style="font-size:.72rem;color:var(--muted);">18 marca 2026</span>
+                </div>
+                <div style="display:grid;gap:7px;">
+                    <div style="display:flex;gap:8px;align-items:flex-start;">
+                        <span style="background:rgba(34,197,94,.15);color:#22c55e;font-size:.6rem;font-weight:700;padding:1px 6px;border-radius:6px;white-space:nowrap;margin-top:1px;">NOWE</span>
+                        <span style="font-size:.72rem;color:var(--text);line-height:1.5;">⚡ <b>12 walut w czasie rzeczywistym</b> – USD, EUR, GBP, CHF, CZK, UAH i więcej.</span>
+                    </div>
+                    <div style="display:flex;gap:8px;align-items:flex-start;">
+                        <span style="background:rgba(34,197,94,.15);color:#22c55e;font-size:.6rem;font-weight:700;padding:1px 6px;border-radius:6px;white-space:nowrap;margin-top:1px;">NOWE</span>
+                        <span style="font-size:.72rem;color:var(--text);line-height:1.5;">🚀 <b>Opcje ekspresowe i wykończenie</b> – malowanie, lakierowanie, grawerowanie dwustronne.</span>
+                    </div>
                 </div>
             </div>
         </div>
-        <!-- v2.4 -->
-        <div style="padding-top:14px;border-top:1px solid var(--border);">
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
-                <span style="background:#334155;color:#94a3b8;font-size:.6rem;font-weight:700;padding:2px 9px;border-radius:10px;">v2.4</span>
-                <span style="font-size:.72rem;color:var(--muted);">18 marca 2026</span>
-            </div>
-            <div style="display:grid;gap:7px;">
-                <div style="display:flex;gap:8px;align-items:flex-start;">
-                    <span style="background:rgba(34,197,94,.15);color:#22c55e;font-size:.6rem;font-weight:700;padding:1px 6px;border-radius:6px;white-space:nowrap;margin-top:1px;">NOWE</span>
-                    <span style="font-size:.72rem;color:var(--text);line-height:1.5;">⚡ <b>12 walut w czasie rzeczywistym</b> – USD, EUR, GBP, CHF, CZK, UAH i więcej z automatyczną konwersją.</span>
-                </div>
-                <div style="display:flex;gap:8px;align-items:flex-start;">
-                    <span style="background:rgba(34,197,94,.15);color:#22c55e;font-size:.6rem;font-weight:700;padding:1px 6px;border-radius:6px;white-space:nowrap;margin-top:1px;">NOWE</span>
-                    <span style="font-size:.72rem;color:var(--text);line-height:1.5;">🚀 <b>Opcje ekspresowe i wykończenie</b> – malowanie, lakierowanie, grawerowanie dwustronne z automatyczną dopłatą.</span>
-                </div>
-                <div style="display:flex;gap:8px;align-items:flex-start;">
-                    <span style="background:rgba(251,191,36,.15);color:#fbbf24;font-size:.6rem;font-weight:700;padding:1px 6px;border-radius:6px;white-space:nowrap;margin-top:1px;">ZMIANA</span>
-                    <span style="font-size:.72rem;color:var(--muted);line-height:1.5;">Dodano 47 nowych modeli laserów do bazy – Atomstack, Sculpfun, OMTech, Thunder Laser.</span>
-                </div>
-            </div>
-        </div>
+
+        <!-- WKRÓTCE -->
         <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border);">
             <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
                 <span style="background:rgba(251,191,36,.15);color:#fbbf24;font-size:.6rem;font-weight:700;padding:2px 9px;border-radius:10px;">🔜 WKRÓTCE</span>
@@ -436,23 +458,20 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
             </div>
             <div style="display:grid;gap:7px;">
                 <div style="display:flex;gap:8px;align-items:flex-start;">
-                    <span style="background:rgba(251,191,36,.12);color:#fbbf24;font-size:.6rem;font-weight:700;padding:1px 6px;border-radius:6px;white-space:nowrap;margin-top:1px;">v2.7</span>
+                    <span style="background:rgba(251,191,36,.12);color:#fbbf24;font-size:.6rem;font-weight:700;padding:1px 6px;border-radius:6px;white-space:nowrap;margin-top:1px;">v2.8</span>
                     <span style="font-size:.72rem;color:var(--muted);line-height:1.5;">💰 <b style="color:var(--text);">Kalkulator platform sprzedażowych</b> – oblicz realny zysk po odliczeniu prowizji Allegro (8 kategorii) i Etsy.</span>
                 </div>
                 <div style="display:flex;gap:8px;align-items:flex-start;">
-                    <span style="background:rgba(251,191,36,.12);color:#fbbf24;font-size:.6rem;font-weight:700;padding:1px 6px;border-radius:6px;white-space:nowrap;margin-top:1px;">v2.7</span>
-                    <span style="font-size:.72rem;color:var(--muted);line-height:1.5;">📜 <b style="color:var(--text);">Historia wyliczeń</b> – ostatnie 10 wycen zapisane w przeglądarce, powrót do poprzednich projektów jednym kliknięciem.</span>
+                    <span style="background:rgba(251,191,36,.12);color:#fbbf24;font-size:.6rem;font-weight:700;padding:1px 6px;border-radius:6px;white-space:nowrap;margin-top:1px;">v2.8</span>
+                    <span style="font-size:.72rem;color:var(--muted);line-height:1.5;">📜 <b style="color:var(--text);">Historia wyliczeń</b> – ostatnie 10 wycen zapisane w przeglądarce.</span>
                 </div>
                 <div style="display:flex;gap:8px;align-items:flex-start;">
-                    <span style="background:rgba(251,191,36,.12);color:#fbbf24;font-size:.6rem;font-weight:700;padding:1px 6px;border-radius:6px;white-space:nowrap;margin-top:1px;">v2.8</span>
-                    <span style="font-size:.72rem;color:var(--muted);line-height:1.5;">🏆 <b style="color:var(--text);">Ranking laserów diodowych 2026</b> – zestawienie najlepszych modeli wg mocy, ceny i zastosowania z ocenami społeczności.</span>
-                </div>
-                <div style="display:flex;gap:8px;align-items:flex-start;">
-                    <span style="background:rgba(251,191,36,.12);color:#fbbf24;font-size:.6rem;font-weight:700;padding:1px 6px;border-radius:6px;white-space:nowrap;margin-top:1px;">v2.8</span>
-                    <span style="font-size:.72rem;color:var(--muted);line-height:1.5;">⚡ <b style="color:var(--text);">Ranking laserów fiber</b> – porównanie maszyn fiber do grawerowania metalu z analizą ROI i czasem zwrotu inwestycji.</span>
+                    <span style="background:rgba(251,191,36,.12);color:#fbbf24;font-size:.6rem;font-weight:700;padding:1px 6px;border-radius:6px;white-space:nowrap;margin-top:1px;">v2.9</span>
+                    <span style="font-size:.72rem;color:var(--muted);line-height:1.5;">⚡ <b style="color:var(--text);">Ranking laserów fiber</b> – porównanie maszyn fiber do grawerowania metalu z analizą ROI.</span>
                 </div>
             </div>
         </div>
+
         <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
             <span style="font-size:.62rem;color:var(--muted);">LaserProfit.eu · darmowy kalkulator wyceny grawerowania laserem</span>
             <div style="display:flex;gap:10px;">
@@ -1411,11 +1430,20 @@ function calculate(){
 // ============================================================
 /* ── CHANGELOG ── */
 function toggleChangelog(){
-    var body = document.getElementById('changelogBody');
-    var arrow = document.getElementById('changelogArrow');
-    var open = body.style.display === 'block';
-    body.style.display = open ? 'none' : 'block';
-    arrow.style.transform = open ? 'rotate(0deg)' : 'rotate(180deg)';
+    var body=document.getElementById('changelogBody');
+    var arrow=document.getElementById('changelogArrow');
+    var open=body.style.display==='block';
+    body.style.display=open?'none':'block';
+    arrow.style.transform=open?'rotate(0deg)':'rotate(180deg)';
+}
+function toggleOldChangelog(){
+    var body=document.getElementById('oldChangelogBody');
+    var arrow=document.getElementById('oldChangelogArrow');
+    var btn=document.getElementById('oldChangelogBtn');
+    var open=body.style.display==='block';
+    body.style.display=open?'none':'block';
+    arrow.style.transform=open?'rotate(0deg)':'rotate(180deg)';
+    btn.querySelector('span:first-child').textContent=open?'📂 Pokaż starsze wersje (v2.4 – v2.6)':'📂 Ukryj starsze wersje';
 }
 
 /* ── LOGO PDF MODAL ── */
