@@ -304,6 +304,18 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
 </div>
 </nav>
 <div class="container">
+
+<!-- ── LASER PROBLEMS – search bar ── -->
+<div style="background:rgba(255,107,43,.06);border:1.5px solid rgba(255,107,43,.25);border-radius:12px;padding:10px 16px;margin:14px 0 0;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+    <span style="font-size:.75rem;font-weight:700;color:var(--orange);white-space:nowrap;">🔍 Having a problem with laser engraving or cutting?</span>
+    <input type="text" id="problemSearch" placeholder="Type your problem e.g. burn marks, focus, wood..." onkeydown="if(event.key==='Enter')goToProblems()"
+        style="flex:1;min-width:180px;padding:7px 12px;border-radius:7px;border:1px solid var(--border);background:var(--input-bg,#0a1624);color:var(--text);font-size:.78rem;font-family:var(--font);outline:none;">
+    <button onclick="goToProblems()"
+        style="background:var(--orange);color:#fff;border:none;border-radius:7px;padding:7px 16px;font-size:.75rem;font-weight:700;cursor:pointer;font-family:var(--font);white-space:nowrap;">Find Solution →</button>
+    <a href="https://laserprofit.eu/laser-problems/" target="_blank" style="font-size:.65rem;color:var(--muted);text-decoration:none;white-space:nowrap;">Full problem database →</a>
+    <span style="font-size:.62rem;color:var(--muted);margin-left:auto;white-space:nowrap;">👁 Visits: <b id="visitorCounter" style="color:var(--orange);">...</b></span>
+</div>
+
 <section class="hero">
     <div class="hero-left">
         <span class="hero-badge">FREE TOOL · 2026</span>
@@ -369,7 +381,7 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
             <span style="font-size:.75rem;font-weight:700;color:var(--text);">📋 Release Notes – what's new in the calculator?</span>
         </div>
         <div style="display:flex;align-items:center;gap:12px;flex-shrink:0;">
-            <span style="background:rgba(34,197,94,.15);color:#22c55e;font-size:.6rem;font-weight:700;padding:2px 7px;border-radius:8px;">1 new feature</span>
+            <span style="background:rgba(34,197,94,.15);color:#22c55e;font-size:.6rem;font-weight:700;padding:2px 7px;border-radius:8px;">2 new features</span>
             <span id="changelogArrow" style="color:var(--orange);font-size:.9rem;transition:.2s;">▼</span>
         </div>
     </div>
@@ -385,6 +397,10 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
                 <div style="display:flex;gap:8px;align-items:flex-start;">
                     <span style="background:rgba(34,197,94,.15);color:#22c55e;font-size:.6rem;font-weight:700;padding:1px 6px;border-radius:6px;white-space:nowrap;margin-top:1px;">NEW</span>
                     <span style="font-size:.72rem;color:var(--text);line-height:1.5;">🏆 <b>Diode laser comparator 2026</b> – compare top models from xTool, Creality, Atomstack, Sculpfun by power, price and use case. <a href="https://laserprofit.eu/compare/" style="color:var(--orange);">Open comparator →</a></span>
+                </div>
+                <div style="display:flex;gap:8px;align-items:flex-start;">
+                    <span style="background:rgba(34,197,94,.15);color:#22c55e;font-size:.6rem;font-weight:700;padding:1px 6px;border-radius:6px;white-space:nowrap;margin-top:1px;">NEW</span>
+                    <span style="font-size:.72rem;color:var(--text);line-height:1.5;">🔍 <b>Laser Problems Database</b> – 72 real problems with diode and fiber lasers sourced from PL &amp; EN forums. Search bar above the hero. <a href="https://laserprofit.eu/laser-problems/" style="color:var(--orange);">Browse database →</a></span>
                 </div>
             </div>
         </div>
@@ -801,6 +817,8 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
 <footer>
     &copy; 2026 <a href="https://laserprofit.eu" style="color:var(--orange);text-decoration:none;">LaserProfit.eu</a>
     &mdash; All affiliate links. Thank you for supporting us!
+    <br><br>
+    <span style="font-size:.72rem;color:var(--muted);">👁 Total visits: <b id="visitorCounterBadge" style="color:var(--orange);">...</b></span>
     <br><br>
     <button onclick="document.getElementById('fbModal').classList.add('open')" class="btn" style="display:inline-block;width:auto;padding:8px 20px;font-size:.75rem;background:var(--navy);border:1px solid var(--orange);">💬 Report issue / Suggest improvement</button>
 </footer>
@@ -1240,6 +1258,38 @@ function printWithLogo(){
     win.onload=function(){win.print();};
 }
 
+/* ── LASER PROBLEMS SEARCH ── */
+function goToProblems(){
+    var q=document.getElementById('problemSearch').value.trim();
+    var url='https://laserprofit.eu/laser-problems/';
+    if(q) url+='?q='+encodeURIComponent(q);
+    window.open(url,'_blank');
+}
+
+/* ── VISITOR COUNTER ── */
+function startVisitorCounter(){
+    try {
+        var db=firebase.database();
+        var ref=db.ref('visitors/total');
+        ref.transaction(function(current){
+            return (current||0)+1;
+        },function(err,committed,snapshot){
+            if(!err&&committed&&snapshot) updateCounterDisplay(snapshot.val());
+        });
+        ref.on('value',function(snap){
+            if(snap.val()!==null) updateCounterDisplay(snap.val());
+        });
+    } catch(e){ console.log('Counter error:',e); }
+}
+
+function updateCounterDisplay(count){
+    var n=Number(count).toLocaleString('en-GB');
+    var el=document.getElementById('visitorCounter');
+    if(el) el.textContent=n;
+    var el2=document.getElementById('visitorCounterBadge');
+    if(el2) el2.textContent=n;
+}
+
 function saveTXT(){
     const c=window._last;if(!c){alert('Please calculate first!');return;}
     const T=getT();const sym=c.sym;
@@ -1365,6 +1415,7 @@ function initChat(){
     try{
         if(!firebase.apps.length) firebase.initializeApp(FB_CONFIG);
         chatDb=firebase.database();
+        startVisitorCounter();
         chatRef=chatDb.ref('chat/messages');
     }catch(e){console.error('Firebase error:',e);}
     var saved=localStorage.getItem(CHAT_USER_KEY);
