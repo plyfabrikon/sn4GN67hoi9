@@ -843,20 +843,7 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
 // ============================================================
 // AUTO-REDIRECT basierend auf Browsersprache
 // ============================================================
-(function(){
-    const path=window.location.pathname;
-    const isDE=path.startsWith('/de');
-    const isEN=path.startsWith('/en');
-    const isPL=!isDE&&!isEN;
-    if(document.cookie.indexOf('lp_redirect=1')!==-1)return;
-    document.cookie='lp_redirect=1;max-age=3600;path=/';
-    const lang=(navigator.language||navigator.userLanguage||'de').toLowerCase();
-    const isDEb=lang.startsWith('de');
-    const isENb=lang.startsWith('en');
-    if(isDEb&&!isDE){window.location.href='https://laserprofit.eu/de/';}
-    else if(isENb&&!isEN){window.location.href='https://laserprofit.eu/en/';}
-    else if(!isDEb&&!isENb&&!isPL){window.location.href='https://laserprofit.eu/';}
-})();
+
 
 // ============================================================
 // ÜBERSETZUNGEN (gleiche Struktur wie Original – nur DE & EN als Hauptsprachen)
