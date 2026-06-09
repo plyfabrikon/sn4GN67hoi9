@@ -1439,10 +1439,6 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
               <div class="storm-param-lbl">Warstwa gran.</div>
               <div class="storm-param-val" id="sp-blh">-- m</div>
             </div>
-            <div class="storm-param" style="border-top:1px solid var(--border);padding-top:7px;grid-column:1/-1;background:rgba(180,0,80,.08);border-color:rgba(255,50,120,.25)">
-              <div class="storm-param-lbl" style="color:#ff6090">🌪️ Ryzyko trąby powietrznej</div>
-              <div class="storm-param-val" id="sp-tornado" style="color:#ff4080">--</div>
-            </div>
           </div>
 
           <!-- Legenda -->
@@ -1844,37 +1840,4 @@ function radarWindUpdatePanel(){
   if(!layers.wind.on)radarWindSetStatus('Warstwa ukryta. Wlacz "Wiatr", aby pobrac siatke dla Europy.',"");
 }
 function radarWindUpdateLabels(){
-  var slider=document.getElementById("radar-wind-slider");
-  var offsetEl=document.getElementById("radar-wind-offset");
-  var timeEl=document.getElementById("radar-wind-time");
-  var metaEl=document.getElementById("radar-wind-meta");
-  if(offsetEl)offsetEl.textContent=radarWindFmtOffset(radarWindState.selectedOffset);
-  if(slider){
-    slider.value=String(radarWindState.selectedOffset);
-    slider.min=String(-radarWindState.centerSlot);
-    slider.max=String(Math.max(0,radarWindState.timestamps.length-radarWindState.centerSlot-1));
-  }
-  if(timeEl){
-    var ts=radarWindState.timestamps[radarWindState.selectedIndex];
-    timeEl.textContent=ts?radarWindFmtDate(ts,true):"--:--";
-  }
-  if(metaEl){
-    var updateTxt=radarWindState.updateTime?radarWindFmtDate(radarWindState.updateTime,false):"--";
-    metaEl.textContent="Open-Meteo / update "+updateTxt+" / Europa + PL dense";
-  }
-}
-function setRadarWindOffset(val){
-  if(!radarWindState.timestamps.length){
-    radarWindState.selectedOffset=0;
-    radarWindUpdateLabels();
-    return;
-  }
-  var min=-radarWindState.centerSlot;
-  var max=Math.max(0,radarWindState.timestamps.length-radarWindState.centerSlot-1);
-  var offset=Math.max(min,Math.min(max,parseInt(val,10)||0));
-  radarWindState.selectedOffset=offset;
-  radarWindState.selectedIndex=radarWindState.centerSlot+offset;
-  radarWindState.needsFieldRefresh=true;
-  radarWindState.forceRespawn=true;
-  radarWindUpdateLabels();
-  if(radarWindState.rea
+  var slider=document.getElementByI
