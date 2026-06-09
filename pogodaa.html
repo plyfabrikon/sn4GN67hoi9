@@ -1,0 +1,1843 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>StormChaser</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+/* ═══════════════════════════════════════════
+   RESET & BASE
+═══════════════════════════════════════════ */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:       #05101e;
+  --bg2:      #071526;
+  --bg3:      #0a1e35;
+  --border:   #1a3550;
+  --accent:   #e8821a;
+  --accent2:  #f5a030;
+  --blue:     #1a8fd1;
+  --blue2:    #29d4ff;
+  --text:     #cce0f5;
+  --text2:    #6b90b0;
+  --glow:     rgba(232,130,26,0.25);
+}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-serif;font-size:13px;display:flex;flex-direction:column}
+
+/* ═══════════════════════════════════════════
+   TOPBAR / NAV
+═══════════════════════════════════════════ */
+.topbar{
+  flex-shrink:0;height:48px;
+  background:linear-gradient(180deg,#0a1e35 0%,#05101e 100%);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;
+  padding:0 16px;gap:0;position:relative;z-index:1000;
+}
+.logo{
+  font-size:1.2rem;font-weight:900;letter-spacing:2px;
+  margin-right:32px;white-space:nowrap;
+  font-family:'Segoe UI',sans-serif;
+}
+.logo span{color:#fff}
+.logo b{color:var(--accent);font-style:italic}
+.logo em{color:var(--accent2);font-style:normal;font-size:.75em;font-weight:700}
+
+/* Nav links */
+.nav{display:flex;flex:1;gap:0;height:100%}
+.nav-item{
+  display:flex;align-items:center;padding:0 16px;
+  font-size:.72rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--text2);cursor:pointer;position:relative;
+  border-bottom:3px solid transparent;transition:all .2s;
+  white-space:nowrap;
+}
+.nav-item:hover{color:var(--text);background:rgba(255,255,255,.04)}
+.nav-item.active{
+  color:#fff;border-bottom-color:var(--accent);
+  background:rgba(232,130,26,.07);
+}
+.nav-item.active::after{
+  content:'';position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);
+  width:6px;height:6px;background:var(--accent);border-radius:50%;
+}
+
+/* Status pills */
+.nav-right{display:flex;align-items:center;gap:8px;margin-left:auto}
+.pill{font-size:.58rem;padding:2px 8px;border-radius:20px;border:1px solid;white-space:nowrap;font-weight:600}
+.pill.ok{border-color:#1fde8a;color:#1fde8a;background:rgba(31,222,138,.08)}
+.pill.wn{border-color:var(--accent);color:var(--accent);background:rgba(232,130,26,.08)}
+.pill.al{border-color:#ff3a3a;color:#ff3a3a}
+.pill.of{border-color:#1a3550;color:#3a6080}
+.pill-btn{
+  display:none;align-items:center;justify-content:center;
+  width:22px;height:22px;border-radius:50%;
+  border:1px solid rgba(255,58,58,.45);
+  background:rgba(255,58,58,.10);color:#ff9c9c;
+  cursor:pointer;font-size:.78rem;line-height:1;flex-shrink:0
+}
+.pill-btn.show{display:inline-flex}
+.pill-btn:hover{background:rgba(255,58,58,.18);color:#fff}
+.clk{font-size:.78rem;color:var(--blue2);font-family:monospace;font-weight:700;margin-left:8px;letter-spacing:1px}
+
+/* ═══════════════════════════════════════════
+   MAIN LAYOUT
+═══════════════════════════════════════════ */
+.layout{display:flex;flex:1;overflow:hidden;min-height:0}
+
+/* ═══════════════════════════════════════════
+   LEFT PANEL
+═══════════════════════════════════════════ */
+.panel-left{
+  width:320px;flex-shrink:0;
+  background:var(--bg2);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+
+/* Location card */
+.loc-card{
+  padding:14px 16px 10px;
+  border-bottom:1px solid var(--border);
+  background:linear-gradient(135deg,#071e38 0%,#051526 100%);
+  flex-shrink:0;
+}
+.loc-city{font-size:1.6rem;font-weight:700;color:#fff;line-height:1;margin-bottom:2px}
+.loc-street{font-size:.8rem;color:var(--text2);margin-bottom:10px;min-height:1rem}
+.loc-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.loc-item{}
+.loc-label{font-size:.54rem;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:2px}
+.loc-val{font-size:.78rem;color:var(--blue2);font-family:monospace;font-weight:600}
+
+/* Weather card - aktualny opis */
+.wx-card{
+  padding:12px 16px;border-bottom:1px solid var(--border);
+  background:var(--bg3);flex-shrink:0;
+}
+.wx-icon{font-size:2.2rem;line-height:1;margin-bottom:4px}
+.wx-desc{font-size:.78rem;color:var(--text2);margin-bottom:8px}
+.wx-row{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:8px}
+.wx-temp{font-size:2.8rem;font-weight:800;color:#fff;line-height:1}
+.wx-temp sup{font-size:1rem;color:var(--text2)}
+.wx-feel{font-size:.72rem;color:var(--text2);margin-top:2px}
+.wx-metrics{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.wx-met{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:6px;padding:7px 8px;position:relative;overflow:hidden}
+.wx-met::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px}
+.wx-met.t::after{background:linear-gradient(90deg,#ff6b35,#ff3a3a)}
+.wx-met.h::after{background:linear-gradient(90deg,#29d4ff,#1a8fd1)}
+.wx-met.p::after{background:linear-gradient(90deg,#a78bfa,#7c3aed)}
+.wx-met.d::after{background:linear-gradient(90deg,#1fde8a,#0aa060)}
+.wx-met.v::after{background:linear-gradient(90deg,#ffe033,#cc8800)}
+.wx-met.w::after{background:linear-gradient(90deg,#1fde8a,#1a8fd1)}
+.wx-ml{font-size:.5rem;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:2px}
+.wx-mv{font-size:1.2rem;font-weight:700;line-height:1;color:#fff}
+.wx-mu{font-size:.55rem;color:var(--text2);margin-top:1px}
+
+/* Risk banner */
+.risk-banner{
+  margin:10px 12px;border-radius:8px;
+  padding:12px 14px;border-left:4px solid var(--accent);
+  background:linear-gradient(135deg,rgba(232,130,26,.15) 0%,rgba(232,130,26,.05) 100%);
+  flex-shrink:0;
+}
+.risk-banner.low{border-left-color:#1fde8a;background:linear-gradient(135deg,rgba(31,222,138,.12) 0%,rgba(31,222,138,.04) 100%)}
+.risk-banner.hi{border-left-color:#ff3a3a;background:linear-gradient(135deg,rgba(255,58,58,.18) 0%,rgba(255,58,58,.06) 100%)}
+.risk-top{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.risk-num{font-size:2.2rem;font-weight:900;line-height:1;min-width:44px}
+.risk-right{}
+.risk-level{font-size:.78rem;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+.risk-desc{font-size:.65rem;color:var(--text2);margin-top:2px}
+.risk-detail{font-size:.62rem;color:var(--accent);letter-spacing:.5px;margin-top:6px;font-weight:600}
+
+/* Wind card */
+.wind-card{
+  padding:10px 12px;border-bottom:1px solid var(--border);
+  flex-shrink:0;background:var(--bg2);
+}
+.wind-title{font-size:.56rem;font-weight:700;letter-spacing:2px;color:var(--text2);text-transform:uppercase;margin-bottom:8px}
+.wind-body{display:flex;gap:12px;align-items:center}
+.wind-rose{width:64px;height:64px;flex-shrink:0}
+.wind-rows{flex:1;display:flex;flex-direction:column;gap:5px}
+.wind-row{display:flex;justify-content:space-between;align-items:center;padding:4px 8px;background:rgba(255,255,255,.03);border-radius:4px}
+.wind-lbl{font-size:.58rem;color:var(--text2);display:flex;align-items:center;gap:5px}
+.wind-lbl svg{width:14px;height:14px;opacity:.6}
+.wind-val{font-size:.82rem;font-weight:700;font-family:monospace}
+
+/* Forecast strip */
+.fc-card{
+  flex:1;overflow-y:auto;padding:10px 12px 0;
+  background:var(--bg2);
+}
+.fc-card::-webkit-scrollbar{width:3px}
+.fc-card::-webkit-scrollbar-thumb{background:var(--border)}
+.fc-title{font-size:.56rem;font-weight:700;letter-spacing:2px;color:var(--text2);text-transform:uppercase;margin-bottom:8px}
+.fc-grid{display:flex;flex-direction:column;gap:4px}
+.fc-day{
+  display:grid;grid-template-columns:40px 28px 1fr 36px 36px;
+  align-items:center;gap:6px;padding:5px 8px;
+  background:rgba(255,255,255,.025);border-radius:5px;cursor:pointer;
+  border:1px solid transparent;transition:all .15s;
+}
+.fc-day:hover,.fc-day.today{border-color:var(--border);background:rgba(255,255,255,.05)}
+.fc-day.today{border-left:2px solid var(--accent)}
+.fc-dname{font-size:.65rem;font-weight:700;color:var(--text2)}
+.fc-day.today .fc-dname{color:var(--accent)}
+.fc-icon{font-size:1.1rem;text-align:center}
+.fc-bar{height:4px;background:#1a2e42;border-radius:2px;overflow:hidden;position:relative}
+.fc-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--blue),var(--accent))}
+.fc-hi{font-size:.72rem;font-weight:700;color:#fff;text-align:right}
+.fc-lo{font-size:.65rem;color:var(--text2);text-align:right}
+
+/* Footer */
+.panel-footer{
+  padding:6px 12px;border-top:1px solid var(--border);
+  font-size:.55rem;color:var(--text2);flex-shrink:0;
+  background:var(--bg);
+}
+
+/* ═══════════════════════════════════════════
+   RIGHT PANEL - MAP
+═══════════════════════════════════════════ */
+.panel-right{flex:1;display:flex;flex-direction:column;min-width:0;position:relative}
+
+/* Map section title */
+.map-header{
+  flex-shrink:0;height:32px;background:var(--bg2);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 12px;gap:8px;
+}
+.map-header-title{font-size:.6rem;font-weight:700;letter-spacing:2px;color:var(--text2);text-transform:uppercase}
+.map-header-badge{
+  font-size:.58rem;color:var(--accent);font-family:monospace;
+  background:rgba(232,130,26,.1);border:1px solid rgba(232,130,26,.3);
+  padding:1px 6px;border-radius:3px;
+}
+#mapbox{position:relative;flex:1;overflow:hidden;background:#03080f}
+#map{width:100%;height:100%}
+
+/* Leaflet zoom - top right */
+.leaflet-top.leaflet-right{top:8px !important}
+.leaflet-control-zoom{
+  margin:0 8px 0 0 !important;
+  border:1px solid var(--border) !important;
+  border-radius:6px !important;overflow:hidden;
+  box-shadow:0 2px 12px rgba(0,0,0,.5) !important;
+}
+.leaflet-control-zoom a{
+  background:rgba(5,16,30,.92) !important;
+  color:var(--text) !important;border:none !important;
+  border-bottom:1px solid var(--border) !important;
+  width:28px !important;height:28px !important;
+  line-height:28px !important;font-size:16px !important;
+  transition:all .15s;
+}
+.leaflet-control-zoom a:hover{background:rgba(232,130,26,.2) !important;color:#fff !important}
+.leaflet-control-zoom-out{border-bottom:none !important}
+
+/* Layer panel */
+.lyr-panel{
+  position:absolute;top:8px;left:8px;z-index:600;
+  background:rgba(4,12,24,0.93);
+  border:1px solid rgba(26,53,80,.8);
+  border-radius:8px;padding:9px 10px;
+  backdrop-filter:blur(8px);min-width:175px;
+  box-shadow:0 4px 20px rgba(0,0,0,.6);
+}
+.lyr-head{font-size:.52rem;font-weight:700;letter-spacing:2px;color:var(--text2);text-transform:uppercase;margin-bottom:7px;padding-bottom:5px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:5px}
+.lyr-row{display:flex;align-items:center;gap:8px;padding:4px 3px;cursor:pointer;border-radius:4px;transition:background .12s;user-select:none}
+.lyr-row:hover{background:rgba(255,255,255,.05)}
+.lyr-chk{width:15px;height:15px;border-radius:3px;border:1.5px solid #2a4560;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;transition:all .15s;background:rgba(255,255,255,.03)}
+.lyr-chk.on{border-color:currentColor;background:currentColor}
+.lyr-chk.on::after{content:"✓";color:#000;font-weight:900;font-size:9px}
+.lyr-dot{width:5px;height:20px;border-radius:3px;flex-shrink:0}
+.lyr-label{font-size:.64rem;color:var(--text);line-height:1.2;flex:1}
+.lyr-label small{font-size:.52rem;color:var(--text2);display:block}
+.lyr-sep{height:1px;background:var(--border);margin:5px 0}
+.lyr-sub{font-size:.5rem;font-weight:700;letter-spacing:1.5px;color:var(--text2);text-transform:uppercase;margin-bottom:4px}
+.base-row{display:flex;gap:3px}
+.base-btn{flex:1;font-size:.54rem;padding:4px 3px;border-radius:4px;border:1px solid var(--border);background:rgba(255,255,255,.03);color:var(--text2);cursor:pointer;text-align:center;transition:all .15s;font-weight:600}
+.base-btn:hover{border-color:var(--accent);color:var(--accent)}
+.base-btn.on{border-color:var(--accent);color:#000;background:var(--accent);font-weight:700}
+.test-btn{
+  width:100%;font-size:.58rem;padding:5px;border-radius:4px;margin-top:5px;
+  border:1px solid rgba(255,224,51,.3);background:rgba(255,224,51,.06);
+  color:#ffe033;cursor:pointer;letter-spacing:.8px;font-weight:600;
+  transition:all .15s;
+}
+.test-btn:hover{background:rgba(255,224,51,.15);border-color:#ffe033}
+
+/* Map badge + lightning counter */
+.map-badge{
+  position:absolute;bottom:10px;left:10px;z-index:500;
+  font-size:.58rem;color:var(--blue2);
+  background:rgba(4,12,24,.88);border:1px solid var(--border);
+  padding:3px 8px;border-radius:4px;font-family:monospace;
+}
+.wind-overlay-panel{
+  position:absolute;left:50%;bottom:10px;transform:translateX(-50%);
+  z-index:510;min-width:360px;max-width:min(760px,calc(100% - 160px));
+  background:rgba(4,12,24,.9);border:1px solid rgba(26,53,80,.95);
+  border-radius:10px;padding:8px 10px;backdrop-filter:blur(8px);
+  box-shadow:0 6px 20px rgba(0,0,0,.45);display:none;
+}
+.wind-overlay-panel.show{display:block}
+.wind-overlay-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.wind-overlay-title{font-size:.58rem;font-weight:700;letter-spacing:1.6px;color:var(--text2);text-transform:uppercase;white-space:nowrap}
+.wind-overlay-time{font-size:1rem;font-weight:800;color:#1fde8a;font-family:monospace;letter-spacing:.8px;min-width:104px}
+.wind-overlay-meta{font-size:.55rem;color:var(--text2);font-family:monospace;white-space:nowrap}
+.wind-overlay-refresh{
+  margin-left:auto;font-size:.54rem;padding:4px 8px;border-radius:5px;border:1px solid var(--border);
+  background:rgba(255,255,255,.04);color:var(--text2);cursor:pointer;transition:all .15s
+}
+.wind-overlay-refresh:hover{border-color:var(--accent);color:var(--accent)}
+.wind-overlay-slider{display:flex;align-items:center;gap:10px;margin-top:8px}
+.wind-overlay-slider .time-slider{flex:1}
+.wind-overlay-offset{font-size:.6rem;color:var(--blue2);font-family:monospace;min-width:62px;text-align:right}
+.wind-overlay-status{font-size:.55rem;color:var(--text2);margin-top:6px;min-height:1em}
+.wind-overlay-status.ok{color:#1fde8a}
+.wind-overlay-status.err{color:#ff6b6b}
+.wind-legend{
+  display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:4px;margin-top:8px
+}
+.wind-legend-item{
+  display:flex;flex-direction:column;gap:3px;padding:6px 7px;border-radius:6px;
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05)
+}
+.wind-legend-swatch{height:6px;border-radius:999px}
+.wind-legend-label{font-size:.52rem;color:#fff;font-family:monospace}
+.wind-legend-sub{font-size:.46rem;color:var(--text2);font-family:monospace}
+.wind-canvas-layer{
+  position:absolute;inset:0;z-index:455;pointer-events:none;display:none
+}
+.wind-canvas-layer.show{display:block}
+.blk-counter{
+  position:absolute;bottom:38px;left:10px;z-index:500;
+  background:rgba(4,12,24,.90);border:1px solid rgba(255,224,51,.4);
+  border-radius:6px;padding:6px 10px;pointer-events:none;
+  display:flex;flex-direction:column;align-items:center;gap:1px;
+  box-shadow:0 2px 10px rgba(255,224,51,.15);
+}
+.blk-num{font-family:monospace;font-size:1.5rem;font-weight:700;color:#ffe033;line-height:1}
+.blk-label{font-family:monospace;font-size:.5rem;color:var(--text2);letter-spacing:1px}
+.blk-legend{display:flex;gap:5px;margin-top:3px;font-size:.48rem;font-family:monospace}
+
+/* Recenter */
+.btn-rc{
+  position:absolute;bottom:10px;right:10px;z-index:500;
+  background:var(--blue);color:#fff;border:none;
+  width:36px;height:36px;border-radius:50%;
+  font-size:1.1rem;cursor:pointer;
+  box-shadow:0 2px 12px rgba(26,143,209,.5);
+  transition:all .15s;
+}
+.btn-rc:hover{background:var(--blue2);transform:scale(1.08)}
+
+/* Lightning legend - bottom right */
+.blk-map-legend{
+  position:absolute;bottom:10px;right:54px;z-index:500;
+  background:rgba(4,12,24,.88);border:1px solid var(--border);
+  border-radius:6px;padding:6px 10px;font-size:.55rem;font-family:monospace;
+}
+.blk-map-legend div{display:flex;align-items:center;gap:5px;margin-bottom:2px;color:var(--text2)}
+.blk-map-legend div:last-child{margin-bottom:0}
+.blk-map-legend span{width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0}
+
+/* ═══════════════════════════════════════════
+   SECTION HEADERS (shared)
+═══════════════════════════════════════════ */
+.sec-title{
+  font-size:.54rem;font-weight:700;letter-spacing:2px;
+  color:var(--text2);text-transform:uppercase;
+  margin-bottom:6px;display:flex;align-items:center;gap:6px;
+}
+.sec-title::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* ═══════════════════════════════════════════
+   FORECAST MODAL (klik na dzień)
+═══════════════════════════════════════════ */
+.fc-modal{
+  display:none;position:absolute;top:0;left:0;right:0;bottom:0;z-index:900;
+  background:rgba(3,8,20,.92);backdrop-filter:blur(8px);
+  flex-direction:column;align-items:center;justify-content:center;padding:20px;
+}
+.fc-modal.open{display:flex}
+.fc-modal-card{
+  background:var(--bg3);border:1px solid var(--border);border-radius:12px;
+  padding:20px;max-width:340px;width:100%;
+  box-shadow:0 8px 40px rgba(0,0,0,.8);
+}
+.fc-modal-close{
+  float:right;background:none;border:none;color:var(--text2);
+  font-size:1.2rem;cursor:pointer;padding:0 4px;line-height:1;
+}
+.fc-modal-close:hover{color:#fff}
+.fc-modal-title{font-size:1rem;font-weight:700;color:#fff;margin-bottom:14px}
+.fc-modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.fc-modal-item{background:rgba(255,255,255,.04);border-radius:6px;padding:8px 10px;border:1px solid var(--border)}
+.fc-modal-lbl{font-size:.54rem;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:3px}
+.fc-modal-val{font-size:1rem;font-weight:700;color:#fff}
+.fc-modal-unit{font-size:.6rem;color:var(--text2)}
+
+@media (max-width:920px){
+  .panel-left{width:280px}
+  .lyr-panel{min-width:160px}
+  .wind-overlay-panel{left:8px;right:8px;bottom:56px;transform:none;min-width:0;max-width:none}
+  .wind-legend{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+@media (max-width:680px){
+  .topbar{padding:0 10px}
+  .logo{display:none}
+  .nav-item{font-size:.62rem;padding:0 10px}
+  .panel-left{display:none}
+  .wind-overlay-top{gap:8px}
+  .wind-overlay-time{font-size:.88rem;min-width:92px}
+  .wind-overlay-refresh{margin-left:0}
+  .wind-overlay-slider{gap:8px}
+  .wind-legend{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+
+/* ═══════════════════════════════════════════
+   MOBILE ONEPAGE — pełna optymalizacja telefonu
+═══════════════════════════════════════════ */
+@media (max-width:600px){
+
+  /* ── BASE ── */
+  html,body{font-size:16px;overflow:hidden}
+
+  /* ── TOPBAR: tylko logo + wskaźniki, bez nav ── */
+  .topbar{
+    height:52px;padding:0 12px;gap:8px;
+    display:flex;align-items:center;
+  }
+  .logo{
+    display:flex!important;margin-right:auto;
+    font-size:1rem;letter-spacing:1px;
+  }
+  .nav{display:none!important}
+
+  /* Nav-right: kompaktowe pills */
+  .nav-right{gap:5px;flex-shrink:0}
+  .pill{font-size:.65rem;padding:4px 7px;border-radius:16px}
+  .clk{font-size:.75rem;margin-left:4px}
+  /* Ukryj źródło danych w topbarze — zbędne na telefonie */
+  .nav-right>span:last-of-type{display:none}
+
+  /* ── DOLNY PASEK NAWIGACJI ── */
+  .mobile-nav{
+    display:flex!important;
+    position:fixed;bottom:0;left:0;right:0;z-index:2000;
+    height:62px;
+    background:linear-gradient(180deg,#071526 0%,#05101e 100%);
+    border-top:1px solid var(--border);
+    box-shadow:0 -4px 20px rgba(0,0,0,.6);
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  }
+  .mobile-nav::-webkit-scrollbar{display:none}
+  .mobile-nav-item{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    min-width:72px;padding:6px 8px;gap:2px;
+    cursor:pointer;border-top:3px solid transparent;
+    transition:all .18s;flex-shrink:0;
+  }
+  .mobile-nav-item.active{
+    border-top-color:var(--accent);
+    background:rgba(232,130,26,.09);
+  }
+  .mobile-nav-item .mn-icon{font-size:1.35rem;line-height:1}
+  .mobile-nav-item .mn-label{
+    font-size:.55rem;font-weight:700;letter-spacing:.8px;
+    text-transform:uppercase;color:var(--text2);white-space:nowrap;
+  }
+  .mobile-nav-item.active .mn-label{color:var(--accent)}
+
+  /* ── LAYOUT: pełna szerokość, odejmij dolny nav ── */
+  .layout{
+    flex-direction:column;overflow:hidden;
+    height:calc(100vh - 52px - 62px);
+  }
+
+  /* ── PANEL-LEFT: staje się górnym paskiem z danymi ── */
+  .panel-left{
+    display:flex!important;
+    width:100%!important;
+    flex-direction:column;
+    border-right:none;
+    border-bottom:1px solid var(--border);
+    flex-shrink:0;
+    max-height:none;
+    overflow:visible;
+  }
+
+  /* Lokalizacja - kompakt */
+  .loc-card{padding:10px 12px 8px}
+  .loc-city{font-size:1.3rem!important}
+  .loc-street{font-size:.8rem;margin-bottom:6px}
+  .loc-grid{grid-template-columns:repeat(3,1fr);gap:6px}
+  .loc-label{font-size:.6rem!important}
+  .loc-val{font-size:.82rem!important}
+
+  /* Aktualna pogoda: poziomy układ */
+  .wx-card{padding:10px 12px}
+  .wx-temp{font-size:2.4rem!important}
+  .wx-feel{font-size:.78rem}
+  .wx-metrics{
+    grid-template-columns:repeat(3,1fr);
+    gap:6px;
+  }
+  .wx-ml{font-size:.6rem!important}
+  .wx-mv{font-size:1.1rem!important}
+  .wx-mu{font-size:.6rem!important}
+
+  /* Risk banner - kompakt */
+  .risk-banner{margin:8px 10px;padding:10px 12px}
+  .risk-num{font-size:1.8rem!important}
+  .risk-level{font-size:.82rem!important}
+  .risk-desc{font-size:.72rem!important}
+  .risk-detail{font-size:.68rem!important}
+
+  /* Wind card - ukryj na małych ekranach (jest w sekcji Wiatr) */
+  .wind-card{display:none}
+
+  /* Forecast strip - ukryj (jest w sekcji Prognoza) */
+  .fc-card{display:none}
+
+  /* Footer panel */
+  .panel-footer{font-size:.62rem;padding:5px 12px}
+
+  /* ── PANEL-RIGHT: wypełnia resztę ── */
+  .panel-right{flex:1;min-width:0;min-height:0}
+
+  /* ── SEKCJE ── */
+  .section{min-height:0}
+
+  /* Mapa - layer panel reposition */
+  .lyr-panel{
+    top:auto;bottom:8px;left:8px;
+    min-width:155px;padding:8px;
+  }
+  .lyr-label{font-size:.72rem!important}
+  .lyr-label small{font-size:.6rem!important}
+  .lyr-chk{width:20px!important;height:20px!important;font-size:12px!important}
+  .lyr-row{padding:6px 3px}
+  .base-btn{font-size:.65rem!important;padding:6px 4px!important}
+
+  /* Recenter button - bigger */
+  .btn-rc{width:48px!important;height:48px!important;font-size:1.4rem!important;bottom:70px!important;right:10px}
+
+  /* Wind overlay - pełna szerokość nad dolnym nav */
+  .wind-overlay-panel{
+    left:8px!important;right:8px!important;
+    bottom:70px!important;
+    transform:none!important;
+    min-width:0!important;max-width:none!important;
+  }
+  .wind-overlay-title{font-size:.65rem!important}
+  .wind-overlay-time{font-size:.9rem!important}
+  .wind-legend{grid-template-columns:repeat(4,1fr)!important}
+  .wind-legend-label{font-size:.6rem!important}
+
+  /* ── PROGNOZA: pełna szerokość ── */
+  .prognoza-left{
+    width:100%!important;
+    border-right:none;border-bottom:1px solid var(--border);
+    padding:10px;overflow:visible;max-height:none;
+  }
+  .prognoza-right{padding:10px;gap:10px}
+  .chart-card{padding:12px}
+  .fc7-day{font-size:.68rem!important}
+  .fc7-hi{font-size:.95rem!important}
+  .fc7-lo{font-size:.78rem!important}
+  .fc7-pp{font-size:.65rem!important}
+
+  /* Godzinowa prognoza */
+  .ph-col{min-width:68px;padding:8px 5px}
+  .ph-hour{font-size:.7rem!important}
+  .ph-icon{font-size:1.5rem!important}
+  .ph-temp{font-size:.95rem!important}
+  .ph-feel{font-size:.68rem!important}
+  .ph-rain{font-size:.72rem!important}
+  .ph-pp{font-size:.62rem!important}
+  .ph-wind{font-size:.68rem!important}
+
+  /* ── OSTRZEŻENIA ── */
+  .alert-wrap{flex-direction:column}
+  .alert-left{
+    width:100%!important;
+    border-right:none;border-bottom:1px solid var(--border);
+    padding:10px;overflow:visible;
+  }
+  .alert-right{padding:10px;gap:8px}
+  .alert-card{padding:14px}
+  .alert-title{font-size:.9rem!important}
+  .alert-body{font-size:.78rem!important;line-height:1.55}
+  .alert-meta{font-size:.65rem!important}
+
+  /* ── WIATR ── */
+  .wiatr-wrap{flex-direction:column}
+  .wiatr-left{
+    width:100%!important;
+    border-right:none;border-bottom:1px solid var(--border);
+    padding:12px;overflow:visible;
+  }
+  .wind-stat-val{font-size:1.4rem!important}
+  .wind-stat-lbl{font-size:.62rem!important}
+  .big-rose{width:160px;height:160px}
+  .wind-scale-txt{font-size:.7rem!important}
+  .wind-scale-km{font-size:.7rem!important}
+
+  /* ── BURZE 72H ── */
+  .burze-topbar{padding:8px 10px;gap:8px}
+  .burze-body{flex-direction:column}
+  .burze-left{
+    width:100%!important;
+    border-right:none;border-bottom:1px solid var(--border);
+    max-height:45%;
+  }
+  .burze-right{flex:1;min-height:200px}
+  .time-label{font-size:.72rem!important}
+  .play-btn{width:36px!important;height:36px!important;font-size:1.1rem!important}
+  .storm-param-val{font-size:1.1rem!important}
+  .storm-param-lbl{font-size:.6rem!important}
+
+  /* ── EUMETSAT ── */
+  #sec-eumetsat>div>div:first-child{
+    padding:6px 10px;gap:6px;
+  }
+
+  /* ── AKTUALNOŚCI ── */
+  .news-wrap{flex-direction:column}
+  .news-left{
+    width:100%!important;
+    border-right:none;border-bottom:1px solid var(--border);
+    padding:10px;
+  }
+  .news-right{padding:10px;gap:8px}
+  .news-card{padding:14px}
+  .news-card-title{font-size:.9rem!important}
+  .news-card-body{font-size:.78rem!important;line-height:1.5}
+  .news-card-meta{font-size:.65rem!important}
+
+  /* ── SEKCJA KART FC (prawa strona radaru) ── */
+  .fc-modal-card{max-width:100%;border-radius:10px;padding:16px}
+  .fc-modal-title{font-size:1.1rem!important}
+  .fc-modal-val{font-size:1.1rem!important}
+  .fc-modal-lbl{font-size:.65rem!important}
+
+  /* ── LEAFLET popup - bigger on mobile ── */
+  .leaflet-popup-content{font-size:.85rem!important;line-height:1.7}
+  .leaflet-control-zoom a{
+    width:38px!important;height:38px!important;
+    line-height:38px!important;font-size:1.2rem!important;
+  }
+
+  /* Lightning counter */
+  .blk-counter{bottom:72px}
+  .blk-num{font-size:1.8rem!important}
+  .blk-label{font-size:.6rem!important}
+
+  /* Map badge */
+  .map-badge{font-size:.68rem!important;padding:5px 10px}
+
+  /* ── CZCIONKI: sekcja tytuły, etykiety ── */
+  .sec-title{font-size:.65rem!important;letter-spacing:1.5px}
+  .wind-title{font-size:.65rem!important}
+  .fc-title{font-size:.65rem!important}
+  .chart-title{font-size:.68rem!important}
+  .burze-info .sec-title{font-size:.65rem!important}
+
+}
+
+/* ═══════════════════════════════════════════
+   POPUP po kliknięciu w mapę
+═══════════════════════════════════════════ */
+.storm-tooltip{
+  background:rgba(4,12,24,.95) !important;
+  border:1px solid var(--border) !important;
+  border-radius:6px !important;
+  color:var(--text) !important;
+  font-size:.72rem !important;
+  font-family:monospace !important;
+  box-shadow:0 2px 10px rgba(0,0,0,.6) !important;
+}
+.storm-tooltip::before{display:none !important}
+.leaflet-tooltip.storm-tooltip{padding:6px 10px !important}
+.leaflet-popup-content-wrapper{
+  background:rgba(5,16,30,.96) !important;
+  border:1px solid var(--border) !important;
+  border-radius:8px !important;
+  box-shadow:0 4px 20px rgba(0,0,0,.7) !important;
+  color:var(--text) !important;
+}
+.leaflet-popup-tip{background:rgba(5,16,30,.96) !important}
+.leaflet-popup-content{font-size:.75rem;line-height:1.6;margin:10px 14px !important}
+
+/* GPS pulse */
+.gpin{width:16px;height:16px;position:relative}
+.gpin-c{width:10px;height:10px;background:#1fde8a;border:2px solid #fff;border-radius:50%;position:absolute;top:3px;left:3px;box-shadow:0 0 8px rgba(31,222,138,.9)}
+.gpin-r{width:16px;height:16px;border:2px solid #1fde8a;border-radius:50%;position:absolute;top:0;left:0;animation:rng 1.8s ease-out infinite}
+@keyframes rng{0%{transform:scale(.5);opacity:.9}100%{transform:scale(2.2);opacity:0}}
+
+/* ═══════════════════════════════════════════
+   LIGHTNING GLOW EFFECT
+═══════════════════════════════════════════ */
+@keyframes lf-glow{
+  0%{opacity:1;transform:scale(1)}
+  50%{opacity:.8}
+  100%{opacity:.4;transform:scale(.7)}
+}
+
+/* ═══════════════════════════════════════════
+   SEKCJE ZAKŁADEK
+═══════════════════════════════════════════ */
+.section{display:none;flex:1;overflow:hidden;min-height:0}
+.section.active{display:flex}
+
+/* BURZE 72H */
+.burze-wrap{flex:1;display:flex;overflow:hidden;flex-direction:column}
+.burze-topbar{flex-shrink:0;background:var(--bg2);border-bottom:1px solid var(--border);padding:10px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.burze-body{flex:1;display:flex;overflow:hidden;min-height:0}
+.burze-left{width:320px;flex-shrink:0;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.burze-right{flex:1;position:relative;overflow:hidden}
+#map-burze{width:100%;height:100%;background:#03080f}
+
+/* Suwak czasu */
+.time-slider-wrap{display:flex;align-items:center;gap:8px;flex:1;min-width:200px}
+.time-slider{-webkit-appearance:none;appearance:none;width:100%;height:4px;background:var(--border);border-radius:2px;outline:none;cursor:pointer}
+.time-slider::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--accent);cursor:pointer;border:2px solid #fff;box-shadow:0 0 6px rgba(232,130,26,.6)}
+.time-label{font-size:.65rem;font-family:monospace;color:var(--accent);white-space:nowrap;min-width:120px;font-weight:700}
+.play-btn{background:var(--accent);border:none;color:#000;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
+.play-btn:hover{background:var(--accent2);transform:scale(1.1)}
+
+/* Panel lewej kolumny */
+.burze-info{padding:12px;flex:1;overflow-y:auto}
+.burze-info::-webkit-scrollbar{width:3px}
+.burze-info::-webkit-scrollbar-thumb{background:var(--border)}
+.storm-gauge{margin-bottom:14px}
+.storm-gauge-label{font-size:.6rem;color:var(--text2);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px}
+.storm-gauge-bar{height:12px;background:#0a1420;border-radius:6px;overflow:hidden;border:1px solid var(--border)}
+.storm-gauge-fill{height:100%;border-radius:6px;transition:width .8s ease,background .8s ease}
+.storm-gauge-val{font-size:.72rem;font-family:monospace;font-weight:700;margin-top:3px}
+.storm-params{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px}
+.storm-param{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:7px 8px}
+.storm-param-lbl{font-size:.52rem;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:2px}
+.storm-param-val{font-size:1rem;font-weight:700;color:#fff;font-family:monospace}
+.storm-legend{display:flex;flex-direction:column;gap:4px;margin-top:8px}
+.storm-legend-row{display:flex;align-items:center;gap:8px;font-size:.62rem;color:var(--text2)}
+.storm-legend-dot{width:14px;height:14px;border-radius:50%;flex-shrink:0}
+.rain-zone-card{margin-bottom:12px;padding:10px 11px;border-radius:8px;border:1px solid rgba(41,212,255,.18);background:linear-gradient(135deg,rgba(6,23,42,.98),rgba(5,16,30,.96))}
+.rain-zone-head{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.rain-zone-badge{font-size:.52rem;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--blue2)}
+.rain-zone-now{margin-left:auto;font-size:.78rem;font-family:monospace;font-weight:700;color:#9be7ff}
+.rain-zone-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.rain-zone-cell{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);border-radius:6px;padding:7px 8px}
+.rain-zone-lbl{font-size:.5rem;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:2px}
+.rain-zone-val{font-size:.9rem;font-weight:700;color:#fff;font-family:monospace}
+.rain-zone-desc{margin-top:8px;font-size:.58rem;line-height:1.6;color:var(--text2)}
+
+/* Status ładowania */
+.burze-loading{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;color:var(--text2);z-index:10;background:rgba(5,16,30,.9);padding:20px 30px;border-radius:10px;border:1px solid var(--border)}
+.burze-loading-spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 10px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Chart */
+.storm-chart-wrap{height:120px;position:relative;padding:8px 12px 0;border-top:1px solid var(--border)}
+.storm-chart-title{font-size:.55rem;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;padding:8px 12px 0}
+
+.sat-wrap{flex:1;position:relative;overflow:hidden}
+
+/* PROGNOZA */
+.prognoza-left{width:320px;flex-shrink:0;background:var(--bg2);border-right:1px solid var(--border);overflow-y:auto;padding:12px}
+.prognoza-left::-webkit-scrollbar{width:3px}
+.prognoza-left::-webkit-scrollbar-thumb{background:var(--border)}
+.prognoza-right{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:16px}
+.prognoza-right::-webkit-scrollbar{width:3px}
+.prognoza-right::-webkit-scrollbar-thumb{background:var(--border)}
+.chart-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px}
+.chart-title{font-size:.62rem;font-weight:700;letter-spacing:2px;color:var(--text2);text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.chart-title::after{content:'';flex:1;height:1px;background:var(--border)}
+/* Tabela godzinowa */
+.ph-col{display:flex;flex-direction:column;align-items:center;min-width:62px;padding:6px 4px;border-right:1px solid rgba(255,255,255,.04);cursor:default;transition:background .15s}
+.ph-col:hover{background:rgba(255,255,255,.05)}
+.ph-col.now{background:rgba(31,222,138,.08);border-right:2px solid #1fde8a}
+.ph-hour{font-size:.62rem;font-weight:700;color:var(--text2);margin-bottom:4px}
+.ph-now-label{font-size:.48rem;color:#1fde8a;font-weight:700;text-transform:uppercase;margin-bottom:2px}
+.ph-icon{font-size:1.3rem;margin:2px 0}
+.ph-temp{font-size:.85rem;font-weight:800;color:#ff6b35}
+.ph-feel{font-size:.6rem;color:var(--text2);margin-bottom:3px}
+.ph-rain{font-size:.65rem;font-weight:700;color:#29d4ff}
+.ph-pp{font-size:.55rem;color:var(--text2)}
+.ph-wind{font-size:.6rem;color:#1fde8a;margin-top:2px}
+.ph-uv{font-size:.55rem;font-weight:700;margin-top:1px}
+.ph-sep{width:100%;height:1px;background:rgba(255,255,255,.06);margin:3px 0}
+.ph-label{font-size:.45rem;color:var(--text2);text-transform:uppercase;letter-spacing:.5px}
+.chart-wrap{position:relative;height:160px}
+.fc7-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:0;position:relative}
+.fc7-wrap{display:flex;flex-direction:column}
+.fc7-card{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 6px;text-align:center;cursor:pointer;transition:all .15s;border-top:3px solid transparent;position:relative}
+.fc7-card:hover{z-index:10}
+.fc7-card:hover .fc7-detail{display:block}
+.fc7-card:hover{border-color:var(--border);background:rgba(255,255,255,.05)}
+.fc7-card.today{border-top-color:var(--accent)}
+.fc7-day{font-size:.6rem;font-weight:700;color:var(--text2);margin-bottom:4px}
+.fc7-card.today .fc7-day{color:var(--accent)}
+.fc7-detail{display:none;position:absolute;top:100%;left:0;right:0;z-index:100;background:var(--bg2);border:1px solid var(--border);border-top:none;border-radius:0 0 8px 8px;padding:8px 10px;font-size:.62rem;color:var(--text2);text-align:left;min-width:140px;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.fc7-det-sep{height:1px;background:rgba(255,255,255,.06);margin:4px 0}
+.fc7-det-row{display:flex;justify-content:space-between;align-items:center;padding:2px 0;gap:6px;line-height:1.4}
+.fc7-det-row span{color:var(--text2)}
+.fc7-det-row b{color:#fff;font-weight:600;white-space:nowrap}
+.fc7-ico{font-size:1.5rem;margin-bottom:4px}
+.fc7-hi{font-size:.88rem;font-weight:700;color:#fff}
+.fc7-lo{font-size:.72rem;color:var(--text2)}
+.fc7-pp{font-size:.58rem;color:var(--blue2);margin-top:2px}
+
+/* OSTRZEŻENIA */
+.alert-wrap{flex:1;display:flex;overflow:hidden}
+.alert-left{width:320px;flex-shrink:0;background:var(--bg2);border-right:1px solid var(--border);overflow-y:auto;padding:12px}
+.alert-left::-webkit-scrollbar{width:3px}
+.alert-left::-webkit-scrollbar-thumb{background:var(--border)}
+.alert-right{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:8px}
+.alert-right::-webkit-scrollbar{width:3px}
+.alert-right::-webkit-scrollbar-thumb{background:var(--border)}
+.alert-card{border-radius:8px;padding:14px;border-left:4px solid;position:relative;transition:all .2s}
+.alert-card.red{background:rgba(255,58,58,.08);border-color:#ff3a3a}
+.alert-card.orange{background:rgba(232,130,26,.08);border-color:var(--accent)}
+.alert-card.yellow{background:rgba(255,224,51,.06);border-color:#ffe033}
+.alert-card.green{background:rgba(31,222,138,.06);border-color:#1fde8a}
+.alert-title{font-size:.82rem;font-weight:700;margin-bottom:4px}
+.alert-body{font-size:.72rem;color:var(--text2);line-height:1.5}
+.alert-meta{font-size:.58rem;color:var(--text2);margin-top:6px;font-family:monospace}
+.alert-badge{position:absolute;top:10px;right:10px;font-size:.55rem;font-weight:700;padding:2px 8px;border-radius:20px;border:1px solid}
+
+/* WIATR */
+.wiatr-wrap{flex:1;display:flex;overflow:hidden}
+.wiatr-left{width:320px;flex-shrink:0;background:var(--bg2);border-right:1px solid var(--border);overflow-y:auto;padding:16px}
+.wiatr-left::-webkit-scrollbar{width:3px}
+.wiatr-left::-webkit-scrollbar-thumb{background:var(--border)}
+.wiatr-right{flex:1;position:relative;overflow:hidden}
+#map-wiatr{width:100%;height:100%;background:#03080f}
+.big-rose{width:200px;height:200px;margin:0 auto 16px}
+.wind-stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.wind-stat{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center}
+.wind-stat-val{font-size:1.6rem;font-weight:700;font-family:monospace;color:#fff}
+.wind-stat-lbl{font-size:.55rem;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;margin-top:2px}
+.wind-scale{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px}
+.wind-scale-row{display:flex;align-items:center;gap:8px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.wind-scale-row:last-child{border-bottom:none}
+.wind-scale-bar{height:6px;border-radius:3px;flex-shrink:0}
+.wind-scale-txt{font-size:.62rem;color:var(--text2);flex:1}
+.wind-scale-km{font-size:.62rem;color:var(--text);font-family:monospace;white-space:nowrap}
+
+/* AKTUALNOŚCI */
+.news-wrap{flex:1;display:flex;overflow:hidden}
+.news-left{width:320px;flex-shrink:0;background:var(--bg2);border-right:1px solid var(--border);overflow-y:auto;padding:12px}
+.news-left::-webkit-scrollbar{width:3px}
+.news-right{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
+.news-right::-webkit-scrollbar{width:3px}
+.news-right::-webkit-scrollbar-thumb{background:var(--border)}
+.news-card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:14px;cursor:pointer;transition:all .15s}
+.news-card:hover{border-color:var(--accent);background:rgba(232,130,26,.04)}
+.news-card-title{font-size:.82rem;font-weight:700;color:#fff;margin-bottom:5px;line-height:1.3}
+.news-card-body{font-size:.72rem;color:var(--text2);line-height:1.5;margin-bottom:6px}
+.news-card-meta{font-size:.58rem;color:var(--text2);font-family:monospace;display:flex;gap:10px}
+.news-card-src{color:var(--accent);font-weight:600}
+.news-loading{text-align:center;padding:40px;color:var(--text2);font-size:.8rem}
+.news-error{text-align:center;padding:30px;color:var(--text2)}
+.news-error-ico{font-size:2rem;margin-bottom:8px}
+
+</style>
+</head>
+<body>
+
+<!-- ═══ MOBILNY PASEK NAWIGACJI (dolny) ═══ -->
+<nav class="mobile-nav" id="mobile-nav" style="display:none">
+  <div class="mobile-nav-item" data-sec="aktualnosci" onclick="showSec(this,'aktualnosci');mobileNavSync('aktualnosci')">
+    <span class="mn-icon">📰</span><span class="mn-label">Nowości</span>
+  </div>
+  <div class="mobile-nav-item active" data-sec="radar" onclick="showSec(this,'radar');mobileNavSync('radar')">
+    <span class="mn-icon">🗺️</span><span class="mn-label">Radar</span>
+  </div>
+  <div class="mobile-nav-item" data-sec="eumetsat" onclick="showSec(this,'eumetsat');mobileNavSync('eumetsat')">
+    <span class="mn-icon">🛰️</span><span class="mn-label">Satelita</span>
+  </div>
+  <div class="mobile-nav-item" data-sec="prognoza" onclick="showSec(this,'prognoza');mobileNavSync('prognoza')">
+    <span class="mn-icon">📅</span><span class="mn-label">Prognoza</span>
+  </div>
+  <div class="mobile-nav-item" data-sec="ostrzezenia" onclick="showSec(this,'ostrzezenia');mobileNavSync('ostrzezenia')">
+    <span class="mn-icon">⚠️</span><span class="mn-label">Ostrzeżenia</span>
+  </div>
+  <div class="mobile-nav-item" data-sec="wyladowania" onclick="showSec(this,'wyladowania');mobileNavSync('wyladowania')">
+    <span class="mn-icon">⚡</span><span class="mn-label">Wyład.</span>
+  </div>
+  <div class="mobile-nav-item" data-sec="burze" onclick="showSec(this,'burze');mobileNavSync('burze')">
+    <span class="mn-icon">🌩️</span><span class="mn-label">Burze</span>
+  </div>
+  <div class="mobile-nav-item" data-sec="wiatr" onclick="showSec(this,'wiatr');mobileNavSync('wiatr')">
+    <span class="mn-icon">💨</span><span class="mn-label">Wiatr</span>
+  </div>
+</nav>
+
+<!-- ═══ TOPBAR ═══ -->
+<div class="topbar">
+  <div class="logo"><span>STORM</span><b>›CHASER</b></div>
+  <nav class="nav">
+    <div class="nav-item" data-sec="aktualnosci" onclick="showSec(this,'aktualnosci')">Aktualności</div>
+    <div class="nav-item active" data-sec="radar" onclick="showSec(this,'radar')">Radar</div>
+    <div class="nav-item" data-sec="eumetsat" onclick="showSec(this,'eumetsat')">EUMETSAT</div>
+    <div class="nav-item" data-sec="prognoza" onclick="showSec(this,'prognoza')">Prognoza</div>
+    <div class="nav-item" data-sec="ostrzezenia" onclick="showSec(this,'ostrzezenia')">Ostrzeżenia</div>
+    <div class="nav-item" data-sec="wyladowania" onclick="showSec(this,'wyladowania')">⚡ Wyładowania</div>
+    <div class="nav-item" data-sec="burze" onclick="showSec(this,'burze')">🌩 Burze 72h</div>
+    <div class="nav-item" data-sec="wiatr" onclick="showSec(this,'wiatr')">Wiatr</div>
+  </nav>
+  <div class="nav-right">
+    <span class="pill of" id="p-gps">GPS</span>
+    <span class="pill of" id="p-dat" title="Status danych pogodowych Open-Meteo" onmouseenter="refreshDataErrorTooltip()">DANE</span>
+    <button class="pill-btn" id="p-dat-reset" onclick="resetDataServices()" title="Ponow pobieranie danych Open-Meteo i Burze 72h">↻</button>
+    <span class="pill of" id="p-rsk">RYZYKO</span>
+    <span class="pill of" id="p-blk">BŁK</span>
+    <span style="font-size:.5rem;color:var(--text2);white-space:nowrap;border-left:1px solid var(--border);padding-left:8px;line-height:1.4;text-align:right">
+      źródło: <span style="color:var(--blue2);font-weight:600">Open-Meteo</span> ICON/DWD<br>
+      <span id="api-req-count" style="color:#1fde8a">3 req/otwarcie • limit: 600/min</span>
+    </span>
+    <div class="clk" id="clk">--:-- UTC</div>
+  </div>
+</div>
+
+<!-- ═══ MAIN LAYOUT ═══ -->
+<div class="layout">
+
+<!-- ══════ SEKCJA: RADAR (domyślna) ══════ -->
+<div class="section active" id="sec-radar">
+  <!-- ══ LEFT PANEL ══ -->
+  <div class="panel-left">
+
+    <!-- Lokalizacja -->
+    <div class="loc-card">
+      <div class="loc-city" id="l-city">---</div>
+      <div class="loc-street" id="l-str">&nbsp;</div>
+      <div class="loc-grid">
+        <div class="loc-item"><div class="loc-label">Szer.</div><div class="loc-val" id="l-lat">---</div></div>
+        <div class="loc-item"><div class="loc-label">Dług.</div><div class="loc-val" id="l-lon">---</div></div>
+        <div class="loc-item"><div class="loc-label">Dokł.</div><div class="loc-val" id="l-acc">---</div></div>
+        <div class="loc-item"><div class="loc-label">Wys.</div><div class="loc-val" id="l-alt">---</div></div>
+        <div class="loc-item"><div class="loc-label">Powiat</div><div class="loc-val" id="l-cnt">---</div></div>
+        <div class="loc-item"><div class="loc-label">Kraj</div><div class="loc-val" id="l-ctr">---</div></div>
+      </div>
+    </div>
+
+    <!-- Aktualna pogoda -->
+    <div class="wx-card">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px">
+        <div>
+          <div class="wx-temp" id="v-tmp">--<sup>°C</sup></div>
+          <div class="wx-feel">Odczuwalna: <span id="v-fel">--</span>°C</div>
+          <div style="font-size:.75rem;color:var(--text2);margin-top:3px" id="wx-desc-txt">Ładowanie...</div>
+        </div>
+        <div style="font-size:2.8rem;line-height:1" id="wx-icon">🌤</div>
+      </div>
+      <div class="wx-metrics">
+        <div class="wx-met h"><div class="wx-ml">Wilgotn.</div><div class="wx-mv" id="v-hum">--</div><div class="wx-mu">%</div></div>
+        <div class="wx-met p"><div class="wx-ml">Ciśnienie</div><div class="wx-mv" id="v-prs">--</div><div class="wx-mu">hPa</div></div>
+        <div class="wx-met d"><div class="wx-ml">Pkt rosy</div><div class="wx-mv" id="v-dew">--</div><div class="wx-mu">°C</div></div>
+        <div class="wx-met v"><div class="wx-ml">Widoczn.</div><div class="wx-mv" id="v-vis">--</div><div class="wx-mu">km</div></div>
+        <div class="wx-met w"><div class="wx-ml">Wiatr</div><div class="wx-mv" id="w-spd">--</div><div class="wx-mu" id="w-dir-lbl">km/h</div></div>
+        <div class="wx-met t" style="--c:#ff6b35"><div class="wx-ml">Porywy</div><div class="wx-mv" id="w-gst" style="color:#ff6b35">--</div><div class="wx-mu">km/h</div></div>
+      </div>
+    </div>
+
+    <!-- Risk banner -->
+    <div class="risk-banner low" id="rbox" style="margin:10px 12px;flex-shrink:0">
+      <div class="risk-top">
+        <div class="risk-num" id="rnum" style="color:#1fde8a">--</div>
+        <div class="risk-right">
+          <div class="risk-level" id="rtit" style="color:#1fde8a">Czekam...</div>
+          <div class="risk-desc" id="rsub">Pobieranie danych</div>
+        </div>
+      </div>
+      <div class="risk-detail" id="rdet"></div>
+    </div>
+
+    <!-- Wiatr -->
+    <div class="wind-card">
+      <div class="wind-title">⭮ Wiatr</div>
+      <div class="wind-body">
+        <svg class="wind-rose" viewBox="0 0 64 64">
+          <circle cx="32" cy="32" r="30" fill="none" stroke="#1a3550" stroke-width="1"/>
+          <circle cx="32" cy="32" r="16" fill="none" stroke="#1a3550" stroke-width=".5" stroke-dasharray="3,3"/>
+          <text x="32" y="7" text-anchor="middle" fill="#3a6080" font-size="6" font-family="monospace">N</text>
+          <text x="32" y="62" text-anchor="middle" fill="#3a6080" font-size="6" font-family="monospace">S</text>
+          <text x="3" y="35" fill="#3a6080" font-size="6" font-family="monospace">W</text>
+          <text x="55" y="35" fill="#3a6080" font-size="6" font-family="monospace">E</text>
+          <line id="wneedle" x1="32" y1="32" x2="32" y2="8" stroke="var(--accent)" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="32" cy="32" r="4" fill="var(--blue2)"/>
+        </svg>
+        <div class="wind-rows">
+          <div class="wind-row">
+            <span class="wind-lbl">Kierunek</span>
+            <span class="wind-val" id="w-dir" style="color:var(--accent)">--</span>
+          </div>
+          <div class="wind-row">
+            <span class="wind-lbl">Prędkość</span>
+            <span class="wind-val" id="w-spd2">-- km/h</span>
+          </div>
+          <div class="wind-row">
+            <span class="wind-lbl">Porywy</span>
+            <span class="wind-val" id="w-gst2" style="color:#ff6b35">-- km/h</span>
+          </div>
+          <div class="wind-row">
+            <span class="wind-lbl">Beaufort</span>
+            <span class="wind-val" id="w-bft" style="color:var(--blue2)">--</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Prognoza 7 dni -->
+    <div class="fc-card">
+      <div class="sec-title">📅 Prognoza 7 dni <small style="font-size:.5rem;font-weight:400;letter-spacing:0;color:var(--text2)">(kliknij dzień po szczegóły)</small></div>
+      <div class="fc-grid" id="fbox"></div>
+    </div>
+
+    <div class="panel-footer">
+      RADAR: <b style="color:var(--blue2)">RainViewer</b> · DANE: <b style="color:var(--blue2)">Open-Meteo</b> · GPS: <b style="color:var(--blue2)">Nominatim</b>
+      &nbsp;·&nbsp; Aktualizacja: <span id="upd">--</span>
+    </div>
+  </div><!-- /panel-left -->
+
+  <!-- ══ RIGHT PANEL ══ -->
+  <div class="panel-right">
+    <div class="map-header">
+      <span class="map-header-title">🗺 Mapa na żywo</span>
+      <span class="map-header-badge" id="mbadge">RADAR...</span>
+    </div>
+
+    <div id="mapbox">
+      <div id="map"></div>
+
+      <!-- Layer panel -->
+      <div class="lyr-panel">
+        <div class="lyr-head">⚙ Warstwy</div>
+
+        <div class="lyr-row" onclick="toggleLayer('sat')" id="row-sat">
+          <div class="lyr-chk on" id="chk-sat" style="color:#90c8e8"></div>
+          <div class="lyr-dot" style="background:linear-gradient(#c8e8ff,#1a6fa8)"></div>
+          <div class="lyr-label">Satelita IR<small>EUMETSAT</small></div>
+        </div>
+
+        <div class="lyr-row" onclick="toggleLayer('radar')" id="row-radar">
+          <div class="lyr-chk on" id="chk-radar" style="color:#29d4ff"></div>
+          <div class="lyr-dot" style="background:linear-gradient(#29d4ff,#0a4080)"></div>
+          <div class="lyr-label">Radar opadów<small>RainViewer live</small></div>
+        </div>
+
+        <div class="lyr-sep"></div>
+
+        <div class="lyr-row" onclick="toggleLayer('wind')" id="row-wind">
+          <div class="lyr-chk" id="chk-wind" style="color:#1fde8a"></div>
+          <div class="lyr-dot" style="background:linear-gradient(#1fde8a,#064030)"></div>
+          <div class="lyr-label">Wiatr<small>Open-Meteo particles</small></div>
+        </div>
+
+        <div class="lyr-row" onclick="toggleLayer('temp')" id="row-temp">
+          <div class="lyr-chk" id="chk-temp" style="color:#ff6b35"></div>
+          <div class="lyr-dot" style="background:linear-gradient(#ff3a3a,#ffaa00)"></div>
+          <div class="lyr-label">Temperatura<small>OpenWeatherMap</small></div>
+        </div>
+
+        <div class="lyr-row" onclick="toggleLayer('pres')" id="row-pres">
+          <div class="lyr-chk" id="chk-pres" style="color:#a78bfa"></div>
+          <div class="lyr-dot" style="background:linear-gradient(#a78bfa,#4c1d95)"></div>
+          <div class="lyr-label">Ciśnienie<small>OpenWeatherMap</small></div>
+        </div>
+
+
+
+        <div class="lyr-sep"></div>
+        <div class="lyr-sub">Mapa bazowa</div>
+        <div class="base-row">
+          <button class="base-btn on" id="base-street" onclick="setBase('street')">Jasna</button>
+          <button class="base-btn" id="base-dark" onclick="setBase('dark')">Ciemna</button>
+          <button class="base-btn" id="base-night" onclick="setBase('night')">Czarna</button>
+          <button class="base-btn" id="base-sat" onclick="setBase('sat')">Sat</button>
+        </div>
+
+        <div class="lyr-sep"></div>
+        <button class="test-btn" onclick="testBlitz()">⚡ Symuluj wyładowania</button>
+
+
+      </div>
+
+      <!-- Licznik wyładowań w widoku - uproszczony bez blitz -->
+      <div class="blk-counter" id="blitz-view-count-box" style="display:none">
+        <div class="blk-num" id="blitz-view-count">0</div>
+        <div class="blk-label">BŁK W WIDOKU</div>
+      </div>
+
+      <div class="map-badge" id="map-badge-txt">RADAR...</div>
+      <canvas id="radar-wind-canvas" class="wind-canvas-layer"></canvas>
+      <div class="wind-overlay-panel" id="radar-wind-panel">
+        <div class="wind-overlay-top">
+          <span class="wind-overlay-title">Wind Flow Europe</span>
+          <span class="wind-overlay-time" id="radar-wind-time">--:--</span>
+          <span class="wind-overlay-meta" id="radar-wind-meta">Open-Meteo / zakres -24h +24h</span>
+          <button class="wind-overlay-refresh" onclick="refreshRadarWind(true)">Odswiez</button>
+        </div>
+        <div class="wind-overlay-slider">
+          <button class="play-btn" id="radar-wind-play" onclick="toggleRadarWindPlayback()" title="Animuj">▶</button>
+          <input type="range" class="time-slider" id="radar-wind-slider" min="-24" max="24" value="0" oninput="setRadarWindOffset(this.value)">
+          <span class="wind-overlay-offset" id="radar-wind-offset">+0 h</span>
+        </div>
+        <div class="wind-overlay-status" id="radar-wind-status">Warstwa ukryta. Wlacz "Wiatr", aby pobrac siatke dla Europy.</div>
+        <div class="wind-legend">
+          <div class="wind-legend-item"><div class="wind-legend-swatch" style="background:#b0f4ff"></div><div class="wind-legend-label">0-5</div><div class="wind-legend-sub">km/h</div></div>
+          <div class="wind-legend-item"><div class="wind-legend-swatch" style="background:#6fe5ff"></div><div class="wind-legend-label">5-10</div><div class="wind-legend-sub">km/h</div></div>
+          <div class="wind-legend-item"><div class="wind-legend-swatch" style="background:#29ccff"></div><div class="wind-legend-label">10-15</div><div class="wind-legend-sub">km/h</div></div>
+          <div class="wind-legend-item"><div class="wind-legend-swatch" style="background:#25a8ff"></div><div class="wind-legend-label">15-20</div><div class="wind-legend-sub">km/h</div></div>
+          <div class="wind-legend-item"><div class="wind-legend-swatch" style="background:#1fe28a"></div><div class="wind-legend-label">20-25</div><div class="wind-legend-sub">km/h</div></div>
+          <div class="wind-legend-item"><div class="wind-legend-swatch" style="background:#22d46a"></div><div class="wind-legend-label">25-30</div><div class="wind-legend-sub">km/h</div></div>
+          <div class="wind-legend-item"><div class="wind-legend-swatch" style="background:#50e83a"></div><div class="wind-legend-label">30-35</div><div class="wind-legend-sub">km/h</div></div>
+          <div class="wind-legend-item"><div class="wind-legend-swatch" style="background:#a8f020"></div><div class="wind-legend-label">35-40</div><div class="wind-legend-sub">km/h</div></div>
+          <div class="wind-legend-item"><div class="wind-legend-swatch" style="background:#ffe45a"></div><div class="wind-legend-label">40-45</div><div class="wind-legend-sub">km/h</div></div>
+          <div class="wind-legend-item"><div class="wind-legend-swatch" style="background:#ffcc00"></div><div class="wind-legend-label">45-50</div><div class="wind-legend-sub">km/h</div></div>
+          <div class="wind-legend-item"><div class="wind-legend-swatch" style="background:#ffaa00"></div><div class="wind-legend-label">50-55</div><div class="wind-legend-sub">km/h</div></div>
+          <div class="wind-legend-item"><div class="wind-legend-swatch" style="background:#ff8c1a"></div><div class="wind-legend-label">55-60</div><div class="wind-legend-sub">km/h</div></div>
+          <div class="wind-legend-item"><div class="wind-legend-swatch" style="background:#ff6b35"></div><div class="wind-legend-label">60-65</div><div class="wind-legend-sub">km/h</div></div>
+          <div class="wind-legend-item"><div class="wind-legend-swatch" style="background:#ff4d4d"></div><div class="wind-legend-label">65-70</div><div class="wind-legend-sub">km/h</div></div>
+          <div class="wind-legend-item"><div class="wind-legend-swatch" style="background:#e0002a"></div><div class="wind-legend-label">70-80</div><div class="wind-legend-sub">km/h</div></div>
+          <div class="wind-legend-item"><div class="wind-legend-swatch" style="background:#b000b0"></div><div class="wind-legend-label">80+</div><div class="wind-legend-sub">km/h</div></div>
+        </div>
+      </div>
+      <button class="btn-rc" onclick="rc()" title="Moja pozycja">⊙</button>
+    </div>
+  </div><!-- /panel-right -->
+</div><!-- /sec-radar -->
+
+
+
+<!-- ══════ SEKCJA: EUMETSAT ══════ -->
+<div class="section" id="sec-eumetsat">
+  <div style="display:flex;flex:1;flex-direction:column;overflow:hidden;min-height:0">
+    <div style="flex-shrink:0;background:var(--bg2);border-bottom:1px solid var(--border);padding:8px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <span style="font-size:.65rem;font-weight:700;letter-spacing:1.5px;color:var(--text2);text-transform:uppercase;white-space:nowrap">🛰 EUMETSAT Meteosat</span>
+      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+        <button id="eum-layer-natural" onclick="eumSetLayer('natural')" class="base-btn on" style="min-width:76px">Natural</button>
+        <button id="eum-layer-ir108" onclick="eumSetLayer('ir108')" class="base-btn" style="min-width:76px">IR 10.8</button>
+        <button id="eum-layer-dust" onclick="eumSetLayer('dust')" class="base-btn" style="min-width:76px">Dust RGB</button>
+      </div>
+      <button id="eum-play-btn" onclick="eumToggleAnim()" style="font-size:.58rem;padding:3px 10px;border-radius:4px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--text2);cursor:pointer">▶ Animuj</button>
+      <button onclick="eumStepFrame(-1)" style="font-size:.58rem;padding:3px 8px;border-radius:4px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--text2);cursor:pointer">◀</button>
+      <button onclick="eumStepFrame(1)" style="font-size:.58rem;padding:3px 8px;border-radius:4px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--text2);cursor:pointer">▶</button>
+      <button onclick="eumReload()" style="font-size:.58rem;padding:3px 8px;border-radius:4px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--text2);cursor:pointer">↻</button>
+      <div style="display:flex;align-items:center;gap:6px;flex:1;min-width:180px">
+        <input type="range" id="eum-slider" min="0" max="0" value="0" style="-webkit-appearance:none;appearance:none;flex:1;height:3px;background:var(--border);border-radius:2px;outline:none;cursor:pointer" oninput="eumSliderChange(this.value)">
+        <span id="eum-frame-lbl" style="font-size:.55rem;color:var(--accent);font-family:monospace;white-space:nowrap;min-width:116px">--:-- UTC</span>
+      </div>
+      <span id="eum-status" style="font-size:.55rem;color:var(--text2)">Historia 24h · opóźnienie 1h</span>
+    </div>
+
+    <div style="flex:1;position:relative;overflow:hidden;background:#03080f">
+      <div id="map-eumetsat" style="width:100%;height:100%;background:#03080f"></div>
+
+      <div id="eum-loading" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(5,16,30,.92);padding:18px 26px;border-radius:8px;border:1px solid var(--border);text-align:center;color:var(--text2);z-index:1000">
+        <div style="font-size:1.8rem;margin-bottom:8px">🛰</div>
+        <div style="font-size:.75rem">Ładowanie klatek EUMETSAT...</div>
+        <div style="font-size:.58rem;margin-top:4px;color:var(--text2)" id="eum-load-progress">Historia 24h · krok 15 min</div>
+      </div>
+
+      <div style="position:absolute;top:8px;left:8px;z-index:500;background:rgba(5,16,30,.82);border:1px solid rgba(41,212,255,.18);border-radius:10px;padding:10px 12px;max-width:290px">
+        <div style="font-size:.62rem;font-weight:700;letter-spacing:1px;color:var(--blue2);text-transform:uppercase;margin-bottom:4px">Warstwy</div>
+        <div style="font-size:.64rem;line-height:1.55;color:var(--text2)">
+          Historia satelitarna Meteosat dla Europy z oknem <b style="color:#fff">24h</b>. Dane są przesunięte o około <b style="color:#fff">1h</b>, żeby zakładka pozostała w bezpiecznym wariancie bez feedu quasi-live.
+        </div>
+        <div id="eum-motion-note" style="margin-top:8px;font-size:.6rem;line-height:1.5;color:var(--text2)">
+          Predykcja ruchu chmur nie jest jeszcze renderowana. Do sensownej prognozy trzeba dodać analizę kolejnych klatek lub optical flow.
+        </div>
+      </div>
+
+      <div style="position:absolute;top:8px;right:8px;z-index:500;background:rgba(5,16,30,.82);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:8px 10px;min-width:150px">
+        <div style="font-size:.55rem;color:var(--text2);text-transform:uppercase;letter-spacing:1px">Zakres czasu</div>
+        <div id="eum-range-lbl" style="font-size:.7rem;color:#fff;font-family:monospace;margin-top:4px">--</div>
+        <div style="font-size:.55rem;color:var(--text2);margin-top:4px">Krok: 15 min · 97 klatek</div>
+      </div>
+    </div>
+
+    <div style="flex-shrink:0;background:var(--bg2);border-top:1px solid var(--border);padding:5px 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <span style="font-size:.6rem;color:var(--accent);font-family:monospace;font-weight:700" id="eum-time-lbl">--:-- UTC</span>
+      <span id="eum-date-lbl" style="font-size:.58rem;color:var(--text2)"></span>
+      <span id="eum-layer-lbl" style="font-size:.58rem;color:var(--text2)">Natural Colour RGB</span>
+      <span style="margin-left:auto;font-size:.52rem;color:var(--text2)">Źródło: EUMETSAT / EUMETView · Meteosat · historia 24h</span>
+    </div>
+  </div>
+</div><!-- /sec-eumetsat -->
+
+
+<!-- ══════ SEKCJA: PROGNOZA ══════ -->
+<div class="section" id="sec-prognoza">
+  <div class="prognoza-left" id="prog-left">
+    <div class="sec-title" style="margin-bottom:12px">📍 Lokalizacja</div>
+    <div style="font-size:1.1rem;font-weight:700;color:#fff;margin-bottom:2px" id="prog-city">---</div>
+    <div style="font-size:.75rem;color:var(--text2);margin-bottom:12px" id="prog-street">&nbsp;</div>
+    <div class="sec-title" style="margin-bottom:10px">🌡 Aktualnie</div>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+      <div style="font-size:3rem;line-height:1" id="prog-icon">🌤</div>
+      <div>
+        <div style="font-size:2rem;font-weight:800;color:#fff" id="prog-tmp">--°</div>
+        <div style="font-size:.7rem;color:var(--text2)" id="prog-desc">---</div>
+        <div style="font-size:.7rem;color:var(--text2)">Odczuw. <span id="prog-fel">--</span>°</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+      <div class="wind-stat"><div class="wind-stat-val" id="prog-hum">--</div><div class="wind-stat-lbl">Wilgotność %</div></div>
+      <div class="wind-stat"><div class="wind-stat-val" id="prog-prs">--</div><div class="wind-stat-lbl">Ciśnienie hPa</div></div>
+      <div class="wind-stat"><div class="wind-stat-val" id="prog-wsp">--</div><div class="wind-stat-lbl">Wiatr km/h</div></div>
+      <div class="wind-stat"><div class="wind-stat-val" id="prog-vis">--</div><div class="wind-stat-lbl">Widoczność km</div></div>
+    </div>
+  </div>
+  <div class="prognoza-right">
+    <!-- Karty szybkich statystyk dnia -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+      <div class="wind-stat" style="background:linear-gradient(135deg,#1a2a40,#0d1826)">
+        <div style="font-size:.55rem;color:#ffe033;text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">☀ UV Index</div>
+        <div class="wind-stat-val" id="prog-uv" style="color:#ffe033;font-size:1.4rem">--</div>
+        <div class="wind-stat-lbl" id="prog-uv-lbl">--</div>
+      </div>
+      <div class="wind-stat" style="background:linear-gradient(135deg,#1a2a40,#0d1826)">
+        <div style="font-size:.55rem;color:#ff8800;text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">🌅 Wschód</div>
+        <div class="wind-stat-val" id="prog-sunrise" style="color:#ff8800;font-size:1.1rem">--:--</div>
+        <div class="wind-stat-lbl" id="prog-sunset">Zachód: --:--</div>
+      </div>
+      <div class="wind-stat" style="background:linear-gradient(135deg,#1a2a40,#0d1826)">
+        <div style="font-size:.55rem;color:#29d4ff;text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">💧 Szansa deszczu</div>
+        <div class="wind-stat-val" id="prog-pp" style="color:#29d4ff;font-size:1.4rem">--%</div>
+        <div class="wind-stat-lbl">maks. dziś</div>
+      </div>
+      <div class="wind-stat" style="background:linear-gradient(135deg,#1a2a40,#0d1826)">
+        <div style="font-size:.55rem;color:#1fde8a;text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">🌡 Odczuwalna</div>
+        <div class="wind-stat-val" id="prog-feel" style="color:#1fde8a;font-size:1.4rem">--°</div>
+        <div class="wind-stat-lbl">temperatura</div>
+      </div>
+    </div>
+
+    <!-- Tabela godzinowa 48h -->
+    <div class="chart-card" style="padding:0;overflow:hidden">
+      <div class="chart-title" style="padding:12px 16px 0">📋 Prognoza godzinowa — 48h</div>
+      <div style="overflow-x:auto;padding:8px 0 12px">
+        <div id="prog-table" style="display:flex;gap:0;min-width:max-content"></div>
+      </div>
+    </div>
+
+    <!-- 7 dni -->
+    <div class="chart-card">
+      <div class="chart-title">📅 Prognoza 7 dni</div>
+      <div class="fc7-grid" id="fc7-grid"></div>
+    </div>
+
+    <!-- Ukryte canvas dla Chart.js (zachowane żeby nie psuć JS) -->
+    <div style="display:none">
+      <canvas id="chart-temp"></canvas>
+      <canvas id="chart-rain"></canvas>
+      <canvas id="chart-wind"></canvas>
+      <canvas id="chart-hum"></canvas>
+      <canvas id="chart-uv"></canvas>
+    </div>
+  </div>
+</div><!-- /sec-prognoza -->
+
+<!-- ══════ SEKCJA: OSTRZEŻENIA ══════ -->
+<div class="section" id="sec-ostrzezenia">
+  <div class="alert-wrap">
+    <div class="alert-left">
+      <div class="sec-title" style="margin-bottom:10px">📍 Twoja lokalizacja</div>
+      <div style="font-size:1rem;font-weight:700;color:#fff;margin-bottom:4px" id="alert-city">---</div>
+      <div style="font-size:.75rem;color:var(--text2);margin-bottom:12px" id="alert-region">---</div>
+      <div class="sec-title" style="margin-bottom:8px">🌡 Stan pogody</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px">
+        <div class="wind-stat"><div class="wind-stat-val" id="alert-tmp">--</div><div class="wind-stat-lbl">Temp °C</div></div>
+        <div class="wind-stat"><div class="wind-stat-val" id="alert-wsp">--</div><div class="wind-stat-lbl">Wiatr km/h</div></div>
+        <div class="wind-stat"><div class="wind-stat-val" id="alert-cape" style="color:var(--accent)">--</div><div class="wind-stat-lbl">CAPE J/kg</div></div>
+        <div class="wind-stat"><div class="wind-stat-val" id="alert-prc">--</div><div class="wind-stat-lbl">Opady mm</div></div>
+      </div>
+      <div class="sec-title" style="margin-bottom:8px">ℹ Źródła</div>
+      <div style="font-size:.62rem;color:var(--text2);line-height:1.7">
+        Alerty: <b style="color:var(--blue2)">IMGW-PIB</b><br>
+        Dane: <b style="color:var(--blue2)">Open-Meteo</b><br>
+        <span style="font-size:.55rem">Aktualizacja co 15 min</span>
+      </div>
+      <button onclick="loadAlerts()" style="width:100%;margin-top:10px;padding:7px;border-radius:5px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--text);cursor:pointer;font-size:.65rem">🔄 Odśwież alerty</button>
+    </div>
+    <div class="alert-right" style="display:flex;flex-direction:column;gap:12px">
+      <!-- Panel AI -->
+      <div id="ai-alert-panel" style="background:linear-gradient(135deg,#0d1f35,#091628);border:1px solid rgba(41,212,255,.25);border-radius:10px;padding:14px 16px;flex-shrink:0">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+          <span style="font-size:1.1rem">🤖</span>
+          <span style="font-size:.6rem;font-weight:700;letter-spacing:2px;color:var(--blue2);text-transform:uppercase">Komunikat meteorologiczny</span>
+          <span id="ai-alert-time" style="font-size:.52rem;color:var(--text2);margin-left:auto">--</span>
+          <button onclick="generateAIAlert()" style="font-size:.5rem;padding:2px 7px;border-radius:4px;border:1px solid rgba(41,212,255,.3);background:rgba(41,212,255,.06);color:var(--blue2);cursor:pointer">🔄</button>
+        </div>
+        <div id="ai-alert-content" style="font-size:.72rem;line-height:1.75;color:#c8dff0;white-space:pre-wrap">
+          <span style="color:var(--text2)">⏳ Analizuję dane meteorologiczne dla Polski...</span>
+        </div>
+      </div>
+      <!-- Alerty IMGW -->
+      <div id="alert-right" style="display:flex;flex-direction:column;gap:8px">
+        <div class="news-loading" id="alert-loading">⏳ Ładowanie alertów IMGW...</div>
+      </div>
+    </div>
+  </div>
+</div><!-- /sec-ostrzezenia -->
+
+<!-- ══════ SEKCJA: WYŁADOWANIA (iframe LightningMaps) ══════ -->
+<div class="section" id="sec-wyladowania">
+  <div style="display:flex;flex:1;overflow:hidden;flex-direction:column">
+    <!-- Pasek info -->
+    <div style="flex-shrink:0;height:36px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 14px;gap:10px">
+      <span style="font-size:.6rem;font-weight:700;letter-spacing:2px;color:var(--text2);text-transform:uppercase">⚡ Wyładowania live — Blitzortung.org</span>
+      <span style="font-size:.58rem;color:#1fde8a;background:rgba(31,222,138,.08);border:1px solid rgba(31,222,138,.3);padding:1px 7px;border-radius:3px">Dane live · Satelity + Detektory</span>
+      <!-- Legenda kolorów -->
+      <span style="font-size:.58rem;color:var(--text2);margin-left:auto;display:flex;align-items:center;gap:6px">
+        <span style="color:#fff">●</span>0-5min
+        <span style="color:#ff8800">●</span>5-10min
+        <span style="color:#ff3300">●</span>10-20min
+      </span>
+      <!-- Tryb mapy -->
+      <select id="blitz-style" onchange="reloadBlitzIframe()" style="font-size:.58rem;background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:4px;padding:2px 4px;cursor:pointer">
+        <option value="2">Ciemna</option>
+        <option value="0">Jasna</option>
+        <option value="3">Satelita</option>
+      </select>
+      <button onclick="reloadBlitzIframe()" style="font-size:.58rem;padding:2px 8px;border-radius:4px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--text2);cursor:pointer">🔄 Odśwież</button>
+      <a href="https://map.blitzortung.org/" target="_blank" style="font-size:.58rem;color:var(--blue2);text-decoration:none;white-space:nowrap">↗ Pełny ekran</a>
+    </div>
+    <!-- iframe Blitzortung — oficjalny embed -->
+    <div id="blitz-iframe-box" style="flex:1;background:#03080f;position:relative">
+      <div id="blitz-loading" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;color:var(--text2);z-index:2">
+        <div style="font-size:2.5rem;margin-bottom:8px;animation:blink 1s infinite">⚡</div>
+        <div style="font-size:.8rem">Ładowanie mapy Blitzortung...</div>
+        <div style="font-size:.62rem;color:var(--text2);margin-top:4px">Dane live z sieci detektorów</div>
+      </div>
+    </div>
+  </div>
+</div><!-- /sec-wyladowania -->
+
+<!-- ══════ SEKCJA: BURZE 72H ══════ -->
+<div class="section" id="sec-burze">
+  <div class="burze-wrap">
+
+    <!-- Topbar z suwakiem -->
+    <div class="burze-topbar" style="flex-direction:column;gap:4px;padding:6px 14px">
+      <div style="display:flex;align-items:center;gap:10px;width:100%">
+        <span style="font-size:.6rem;font-weight:700;letter-spacing:1.5px;color:var(--text2);text-transform:uppercase;white-space:nowrap">🌩 Burze 72h</span>
+        <!-- Duża godzina -->
+        <span id="burze-time-big" style="font-size:1.05rem;font-weight:800;color:#1fde8a;font-family:monospace;letter-spacing:1px;min-width:110px">Teraz</span>
+        <button class="play-btn" id="burze-play-btn" onclick="toggleBurzeAnim()" title="Animuj">▶</button>
+        <div style="display:flex;gap:4px;align-items:center">
+          <button id="burze-mode-storm" onclick="setBurzeLayerMode('storm')" style="font-size:.56rem;padding:3px 9px;border-radius:999px;border:1px solid rgba(232,130,26,.45);background:rgba(232,130,26,.16);color:var(--accent);cursor:pointer">Burze</button>
+          <button id="burze-mode-rain" onclick="setBurzeLayerMode('rain')" style="font-size:.56rem;padding:3px 9px;border-radius:999px;border:1px solid var(--border);background:rgba(255,255,255,.03);color:var(--text2);cursor:pointer">Strefa opadowa</button>
+          <button id="burze-mode-rainanim" onclick="setBurzeLayerMode('rainanim')" style="font-size:.56rem;padding:3px 9px;border-radius:999px;border:1px solid var(--border);background:rgba(255,255,255,.03);color:var(--text2);cursor:pointer">Strefa test anim.</button>
+        </div>
+        <div style="display:flex;gap:4px;align-items:center;margin-left:auto">
+          <span style="font-size:.55rem;color:var(--text2)">Dane:</span>
+          <span style="font-size:.55rem;color:var(--blue2);font-family:monospace" id="burze-update-time">--</span>
+          <button onclick="loadBurzeData(true)" style="font-size:.52rem;padding:2px 7px;border-radius:4px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--text2);cursor:pointer">🔄</button>
+        </div>
+      </div>
+      <!-- Slider z linią "teraz" -->
+      <div style="position:relative;width:100%;display:flex;align-items:center;gap:8px">
+        <input type="range" class="time-slider" id="burze-slider" min="0" max="71" value="0"
+          style="flex:1" oninput="onBurzeSlider(this.value)">
+        <!-- Marker "teraz" -->
+        <div id="burze-now-marker" style="position:absolute;top:-2px;bottom:-2px;width:2px;background:#1fde8a;border-radius:2px;pointer-events:none;box-shadow:0 0 6px #1fde8a;display:none"></div>
+        <span id="burze-time-label" style="font-size:.58rem;color:var(--text2);white-space:nowrap;min-width:40px">Teraz</span>
+      </div>
+    </div>
+
+    <div class="burze-body">
+      <!-- Lewa kolumna info -->
+      <div class="burze-left">
+        <!-- Wykres prawdopodobieństwa -->
+        <div class="storm-chart-title" id="storm-chart-title">📊 Prawdopodob. burzy — Twoja lokalizacja</div>
+        <div class="storm-chart-wrap"><canvas id="chart-storm"></canvas></div>
+
+        <div class="burze-info">
+          <div class="rain-zone-card">
+            <div class="rain-zone-head">
+              <span style="font-size:1rem">☔</span>
+              <span class="rain-zone-badge">Strefa opadowa modelu</span>
+              <span class="rain-zone-now" id="rain-zone-now">0.0 mm/h</span>
+            </div>
+            <div class="rain-zone-grid">
+              <div class="rain-zone-cell">
+                <div class="rain-zone-lbl">Status</div>
+                <div class="rain-zone-val" id="rain-zone-status">Brak opadu</div>
+              </div>
+              <div class="rain-zone-cell">
+                <div class="rain-zone-lbl">Prawd. opadu</div>
+                <div class="rain-zone-val" id="rain-zone-pp">0%</div>
+              </div>
+              <div class="rain-zone-cell">
+                <div class="rain-zone-lbl">WMO</div>
+                <div class="rain-zone-val" id="rain-zone-wmo">--</div>
+              </div>
+              <div class="rain-zone-cell">
+                <div class="rain-zone-lbl">Warstwa</div>
+                <div class="rain-zone-val" id="rain-zone-layer">Model 72h</div>
+              </div>
+            </div>
+            <div class="rain-zone-desc" id="rain-zone-desc">Warstwa opadowa korzysta z tych samych odświeżeń modelowych co mapa burz i pokazuje intensywność opadu dla wybranej godziny.</div>
+          </div>
+
+          <!-- Główny wskaźnik -->
+          <div class="storm-gauge">
+            <div class="storm-gauge-label" id="storm-gauge-label">Ryzyko burzowe</div>
+            <div class="storm-gauge-bar">
+              <div class="storm-gauge-fill" id="sg-fill" style="width:0%"></div>
+            </div>
+            <div class="storm-gauge-val" id="sg-val" style="color:#1fde8a">0% — Brak ryzyka</div>
+          </div>
+
+          <!-- Parametry -->
+          <div class="storm-params">
+            <div class="storm-param">
+              <div class="storm-param-lbl">CAPE</div>
+              <div class="storm-param-val" id="sp-cape">-- J/kg</div>
+            </div>
+            <div class="storm-param">
+              <div class="storm-param-lbl">Lifted Index</div>
+              <div class="storm-param-val" id="sp-li">--</div>
+            </div>
+            <div class="storm-param">
+              <div class="storm-param-lbl">CIN</div>
+              <div class="storm-param-val" id="sp-cin">-- J/kg</div>
+            </div>
+            <div class="storm-param">
+              <div class="storm-param-lbl">Opady</div>
+              <div class="storm-param-val" id="sp-prc">-- mm/h</div>
+            </div>
+            <div class="storm-param">
+              <div class="storm-param-lbl">Wind Shear</div>
+              <div class="storm-param-val" id="sp-shr">-- km/h</div>
+            </div>
+            <div class="storm-param">
+              <div class="storm-param-lbl">WMO kod</div>
+              <div class="storm-param-val" id="sp-wmo">--</div>
+            </div>
+            <div class="storm-param" style="border-top:1px solid var(--border);padding-top:7px;grid-column:1/-1">
+              <div class="storm-param-lbl" style="color:var(--blue2)">⚡ LPI (wyładowania)</div>
+              <div class="storm-param-val" id="sp-lpi" style="color:var(--accent)">--</div>
+            </div>
+            <div class="storm-param">
+              <div class="storm-param-lbl">Wilgotn. 700hPa</div>
+              <div class="storm-param-val" id="sp-rh700">--%</div>
+            </div>
+            <div class="storm-param">
+              <div class="storm-param-lbl">Warstwa gran.</div>
+              <div class="storm-param-val" id="sp-blh">-- m</div>
+            </div>
+          </div>
+
+          <!-- Legenda -->
+          <div style="font-size:.58rem;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px" id="storm-legend-title">Legenda mapy</div>
+          <div class="storm-legend">
+            <div class="storm-legend-row"><div class="storm-legend-dot" id="storm-legend-dot-1" style="background:#ff8800;box-shadow:0 0 6px #ff8800"></div><span id="storm-legend-text-1">40–60% Umiarkowane</span></div>
+            <div class="storm-legend-row"><div class="storm-legend-dot" id="storm-legend-dot-2" style="background:#ff3a3a;box-shadow:0 0 6px #ff3a3a"></div><span id="storm-legend-text-2">60–80% Wysokie ⚡</span></div>
+            <div class="storm-legend-row"><div class="storm-legend-dot" id="storm-legend-dot-3" style="background:#cc00ff;box-shadow:0 0 8px #cc00ff"></div><span id="storm-legend-text-3">80–100% Ekstremalne ⚡⚡</span></div>
+            <div class="storm-legend-row" style="margin-top:6px;border-top:1px solid rgba(255,255,255,.06);padding-top:5px"><div style="font-size:1.1rem" id="storm-legend-extra-icon">⚡</div><span style="font-size:.58rem;color:var(--text2)" id="storm-legend-extra-text">Aktywne wyładowania (LPI)</span></div>
+          </div>
+
+          <div style="margin-top:12px;font-size:.58rem;color:var(--text2);line-height:1.6;border-top:1px solid var(--border);padding-top:8px">
+            Dane: <b style="color:var(--blue2)">Open-Meteo</b><br>
+            Parametry: CAPE, LI, CIN, WMO, LPI, RH700, BLH, opady, shear<br>
+            Aktualizacja: co 15 min<br>
+            Siatka: 40 punktów (~100km)
+          </div>
+        </div>
+      </div>
+
+      <!-- Mapa -->
+      <div class="burze-right">
+        <div id="map-burze"></div>
+        <div class="burze-loading" id="burze-loading">
+          <div class="burze-loading-spinner" id="burze-spinner"></div>
+          <div style="font-size:.75rem" id="burze-loading-msg">Pobieranie danych pogodowych...</div>
+          <div style="font-size:.6rem;margin-top:4px;color:var(--text2)" id="burze-progress"></div>
+          <div id="burze-429-info" style="display:none;margin-top:12px;padding:10px 14px;border-radius:8px;border:1px solid rgba(255,58,58,.4);background:rgba(255,58,58,.1);max-width:280px;text-align:left">
+            <div style="font-size:.72rem;font-weight:700;color:#ff6b6b;margin-bottom:5px">⚠ Przekroczono limit API</div>
+            <div style="font-size:.63rem;color:var(--text2);line-height:1.5">Serwer Open-Meteo chwilowo zablokował Twoje IP (zbyt wiele zapytań).<br>Limit resetuje się automatycznie — zazwyczaj po <b style="color:var(--text)">kilku minutach</b>.</div>
+            <button onclick="retryBurzeLoad()" style="margin-top:10px;width:100%;padding:6px;border-radius:5px;border:1px solid rgba(255,100,100,.4);background:rgba(255,58,58,.15);color:#ff9090;font-size:.65rem;font-weight:700;cursor:pointer;letter-spacing:.5px">↻ SPRÓBUJ PONOWNIE</button>
+            <div style="font-size:.55rem;color:var(--text2);margin-top:6px;text-align:center">Jeśli błąd się powtarza, odczekaj kilka minut i odśwież stronę</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><!-- /sec-burze -->
+
+<!-- ══════ SEKCJA: WIATR ══════ -->
+<div class="section" id="sec-wiatr">
+  <div class="wiatr-wrap">
+    <div class="wiatr-left">
+      <div class="sec-title" style="margin-bottom:12px">💨 Aktualne warunki</div>
+      <!-- Duża róża wiatru -->
+      <svg class="big-rose" viewBox="0 0 200 200">
+        <circle cx="100" cy="100" r="90" fill="none" stroke="#1a3550" stroke-width="1.5"/>
+        <circle cx="100" cy="100" r="60" fill="none" stroke="#1a3550" stroke-width=".8" stroke-dasharray="4,4"/>
+        <circle cx="100" cy="100" r="30" fill="none" stroke="#1a3550" stroke-width=".8" stroke-dasharray="2,4"/>
+        <!-- Kierunki -->
+        <text x="100" y="16" text-anchor="middle" fill="#3a6080" font-size="12" font-family="monospace" font-weight="700">N</text>
+        <text x="100" y="194" text-anchor="middle" fill="#3a6080" font-size="12" font-family="monospace" font-weight="700">S</text>
+        <text x="8" y="105" fill="#3a6080" font-size="12" font-family="monospace" font-weight="700">W</text>
+        <text x="180" y="105" fill="#3a6080" font-size="12" font-family="monospace" font-weight="700">E</text>
+        <text x="148" y="24" fill="#2a5070" font-size="9" font-family="monospace">NE</text>
+        <text x="148" y="184" fill="#2a5070" font-size="9" font-family="monospace">SE</text>
+        <text x="16" y="184" fill="#2a5070" font-size="9" font-family="monospace">SW</text>
+        <text x="16" y="24" fill="#2a5070" font-size="9" font-family="monospace">NW</text>
+        <!-- Igła -->
+        <line id="w-needle-big" x1="100" y1="100" x2="100" y2="20" stroke="var(--accent)" stroke-width="4" stroke-linecap="round"/>
+        <polygon id="w-arrow-big" points="100,14 94,28 106,28" fill="var(--accent)"/>
+        <circle cx="100" cy="100" r="8" fill="var(--blue2)"/>
+        <text id="w-dir-big" x="100" y="108" text-anchor="middle" fill="#fff" font-size="7" font-family="monospace" font-weight="700">N</text>
+      </svg>
+      <div class="wind-stat-grid">
+        <div class="wind-stat"><div class="wind-stat-val" id="w-big-dir" style="font-size:1.2rem">--</div><div class="wind-stat-lbl">Kierunek</div></div>
+        <div class="wind-stat"><div class="wind-stat-val" id="w-big-spd">--</div><div class="wind-stat-lbl">km/h</div></div>
+        <div class="wind-stat"><div class="wind-stat-val" id="w-big-gst" style="color:#ff6b35">--</div><div class="wind-stat-lbl">Porywy km/h</div></div>
+        <div class="wind-stat"><div class="wind-stat-val" id="w-big-bft" style="color:var(--blue2)">B--</div><div class="wind-stat-lbl">Beaufort</div></div>
+      </div>
+      <div class="sec-title" style="margin:12px 0 8px">📊 Skala Beauforta</div>
+      <div class="wind-scale">
+        <div class="wind-scale-row"><div class="wind-scale-bar" style="width:20px;background:#1fde8a"></div><div class="wind-scale-txt">B0-2 Spokojny</div><div class="wind-scale-km">&lt;12 km/h</div></div>
+        <div class="wind-scale-row"><div class="wind-scale-bar" style="width:30px;background:#29d4ff"></div><div class="wind-scale-txt">B3-4 Słaby-Umiark.</div><div class="wind-scale-km">12-28</div></div>
+        <div class="wind-scale-row"><div class="wind-scale-bar" style="width:45px;background:#ffe033"></div><div class="wind-scale-txt">B5-6 Dość silny</div><div class="wind-scale-km">29-49</div></div>
+        <div class="wind-scale-row"><div class="wind-scale-bar" style="width:60px;background:var(--accent)"></div><div class="wind-scale-txt">B7-8 Silny</div><div class="wind-scale-km">50-74</div></div>
+        <div class="wind-scale-row"><div class="wind-scale-bar" style="width:75px;background:#ff6b35"></div><div class="wind-scale-txt">B9-10 Bardzo silny</div><div class="wind-scale-km">75-102</div></div>
+        <div class="wind-scale-row"><div class="wind-scale-bar" style="width:90px;background:#ff3a3a"></div><div class="wind-scale-txt">B11-12 Sztorm/Huragan</div><div class="wind-scale-km">&gt;103</div></div>
+      </div>
+    </div>
+    <div class="wiatr-right">
+      <div id="map-wiatr"></div>
+      <div class="lyr-panel" style="top:8px;left:8px">
+        <div class="lyr-head">💨 Warstwy wiatru</div>
+        <div class="lyr-row" onclick="toggleWindLayer('wind')">
+          <div class="lyr-chk on" id="wchk-wind" style="color:#1fde8a"></div>
+          <div class="lyr-dot" style="background:linear-gradient(#1fde8a,#064030)"></div>
+          <div class="lyr-label">Wiatr OWM</div>
+        </div>
+        <div class="lyr-row" onclick="toggleWindLayer('pres')">
+          <div class="lyr-chk" id="wchk-pres" style="color:#a78bfa"></div>
+          <div class="lyr-dot" style="background:linear-gradient(#a78bfa,#4c1d95)"></div>
+          <div class="lyr-label">Ciśnienie OWM</div>
+        </div>
+        <div class="lyr-sep"></div>
+        <div class="lyr-sub">Mapa bazowa</div>
+        <div class="base-row">
+          <button class="base-btn on" id="wbase-dark" onclick="setWindBase('dark')">Ciemna</button>
+          <button class="base-btn" id="wbase-street" onclick="setWindBase('street')">Jasna</button>
+        </div>
+      </div>
+      <div class="map-badge" style="bottom:10px;left:10px">WIATR — OWM</div>
+    </div>
+  </div>
+</div><!-- /sec-wiatr -->
+
+
+
+<!-- ══════ SEKCJA: AKTUALNOŚCI ══════ -->
+<div class="section" id="sec-aktualnosci">
+  <div class="news-wrap">
+    <div class="news-left">
+      <div class="sec-title" style="margin-bottom:10px">📍 Twoja lokalizacja</div>
+      <div style="font-size:1rem;font-weight:700;color:#fff;margin-bottom:4px" id="news-city">---</div>
+      <div style="font-size:.75rem;color:var(--text2);margin-bottom:12px" id="news-street">&nbsp;</div>
+      <div class="sec-title" style="margin-bottom:8px">🌡 Teraz</div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <div style="font-size:2.5rem" id="news-icon">🌤</div>
+        <div>
+          <div style="font-size:1.6rem;font-weight:700;color:#fff" id="news-tmp">--°C</div>
+          <div style="font-size:.7rem;color:var(--text2)" id="news-desc">---</div>
+        </div>
+      </div>
+      <div class="sec-title" style="margin-bottom:8px">📡 Źródła newsów</div>
+      <div style="font-size:.62rem;color:var(--text2);line-height:1.8">
+        • <b style="color:var(--blue2)">IMGW-PIB</b> Ostrzeżenia<br>
+        • <b style="color:var(--blue2)">Meteo.pl</b> Komunikaty<br>
+        • <b style="color:var(--blue2)">EUMETSAT</b> Biuletyny<br>
+        <span style="font-size:.55rem;margin-top:4px;display:block">Dane z API/RSS, auto-odśw. 30min</span>
+      </div>
+      <button onclick="loadNews()" style="width:100%;margin-top:10px;padding:7px;border-radius:5px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--text);cursor:pointer;font-size:.65rem">🔄 Odśwież newsy</button>
+    </div>
+    <div class="news-right" id="news-right">
+      <div class="news-loading" id="news-loading">⏳ Ładowanie aktualności...</div>
+    </div>
+  </div>
+</div><!-- /sec-aktualnosci -->
+
+</div><!-- /layout -->
+
+<!-- FORECAST MODAL -->
+<div class="fc-modal" id="fc-modal">
+  <div class="fc-modal-card">
+    <button class="fc-modal-close" onclick="closeFcModal()">✕</button>
+    <div class="fc-modal-title" id="fc-modal-title">Prognoza</div>
+    <div class="fc-modal-grid" id="fc-modal-body"></div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+// GLOBALS
+// ═══════════════════════════════════════════
+var uLat=null,uLon=null,mapObj=null,gpsMkr=null,rvLyr=null,satLyr=null;
+var lMk=[],lIt=null,pT=null,pP=null,gpsHadFix=false,gpsWatch=null,clickMkr=null;
+var blitzWS=null,blitzMarkers=[],blitzPath=null;
+var OWM_KEY="f65b3018ded1baf5c48413dbd6703953";
+var DAYS=["Niedz","Pon","Wt","Śr","Czw","Pt","Sob"];
+var DIRS=["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"];
+var WMO={0:"Bezchmurnie",1:"Prawie bezchmurnie",2:"Częściowe zachmurzenie",3:"Całkowite zachmurzenie",45:"Mgła",51:"Mżawka",61:"Deszcz słaby",63:"Deszcz",65:"Deszcz silny",80:"Deszcz przelotny",82:"Nawalnica",95:"Burza",96:"Burza z gradem",99:"Burza -- duży grad"};
+var fcData=null; // przechowuje dane prognozy
+var wxLastError="";
+
+function pd(n){return String(n).padStart(2,"0");}
+function pi(id,c,t){
+  var e=document.getElementById(id);
+  if(e){
+    e.className="pill "+c;
+    e.textContent=t;
+    if(id==="p-dat"){
+      var reset=document.getElementById("p-dat-reset");
+      if(c==="al"){
+        e.title=wxLastError||"Blad danych Open-Meteo";
+      } else if(c==="wn"){
+        e.title="Trwa pobieranie danych Open-Meteo";
+      } else if(c==="ok"){
+        e.title="Dane Open-Meteo pobrane poprawnie";
+      } else {
+        e.title="Status danych pogodowych Open-Meteo";
+      }
+      if(reset) reset.className="pill-btn"+(c==="al"?" show":"");
+    }
+  }
+}
+function setDataStatus(cls,text,detail){
+  var el=document.getElementById("p-dat");
+  var reset=document.getElementById("p-dat-reset");
+  pi("p-dat",cls,text);
+  if(el) el.title=detail||"Status danych pogodowych Open-Meteo";
+  if(reset) reset.className="pill-btn"+(cls==="al"?" show":"");
+  wxLastError=cls==="al"?(detail||"Blad danych Open-Meteo"):"";
+}
+function refreshDataErrorTooltip(){
+  var el=document.getElementById("p-dat");
+  var desc=document.getElementById("wx-desc-txt");
+  if(!el) return;
+  if(wxLastError){
+    el.title=wxLastError;
+    return;
+  }
+  if(desc&&desc.textContent&&desc.textContent.indexOf("Open-Meteo:")===0){
+    el.title=desc.textContent.replace("Open-Meteo: ","");
+  }
+}
+function resetDataServices(){
+  setDataStatus("wn","RESET","Ponawiam polaczenie z Open-Meteo...");
+  if(uLat!=null&&uLon!=null) fetchWx(uLat,uLon);
+  if(typeof loadBurzeData==="function"){
+    burzeLoaded=false;
+    loadBurzeData(true);
+  }
+}
+function dc(d){return DIRS[Math.round(d/22.5)%16];}
+function bf(k){var t=[1,6,12,20,29,39,50,62,75,89,103,117];for(var i=0;i<t.length;i++)if(k<t[i])return i;return 12;}
+function we(c){if(c===0)return"☀";if(c<=2)return"🌤";if(c<=3)return"⛅";if(c<=48)return"🌥";if(c<=65)return"🌧";if(c<=77)return"❄";if(c<=82)return"🌦";if(c>=95)return"⛈";return"🌡";}
+
+var RADAR_WIND_HISTORY_H=24;
+var RADAR_WIND_FORECAST_H=24;
+var RADAR_WIND_CACHE_MS=45*60*1000;
+var RADAR_WIND_COOLDOWN_MS=30*60*1000;
+var RADAR_WIND_BATCH_SIZE=90;
+var RADAR_WIND_CACHE_KEY="stormchaser_radar_wind_cache_v1";
+var RADAR_WIND_EU={minLat:34,maxLat:72,minLon:-25,maxLon:45};
+var RADAR_WIND_PL={minLat:49,maxLat:55.8,minLon:14,maxLon:24.5};
+var RADAR_WIND_COLORS=[
+  {max:5,  color:"#b0f4ff"},
+  {max:10, color:"#6fe5ff"},
+  {max:15, color:"#29ccff"},
+  {max:20, color:"#25a8ff"},
+  {max:25, color:"#1fe28a"},
+  {max:30, color:"#22d46a"},
+  {max:35, color:"#50e83a"},
+  {max:40, color:"#a8f020"},
+  {max:45, color:"#ffe45a"},
+  {max:50, color:"#ffcc00"},
+  {max:55, color:"#ffaa00"},
+  {max:60, color:"#ff8c1a"},
+  {max:65, color:"#ff6b35"},
+  {max:70, color:"#ff4d4d"},
+  {max:80, color:"#e0002a"},
+  {max:1e9,color:"#b000b0"}
+];
+var radarWindState={
+  enabled:false,loading:false,ready:false,error:"",
+  canvas:null,ctx:null,offscreen:null,offCtx:null,
+  samplePoints:null,gridPoints:[],timestamps:[],
+  centerSlot:0,selectedIndex:0,selectedOffset:0,updateTime:null,lastLoadedAt:0,
+  fieldCache:{},screenField:null,particles:[],needsFieldRefresh:true,forceRespawn:true,
+  raf:0,lastFrameTs:0,playTimer:null,cooldownUntil:0,mapMoving:false
+};
+function radarWindFmtOffset(v){
+  var n=parseInt(v,10)||0;
+  return (n>0?"+":"")+n+" h";
+}
+function radarWindFmtDate(ts,shortOnly){
+  if(!ts)return"--";
+  return new Intl.DateTimeFormat("pl-PL",shortOnly
+    ? {hour:"2-digit",minute:"2-digit"}
+    : {weekday:"short",day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"}
+  ).format(new Date(ts));
+}
+function radarWindParseUtc(iso){
+  if(!iso)return NaN;
+  return Date.parse(/Z$/.test(iso)?iso:(iso+"Z"));
+}
+function radarWindInBounds(lat,lng,b){
+  return lat>=b.minLat&&lat<=b.maxLat&&lng>=b.minLon&&lng<=b.maxLon;
+}
+function radarWindColor(speed){
+  for(var i=0;i<RADAR_WIND_COLORS.length;i++) if(speed<RADAR_WIND_COLORS[i].max) return RADAR_WIND_COLORS[i].color;
+  return RADAR_WIND_COLORS[RADAR_WIND_COLORS.length-1].color;
+}
+function radarWindSetStatus(text,cls){
+  var el=document.getElementById("radar-wind-status");
+  if(!el)return;
+  el.className="wind-overlay-status"+(cls?" "+cls:"");
+  el.textContent=text;
+}
+function radarWindHourNow(){
+  return Math.round(Date.now()/3600000)*3600000;
+}
+function radarWindSaveCache(){
+  try{
+    localStorage.setItem(RADAR_WIND_CACHE_KEY,JSON.stringify({
+      savedAt:Date.now(),
+      points:radarWindState.gridPoints,
+      timestamps:radarWindState.timestamps,
+      updateTime:radarWindState.updateTime
+    }));
+  }catch(_e){}
+}
+function radarWindLoadCache(){
+  try{
+    var raw=localStorage.getItem(RADAR_WIND_CACHE_KEY);
+    if(!raw)return null;
+    var parsed=JSON.parse(raw);
+    if(!parsed||!parsed.savedAt||!parsed.points||!parsed.timestamps)return null;
+    return parsed;
+  }catch(_e){
+    return null;
+  }
+}
+function radarWindApplyCache(cache,maxAgeMs){
+  if(!cache||!cache.savedAt||((Date.now()-cache.savedAt)>(maxAgeMs||RADAR_WIND_CACHE_MS)))return false;
+  radarWindApplyData(cache.points||[],cache.timestamps||[],cache.updateTime||radarWindHourNow());
+  radarWindState.lastLoadedAt=cache.savedAt;
+  radarWindState.error="";
+  radarWindSetStatus("Uzyto lokalnego cache Open-Meteo, bez nowego requestu.","ok");
+  radarWindStartAnim();
+  return true;
+}
+function radarWindBuildPoints(){
+  if(radarWindState.samplePoints)return radarWindState.samplePoints.slice();
+  var pts=[];
+  function addGrid(bounds,latStep,lonStep,dense){
+    for(var lat=bounds.minLat;lat<=bounds.maxLat+0.001;lat+=latStep){
+      for(var lon=bounds.minLon;lon<=bounds.maxLon+0.001;lon+=lonStep){
+        if(!dense && radarWindInBounds(lat,lon,RADAR_WIND_PL)) continue;
+        pts.push({lat:+lat.toFixed(3),lon:+lon.toFixed(3),dense:!!dense});
+      }
+    }
+  }
+  addGrid(RADAR_WIND_EU,2.4,3.2,false);
+  addGrid(RADAR_WIND_PL,0.75,0.75,true);
+  radarWindState.samplePoints=pts;
+  return pts.slice();
+}
+function radarWindEnsureCanvas(){
+  if(radarWindState.canvas&&radarWindState.ctx)return true;
+  var canvas=document.getElementById("radar-wind-canvas");
+  if(!canvas)return false;
+  // Move canvas inside the Leaflet container so it shares the same coordinate space
+  // as latLngToContainerPoint(). Without this, pan offsets are doubled.
+  if(mapObj&&canvas.parentNode!==mapObj.getContainer()){
+    mapObj.getContainer().appendChild(canvas);
+    canvas.style.position="absolute";
+    canvas.style.top="0";
+    canvas.style.left="0";
+    canvas.style.width="100%";
+    canvas.style.height="100%";
+    canvas.style.pointerEvents="none";
+    canvas.style.zIndex="455";
+  }
+  radarWindState.canvas=canvas;
+  radarWindState.ctx=canvas.getContext("2d");
+  return true;
+}
+function radarWindResizeCanvas(){
+  if(!mapObj||!radarWindEnsureCanvas())return;
+  var size=mapObj.getSize();
+  var dpr=window.devicePixelRatio||1;
+  var canvas=radarWindState.canvas;
+  var w=Math.max(1,Math.round(size.x*dpr));
+  var h=Math.max(1,Math.round(size.y*dpr));
+  // Only set pixel dimensions, not style dimensions - let CSS inset:0 handle sizing
+  canvas.width=w;
+  canvas.height=h;
+  radarWindState.ctx.setTransform(dpr,0,0,dpr,0,0);
+  // Resize offscreen canvas too
+  if(radarWindState.offscreen){
+    radarWindState.offscreen.width=w;
+    radarWindState.offscreen.height=h;
+    radarWindState.offCtx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  radarWindState.needsFieldRefresh=true;
+  radarWindState.forceRespawn=true;
+}
+function radarWindClearCanvas(){
+  if(!radarWindState.ctx||!radarWindState.canvas)return;
+  radarWindState.ctx.save();
+  radarWindState.ctx.setTransform(1,0,0,1,0,0);
+  radarWindState.ctx.clearRect(0,0,radarWindState.canvas.width,radarWindState.canvas.height);
+  radarWindState.ctx.restore();
+  if(radarWindState.offCtx&&radarWindState.offscreen){
+    radarWindState.offCtx.save();
+    radarWindState.offCtx.setTransform(1,0,0,1,0,0);
+    radarWindState.offCtx.clearRect(0,0,radarWindState.offscreen.width,radarWindState.offscreen.height);
+    radarWindState.offCtx.restore();
+  }
+}
+function radarWindBindMapEvents(){
+  if(!mapObj||mapObj._radarWindBound)return;
+  mapObj._radarWindBound=true;
+  // On zoom/resize: resize canvas and respawn particles for new view
+  ["zoomend","resize"].forEach(function(evt){
+    mapObj.on(evt,function(){
+      if(!radarWindState.enabled||!layers.wind.on)return;
+      radarWindResizeCanvas();
+      radarWindClearCanvas();
+      radarWindState.forceRespawn=true;
+    });
+  });
+}
+function radarWindUpdatePanel(){
+  var panel=document.getElementById("radar-wind-panel");
+  var canvas=document.getElementById("radar-wind-canvas");
+  if(panel)panel.classList.toggle("show",!!layers.wind.on);
+  if(canvas)canvas.classList.toggle("show",!!layers.wind.on);
+  if(!layers.wind.on)radarWindSetStatus('Warstwa ukryta. Wlacz "Wiatr", aby pobrac siatke dla Europy.',"");
+}
+function radarWindUpdateLabels(){
+  var slider=document.getElementByI
