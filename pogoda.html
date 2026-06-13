@@ -4001,15 +4001,17 @@ function drawStormIsobarFrame(ctx, map, stormGrid){
   ctx.save();
   ctx.globalCompositeOperation='source-over';
   ctx.lineJoin='round';
-  var sample=buildScreenSampleGrid(map,stormGrid,3,true);
-  var smooth=function(gx,gy){return smoothSampleValue(sample,gx,gy);};
-  ctx.filter='blur(1.8px)';
-  drawThresholdFieldSample(ctx, sample, smooth, 34, 'rgba(180,0,220,__A__)', 0.16);
-  drawThresholdFieldSample(ctx, sample, smooth, 40, 'rgba(255,136,0,__A__)', 0.30);
-  drawThresholdFieldSample(ctx, sample, smooth, 60, 'rgba(255,34,0,__A__)', 0.42);
-  drawThresholdFieldSample(ctx, sample, smooth, 80, 'rgba(204,0,255,__A__)', 0.56);
+  var sampleFill=buildScreenSampleGrid(map,stormGrid,3,true);
+  var smoothFill=function(gx,gy){return smoothSampleValue(sampleFill,gx,gy);};
+  ctx.filter='blur(2.8px)';
+  drawThresholdFieldSample(ctx, sampleFill, smoothFill, 34, 'rgba(180,0,220,__A__)', 0.16);
+  drawThresholdFieldSample(ctx, sampleFill, smoothFill, 40, 'rgba(255,136,0,__A__)', 0.30);
+  drawThresholdFieldSample(ctx, sampleFill, smoothFill, 60, 'rgba(255,34,0,__A__)', 0.42);
+  drawThresholdFieldSample(ctx, sampleFill, smoothFill, 80, 'rgba(204,0,255,__A__)', 0.56);
   ctx.filter='none';
-  drawIsoLinesSample(ctx, sample, smooth, [
+  var sampleLine=buildScreenSampleGrid(map,stormGrid,2,true);
+  var smoothLine=function(gx,gy){return smoothSampleValue(sampleLine,gx,gy);};
+  drawIsoLinesSample(ctx, sampleLine, smoothLine, [
     {value:40,color:'#ffaa00'},
     {value:60,color:'#ff4400'},
     {value:80,color:'#ff00ff'}
@@ -4690,10 +4692,25 @@ function initCanvasOverlay() {
     }
   }
 
-  mapBurze.on('zoom zoomanim move', fixCanvas);
-  mapBurze.on('zoomend moveend resize', function(){
+  var _moveRaf=null;
+  function fixAndRedraw(){
     fixCanvas();
     redrawBurze();
+  }
+  mapBurze.on('zoom zoomanim move', function(){
+    burzeCanvas.style.transform='none';
+    burzeCanvas.style.top='0px';
+    burzeCanvas.style.left='0px';
+    if(_moveRaf)cancelAnimationFrame(_moveRaf);
+    _moveRaf=requestAnimationFrame(function(){
+      fixAndRedraw();
+      _moveRaf=null;
+    });
+  });
+  mapBurze.on('zoomend moveend resize', function(){
+    if(_moveRaf)cancelAnimationFrame(_moveRaf);
+    _moveRaf=null;
+    fixAndRedraw();
   });
 
   mapBurze.on('click', function(e){
@@ -5521,4 +5538,3 @@ window.onload=function(){startGPS();checkMobileNav();};
 </script>
 </body>
 </html>
-  
