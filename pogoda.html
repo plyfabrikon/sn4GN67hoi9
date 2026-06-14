@@ -3846,22 +3846,42 @@ function scalarDomainFade(lat,lon){
 }
 
 function buildScreenSampleGrid(map,scalarGrid,step,softEdges){
+  // Użyj kroku min 5px dla burze (step=3 to ~230k punktów na FHD, 5px to ~83k — 2.8× szybciej)
+  var effStep=Math.max(step,5);
   var size=map.getSize();
-  var cols=Math.ceil(size.x/step)+1, rows=Math.ceil(size.y/step)+1;
+  var cols=Math.ceil(size.x/effStep)+1, rows=Math.ceil(size.y/effStep)+1;
   var pts=[], vals=[];
   for(var y=0;y<rows;y++){
     pts[y]=[]; vals[y]=[];
     for(var x=0;x<cols;x++){
-      var px=Math.min(size.x,x*step), py=Math.min(size.y,y*step);
+      var px=Math.min(size.x,x*effStep), py=Math.min(size.y,y*effStep);
       var ll=map.containerPointToLatLng([px,py]);
       pts[y][x]={x:px,y:py};
       vals[y][x]=sampleScalarGridAtLatLon(scalarGrid,ll.lat,ll.lng)*(softEdges?scalarDomainFade(ll.lat,ll.lng):1);
     }
   }
-  return {pts:pts,vals:vals,cols:cols,rows:rows,step:step};
+  // Precompute smooth values (cache eliminuje wielokrotne wywołania dla tego samego piksela)
+  var smoothCache=new Float32Array(cols*rows);
+  for(var sy=0;sy<rows;sy++){
+    for(var sx=0;sx<cols;sx++){
+      var sum=0,wSum=0;
+      for(var oy=-1;oy<=1;oy++){
+        for(var ox=-1;ox<=1;ox++){
+          var nx=sx+ox,ny=sy+oy;
+          if(nx<0||ny<0||nx>=cols||ny>=rows)continue;
+          var w=(ox===0&&oy===0)?2:1;
+          sum+=(vals[ny][nx]||0)*w; wSum+=w;
+        }
+      }
+      smoothCache[sy*cols+sx]=wSum?sum/wSum:0;
+    }
+  }
+  return {pts:pts,vals:vals,smoothCache:smoothCache,cols:cols,rows:rows,step:effStep};
 }
 
 function smoothSampleValue(sample,gx,gy){
+  // Użyj precomputed cache jeśli dostępny (buildScreenSampleGrid go tworzy)
+  if(sample.smoothCache) return sample.smoothCache[gy*sample.cols+gx]||0;
   var sum=0,wSum=0;
   for(var oy=-1;oy<=1;oy++){
     for(var ox=-1;ox<=1;ox++){
@@ -3897,35 +3917,69 @@ function drawThresholdFieldSample(ctx,sample,valueFn,th,fillStyle,alpha){
 }
 
 function drawIsoLinesSample(ctx,sample,valueFn,levels){
-  ctx.save();
-  ctx.lineCap='round';
-  ctx.lineJoin='round';
-  levels.forEach(function(level){
-    function pass(width,alpha){
-      ctx.beginPath();
-      for(var gy=0;gy<sample.rows-1;gy++){
-        for(var gx=0;gx<sample.cols-1;gx++){
-          var vTL=valueFn(gx,gy), vTR=valueFn(gx+1,gy);
-          var vBR=valueFn(gx+1,gy+1), vBL=valueFn(gx,gy+1);
-          var pTL=sample.pts[gy][gx], pTR=sample.pts[gy][gx+1];
-          var pBR=sample.pts[gy+1][gx+1], pBL=sample.pts[gy+1][gx];
-          var pts=[];
-          if((vTL<level.value&&vTR>=level.value)||(vTR<level.value&&vTL>=level.value))pts.push(interpPoint(pTL,pTR,vTL,vTR,level.value));
-          if((vTR<level.value&&vBR>=level.value)||(vBR<level.value&&vTR>=level.value))pts.push(interpPoint(pTR,pBR,vTR,vBR,level.value));
-          if((vBR<level.value&&vBL>=level.value)||(vBL<level.value&&vBR>=level.value))pts.push(interpPoint(pBR,pBL,vBR,vBL,level.value));
-          if((vBL<level.value&&vTL>=level.value)||(vTL<level.value&&vBL>=level.value))pts.push(interpPoint(pBL,pTL,vBL,vTL,level.value));
-          if(pts.length>=2){
-            ctx.moveTo(pts[0].x,pts[0].y);ctx.lineTo(pts[1].x,pts[1].y);
-            if(pts.length===4){ctx.moveTo(pts[2].x,pts[2].y);ctx.lineTo(pts[3].x,pts[3].y);}
+  var step=sample.step||3;
+  var R=Math.round(step*0.6)||1;
+  function key(p){return (Math.round(p.x/R)*R)+'_'+(Math.round(p.y/R)*R);}
+  function buildChains(segs){
+    var map={},used=new Uint8Array(segs.length),chains=[];
+    for(var i=0;i<segs.length;i++){
+      var ka=key(segs[i].a),kb=key(segs[i].b);
+      if(!map[ka])map[ka]=[];map[ka].push(i);
+      if(!map[kb])map[kb]=[];map[kb].push(i);
+    }
+    for(var s=0;s<segs.length;s++){
+      if(used[s])continue;
+      used[s]=1;
+      var chain=[segs[s].a,segs[s].b];
+      for(var dir=0;dir<2;dir++){
+        var grow=true;
+        while(grow){
+          grow=false;
+          var tip=dir===0?chain[chain.length-1]:chain[0];
+          var cands=map[key(tip)];if(!cands)break;
+          for(var c=0;c<cands.length;c++){
+            var ci=cands[c];if(used[ci])continue;
+            used[ci]=1;
+            var nxt=key(segs[ci].a)===key(tip)?segs[ci].b:segs[ci].a;
+            if(dir===0)chain.push(nxt);else chain.unshift(nxt);
+            grow=true;break;
           }
         }
       }
-      ctx.strokeStyle=rgbaFromHex(level.color,alpha);
-      ctx.lineWidth=width;
-      ctx.stroke();
+      chains.push(chain);
     }
-    pass(3,0.16);
-    pass(1.45,0.92);
+    return chains;
+  }
+  function drawChain(ch){
+    if(ch.length<2)return;
+    ctx.moveTo(ch[0].x,ch[0].y);
+    if(ch.length===2){ctx.lineTo(ch[1].x,ch[1].y);return;}
+    for(var i=0;i<ch.length-1;i++){
+      var p0=ch[Math.max(0,i-1)],p1=ch[i],p2=ch[i+1],p3=ch[Math.min(ch.length-1,i+2)];
+      ctx.bezierCurveTo(p1.x+(p2.x-p0.x)/5,p1.y+(p2.y-p0.y)/5,p2.x-(p3.x-p1.x)/5,p2.y-(p3.y-p1.y)/5,p2.x,p2.y);
+    }
+  }
+  ctx.save();ctx.lineCap='round';ctx.lineJoin='round';
+  levels.forEach(function(lv){
+    var segs=[];
+    for(var gy=0;gy<sample.rows-1;gy++){
+      for(var gx=0;gx<sample.cols-1;gx++){
+        var vTL=valueFn(gx,gy),vTR=valueFn(gx+1,gy),vBR=valueFn(gx+1,gy+1),vBL=valueFn(gx,gy+1);
+        var pTL=sample.pts[gy][gx],pTR=sample.pts[gy][gx+1],pBR=sample.pts[gy+1][gx+1],pBL=sample.pts[gy+1][gx];
+        var pts=[];
+        if((vTL<lv.value)!==(vTR<lv.value))pts.push(interpPoint(pTL,pTR,vTL,vTR,lv.value));
+        if((vTR<lv.value)!==(vBR<lv.value))pts.push(interpPoint(pTR,pBR,vTR,vBR,lv.value));
+        if((vBR<lv.value)!==(vBL<lv.value))pts.push(interpPoint(pBR,pBL,vBR,vBL,lv.value));
+        if((vBL<lv.value)!==(vTL<lv.value))pts.push(interpPoint(pBL,pTL,vBL,vTL,lv.value));
+        if(pts.length>=2)segs.push({a:pts[0],b:pts[1]});
+        if(pts.length===4)segs.push({a:pts[2],b:pts[3]});
+      }
+    }
+    var chains=buildChains(segs);
+    ctx.beginPath();chains.forEach(drawChain);
+    ctx.strokeStyle=rgbaFromHex(lv.color,0.18);ctx.lineWidth=3.5;ctx.stroke();
+    ctx.beginPath();chains.forEach(drawChain);
+    ctx.strokeStyle=rgbaFromHex(lv.color,0.95);ctx.lineWidth=1.4;ctx.stroke();
   });
   ctx.restore();
 }
@@ -3949,11 +4003,17 @@ function radarColorForRain(mm,x,y){
 }
 
 function drawRainRadarStyle(ctx,map,rainGrid){
-  var sample=buildScreenSampleGrid(map,rainGrid,3,true);
   var W=ctx.canvas.width,H=ctx.canvas.height;
-  var field=document.createElement('canvas');
-  field.width=W; field.height=H;
+  // Reuse offscreen canvas zamiast tworzyć nowy przy każdym redraw
+  if(!drawRainRadarStyle._off||drawRainRadarStyle._off.width!==W||drawRainRadarStyle._off.height!==H){
+    drawRainRadarStyle._off=document.createElement('canvas');
+    drawRainRadarStyle._off.width=W;
+    drawRainRadarStyle._off.height=H;
+  }
+  var field=drawRainRadarStyle._off;
   var fctx=field.getContext('2d');
+  fctx.clearRect(0,0,W,H);
+  var sample=buildScreenSampleGrid(map,rainGrid,5,true);
   fctx.globalCompositeOperation='source-over';
   for(var gy=0;gy<sample.rows;gy++){
     for(var gx=0;gx<sample.cols;gx++){
@@ -3973,11 +4033,12 @@ function drawRainRadarStyle(ctx,map,rainGrid){
         c={r:255,g:224,b:24,a:0.90};
       }
       fctx.fillStyle='rgba('+c.r+','+c.g+','+c.b+','+c.a.toFixed(2)+')';
-      fctx.fillRect(p.x-2,p.y-2,7,7);
+      var sz=sample.step+2;
+      fctx.fillRect(p.x-2,p.y-2,sz,sz);
     }
   }
   ctx.save();
-  ctx.filter='blur(2.2px)';
+  ctx.filter='blur(2px)';
   ctx.drawImage(field,0,0);
   ctx.filter='none';
   ctx.globalAlpha=0.38;
@@ -3998,20 +4059,42 @@ function drawRainAnimFrame(ctx, map, rainGrid){
 }
 
 function drawStormIsobarFrame(ctx, map, stormGrid){
+  var W=ctx.canvas.width, H=ctx.canvas.height;
+  // Offscreen canvas dla warstwy wypełnień (blur tylko raz, nie 4×)
+  if(!drawStormIsobarFrame._off||drawStormIsobarFrame._off.width!==W||drawStormIsobarFrame._off.height!==H){
+    drawStormIsobarFrame._off=document.createElement('canvas');
+    drawStormIsobarFrame._off.width=W;
+    drawStormIsobarFrame._off.height=H;
+  }
+  var off=drawStormIsobarFrame._off;
+  var octx=off.getContext('2d');
+  octx.clearRect(0,0,W,H);
+
+  var sample=buildScreenSampleGrid(map,stormGrid,5,true);
+  var smooth=function(gx,gy){return smoothSampleValue(sample,gx,gy);};
+
+  // Rysuj wszystkie wypełnienia na offscreen (bez blur — zrobimy raz po)
+  octx.save();
+  octx.globalCompositeOperation='source-over';
+  octx.lineJoin='round';
+  drawThresholdFieldSample(octx, sample, smooth, 34, 'rgba(180,0,220,__A__)', 0.18);
+  drawThresholdFieldSample(octx, sample, smooth, 40, 'rgba(255,136,0,__A__)',  0.32);
+  drawThresholdFieldSample(octx, sample, smooth, 60, 'rgba(255,34,0,__A__)',   0.44);
+  drawThresholdFieldSample(octx, sample, smooth, 80, 'rgba(204,0,255,__A__)',  0.58);
+  octx.restore();
+
+  // Kopiuj na główny canvas z blur (jeden filter zamiast czterech)
+  ctx.save();
+  ctx.filter='blur(2px)';
+  ctx.drawImage(off,0,0);
+  ctx.filter='none';
+  ctx.restore();
+
+  // Izolinii bez blur — na głównym canvas
   ctx.save();
   ctx.globalCompositeOperation='source-over';
   ctx.lineJoin='round';
-  var sampleFill=buildScreenSampleGrid(map,stormGrid,3,true);
-  var smoothFill=function(gx,gy){return smoothSampleValue(sampleFill,gx,gy);};
-  ctx.filter='blur(2.8px)';
-  drawThresholdFieldSample(ctx, sampleFill, smoothFill, 34, 'rgba(180,0,220,__A__)', 0.16);
-  drawThresholdFieldSample(ctx, sampleFill, smoothFill, 40, 'rgba(255,136,0,__A__)', 0.30);
-  drawThresholdFieldSample(ctx, sampleFill, smoothFill, 60, 'rgba(255,34,0,__A__)', 0.42);
-  drawThresholdFieldSample(ctx, sampleFill, smoothFill, 80, 'rgba(204,0,255,__A__)', 0.56);
-  ctx.filter='none';
-  var sampleLine=buildScreenSampleGrid(map,stormGrid,2,true);
-  var smoothLine=function(gx,gy){return smoothSampleValue(sampleLine,gx,gy);};
-  drawIsoLinesSample(ctx, sampleLine, smoothLine, [
+  drawIsoLinesSample(ctx, sample, smooth, [
     {value:40,color:'#ffaa00'},
     {value:60,color:'#ff4400'},
     {value:80,color:'#ff00ff'}
@@ -4435,13 +4518,16 @@ function buildRainGridForHour(hIdx) {
 // ── Pre-build wszystkich godzin asynchronicznie (bez blokowania UI) ─
 function prebuildAllGrids(onDone) {
   gridCache = {};
+  rainGridCache = {};
   gridCacheReady = false;
   var h = 0;
+  // Buduj storm i rain naprzemiennie (jeden krok = 2 gridy = 1 yield)
   function buildNext() {
     if(h >= 72) { gridCacheReady=true; if(onDone) onDone(); return; }
     gridCache[h] = buildGridForHour(h);
+    rainGridCache[h] = buildRainGridForHour(h);
     h++;
-    // Użyj MessageChannel zamiast setTimeout(0) — szybsze i nie blokuje
+    // MessageChannel nie blokuje event loop — szybsze niż setTimeout(0)
     if(typeof MessageChannel!=='undefined') {
       var ch=new MessageChannel();
       ch.port1.onmessage=buildNext;
@@ -4516,109 +4602,25 @@ function drawFrame(gridIgnored) {
     return;
   }
   drawStormIsobarFrame(ctx, map, getGrid(h));
-  return;
-  if(isRainLayerMode(burzeLayerMode)){
-    var rainGrid=getRainGrid(h);
-    if(burzeLayerMode==='rainanim'){
-      drawRainAnimFrame(ctx, map, rainGrid);
-      return;
-    }
-    for(var gy=0; gy<GRID_H-1; gy++){
-      for(var gx=0; gx<GRID_W-1; gx++){
-        var mm=rainGrid[gy*GRID_W+gx];
-        if(mm<0.15) continue;
-        var lat1=GEO_MAX_LAT - (GEO_MAX_LAT-GEO_MIN_LAT)*gy/(GRID_H-1);
-        var lon1=GEO_MIN_LON + (GEO_MAX_LON-GEO_MIN_LON)*gx/(GRID_W-1);
-        var lat2=GEO_MAX_LAT - (GEO_MAX_LAT-GEO_MIN_LAT)*(gy+1)/(GRID_H-1);
-        var lon2=GEO_MIN_LON + (GEO_MAX_LON-GEO_MIN_LON)*(gx+1)/(GRID_W-1);
-        var p1=map.latLngToLayerPoint([lat1,lon1]);
-        var p2=map.latLngToLayerPoint([lat2,lon2]);
-        var left=Math.min(p1.x,p2.x), top=Math.min(p1.y,p2.y);
-        var width=Math.max(1,Math.abs(p2.x-p1.x)+1), height=Math.max(1,Math.abs(p2.y-p1.y)+1);
-        var rc=rainToColor(mm);
-        var alpha=mm>=10?0.72:mm>=5?0.58:mm>=2?0.44:mm>=0.5?0.32:0.22;
-        var rgb = rc.fill==='#ff5a1f' ? '255,90,31'
-          : rc.fill==='#ffd43b' ? '255,212,59'
-          : rc.fill==='#9be7ff' ? '155,231,255'
-          : '59,130,246';
-        ctx.fillStyle='rgba('+rgb+','+alpha.toFixed(2)+')';
-        ctx.fillRect(left,top,width,height);
-      }
-    }
-    return;
-  }
-  var zoom = map.getZoom();
-  var radius = Math.max(22, Math.min(150, 13.5 * Math.pow(2, zoom-4)));
-  STORM_GRID.forEach(function(pt,idx){
-    var d = burzeData[idx]&&burzeData[idx][h];
-    if(!d) return;
-    var val = isRainLayerMode(burzeLayerMode)?(d.prc||0):d.prob;
-    if(isRainLayerMode(burzeLayerMode) ? val<0.2 : val<STORM_THRESHOLD) return;
-    var px = map.latLngToLayerPoint([pt[0], pt[1]]);
-    if(px.x<-radius||px.x>W+radius||px.y<-radius||px.y>H+radius) return;
-    var col = isRainLayerMode(burzeLayerMode)
-      ? (function(mm){
-          if(mm>=10)return [255,90,31,255];
-          if(mm>=5)return [255,212,59,255];
-          if(mm>=2)return [155,231,255,255];
-          return [59,130,246,255];
-        })(val)
-      : probToRGBA(val, 255);
-    var r=col[0],g=col[1],b=col[2];
-    var grad = ctx.createRadialGradient(px.x,px.y,0, px.x,px.y,radius);
-    var alpha = isRainLayerMode(burzeLayerMode)
-      ? Math.min(0.95, Math.max(0.25, val/10))
-      : Math.min(1.0, (val/100)*1.25);
-    grad.addColorStop(0,   'rgba('+r+','+g+','+b+','+alpha.toFixed(2)+')');
-    grad.addColorStop(0.4, 'rgba('+r+','+g+','+b+','+(alpha*0.75).toFixed(2)+')');
-    grad.addColorStop(1,   'rgba('+r+','+g+','+b+',0)');
-    ctx.beginPath();
-    ctx.arc(px.x,px.y,radius,0,Math.PI*2);
-    ctx.fillStyle=grad;
-    ctx.fill();
-  });
-  // ⚡ Ikony wyladowan - LPI (Lightning Potential Index) z modelu ICON
-  STORM_GRID.forEach(function(pt,idx){
-    var d=burzeData[idx]&&burzeData[idx][h];
-    if(!d) return;
-    if(isRainLayerMode(burzeLayerMode)) return;
-    var lpi=d.lpi||0;
-    var prob=d.prob||0;
-    var tornado=d.tornado||0;
-    if(lpi>=0.5||prob>=65){
-      var px=map.latLngToLayerPoint([pt[0],pt[1]]);
-      if(px.x>=0&&px.x<=W&&px.y>=0&&px.y<=H){
-        var fs=lpi>=5||prob>=80?22:17;
-        ctx.globalAlpha=lpi>=5||prob>=80?1.0:0.9;
-        ctx.font=fs+'px sans-serif';
-        ctx.fillText('⚡',px.x-fs/2,px.y+fs/2);
-        ctx.globalAlpha=1;
-      }
-    }
-    if(tornado>=45){
-      var px2=map.latLngToLayerPoint([pt[0],pt[1]]);
-      if(px2.x>=0&&px2.x<=W&&px2.y>=0&&px2.y<=H){
-        var tfs=tornado>=65?20:16;
-        ctx.globalAlpha=tornado>=65?1.0:0.85;
-        ctx.font=tfs+'px sans-serif';
-        ctx.fillText('🌪️',px2.x+6,px2.y-4);
-        ctx.globalAlpha=1;
-      }
-    }
-  });
 }
-// ── Rysowanie na żądanie (bez RAF — bez wzorków) ─────────────────
+// ── Rysowanie na żądanie (przez RAF — zapobiega duplikowaniu klatek) ─────────────────
 // Brak ciągłej pętli = brak animowanych wzorków, znacznie lepsza wydajność
 function fogLoop(ts) { /* wyłączone — rysujemy tylko przy zmianie */ }
 
+var _redrawRAF=null;
 function redrawBurze() {
   if(!burzeLoaded) return;
   if(!burzeCanvas) {
     initCanvasOverlay();
     if(!burzeCanvas) { setTimeout(redrawBurze,300); return; }
   }
-  drawFrame(null);
-  renderBurzeMarkers(Math.floor(curStep/STEPS_PER_HOUR));
+  // Anuluj poprzedni oczekujący redraw — interesuje nas tylko ostatni
+  if(_redrawRAF){ cancelAnimationFrame(_redrawRAF); }
+  _redrawRAF=requestAnimationFrame(function(){
+    _redrawRAF=null;
+    drawFrame(null);
+    renderBurzeMarkers(Math.floor(curStep/STEPS_PER_HOUR));
+  });
 }
 
 function renderBurzeMarkers(hIdx){
@@ -4676,41 +4678,44 @@ function initCanvasOverlay() {
   burzeCanvas.style.zIndex = '620';
   burzeCanvas.style.transform = 'none';
 
-  var pane = mapBurze.getPane('stormCanvasPane') || mapBurze.getContainer();
-  pane.appendChild(burzeCanvas);
+  // Montujemy na getContainer() — Leaflet nie przesuwa kontenera, tylko wewnętrzne pane
+  mapBurze.getContainer().appendChild(burzeCanvas);
 
   function fixCanvas(){
-    var s = mapBurze.getSize();
-    burzeCanvas.style.transform = 'none';
-    burzeCanvas.style.top = '0px';
-    burzeCanvas.style.left = '0px';
-    if(burzeCanvas.width!==s.x||burzeCanvas.height!==s.y){
-      burzeCanvas.width=s.x;
-      burzeCanvas.height=s.y;
-      burzeCanvas.style.width=s.x+'px';
-      burzeCanvas.style.height=s.y+'px';
-    }
-  }
-
-  var _moveRaf=null;
-  function fixAndRedraw(){
-    fixCanvas();
-    redrawBurze();
-  }
-  mapBurze.on('zoom zoomanim move', function(){
+    var s=mapBurze.getSize();
     burzeCanvas.style.transform='none';
     burzeCanvas.style.top='0px';
     burzeCanvas.style.left='0px';
-    if(_moveRaf)cancelAnimationFrame(_moveRaf);
-    _moveRaf=requestAnimationFrame(function(){
-      fixAndRedraw();
-      _moveRaf=null;
+    if(burzeCanvas.width!==s.x||burzeCanvas.height!==s.y){
+      burzeCanvas.width=s.x; burzeCanvas.height=s.y;
+      burzeCanvas.style.width=s.x+'px'; burzeCanvas.style.height=s.y+'px';
+    }
+  }
+
+  // RAF-throttled redraw — eliminuje klatkowanie podczas panning/zoom
+  var _rafPending=false;
+  function scheduleRedrawRAF(){
+    if(_rafPending)return;
+    _rafPending=true;
+    requestAnimationFrame(function(){
+      _rafPending=false;
+      fixCanvas();
+      redrawBurze();
     });
+  }
+
+  // Przy starcie przesuwania natychmiast wyczyść canvas żeby nie było "pływającego" obrazu
+  mapBurze.on('movestart zoomstart',function(){
+    if(burzeCanvas){
+      var c=burzeCanvas.getContext('2d');
+      c.clearRect(0,0,burzeCanvas.width,burzeCanvas.height);
+    }
   });
-  mapBurze.on('zoomend moveend resize', function(){
-    if(_moveRaf)cancelAnimationFrame(_moveRaf);
-    _moveRaf=null;
-    fixAndRedraw();
+
+  mapBurze.on('move zoom',scheduleRedrawRAF);
+  mapBurze.on('zoomend moveend resize',function(){
+    _rafPending=false;
+    fixCanvas(); redrawBurze();
   });
 
   mapBurze.on('click', function(e){
@@ -5011,6 +5016,14 @@ function initBurze(){
     }
     updateNowMarker();
   },15*60*1000);
+
+  // Aktualizacja znacznika czasu na pasku co godzinę (bez pobierania danych)
+  setInterval(function(){
+    var el=document.getElementById('burze-update-time');
+    if(el&&burzeLoaded){
+      el.textContent=new Date().toLocaleTimeString('pl-PL',{hour:'2-digit',minute:'2-digit'})+' (akt.)';
+    }
+  },60*60*1000);
 }
 
 
@@ -5538,3 +5551,4 @@ window.onload=function(){startGPS();checkMobileNav();};
 </script>
 </body>
 </html>
+  
