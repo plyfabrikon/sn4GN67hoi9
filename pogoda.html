@@ -1369,6 +1369,12 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
           <button id="burze-mode-radar" onclick="setBurzeLayerMode('radar')" style="font-size:.56rem;padding:3px 9px;border-radius:999px;border:1px solid var(--border);background:rgba(255,255,255,.03);color:var(--text2);cursor:pointer">📡 Radar live</button>
         </div>
         <div style="display:flex;gap:4px;align-items:center;margin-left:auto">
+          <div id="px-size-btns" style="display:flex;gap:2px;align-items:center;border:1px solid var(--border);border-radius:6px;overflow:hidden;padding:1px">
+            <button onclick="setBurzePixelSize(4,this)" style="font-size:.5rem;padding:1px 6px;border:none;background:rgba(255,255,255,.04);color:var(--text2);cursor:pointer;font-family:inherit;border-radius:4px">4px</button>
+            <button onclick="setBurzePixelSize(6,this)" style="font-size:.5rem;padding:1px 6px;border:none;background:rgba(41,212,255,.12);color:var(--blue2);cursor:pointer;font-family:inherit;border-radius:4px">6px</button>
+            <button onclick="setBurzePixelSize(10,this)" style="font-size:.5rem;padding:1px 6px;border:none;background:rgba(255,255,255,.04);color:var(--text2);cursor:pointer;font-family:inherit;border-radius:4px">10px</button>
+            <button onclick="setBurzePixelSize(16,this)" style="font-size:.5rem;padding:1px 6px;border:none;background:rgba(255,255,255,.04);color:var(--text2);cursor:pointer;font-family:inherit;border-radius:4px">16px</button>
+          </div>
           <span style="font-size:.55rem;color:var(--text2)">Dane:</span>
           <span style="font-size:.55rem;color:var(--blue2);font-family:monospace" id="burze-update-time">--</span>
           <button onclick="loadBurzeData(true)" style="font-size:.52rem;padding:2px 7px;border-radius:4px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--text2);cursor:pointer">🔄</button>
@@ -3646,7 +3652,8 @@ var burzeChartInst=null;
 var burzeRefreshInt=null;
 var burzeLayerMode='storm';
 var burzeTileLayer=null;
-var burzeMapStyle='night'; // 'night' | 'day'
+var burzeMapStyle='night';
+var burzePixelSize=6; // rozmiar piksela w px — domyślnie 6 // 'night' | 'day'
 
 // ── ALGORYTM PRAWDOPODOBIEŃSTWA BURZY ───────────────────────────────
 // ── ALGORYTM BURZOWY v2 — 9 parametrów ─────────────────────────────────
@@ -4067,31 +4074,11 @@ function drawRainRadarStyle(ctx,map,rainGrid){
 }
 
 function drawRainIsobarFrame(ctx, map, rainGrid){
-  ctx.save();
-  ctx.globalCompositeOperation='source-over';
-  ctx.lineJoin='round';
-  drawRainRadarStyle(ctx,map,rainGrid);
-  ctx.restore();
+  drawPixelFrame(ctx, map, rainGrid, 'rain');
 }
 
 function drawStormIsobarFrame(ctx, map, stormGrid){
-  ctx.save();
-  ctx.globalCompositeOperation='source-over';
-  ctx.lineJoin='round';
-  var sample=buildScreenSampleGrid(map,stormGrid,3,true);
-  var smooth=function(gx,gy){return smoothSampleValue(sample,gx,gy);};
-  ctx.filter='blur(1.8px)';
-  drawThresholdFieldSample(ctx, sample, smooth, 34, 'rgba(180,0,220,__A__)', 0.16);
-  drawThresholdFieldSample(ctx, sample, smooth, 40, 'rgba(255,136,0,__A__)', 0.30);
-  drawThresholdFieldSample(ctx, sample, smooth, 60, 'rgba(255,34,0,__A__)', 0.42);
-  drawThresholdFieldSample(ctx, sample, smooth, 80, 'rgba(204,0,255,__A__)', 0.56);
-  ctx.filter='none';
-  drawIsoLinesSample(ctx, sample, smooth, [
-    {value:40,color:'#ffaa00'},
-    {value:60,color:'#ff4400'},
-    {value:80,color:'#ff00ff'}
-  ]);
-  ctx.restore();
+  drawPixelFrame(ctx, map, stormGrid, 'storm');
 }
 
 function setBurzeLayerMode(mode){
@@ -4584,6 +4571,86 @@ function probToRGBA(p, alpha) {
   return [0,0,0,0];                      // ponizej 40% -- brak koloru
 }
 
+
+// ── PIXEL RENDERER ────────────────────────────────────────────────────────────
+// Kolory burze zgodne z probToColor/probToRGBA:
+//   fiolet(80+) czerwień(60+) pomarańcz(40+) — poniżej progu: brak
+// Kolory deszcz zgodne z rainToColor:
+//   łosoś #ff5a1f(10+) żółty #ffd43b(5+) błękit #9be7ff(2+) niebieski #3b82f6(0.2+)
+function pixelColorStorm(v){
+  if(v>=80) return [200,  0,255,220];  // fiolet — ekstremalne
+  if(v>=60) return [255, 20, 20,200];  // czerwień — wysokie
+  if(v>=40) return [255,120,  0,180];  // pomarańcz — umiarkowane
+  if(v>=20) return [255,220,  0,140];  // żółty — niskie
+  return null;
+}
+function pixelColorRain(v){
+  if(v>=10) return [255, 90, 31,215];  // łosoś #ff5a1f — ulewa
+  if(v>=5)  return [255,212, 59,200];  // żółty #ffd43b — mocny
+  if(v>=2)  return [155,231,255,180];  // błękit #9be7ff — umiarkowany
+  if(v>=0.2)return [ 59,130,246,160];  // niebieski #3b82f6 — lekki
+  return null;
+}
+
+function drawPixelFrame(ctx, map, scalarGrid, type){
+  var W=ctx.canvas.width, H=ctx.canvas.height;
+  if(!W||!H) return;
+  var ps=burzePixelSize;
+  var cols=Math.ceil(W/ps), rows=Math.ceil(H/ps);
+  var img=ctx.createImageData(W,H);
+  var d=img.data;
+  var nw=map.containerPointToLatLng([0,0]);
+  var se=map.containerPointToLatLng([W,H]);
+  var latRange=nw.lat-se.lat, lonRange=se.lng-nw.lng;
+  for(var gy=0;gy<rows;gy++){
+    for(var gx=0;gx<cols;gx++){
+      var cx=(gx+0.5)*ps, cy=(gy+0.5)*ps;
+      var lat=nw.lat-(cy/H)*latRange;
+      var lon=nw.lng+(cx/W)*lonRange;
+      var v=sampleScalarGridAtLatLon(scalarGrid,lat,lon);
+      if(type==='storm') v=v*scalarDomainFade(lat,lon);
+      var c=type==='storm'?pixelColorStorm(v):pixelColorRain(v);
+      if(!c) continue;
+      var x0=gx*ps, y0=gy*ps;
+      var x1=Math.min(W,x0+ps), y1=Math.min(H,y0+ps);
+      var r=c[0],g=c[1],b=c[2],a=c[3];
+      for(var py=y0;py<y1;py++){
+        var row=py*W;
+        for(var px=x0;px<x1;px++){
+          var idx=(row+px)<<2;
+          d[idx]=r; d[idx+1]=g; d[idx+2]=b; d[idx+3]=a;
+        }
+      }
+    }
+  }
+  ctx.putImageData(img,0,0);
+  if(ps>=8){
+    ctx.save();
+    ctx.strokeStyle='rgba(5,16,30,0.22)';
+    ctx.lineWidth=0.5;
+    for(var i=1;i<cols;i++){
+      ctx.beginPath();ctx.moveTo(i*ps+0.5,0);ctx.lineTo(i*ps+0.5,H);ctx.stroke();
+    }
+    for(var j=1;j<rows;j++){
+      ctx.beginPath();ctx.moveTo(0,j*ps+0.5);ctx.lineTo(W,j*ps+0.5);ctx.stroke();
+    }
+    ctx.restore();
+  }
+}
+
+function setBurzePixelSize(size,btn){
+  burzePixelSize=size;
+  document.querySelectorAll('#px-size-btns button').forEach(function(b){
+    b.style.background='rgba(255,255,255,.04)';
+    b.style.color='var(--text2)';
+  });
+  if(btn){
+    btn.style.background='rgba(41,212,255,.12)';
+    btn.style.color='var(--blue2)';
+  }
+  redrawBurze();
+}
+
 // ── Główny draw na canvas ─────────────────────────────────────────
 // Renderowanie: gradient radialny dla każdego punktu STORM_GRID
 // Zero IDW interpolacji → zero przesunięcia
@@ -4992,9 +5059,11 @@ function showRainViewerOverlay(){
   if(!mapBurze) return;
   // Ukryj canvas burzowy
   if(burzeCanvas) burzeCanvas.style.display='none';
-  // Ukryj suwak burze, pokaż pasek radar w topbarze
+  // Ukryj suwak burze i przyciski px, pokaż pasek radar w topbarze
   var slRow=document.getElementById('burze-slider-row');
   if(slRow) slRow.style.display='none';
+  var pxBtns=document.getElementById('px-size-btns');
+  if(pxBtns) pxBtns.style.display='none';
   var rvTopbar=document.getElementById('rv-topbar');
   if(rvTopbar) rvTopbar.style.display='flex';
   if(!rvState.loaded){
@@ -5014,6 +5083,8 @@ function hideRainViewerOverlay(){
   if(rvTopbar) rvTopbar.style.display='none';
   var slRow=document.getElementById('burze-slider-row');
   if(slRow) slRow.style.display='';
+  var pxBtns=document.getElementById('px-size-btns');
+  if(pxBtns) pxBtns.style.display='flex';
   // Przywróć canvas burzowy
   if(burzeCanvas) burzeCanvas.style.display='';
 }
