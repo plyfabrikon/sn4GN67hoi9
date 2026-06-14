@@ -741,6 +741,33 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
 .rain-zone-desc{margin-top:8px;font-size:.58rem;line-height:1.6;color:var(--text2)}
 
 /* Status ładowania */
+.burze-map-tiles{transition:filter .3s}
+.burze-map-night .burze-map-tiles{
+  filter:invert(1) hue-rotate(180deg) brightness(0.88) contrast(0.92) saturate(0.85);
+}
+.burze-map-day .burze-map-tiles{
+  filter:none;
+}
+/* Przełącznik stylu mapy */
+#burze-map-switcher{
+  position:absolute;top:10px;left:50%;transform:translateX(-50%);
+  z-index:900;display:flex;gap:0;
+  background:rgba(5,16,30,.88);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:20px;overflow:hidden;
+  backdrop-filter:blur(6px);
+  box-shadow:0 2px 10px rgba(0,0,0,.45);
+}
+#burze-map-switcher button{
+  padding:4px 14px;font-size:.58rem;font-weight:700;letter-spacing:.8px;
+  text-transform:uppercase;border:none;cursor:pointer;
+  background:transparent;color:rgba(255,255,255,.45);
+  transition:all .18s;white-space:nowrap;
+}
+#burze-map-switcher button.active{
+  background:rgba(255,255,255,.12);color:#fff;
+}
+#burze-map-switcher button:hover:not(.active){color:rgba(255,255,255,.75)}
 .burze-loading{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;color:var(--text2);z-index:10;background:rgba(5,16,30,.9);padding:20px 30px;border-radius:10px;border:1px solid var(--border)}
 .burze-loading-spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 10px}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -1339,7 +1366,7 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
         <div style="display:flex;gap:4px;align-items:center">
           <button id="burze-mode-storm" onclick="setBurzeLayerMode('storm')" style="font-size:.56rem;padding:3px 9px;border-radius:999px;border:1px solid rgba(232,130,26,.45);background:rgba(232,130,26,.16);color:var(--accent);cursor:pointer">Burze</button>
           <button id="burze-mode-rain" onclick="setBurzeLayerMode('rain')" style="font-size:.56rem;padding:3px 9px;border-radius:999px;border:1px solid var(--border);background:rgba(255,255,255,.03);color:var(--text2);cursor:pointer">Strefa opadowa</button>
-          <button id="burze-mode-rainanim" onclick="setBurzeLayerMode('rainanim')" style="font-size:.56rem;padding:3px 9px;border-radius:999px;border:1px solid var(--border);background:rgba(255,255,255,.03);color:var(--text2);cursor:pointer">Strefa test anim.</button>
+          <button id="burze-mode-radar" onclick="setBurzeLayerMode('radar')" style="font-size:.56rem;padding:3px 9px;border-radius:999px;border:1px solid var(--border);background:rgba(255,255,255,.03);color:var(--text2);cursor:pointer">📡 Radar live</button>
         </div>
         <div style="display:flex;gap:4px;align-items:center;margin-left:auto">
           <span style="font-size:.55rem;color:var(--text2)">Dane:</span>
@@ -1347,13 +1374,27 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
           <button onclick="loadBurzeData(true)" style="font-size:.52rem;padding:2px 7px;border-radius:4px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--text2);cursor:pointer">🔄</button>
         </div>
       </div>
-      <!-- Slider z linią "teraz" -->
-      <div style="position:relative;width:100%;display:flex;align-items:center;gap:8px">
+      <!-- Slider z linią "teraz" — ukryty w trybie radar -->
+      <div id="burze-slider-row" style="position:relative;width:100%;display:flex;align-items:center;gap:8px">
         <input type="range" class="time-slider" id="burze-slider" min="0" max="71" value="0"
           style="flex:1" oninput="onBurzeSlider(this.value)">
         <!-- Marker "teraz" -->
         <div id="burze-now-marker" style="position:absolute;top:-2px;bottom:-2px;width:2px;background:#1fde8a;border-radius:2px;pointer-events:none;box-shadow:0 0 6px #1fde8a;display:none"></div>
         <span id="burze-time-label" style="font-size:.58rem;color:var(--text2);white-space:nowrap;min-width:40px">Teraz</span>
+      </div>
+      <!-- Pasek animacji RainViewer — widoczny tylko w trybie radar -->
+      <div id="rv-topbar" style="display:none;align-items:center;gap:10px;width:100%;padding-top:2px">
+        <span style="font-size:.55rem;color:#1fde8a;font-weight:700;letter-spacing:1px;white-space:nowrap">📡 RADAR LIVE</span>
+        <button id="rv-play-btn" onclick="toggleRVAnim()" style="background:rgba(31,222,138,.15);border:1px solid rgba(31,222,138,.4);color:#1fde8a;border-radius:6px;padding:2px 9px;font-size:.75rem;cursor:pointer;flex-shrink:0">▶</button>
+        <div style="flex:1;position:relative;display:flex;align-items:center;gap:8px">
+          <input id="rv-slider" type="range" min="0" max="11" value="11"
+            oninput="showRVFrame(parseInt(this.value));stopRVAnim()"
+            style="flex:1;accent-color:#1fde8a">
+        </div>
+        <span id="rv-time-label" style="font-size:.72rem;font-family:monospace;color:#1fde8a;font-weight:700;min-width:38px;text-align:right">--:--</span>
+        <button onclick="refreshRainViewer()" title="Odśwież" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:var(--text2);border-radius:6px;padding:2px 7px;font-size:.7rem;cursor:pointer;flex-shrink:0">🔄</button>
+        <span id="rv-status" style="font-size:.5rem;color:var(--text2);white-space:nowrap"></span>
+        <a href="https://www.rainviewer.com/" target="_blank" style="font-size:.48rem;color:rgba(107,144,176,.7);white-space:nowrap;text-decoration:none;flex-shrink:0">RainViewer</a>
       </div>
     </div>
 
@@ -1466,6 +1507,10 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
       <!-- Mapa -->
       <div class="burze-right">
         <div id="map-burze"></div>
+        <div id="burze-map-switcher">
+          <button id="bms-night" onclick="setBurzeMapStyle('night')" class="active">🌙 Nocna</button>
+          <button id="bms-day" onclick="setBurzeMapStyle('day')">☀️ Dzienna</button>
+        </div>
         <div class="burze-loading" id="burze-loading">
           <div class="burze-loading-spinner" id="burze-spinner"></div>
           <div style="font-size:.75rem" id="burze-loading-msg">Pobieranie danych pogodowych...</div>
@@ -3600,6 +3645,8 @@ var burzeLoaded=false;
 var burzeChartInst=null;
 var burzeRefreshInt=null;
 var burzeLayerMode='storm';
+var burzeTileLayer=null;
+var burzeMapStyle='night'; // 'night' | 'day'
 
 // ── ALGORYTM PRAWDOPODOBIEŃSTWA BURZY ───────────────────────────────
 // ── ALGORYTM BURZOWY v2 — 9 parametrów ─────────────────────────────────
@@ -3696,7 +3743,7 @@ function describeRainIntensity(mm){
 }
 
 function isRainLayerMode(mode){
-  return mode==='rain' || mode==='rainanim';
+  return mode==='rain';
 }
 
 function getRainCloudSignal(rainGrid, gx, gy){
@@ -3846,42 +3893,22 @@ function scalarDomainFade(lat,lon){
 }
 
 function buildScreenSampleGrid(map,scalarGrid,step,softEdges){
-  // Użyj kroku min 5px dla burze (step=3 to ~230k punktów na FHD, 5px to ~83k — 2.8× szybciej)
-  var effStep=Math.max(step,5);
   var size=map.getSize();
-  var cols=Math.ceil(size.x/effStep)+1, rows=Math.ceil(size.y/effStep)+1;
+  var cols=Math.ceil(size.x/step)+1, rows=Math.ceil(size.y/step)+1;
   var pts=[], vals=[];
   for(var y=0;y<rows;y++){
     pts[y]=[]; vals[y]=[];
     for(var x=0;x<cols;x++){
-      var px=Math.min(size.x,x*effStep), py=Math.min(size.y,y*effStep);
+      var px=Math.min(size.x,x*step), py=Math.min(size.y,y*step);
       var ll=map.containerPointToLatLng([px,py]);
       pts[y][x]={x:px,y:py};
       vals[y][x]=sampleScalarGridAtLatLon(scalarGrid,ll.lat,ll.lng)*(softEdges?scalarDomainFade(ll.lat,ll.lng):1);
     }
   }
-  // Precompute smooth values (cache eliminuje wielokrotne wywołania dla tego samego piksela)
-  var smoothCache=new Float32Array(cols*rows);
-  for(var sy=0;sy<rows;sy++){
-    for(var sx=0;sx<cols;sx++){
-      var sum=0,wSum=0;
-      for(var oy=-1;oy<=1;oy++){
-        for(var ox=-1;ox<=1;ox++){
-          var nx=sx+ox,ny=sy+oy;
-          if(nx<0||ny<0||nx>=cols||ny>=rows)continue;
-          var w=(ox===0&&oy===0)?2:1;
-          sum+=(vals[ny][nx]||0)*w; wSum+=w;
-        }
-      }
-      smoothCache[sy*cols+sx]=wSum?sum/wSum:0;
-    }
-  }
-  return {pts:pts,vals:vals,smoothCache:smoothCache,cols:cols,rows:rows,step:effStep};
+  return {pts:pts,vals:vals,cols:cols,rows:rows,step:step};
 }
 
 function smoothSampleValue(sample,gx,gy){
-  // Użyj precomputed cache jeśli dostępny (buildScreenSampleGrid go tworzy)
-  if(sample.smoothCache) return sample.smoothCache[gy*sample.cols+gx]||0;
   var sum=0,wSum=0;
   for(var oy=-1;oy<=1;oy++){
     for(var ox=-1;ox<=1;ox++){
@@ -4003,17 +4030,11 @@ function radarColorForRain(mm,x,y){
 }
 
 function drawRainRadarStyle(ctx,map,rainGrid){
+  var sample=buildScreenSampleGrid(map,rainGrid,3,true);
   var W=ctx.canvas.width,H=ctx.canvas.height;
-  // Reuse offscreen canvas zamiast tworzyć nowy przy każdym redraw
-  if(!drawRainRadarStyle._off||drawRainRadarStyle._off.width!==W||drawRainRadarStyle._off.height!==H){
-    drawRainRadarStyle._off=document.createElement('canvas');
-    drawRainRadarStyle._off.width=W;
-    drawRainRadarStyle._off.height=H;
-  }
-  var field=drawRainRadarStyle._off;
+  var field=document.createElement('canvas');
+  field.width=W; field.height=H;
   var fctx=field.getContext('2d');
-  fctx.clearRect(0,0,W,H);
-  var sample=buildScreenSampleGrid(map,rainGrid,5,true);
   fctx.globalCompositeOperation='source-over';
   for(var gy=0;gy<sample.rows;gy++){
     for(var gx=0;gx<sample.cols;gx++){
@@ -4033,12 +4054,11 @@ function drawRainRadarStyle(ctx,map,rainGrid){
         c={r:255,g:224,b:24,a:0.90};
       }
       fctx.fillStyle='rgba('+c.r+','+c.g+','+c.b+','+c.a.toFixed(2)+')';
-      var sz=sample.step+2;
-      fctx.fillRect(p.x-2,p.y-2,sz,sz);
+      fctx.fillRect(p.x-2,p.y-2,7,7);
     }
   }
   ctx.save();
-  ctx.filter='blur(2px)';
+  ctx.filter='blur(2.2px)';
   ctx.drawImage(field,0,0);
   ctx.filter='none';
   ctx.globalAlpha=0.38;
@@ -4054,46 +4074,18 @@ function drawRainIsobarFrame(ctx, map, rainGrid){
   ctx.restore();
 }
 
-function drawRainAnimFrame(ctx, map, rainGrid){
-  drawRainIsobarFrame(ctx,map,rainGrid);
-}
-
 function drawStormIsobarFrame(ctx, map, stormGrid){
-  var W=ctx.canvas.width, H=ctx.canvas.height;
-  // Offscreen canvas dla warstwy wypełnień (blur tylko raz, nie 4×)
-  if(!drawStormIsobarFrame._off||drawStormIsobarFrame._off.width!==W||drawStormIsobarFrame._off.height!==H){
-    drawStormIsobarFrame._off=document.createElement('canvas');
-    drawStormIsobarFrame._off.width=W;
-    drawStormIsobarFrame._off.height=H;
-  }
-  var off=drawStormIsobarFrame._off;
-  var octx=off.getContext('2d');
-  octx.clearRect(0,0,W,H);
-
-  var sample=buildScreenSampleGrid(map,stormGrid,5,true);
-  var smooth=function(gx,gy){return smoothSampleValue(sample,gx,gy);};
-
-  // Rysuj wszystkie wypełnienia na offscreen (bez blur — zrobimy raz po)
-  octx.save();
-  octx.globalCompositeOperation='source-over';
-  octx.lineJoin='round';
-  drawThresholdFieldSample(octx, sample, smooth, 34, 'rgba(180,0,220,__A__)', 0.18);
-  drawThresholdFieldSample(octx, sample, smooth, 40, 'rgba(255,136,0,__A__)',  0.32);
-  drawThresholdFieldSample(octx, sample, smooth, 60, 'rgba(255,34,0,__A__)',   0.44);
-  drawThresholdFieldSample(octx, sample, smooth, 80, 'rgba(204,0,255,__A__)',  0.58);
-  octx.restore();
-
-  // Kopiuj na główny canvas z blur (jeden filter zamiast czterech)
-  ctx.save();
-  ctx.filter='blur(2px)';
-  ctx.drawImage(off,0,0);
-  ctx.filter='none';
-  ctx.restore();
-
-  // Izolinii bez blur — na głównym canvas
   ctx.save();
   ctx.globalCompositeOperation='source-over';
   ctx.lineJoin='round';
+  var sample=buildScreenSampleGrid(map,stormGrid,3,true);
+  var smooth=function(gx,gy){return smoothSampleValue(sample,gx,gy);};
+  ctx.filter='blur(1.8px)';
+  drawThresholdFieldSample(ctx, sample, smooth, 34, 'rgba(180,0,220,__A__)', 0.16);
+  drawThresholdFieldSample(ctx, sample, smooth, 40, 'rgba(255,136,0,__A__)', 0.30);
+  drawThresholdFieldSample(ctx, sample, smooth, 60, 'rgba(255,34,0,__A__)', 0.42);
+  drawThresholdFieldSample(ctx, sample, smooth, 80, 'rgba(204,0,255,__A__)', 0.56);
+  ctx.filter='none';
   drawIsoLinesSample(ctx, sample, smooth, [
     {value:40,color:'#ffaa00'},
     {value:60,color:'#ff4400'},
@@ -4103,10 +4095,11 @@ function drawStormIsobarFrame(ctx, map, stormGrid){
 }
 
 function setBurzeLayerMode(mode){
-  burzeLayerMode=(mode==='rain'||mode==='rainanim')?mode:'storm';
+  if(mode==='rain'||mode==='storm'||mode==='radar') burzeLayerMode=mode;
+  else burzeLayerMode='storm';
   var btnStorm=document.getElementById('burze-mode-storm');
   var btnRain=document.getElementById('burze-mode-rain');
-  var btnRainAnim=document.getElementById('burze-mode-rainanim');
+  var btnRadar=document.getElementById('burze-mode-radar');
   if(btnStorm){
     btnStorm.style.borderColor=burzeLayerMode==='storm'?'rgba(232,130,26,.45)':'var(--border)';
     btnStorm.style.background=burzeLayerMode==='storm'?'rgba(232,130,26,.16)':'rgba(255,255,255,.03)';
@@ -4117,10 +4110,16 @@ function setBurzeLayerMode(mode){
     btnRain.style.background=burzeLayerMode==='rain'?'rgba(41,212,255,.14)':'rgba(255,255,255,.03)';
     btnRain.style.color=burzeLayerMode==='rain'?'var(--blue2)':'var(--text2)';
   }
-  if(btnRainAnim){
-    btnRainAnim.style.borderColor=burzeLayerMode==='rainanim'?'rgba(155,231,255,.45)':'var(--border)';
-    btnRainAnim.style.background=burzeLayerMode==='rainanim'?'rgba(215,245,255,.14)':'rgba(255,255,255,.03)';
-    btnRainAnim.style.color=burzeLayerMode==='rainanim'?'#d7f5ff':'var(--text2)';
+  if(btnRadar){
+    btnRadar.style.borderColor=burzeLayerMode==='radar'?'rgba(31,222,138,.45)':'var(--border)';
+    btnRadar.style.background=burzeLayerMode==='radar'?'rgba(31,222,138,.12)':'rgba(255,255,255,.03)';
+    btnRadar.style.color=burzeLayerMode==='radar'?'#1fde8a':'var(--text2)';
+  }
+  // Pokaż/ukryj nakładkę RainViewer
+  if(burzeLayerMode==='radar'){
+    showRainViewerOverlay();
+  } else {
+    hideRainViewerOverlay();
   }
   updateBurzeLegend();
   updateBurzePanelForStep(curStep);
@@ -4140,17 +4139,17 @@ function updateBurzeLegend(){
   var d3=document.getElementById('storm-legend-dot-3');
   var extraIcon=document.getElementById('storm-legend-extra-icon');
   var extraText=document.getElementById('storm-legend-extra-text');
-  if(burzeLayerMode==='rainanim'){
-    if(title)title.textContent='Legenda test anim.';
-    if(gauge)gauge.textContent='Pasmo opadów';
-    if(t1)t1.textContent='0.2–2 mm/h Tło pasma';
-    if(t2)t2.textContent='2–5 mm/h Rdzeń strefy';
-    if(t3)t3.textContent='5–10+ mm/h Silniejszy rdzeń';
-    if(d1){d1.style.background='#cfd6de';d1.style.boxShadow='0 0 6px rgba(230,236,242,.65)';}
-    if(d2){d2.style.background='#9be7ff';d2.style.boxShadow='0 0 6px #9be7ff';}
-    if(d3){d3.style.background='#3b82f6';d3.style.boxShadow='0 0 8px #3b82f6';}
-    if(extraIcon)extraIcon.textContent='☁';
-    if(extraText)extraText.textContent='Analiza modeli + nakładające się pasma opadu';
+  if(burzeLayerMode==='radar'){
+    if(title)title.textContent='Legenda radaru';
+    if(gauge)gauge.textContent='Odbiciowość radaru';
+    if(t1)t1.textContent='0.1–2 mm/h Lekki';
+    if(t2)t2.textContent='2–10 mm/h Umiarkowany';
+    if(t3)t3.textContent='10+ mm/h Mocny / ulewa';
+    if(d1){d1.style.background='#3b82f6';d1.style.boxShadow='0 0 6px #3b82f6';}
+    if(d2){d2.style.background='#1fde8a';d2.style.boxShadow='0 0 6px #1fde8a';}
+    if(d3){d3.style.background='#ff5a1f';d3.style.boxShadow='0 0 8px #ff5a1f';}
+    if(extraIcon)extraIcon.textContent='📡';
+    if(extraText)extraText.textContent='Dane z 1200+ radarów RainViewer (odśw. co 10min)';
   } else if(burzeLayerMode==='rain'){
     if(title)title.textContent='Legenda opadu';
     if(gauge)gauge.textContent='Intensywność opadu';
@@ -4193,11 +4192,18 @@ function initMapBurze(){
     mapBurze.getPane('stormCanvasPane').style.zIndex='620';
     mapBurze.getPane('stormCanvasPane').style.pointerEvents='none';
   }
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-    {maxZoom:10,subdomains:'abcd'}).addTo(mapBurze);
+  // Warstwa bazowa mapy — domyślnie OSM Night (ciemna)
+  var osmUrl='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+  var osmAttr='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+  var osmOpts={maxZoom:18,subdomains:'abc',attribution:osmAttr,className:'burze-map-tiles'};
+  burzeTileLayer=L.tileLayer(osmUrl,osmOpts).addTo(mapBurze);
+  // Domyślnie: tryb ciemny (Night)
+  setBurzeMapStyle('night');
   setTimeout(function(){
     mapBurze.invalidateSize();
     initCanvasOverlay();
+    initRainViewerControl();
+    initMapStyleSwitcher();
   },300);
 }
 // ── POBIERANIE DANYCH — multi-location batch (3 requesty zamiast 252) ──
@@ -4518,16 +4524,13 @@ function buildRainGridForHour(hIdx) {
 // ── Pre-build wszystkich godzin asynchronicznie (bez blokowania UI) ─
 function prebuildAllGrids(onDone) {
   gridCache = {};
-  rainGridCache = {};
   gridCacheReady = false;
   var h = 0;
-  // Buduj storm i rain naprzemiennie (jeden krok = 2 gridy = 1 yield)
   function buildNext() {
     if(h >= 72) { gridCacheReady=true; if(onDone) onDone(); return; }
     gridCache[h] = buildGridForHour(h);
-    rainGridCache[h] = buildRainGridForHour(h);
     h++;
-    // MessageChannel nie blokuje event loop — szybsze niż setTimeout(0)
+    // Użyj MessageChannel zamiast setTimeout(0) — szybsze i nie blokuje
     if(typeof MessageChannel!=='undefined') {
       var ch=new MessageChannel();
       ch.port1.onmessage=buildNext;
@@ -4603,19 +4606,21 @@ function drawFrame(gridIgnored) {
   }
   drawStormIsobarFrame(ctx, map, getGrid(h));
 }
-// ── Rysowanie na żądanie (przez RAF — zapobiega duplikowaniu klatek) ─────────────────
+// ── Rysowanie na żądanie (bez RAF — bez wzorków) ─────────────────
 // Brak ciągłej pętli = brak animowanych wzorków, znacznie lepsza wydajność
 function fogLoop(ts) { /* wyłączone — rysujemy tylko przy zmianie */ }
 
 var _redrawRAF=null;
 function redrawBurze() {
   if(!burzeLoaded) return;
+  // Tryb radar — canvas nieaktywny, nie rysujemy (kafelki RainViewer widoczne)
+  if(burzeLayerMode==='radar') return;
   if(!burzeCanvas) {
     initCanvasOverlay();
     if(!burzeCanvas) { setTimeout(redrawBurze,300); return; }
   }
-  // Anuluj poprzedni oczekujący redraw — interesuje nas tylko ostatni
-  if(_redrawRAF){ cancelAnimationFrame(_redrawRAF); }
+  if(burzeCanvas) burzeCanvas.style.display='';
+  if(_redrawRAF) cancelAnimationFrame(_redrawRAF);
   _redrawRAF=requestAnimationFrame(function(){
     _redrawRAF=null;
     drawFrame(null);
@@ -4636,7 +4641,7 @@ function renderBurzeMarkers(hIdx){
     var metric=isRain?(d.prc||0):d.prob;
     if(isRain ? metric<0.2 : metric<STORM_THRESHOLD)return;
     var col=isRain?rainToColor(metric):probToColor(metric);
-    var radius=isRain?(burzeLayerMode==='rainanim'?(metric>=10?8:metric>=5?7:5):(metric>=10?11:metric>=5?9:7)):(metric>=80?14:metric>=60?11:8);
+    var radius=isRain?(metric>=10?11:metric>=5?9:7):(metric>=80?14:metric>=60?11:8);
     var marker=L.circleMarker([pt[0],pt[1]],{
       pane:'stormMarkers',
       radius:radius,
@@ -4644,7 +4649,7 @@ function renderBurzeMarkers(hIdx){
       weight:2,
       opacity:0.95,
       fillColor:col.fill,
-      fillOpacity:isRain?(burzeLayerMode==='rainanim'?(metric>=5?0.24:0.16):(metric>=5?0.42:0.28)):(metric>=80?0.55:metric>=60?0.45:0.32)
+      fillOpacity:isRain?(metric>=5?0.42:0.28):(metric>=80?0.55:metric>=60?0.45:0.32)
     });
     marker.bindTooltip(
       isRain
@@ -4692,29 +4697,21 @@ function initCanvasOverlay() {
     }
   }
 
-  // RAF-throttled redraw — eliminuje klatkowanie podczas panning/zoom
-  var _rafPending=false;
-  function scheduleRedrawRAF(){
-    if(_rafPending)return;
-    _rafPending=true;
-    requestAnimationFrame(function(){
-      _rafPending=false;
-      fixCanvas();
-      redrawBurze();
-    });
+  // Throttle: podczas przeciągania max 1 redraw co 200ms
+  var _raf=null, _lastDraw=0;
+  function scheduleRedraw(){
+    if(_raf)return;
+    var delay=Math.max(0,200-(Date.now()-_lastDraw));
+    _raf=setTimeout(function(){
+      _raf=null; _lastDraw=Date.now();
+      fixCanvas(); redrawBurze();
+    },delay);
   }
 
-  // Przy starcie przesuwania natychmiast wyczyść canvas żeby nie było "pływającego" obrazu
-  mapBurze.on('movestart zoomstart',function(){
-    if(burzeCanvas){
-      var c=burzeCanvas.getContext('2d');
-      c.clearRect(0,0,burzeCanvas.width,burzeCanvas.height);
-    }
-  });
-
-  mapBurze.on('move zoom',scheduleRedrawRAF);
+  mapBurze.on('move zoom zoomanim',scheduleRedraw);
   mapBurze.on('zoomend moveend resize',function(){
-    _rafPending=false;
+    if(_raf){clearTimeout(_raf);_raf=null;}
+    _lastDraw=Date.now();
     fixCanvas(); redrawBurze();
   });
 
@@ -4886,18 +4883,14 @@ function updateBurzePanel(d){
   set('rain-zone-status',rainLabel);
   set('rain-zone-pp',(d.pp||0)+'%');
   set('rain-zone-wmo',d.wmo);
-  set('rain-zone-layer',burzeLayerMode==='rainanim'?'Test anim.':(isRain?'Aktualna warstwa':'Dane pomocnicze'));
-  if(burzeLayerMode==='rainanim'){
-    set('rain-zone-desc','Tryb testowy scala pola opadu z modelu w miekkie, nakladajace sie pasma z jasnym tlem chmur, podobnie jak na referencyjnej mapie.');
-  }
+  set('rain-zone-layer',burzeLayerMode==='radar'?'Radar live':(isRain?'Aktualna warstwa':'Dane pomocnicze'));
   set('rain-zone-desc',
-    isRain
-      ? 'Aktywna warstwa pokazuje strefę opadową z modelu dla wybranej godziny. Kolory odpowiadają intensywności w mm/h.'
-      : 'Panel opadowy korzysta z tych samych aktualizacji modelowych i podpowiada, czy razem z ryzykiem burzowym pojawia się deszcz.'
+    burzeLayerMode==='radar'
+      ? 'Nakładka radaru RainViewer — dane z prawdziwych radarów meteorologicznych, odświeżane co 10 minut.'
+      : isRain
+        ? 'Aktywna warstwa pokazuje strefę opadową z modelu dla wybranej godziny. Kolory odpowiadają intensywności w mm/h.'
+        : 'Panel opadowy korzysta z tych samych aktualizacji modelowych i podpowiada, czy razem z ryzykiem burzowym pojawia się deszcz.'
   );
-  if(burzeLayerMode==='rainanim'){
-    set('rain-zone-desc','Tryb testowy scala pola opadu z modelu w miekkie, nakladajace sie pasma z jasnym tlem chmur, podobnie jak na referencyjnej mapie.');
-  }
 }
 
 // ── Wykres ─────────────────────────────────────────────────────────
@@ -4927,7 +4920,7 @@ function buildStormChart(){
       : '📊 Prawdopodob. burzy — Twoja lokalizacja';
   }
   if(chartTitle){
-    if(burzeLayerMode==='rainanim') chartTitle.textContent='Strefa test anim. - Twoja lokalizacja';
+    if(burzeLayerMode==='radar') chartTitle.textContent='📡 Radar live — lokalizacja';
     else if(isRain) chartTitle.textContent='Strefa opadowa - Twoja lokalizacja';
     else chartTitle.textContent='Prawdopodob. burzy - Twoja lokalizacja';
   }
@@ -4976,6 +4969,205 @@ function toggleBurzeAnim(){
   }
 }
 
+
+// ═══════════════════════════════════════════════════════════════════
+// RAINVIEWER — nakładka radaru meteorologicznego na żywo
+// API: https://www.rainviewer.com/api.html (darmowe, osobiste/edukacyjne)
+// Atrybucja: "Weather data by RainViewer" wymagana
+// ═══════════════════════════════════════════════════════════════════
+var rvState = {
+  frames: [],        // tablica {time, path} z API
+  frameIdx: 0,       // aktualnie wyświetlana klatka
+  layers: [],        // Leaflet TileLayer dla każdej klatki
+  host: '',
+  animTimer: null,
+  animRunning: false,
+  loaded: false,
+  refreshTimer: null,
+  apiUrl: 'https://api.rainviewer.com/public/weather-maps.json'
+};
+var rvControlDiv = null;  // pasek kontrolny animacji
+
+function showRainViewerOverlay(){
+  if(!mapBurze) return;
+  // Ukryj canvas burzowy
+  if(burzeCanvas) burzeCanvas.style.display='none';
+  // Ukryj suwak burze, pokaż pasek radar w topbarze
+  var slRow=document.getElementById('burze-slider-row');
+  if(slRow) slRow.style.display='none';
+  var rvTopbar=document.getElementById('rv-topbar');
+  if(rvTopbar) rvTopbar.style.display='flex';
+  if(!rvState.loaded){
+    loadRainViewerData();
+  } else {
+    showRVFrame(rvState.frameIdx);
+  }
+}
+
+function hideRainViewerOverlay(){
+  // Usuń wszystkie warstwy RainViewer
+  rvState.layers.forEach(function(l){ try{ if(mapBurze&&l._map) mapBurze.removeLayer(l); }catch(e){} });
+  // Zatrzymaj animację
+  stopRVAnim();
+  // Ukryj pasek radar, przywróć suwak burze
+  var rvTopbar=document.getElementById('rv-topbar');
+  if(rvTopbar) rvTopbar.style.display='none';
+  var slRow=document.getElementById('burze-slider-row');
+  if(slRow) slRow.style.display='';
+  // Przywróć canvas burzowy
+  if(burzeCanvas) burzeCanvas.style.display='';
+}
+
+function loadRainViewerData(){
+  setRVStatus('Pobieranie danych radaru...');
+  fetch(rvState.apiUrl, {cache:'no-cache'})
+    .then(function(r){
+      if(!r.ok) throw new Error('HTTP '+r.status);
+      return r.json();
+    })
+    .then(function(data){
+      rvState.host = data.host || 'https://tilecache.rainviewer.com';
+      var past = (data.radar && data.radar.past) || [];
+      rvState.frames = past;
+      rvState.loaded = true;
+      if(rvState.frames.length === 0){
+        setRVStatus('Brak danych radaru');
+        return;
+      }
+      // Usuń stare warstwy
+      rvState.layers.forEach(function(l){
+        try{ if(mapBurze&&l._map) mapBurze.removeLayer(l); }catch(e){}
+      });
+      // Utwórz nowe warstwy dla każdej klatki
+      // color=6 (rainbow), smooth=1, snow=1, zoomOffset=-1 dla kafelków 512px
+      rvState.layers = rvState.frames.map(function(f){
+        var url = rvState.host + f.path + '/512/{z}/{x}/{y}/6/1_1.png';
+        return L.tileLayer(url, {
+          tileSize: 512,
+          zoomOffset: -1,
+          maxNativeZoom: 6,
+          maxZoom: 12,
+          opacity: 0,
+          zIndex: 200,
+          updateWhenIdle: false,
+          keepBuffer: 2,
+          attribution: 'Weather data by <a href="https://www.rainviewer.com/" target="_blank">RainViewer</a>'
+        });
+      });
+      // Dodaj wszystkie do mapy (opacity=0, preload)
+      rvState.layers.forEach(function(l){ l.addTo(mapBurze); });
+      // Pokaż ostatnią klatkę (najnowszą)
+      rvState.frameIdx = rvState.frames.length - 1;
+      showRVFrame(rvState.frameIdx);
+      updateRVTimeline();
+      setRVStatus('');
+    })
+    .catch(function(err){
+      console.error('RainViewer error:', err);
+      setRVStatus('Błąd: '+err.message);
+    });
+}
+
+function showRVFrame(idx){
+  if(!rvState.frames.length) return;
+  idx = Math.max(0, Math.min(idx, rvState.frames.length-1));
+  rvState.frameIdx = idx;
+  // Pokaż wybraną, ukryj pozostałe
+  rvState.layers.forEach(function(l, i){
+    l.setOpacity(i===idx ? 0.85 : 0);
+  });
+  // Aktualizuj czas na pasku
+  var frameTime = rvState.frames[idx] && rvState.frames[idx].time;
+  if(frameTime){
+    var dt = new Date(frameTime*1000);
+    var hh = String(dt.getHours()).padStart(2,'0');
+    var mm = String(dt.getMinutes()).padStart(2,'0');
+    var el = document.getElementById('rv-time-label');
+    if(el) el.textContent = hh+':'+mm;
+  }
+  updateRVSlider();
+}
+
+function updateRVTimeline(){
+  var slider = document.getElementById('rv-slider');
+  if(slider){
+    slider.max = Math.max(0, rvState.frames.length-1);
+    slider.value = rvState.frameIdx;
+  }
+}
+
+function updateRVSlider(){
+  var slider = document.getElementById('rv-slider');
+  if(slider) slider.value = rvState.frameIdx;
+}
+
+function setRVStatus(msg){
+  var el = document.getElementById('rv-status');
+  if(el) el.textContent = msg;
+}
+
+function startRVAnim(){
+  if(rvState.animRunning) return;
+  rvState.animRunning = true;
+  var btn = document.getElementById('rv-play-btn');
+  if(btn) btn.textContent = '⏹';
+  function tick(){
+    if(!rvState.animRunning) return;
+    var next = (rvState.frameIdx+1) % rvState.frames.length;
+    showRVFrame(next);
+    // Pauza 1.2s na ostatniej klatce, 400ms na pozostałych
+    var delay = next===rvState.frames.length-1 ? 1200 : 400;
+    rvState.animTimer = setTimeout(tick, delay);
+  }
+  tick();
+}
+
+function stopRVAnim(){
+  rvState.animRunning = false;
+  if(rvState.animTimer){ clearTimeout(rvState.animTimer); rvState.animTimer=null; }
+  var btn = document.getElementById('rv-play-btn');
+  if(btn) btn.textContent = '▶';
+}
+
+function toggleRVAnim(){
+  if(rvState.animRunning) stopRVAnim();
+  else startRVAnim();
+}
+
+function refreshRainViewer(){
+  stopRVAnim();
+  rvState.loaded = false;
+  rvState.layers.forEach(function(l){ if(mapBurze&&l._map) mapBurze.removeLayer(l); });
+  rvState.layers = [];
+  loadRainViewerData();
+}
+
+function initRainViewerControl(){
+  // Pasek RainViewer jest teraz w topbarze (rv-topbar) — tylko auto-refresh
+  rvState.refreshTimer = setInterval(function(){
+    if(burzeLayerMode==='radar') refreshRainViewer();
+  }, 10*60*1000);
+}
+
+// ── Przełącznik stylu mapy ─────────────────────────────────────────────────
+function setBurzeMapStyle(style){
+  burzeMapStyle=style;
+  var mapDiv=document.getElementById('map-burze');
+  if(mapDiv){
+    mapDiv.classList.remove('burze-map-night','burze-map-day');
+    mapDiv.classList.add(style==='night'?'burze-map-night':'burze-map-day');
+  }
+  var bNight=document.getElementById('bms-night');
+  var bDay=document.getElementById('bms-day');
+  if(bNight) bNight.classList.toggle('active',style==='night');
+  if(bDay)   bDay.classList.toggle('active',style==='day');
+}
+
+function initMapStyleSwitcher(){
+  // Przy starcie ustaw klasę na kontenerze mapy
+  setBurzeMapStyle(burzeMapStyle);
+}
+
 // ── INICJALIZACJA SEKCJI ─────────────────────────────────────────────
 function initBurze(){
   if(burzeInit)return;
@@ -5016,14 +5208,6 @@ function initBurze(){
     }
     updateNowMarker();
   },15*60*1000);
-
-  // Aktualizacja znacznika czasu na pasku co godzinę (bez pobierania danych)
-  setInterval(function(){
-    var el=document.getElementById('burze-update-time');
-    if(el&&burzeLoaded){
-      el.textContent=new Date().toLocaleTimeString('pl-PL',{hour:'2-digit',minute:'2-digit'})+' (akt.)';
-    }
-  },60*60*1000);
 }
 
 
@@ -5551,4 +5735,3 @@ window.onload=function(){startGPS();checkMobileNav();};
 </script>
 </body>
 </html>
-  
