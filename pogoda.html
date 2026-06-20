@@ -1655,15 +1655,15 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
       </div>
     </div>
 
-    <div style="position:absolute;right:10px;bottom:84px;z-index:6;display:flex;flex-direction:column;gap:8px">
-      <button id="trk-recenter-btn" onclick="trkRecenter()" title="Wyśrodkuj na mojej pozycji" style="width:40px;height:40px;background:rgba(78,201,255,.18);border:1px solid rgba(78,201,255,.4);color:#4ec9ff;border-radius:10px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center">◎</button>
-      <button id="trk-fullscreen-btn" onclick="trkToggleFullscreen()" title="Pełny ekran" style="width:40px;height:40px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#cfe0ec;border-radius:10px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center">⤢</button>
-      <button id="trk-style-btn" onclick="trkToggleMapStyle()" title="Jasna/ciemna mapa" style="width:40px;height:40px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#cfe0ec;border-radius:10px;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center">☾</button>
+    <div style="position:absolute;right:10px;bottom:84px;z-index:6;display:flex;flex-direction:column;gap:9px">
+      <button id="trk-recenter-btn" onclick="trkRecenter()" title="Wyśrodkuj na mojej pozycji" style="width:44px;height:44px;background:#0a1622;border:2px solid #4ec9ff;color:#4ec9ff;border-radius:11px;font-size:19px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(0,0,0,.6),0 0 0 1px rgba(0,0,0,.4)">◎</button>
+      <button id="trk-fullscreen-btn" onclick="trkToggleFullscreen()" title="Pełny ekran" style="width:44px;height:44px;background:#0a1622;border:2px solid #ffffff;color:#ffffff;border-radius:11px;font-size:19px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(0,0,0,.6),0 0 0 1px rgba(0,0,0,.4)">⤢</button>
+      <button id="trk-style-btn" onclick="trkToggleMapStyle()" title="Jasna/ciemna mapa" style="width:44px;height:44px;background:#0a1622;border:2px solid #ffffff;color:#ffffff;border-radius:11px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(0,0,0,.6),0 0 0 1px rgba(0,0,0,.4)">☾</button>
     </div>
 
-    <div style="position:absolute;left:10px;bottom:84px;z-index:6;display:flex;flex-direction:column;background:rgba(10,22,34,.9);border:1px solid rgba(255,255,255,.12);border-radius:10px;overflow:hidden">
-      <button id="trk-mode-hand-btn" onclick="trkSetRotationMode('hand')" title="Tryb w ręku — obrót telefonem" style="padding:8px 11px;background:rgba(255,255,255,.05);border:none;border-bottom:1px solid rgba(255,255,255,.1);color:#cfe0ec;font-size:11px;cursor:pointer;text-align:left;white-space:nowrap">📱 W ręku</button>
-      <button id="trk-mode-car-btn" onclick="trkSetRotationMode('car')" title="Tryb samochodowy — obrót wg kierunku jazdy" style="padding:8px 11px;background:rgba(78,201,255,.18);border:none;color:#4ec9ff;font-size:11px;cursor:pointer;text-align:left;white-space:nowrap">🚗 Samochód</button>
+    <div style="position:absolute;left:10px;bottom:84px;z-index:6;display:flex;flex-direction:column;background:#0a1622;border:2px solid #ffffff;border-radius:11px;overflow:hidden;box-shadow:0 3px 10px rgba(0,0,0,.6),0 0 0 1px rgba(0,0,0,.4)">
+      <button id="trk-mode-hand-btn" onclick="trkSetRotationMode('hand')" title="Tryb w ręku — obrót telefonem" style="padding:10px 13px;background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,.25);color:#ffffff;font-size:11px;font-weight:700;cursor:pointer;text-align:left;white-space:nowrap">📱 W ręku</button>
+      <button id="trk-mode-car-btn" onclick="trkSetRotationMode('car')" title="Tryb samochodowy — obrót wg kierunku jazdy" style="padding:10px 13px;background:#1c3a52;border:none;color:#4ec9ff;font-size:11px;font-weight:700;cursor:pointer;text-align:left;white-space:nowrap">🚗 Samochód</button>
     </div>
 
     <div style="position:absolute;left:50%;bottom:84px;transform:translateX(-50%);pointer-events:none;z-index:5">
@@ -5385,7 +5385,7 @@ function trkInitMap(containerId){
     // Strzałka samochodu stoi na bottom:84px od dołu kontenera mapy — nie w geometrycznym
     // środku. Padding przesuwa logiczny "center" MapLibre dokładnie pod strzałkę,
     // żeby pozycja GPS renderowała się tam gdzie faktycznie jest ikona pojazdu.
-    padding: {top:0, bottom:170, left:0, right:0}
+    padding: {top:0, bottom:116, left:0, right:0}
   });
   trkState.map.on('load', function(){
     var st=document.getElementById('trk-gps-status');
@@ -5409,7 +5409,7 @@ function trkToggleMapStyle(){
     // setStyle czyści część konfiguracji kamery — odtwarzamy po wczytaniu nowego stylu
     trkState.map.once('styledata', function(){
       trkState.map.setPitch(60);
-      trkState.map.setPadding({top:0,bottom:170,left:0,right:0});
+      trkState.map.setPadding({top:0,bottom:116,left:0,right:0});
     });
   }
   var btn=document.getElementById('trk-style-btn');
@@ -5449,7 +5449,7 @@ function trkSetFollowMode(on){
 function trkRecenter(){
   trkSetFollowMode(true);
   if(trkState.map && trkState.lat){
-    trkState.map.jumpTo({center:[trkState.lng,trkState.lat], padding:{top:0,bottom:170,left:0,right:0}});
+    trkState.map.jumpTo({center:[trkState.lng,trkState.lat], padding:{top:0,bottom:116,left:0,right:0}});
   }
 }
 
@@ -5494,7 +5494,7 @@ function trkRequestGPS(){
       if(st) st.style.display='none';
       if(!trkState.stormLoaded) trkLoadStormData();
       if(trkState.map && trkState.followMode){
-        trkState.map.jumpTo({center:[trkState.lng,trkState.lat], padding:{top:0,bottom:170,left:0,right:0}});
+        trkState.map.jumpTo({center:[trkState.lng,trkState.lat], padding:{top:0,bottom:116,left:0,right:0}});
       }
     },
     function(err){
@@ -5738,9 +5738,10 @@ function trkTick(){
   if(!trkState.fullscreenActive && (!sec||!sec.classList.contains('active'))) return;
   if(trkState.map && trkState.followMode){
     var smoothBearing=trkSmoothHeading();
-    // setBearing zamiast jumpTo/easeTo — animacja jest już zrobiona ręcznie przez
-    // low-pass filter powyżej, dodatkowa animacja CSS/easeTo dawałaby podwójne lagowanie
-    trkState.map.setBearing(smoothBearing);
+    // easeTo z krótką animacją (dopasowaną do interwału ticku) — daje płynny,
+    // ciągły obrót renderowany przez GPU między klatkami, zamiast dyskretnych
+    // skoków które setBearing() wykonuje natychmiastowo bez interpolacji.
+    trkState.map.easeTo({bearing:smoothBearing, duration:160, easing:function(t){return t;}});
   }
   var sv=document.getElementById('trk-speed-val'), hv=document.getElementById('trk-heading-val');
   if(sv) sv.textContent=Math.round(trkState.speed||0);
