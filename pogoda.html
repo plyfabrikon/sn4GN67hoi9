@@ -6,6 +6,8 @@
 <title>StormChaser</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 /* ═══════════════════════════════════════════
@@ -907,6 +909,9 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
   <div class="mobile-nav-item" data-sec="wiatr" onclick="showSec(this,'wiatr');mobileNavSync('wiatr')">
     <span class="mn-icon">💨</span><span class="mn-label">Wiatr</span>
   </div>
+  <div class="mobile-nav-item" data-sec="tracker" onclick="showSec(this,'tracker');mobileNavSync('tracker')">
+    <span class="mn-icon">🚗</span><span class="mn-label">Tracker</span>
+  </div>
 </nav>
 
 <!-- ═══ TOPBAR ═══ -->
@@ -921,6 +926,7 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
     <div class="nav-item" data-sec="wyladowania" onclick="showSec(this,'wyladowania')">⚡ Wyładowania</div>
     <div class="nav-item" data-sec="burze" onclick="showSec(this,'burze')">🌩 Burze 72h</div>
     <div class="nav-item" data-sec="wiatr" onclick="showSec(this,'wiatr')">Wiatr</div>
+    <div class="nav-item" data-sec="tracker" onclick="showSec(this,'tracker')">🚗 Tracker</div>
   </nav>
   <div class="nav-right">
     <span class="pill of" id="p-gps">GPS</span>
@@ -1601,6 +1607,77 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
     </div>
   </div>
 </div><!-- /sec-wiatr -->
+
+
+<!-- ══════ SEKCJA: TRACKER (tryb samochodowy) ══════ -->
+<div class="section" id="sec-tracker">
+  <div id="trk-panel" style="position:relative;width:100%;height:calc(100vh - 130px);min-height:520px;background:#0a1622;overflow:hidden;border-radius:10px">
+
+    <style>
+      #trk-panel.trk-fullscreen-active{height:100vh!important;min-height:100vh!important;border-radius:0!important}
+      #trk-panel.trk-fullscreen-active #trk-map,
+      #trk-panel.trk-fullscreen-active #trk-storm-canvas{top:128px}
+    </style>
+
+    <div style="position:absolute;top:0;left:0;right:0;z-index:10;padding:10px 12px;background:rgba(10,22,34,.94);border-radius:10px 10px 0 0">
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:#9fb8cc;margin-bottom:5px">
+        <span>Burze wokół kierunku jazdy</span>
+        <span id="trk-dist-val">-- km</span>
+      </div>
+      <div style="position:relative;height:24px;border-radius:6px;overflow:hidden;background:rgba(255,255,255,.05)">
+        <div style="display:flex;height:100%;gap:1px" id="trk-intensity-bar"></div>
+        <div style="position:absolute;left:50%;top:-3px;bottom:-3px;width:2px;background:#4ec9ff;transform:translateX(-1px)"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:#6b8499;margin-top:3px">
+        <span>lewo</span><span style="color:#4ec9ff">kierunek jazdy</span><span>prawo</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:7px">
+        <span style="font-size:10px;color:#6b8499;white-space:nowrap">Zasięg</span>
+        <input type="range" min="10" max="100" step="5" value="30" id="trk-range-slider" style="flex:1;accent-color:#4ec9ff" oninput="trkSetRange(this.value)">
+        <span style="font-size:11px;color:#cfe0ec;font-weight:600;min-width:42px;text-align:right" id="trk-range-val">30 km</span>
+      </div>
+    </div>
+
+    <div id="trk-map" style="position:absolute;left:0;right:0;bottom:0;top:128px;background:#0e1c29"></div>
+
+    <canvas id="trk-storm-canvas" style="position:absolute;left:0;right:0;bottom:0;top:128px;width:100%;height:calc(100% - 128px);pointer-events:none;z-index:3"></canvas>
+
+    <div id="trk-gps-status" style="position:absolute;top:138px;left:50%;transform:translateX(-50%);background:rgba(10,22,34,.88);border-radius:8px;padding:5px 12px;font-size:11px;color:#ffb648;z-index:6;cursor:pointer" onclick="trkRequestGPS()">
+      📍 Kliknij aby włączyć GPS
+    </div>
+
+    <div style="position:absolute;top:138px;left:10px;right:10px;display:flex;justify-content:space-between;pointer-events:none;z-index:5">
+      <div style="background:rgba(10,22,34,.85);border-radius:8px;padding:5px 10px;font-size:13px;color:#9fb8cc">
+        <span style="margin-right:4px">⏱</span><span id="trk-speed-val">0</span> km/h
+      </div>
+      <div style="background:rgba(10,22,34,.85);border-radius:8px;padding:5px 10px;font-size:13px;color:#9fb8cc">
+        <span style="margin-right:4px">🧭</span><span id="trk-heading-val">0</span>°
+      </div>
+    </div>
+
+    <div style="position:absolute;right:10px;bottom:84px;z-index:6;display:flex;flex-direction:column;gap:8px">
+      <button id="trk-recenter-btn" onclick="trkRecenter()" title="Wyśrodkuj na mojej pozycji" style="width:40px;height:40px;background:rgba(78,201,255,.18);border:1px solid rgba(78,201,255,.4);color:#4ec9ff;border-radius:10px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center">◎</button>
+      <button id="trk-fullscreen-btn" onclick="trkToggleFullscreen()" title="Pełny ekran" style="width:40px;height:40px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#cfe0ec;border-radius:10px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center">⤢</button>
+    </div>
+
+    <div style="position:absolute;left:50%;bottom:84px;transform:translateX(-50%);pointer-events:none;z-index:5">
+      <div style="width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-bottom:32px solid #4ec9ff;filter:drop-shadow(0 0 7px rgba(78,201,255,.85))"></div>
+    </div>
+
+    <div style="position:absolute;left:10px;right:10px;bottom:10px;z-index:10;display:flex;align-items:center;gap:10px;background:rgba(20,36,51,.96);border-radius:12px;padding:11px 14px">
+      <div id="trk-dir-arrow" style="font-size:24px;color:#f0997b;flex-shrink:0;transition:transform .3s">↑</div>
+      <div style="flex:1;min-width:0">
+        <p style="margin:0;font-size:13px;font-weight:600;color:#e8eef2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" id="trk-storm-text">Włącz GPS aby zacząć</p>
+        <p style="margin:0;font-size:10.5px;color:#8ea3b5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" id="trk-storm-sub">Dane: Open-Meteo, na żywo</p>
+      </div>
+      <button onclick="trkRequestGPS()" id="trk-gps-btn" style="background:rgba(255,182,72,.18);border:1px solid rgba(255,182,72,.4);color:#ffb648;border-radius:8px;padding:8px 10px;flex-shrink:0;font-size:11px;cursor:pointer">GPS</button>
+    </div>
+
+  </div>
+  <div style="font-size:.6rem;color:var(--text2);text-align:center;margin-top:6px">
+    📡 Mapa wektorowa: OpenFreeMap (OSM) · 🌩 Dane burzowe: Open-Meteo ICON, aktualizacja co 10 min · Wymaga zgody na lokalizację
+  </div>
+</div><!-- /sec-tracker -->
 
 
 
@@ -2305,6 +2382,7 @@ function showSec(el,s){
     setTimeout(function(){if(mapWiatr)mapWiatr.invalidateSize();},120);
   }
   if(s==='aktualnosci'){syncNewsPanel();loadNews();}
+  if(s==='tracker'){initTracker();}
   if(s==='eumetsat'){
     if(!eumInit)initEumetsat();
     else setTimeout(function(){if(eumMap)eumMap.invalidateSize();},150);
@@ -5251,6 +5329,398 @@ function setBurzeMapStyle(style){
 function initMapStyleSwitcher(){
   // Przy starcie ustaw klasę na kontenerze mapy
   setBurzeMapStyle(burzeMapStyle);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// TRACKER — tryb samochodowy z prawdziwym GPS, kompasem i mapą OSM
+// Niezależny od zakładki Burze/Strefa opadowa — własne dane Open-Meteo
+// ═══════════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════════════
+// TRACKER — tryb samochodowy z prawdziwym GPS, kompasem i mapą wektorową
+// Mapa: OpenFreeMap (darmowe wektorowe kafelki OSM, bez klucza API)
+// Renderer: MapLibre GL JS — natywny obrot (bearing) i przechylenie 3D (pitch)
+// Dane burzowe: niezależny fetch z Open-Meteo, NIE używa burzeData z zakładki Burze
+// ═══════════════════════════════════════════════════════════════════
+var trkState = {
+  inited: false,
+  map: null,            // instancja MapLibre GL
+  watchId: null,
+  lat: null,
+  lng: null,
+  heading: 0,
+  speed: 0,
+  rangeKm: 30,
+  stormPoints: [],
+  stormLoaded: false,
+  refreshTimer: null,
+  orientationActive: false,
+  tickInterval: null,
+  followMode: true,     // true = mapa śledzi GPS, false = użytkownik przesunął mapę ręcznie
+  fullscreenActive: false
+};
+
+// ── Inicjalizacja mapy wektorowej MapLibre ──────────────────────────
+function trkInitMap(containerId){
+  if(trkState.map) return;
+  trkState.map = new maplibregl.Map({
+    container: containerId||'trk-map',
+    style: 'https://tiles.openfreemap.org/styles/dark',
+    center: [19.4560, 51.7592], // Łódź — punkt startowy zanim GPS odpowie
+    zoom: 13,
+    pitch: 60,          // natywne przechylenie kamery 3D (wektorowe, bez rozmycia)
+    bearing: 0,
+    attributionControl: false,
+    dragRotate: false,  // obrót steruje tylko kompas/GPS, nie gest
+    touchZoomRotate: {around:'center'},
+    interactive: true   // przesuwanie myszką/palcem włączone
+  });
+  trkState.map.on('load', function(){
+    var st=document.getElementById('trk-gps-status');
+    if(st) st.textContent='📍 Mapa gotowa — kliknij aby włączyć GPS';
+  });
+  // Gdy użytkownik sam przesunie mapę (drag/scroll/pinch) — wyłącz tryb śledzenia
+  trkState.map.on('dragstart', function(){ trkSetFollowMode(false); });
+  trkState.map.on('zoomstart', function(e){
+    if(e.originalEvent) trkSetFollowMode(false);
+  });
+}
+
+function trkSetFollowMode(on){
+  trkState.followMode = on;
+  var btn=document.getElementById('trk-recenter-btn');
+  if(btn){
+    btn.style.background = on ? 'rgba(78,201,255,.18)' : 'rgba(255,255,255,.08)';
+    btn.style.color = on ? '#4ec9ff' : '#cfe0ec';
+    btn.style.borderColor = on ? 'rgba(78,201,255,.4)' : 'rgba(255,255,255,.15)';
+  }
+}
+
+function trkRecenter(){
+  trkSetFollowMode(true);
+  if(trkState.map && trkState.lat){
+    trkState.map.jumpTo({center:[trkState.lng,trkState.lat]});
+  }
+}
+
+
+function trkRequestGPS(){
+  if(!window.isSecureContext){
+    document.getElementById('trk-gps-status').textContent='❌ Wymaga HTTPS (otwórz przez https://, nie plik lokalny)';
+    document.getElementById('trk-gps-status').style.color='#ff6b6b';
+    return;
+  }
+  if(!navigator.geolocation){
+    document.getElementById('trk-gps-status').textContent='❌ GPS niedostępny w tej przeglądarce';
+    return;
+  }
+  document.getElementById('trk-gps-status').textContent='📍 Pobieranie pozycji...';
+  document.getElementById('trk-gps-status').style.color='#ffb648';
+  document.getElementById('trk-gps-status').style.display='block';
+  if(typeof DeviceOrientationEvent!=='undefined' && typeof DeviceOrientationEvent.requestPermission==='function'){
+    DeviceOrientationEvent.requestPermission().then(function(state){
+      if(state==='granted') trkEnableCompass();
+    }).catch(function(){});
+  } else {
+    trkEnableCompass();
+  }
+  trkState.watchId = navigator.geolocation.watchPosition(
+    function(pos){
+      trkState.lat = pos.coords.latitude;
+      trkState.lng = pos.coords.longitude;
+      if(pos.coords.speed!=null && pos.coords.speed>=0){
+        trkState.speed = pos.coords.speed*3.6;
+      }
+      if(pos.coords.heading!=null && !isNaN(pos.coords.heading) && trkState.speed>3){
+        trkState.heading = pos.coords.heading;
+      }
+      var st=document.getElementById('trk-gps-status');
+      if(st) st.style.display='none';
+      if(!trkState.stormLoaded) trkLoadStormData();
+      if(trkState.map && trkState.followMode){
+        trkState.map.jumpTo({center:[trkState.lng,trkState.lat]});
+      }
+    },
+    function(err){
+      var st=document.getElementById('trk-gps-status');
+      if(st){
+        st.style.display='block';
+        st.style.color='#ff6b6b';
+        var codeMsg={
+          1:'Odmówiono zgody na lokalizację — sprawdź ustawienia strony w przeglądarce',
+          2:'Pozycja niedostępna — sprawdź czy GPS/lokalizacja jest włączona w telefonie',
+          3:'Przekroczono czas — słaby sygnał GPS, spróbuj na zewnątrz'
+        };
+        st.textContent='❌ Błąd '+err.code+': '+(codeMsg[err.code]||err.message||'nieznany błąd');
+      }
+    },
+    {enableHighAccuracy:true, maximumAge:2000, timeout:10000}
+  );
+}
+
+function trkEnableCompass(){
+  if(trkState.orientationActive) return;
+  trkState.orientationActive = true;
+  window.addEventListener('deviceorientationabsolute', trkOrientHandler, true);
+  window.addEventListener('deviceorientation', trkOrientHandler, true);
+}
+function trkOrientHandler(ev){
+  if(trkState.speed>3) return;
+  var h = ev.webkitCompassHeading!=null ? ev.webkitCompassHeading : (ev.alpha!=null ? (360-ev.alpha) : null);
+  if(h!=null && !isNaN(h)) trkState.heading = h;
+}
+
+// ── Dane burzowe — własny, niezależny fetch z Open-Meteo ────────────
+function trkLoadStormData(){
+  if(!trkState.lat) return;
+  trkState.stormLoaded = true;
+  var pts = [];
+  var R = 0.9;
+  var step = 0.3;
+  for(var dy=-R; dy<=R; dy+=step){
+    for(var dx=-R; dx<=R; dx+=step){
+      pts.push([trkState.lat+dy, trkState.lng+dx/Math.cos(trkState.lat*Math.PI/180)]);
+    }
+  }
+  var latsStr = pts.map(function(p){return p[0].toFixed(2);}).join(',');
+  var lngsStr = pts.map(function(p){return p[1].toFixed(2);}).join(',');
+  var url = 'https://api.open-meteo.com/v1/forecast?latitude='+latsStr+'&longitude='+lngsStr
+    +'&hourly=cape,lifted_index,precipitation,weather_code,convective_inhibition'
+    +'&forecast_days=1&timezone=auto';
+  fetch(url).then(function(r){return r.json();}).then(function(data){
+    var arr = Array.isArray(data)?data:[data];
+    trkState.stormPoints = [];
+    arr.forEach(function(d,i){
+      if(!d.hourly) return;
+      var nowIdx = 0;
+      var cape = d.hourly.cape ? d.hourly.cape[nowIdx] : 0;
+      var li = d.hourly.lifted_index ? d.hourly.lifted_index[nowIdx] : 0;
+      var prc = d.hourly.precipitation ? d.hourly.precipitation[nowIdx] : 0;
+      var wmo = d.hourly.weather_code ? d.hourly.weather_code[nowIdx] : 0;
+      var cin = d.hourly.convective_inhibition ? d.hourly.convective_inhibition[nowIdx] : 0;
+      var prob = calcStormProb(cape||0, li||0, cin||0, prc||0, wmo||0, 0, 0, 60, 0, 10, 0, 0);
+      if(prob>=15 || prc>=2){
+        trkState.stormPoints.push({lat:pts[i][0], lng:pts[i][1], prob:prob, prc:prc});
+      }
+    });
+    var st=document.getElementById('trk-gps-status');
+    if(st) st.style.display='none';
+  }).catch(function(){
+    trkState.stormLoaded = false;
+  });
+}
+
+function trkStormColorAt(lat,lng){
+  var maxV=0;
+  trkState.stormPoints.forEach(function(p){
+    var d=Math.sqrt(Math.pow(lat-p.lat,2)+Math.pow(lng-p.lng,2));
+    var influence=Math.max(0,1-d/0.22);
+    var v=influence*p.prob;
+    maxV=Math.max(maxV,v);
+  });
+  return maxV;
+}
+function trkColorForVal(v){
+  if(v>=70) return [200,0,255,200];
+  if(v>=50) return [255,30,30,190];
+  if(v>=30) return [255,140,0,170];
+  if(v>=15) return [255,220,0,140];
+  return null;
+}
+function trkBearing(lat1,lng1,lat2,lng2){
+  var dLng=(lng2-lng1)*Math.PI/180;
+  var y=Math.sin(dLng)*Math.cos(lat2*Math.PI/180);
+  var x=Math.cos(lat1*Math.PI/180)*Math.sin(lat2*Math.PI/180)-Math.sin(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.cos(dLng);
+  return ((Math.atan2(y,x)*180/Math.PI)+360)%360;
+}
+function trkDistKm(lat1,lng1,lat2,lng2){
+  var R=6371;
+  var dLat=(lat2-lat1)*Math.PI/180, dLng=(lng2-lng1)*Math.PI/180;
+  var a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)*Math.sin(dLng/2);
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+
+// ── Warstwa burzowa rysowana na osobnym canvasie NAD mapą wektorową ──
+// (canvas pełni funkcję overlay — sama mapa pozostaje czysto wektorowa)
+function trkDrawStorm(){
+  var canvas=document.getElementById('trk-storm-canvas');
+  if(!canvas||!trkState.lat||!trkState.map) return;
+  var rect=canvas.getBoundingClientRect();
+  if(canvas.width!==rect.width||canvas.height!==rect.height){
+    canvas.width=rect.width; canvas.height=rect.height;
+  }
+  var ctx=canvas.getContext('2d');
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  if(!trkState.stormPoints.length) return;
+
+  // Projekcja lat/lng → ekran przez wbudowaną funkcję MapLibre (uwzględnia bearing+pitch automatycznie)
+  var ps=10;
+  var step=0.01; // ~1.1km w stopniach — gęstość próbkowania siatki
+  var R=0.95;
+  for(var dy=-R; dy<=R; dy+=step*3){
+    for(var dx=-R; dx<=R; dx+=step*3){
+      var lat=trkState.lat+dy, lng=trkState.lng+dx/Math.cos(trkState.lat*Math.PI/180);
+      var v=trkStormColorAt(lat,lng);
+      var c=trkColorForVal(v);
+      if(!c) continue;
+      var pt=trkState.map.project([lng,lat]);
+      if(pt.x<-20||pt.x>canvas.width+20||pt.y<-20||pt.y>canvas.height+20) continue;
+      ctx.fillStyle='rgba('+c[0]+','+c[1]+','+c[2]+','+(c[3]/255*0.55)+')';
+      ctx.fillRect(pt.x-ps/2,pt.y-ps/2,ps,ps);
+    }
+  }
+}
+
+function trkUpdateIntensityBar(){
+  var bar=document.getElementById('trk-intensity-bar');
+  if(!bar) return;
+  bar.innerHTML='';
+  if(!trkState.lat){
+    document.getElementById('trk-dist-val').textContent='-- km';
+    return;
+  }
+  var steps=21;
+  var fovDeg=80;
+  var nearestDist=null;
+  for(var i=0;i<steps;i++){
+    var relAngle=(i/(steps-1)-0.5)*fovDeg;
+    var absAngle=(trkState.heading+relAngle+360)%360;
+    var rad=absAngle*Math.PI/180;
+    var maxV=0;
+    for(var t=0.1;t<=1;t+=0.08){
+      var dd=t*trkState.rangeKm;
+      var llat=trkState.lat+(dd/111)*Math.cos(rad);
+      var llng=trkState.lng+(dd/111/Math.cos(trkState.lat*Math.PI/180))*Math.sin(rad);
+      var vv=trkStormColorAt(llat,llng);
+      if(vv>maxV) maxV=vv;
+    }
+    var c=trkColorForVal(maxV);
+    var div=document.createElement('div');
+    div.style.flex='1';
+    div.style.background=c?('rgba('+c[0]+','+c[1]+','+c[2]+',0.9)'):'transparent';
+    bar.appendChild(div);
+    if(i===Math.floor(steps/2) && maxV>=15 && nearestDist===null){
+      nearestDist=trkFindDistAlongHeading();
+    }
+  }
+  document.getElementById('trk-dist-val').textContent=nearestDist!==null?(Math.round(nearestDist)+' km wprost'):('zasięg '+trkState.rangeKm+' km');
+}
+
+function trkFindDistAlongHeading(){
+  var rad=trkState.heading*Math.PI/180;
+  for(var d=1;d<=trkState.rangeKm;d+=2){
+    var lat=trkState.lat+(d/111)*Math.cos(rad);
+    var lng=trkState.lng+(d/111/Math.cos(trkState.lat*Math.PI/180))*Math.sin(rad);
+    if(trkStormColorAt(lat,lng)>=15) return d;
+  }
+  return null;
+}
+
+function trkFindNearestStorm(){
+  var best=null,bestDist=999;
+  trkState.stormPoints.forEach(function(p){
+    if(p.prob<30) return;
+    var d=trkDistKm(trkState.lat,trkState.lng,p.lat,p.lng);
+    if(d<bestDist){bestDist=d;best=p;}
+  });
+  return best?{dist:bestDist,bearing:trkBearing(trkState.lat,trkState.lng,best.lat,best.lng),prob:best.prob}:null;
+}
+
+function trkUpdateStormInfo(){
+  var arrow=document.getElementById('trk-dir-arrow');
+  var text=document.getElementById('trk-storm-text');
+  var sub=document.getElementById('trk-storm-sub');
+  if(!arrow) return;
+  if(!trkState.lat){
+    text.textContent='Włącz GPS aby zacząć';
+    return;
+  }
+  if(!trkState.stormLoaded || !trkState.stormPoints.length){
+    text.textContent='Brak wykrytych burz w zasięgu '+trkState.rangeKm+'km';
+    sub.textContent='Dane: Open-Meteo, na żywo';
+    arrow.style.transform='rotate(0deg)';
+    return;
+  }
+  var s=trkFindNearestStorm();
+  if(!s){
+    text.textContent='Brak wykrytych burz w zasięgu '+trkState.rangeKm+'km';
+    sub.textContent='Dane: Open-Meteo, na żywo';
+    arrow.style.transform='rotate(0deg)';
+    return;
+  }
+  var rel=(s.bearing-trkState.heading+360)%360;
+  arrow.style.transform='rotate('+rel+'deg)';
+  var dirNames=['N','NE','E','SE','S','SW','W','NW'];
+  var dirIdx=Math.round(s.bearing/45)%8;
+  var level=s.prob>=70?'silna':s.prob>=50?'umiarkowana':'słaba';
+  text.textContent='Burza '+Math.round(s.dist)+' km, kierunek '+dirNames[dirIdx]+' ('+level+', '+s.prob+'%)';
+  sub.textContent='Dane: Open-Meteo, na żywo';
+}
+
+function trkTick(){
+  var sec=document.getElementById('sec-tracker');
+  if(!trkState.fullscreenActive && (!sec||!sec.classList.contains('active'))) return;
+  if(trkState.map && trkState.followMode){
+    // Natywny obrot mapy wektorowej — GPU-accelerated, ostre linie niezależnie od kąta
+    trkState.map.setBearing(trkState.heading);
+  }
+  var sv=document.getElementById('trk-speed-val'), hv=document.getElementById('trk-heading-val');
+  if(sv) sv.textContent=Math.round(trkState.speed||0);
+  if(hv) hv.textContent=Math.round(trkState.heading||0);
+  trkDrawStorm();
+  trkUpdateIntensityBar();
+  trkUpdateStormInfo();
+}
+
+function trkSetRange(v){
+  trkState.rangeKm=parseInt(v);
+  document.getElementById('trk-range-val').textContent=trkState.rangeKm+' km';
+  if(trkState.map){
+    var zoom = trkState.rangeKm<=20?13 : trkState.rangeKm<=50?11 : 9;
+    trkState.map.setZoom(zoom);
+  }
+  if(trkState.stormLoaded) trkLoadStormData();
+}
+
+// ── Pełny ekran — przenosimy CAŁY panel trackera (jedna instancja mapy) ──
+// Prościej i lżej niż druga instancja MapLibre: używamy Fullscreen API
+// na kontenerze nadrzędnym, mapa i canvas automatycznie wypełniają ekran.
+function trkToggleFullscreen(){
+  var panel=document.getElementById('trk-panel');
+  if(!panel) return;
+  if(!document.fullscreenElement){
+    if(panel.requestFullscreen) panel.requestFullscreen();
+    else if(panel.webkitRequestFullscreen) panel.webkitRequestFullscreen();
+  } else {
+    if(document.exitFullscreen) document.exitFullscreen();
+    else if(document.webkitExitFullscreen) document.webkitExitFullscreen();
+  }
+}
+
+function trkOnFullscreenChange(){
+  var panel=document.getElementById('trk-panel');
+  var isFs = document.fullscreenElement===panel || document.webkitFullscreenElement===panel;
+  trkState.fullscreenActive = isFs;
+  var btn=document.getElementById('trk-fullscreen-btn');
+  if(btn) btn.innerHTML = isFs ? '⤓' : '⤢';
+  panel.classList.toggle('trk-fullscreen-active', isFs);
+  setTimeout(function(){
+    if(trkState.map) trkState.map.resize();
+  }, 150);
+}
+document.addEventListener('fullscreenchange', trkOnFullscreenChange);
+document.addEventListener('webkitfullscreenchange', trkOnFullscreenChange);
+
+function initTracker(){
+  if(trkState.inited) return;
+  trkState.inited = true;
+  trkInitMap();
+  trkState.tickInterval = setInterval(trkTick, 400);
+  trkState.refreshTimer = setInterval(function(){
+    if(trkState.lat) trkLoadStormData();
+  }, 10*60*1000);
+  setTimeout(function(){
+    if(trkState.map) trkState.map.resize();
+  }, 300);
 }
 
 // ── INICJALIZACJA SEKCJI ─────────────────────────────────────────────
