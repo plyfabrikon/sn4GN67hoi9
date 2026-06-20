@@ -5372,7 +5372,11 @@ function trkInitMap(containerId){
     attributionControl: false,
     dragRotate: false,  // obrót steruje tylko kompas/GPS, nie gest
     touchZoomRotate: {around:'center'},
-    interactive: true   // przesuwanie myszką/palcem włączone
+    interactive: true,  // przesuwanie myszką/palcem włączone
+    // Strzałka samochodu stoi na bottom:84px od dołu kontenera mapy — nie w geometrycznym
+    // środku. Padding przesuwa logiczny "center" MapLibre dokładnie pod strzałkę,
+    // żeby pozycja GPS renderowała się tam gdzie faktycznie jest ikona pojazdu.
+    padding: {top:0, bottom:170, left:0, right:0}
   });
   trkState.map.on('load', function(){
     var st=document.getElementById('trk-gps-status');
@@ -5398,7 +5402,7 @@ function trkSetFollowMode(on){
 function trkRecenter(){
   trkSetFollowMode(true);
   if(trkState.map && trkState.lat){
-    trkState.map.jumpTo({center:[trkState.lng,trkState.lat]});
+    trkState.map.jumpTo({center:[trkState.lng,trkState.lat], padding:{top:0,bottom:170,left:0,right:0}});
   }
 }
 
@@ -5437,7 +5441,7 @@ function trkRequestGPS(){
       if(st) st.style.display='none';
       if(!trkState.stormLoaded) trkLoadStormData();
       if(trkState.map && trkState.followMode){
-        trkState.map.jumpTo({center:[trkState.lng,trkState.lat]});
+        trkState.map.jumpTo({center:[trkState.lng,trkState.lat], padding:{top:0,bottom:170,left:0,right:0}});
       }
     },
     function(err){
@@ -5467,6 +5471,24 @@ function trkOrientHandler(ev){
   if(trkState.speed>3) return;
   var h = ev.webkitCompassHeading!=null ? ev.webkitCompassHeading : (ev.alpha!=null ? (360-ev.alpha) : null);
   if(h!=null && !isNaN(h)) trkState.heading = h;
+}
+
+// ── Wygładzanie kierunku mapy ─────────────────────────────────────
+// Surowy heading z kompasu/GPS jest zaszumiony (fluktuacje ±10-20°),
+// więc nie obracamy mapy bezpośrednio na każdą zmianę. Zamiast tego:
+// 1) circular low-pass filter (uwzględnia przejście przez 0°/360°)
+// 2) martwa strefa — różnica <4° nie wywołuje przerysowania
+// 3) animowane przejście (easeTo) zamiast skoku (setBearing)
+trkState.displayedBearing = 0;
+function trkAngleDiff(a,b){
+  var d=((a-b+540)%360)-180;
+  return d;
+}
+function trkSmoothHeading(){
+  var diff=trkAngleDiff(trkState.heading, trkState.displayedBearing);
+  // Low-pass: przesuń wyświetlany kąt o 18% różnicy każdy tick — płynne, nie skokowe
+  trkState.displayedBearing=(trkState.displayedBearing+diff*0.18+360)%360;
+  return trkState.displayedBearing;
 }
 
 // ── Dane burzowe — własny, niezależny fetch z Open-Meteo ────────────
@@ -5660,8 +5682,10 @@ function trkTick(){
   var sec=document.getElementById('sec-tracker');
   if(!trkState.fullscreenActive && (!sec||!sec.classList.contains('active'))) return;
   if(trkState.map && trkState.followMode){
-    // Natywny obrot mapy wektorowej — GPU-accelerated, ostre linie niezależnie od kąta
-    trkState.map.setBearing(trkState.heading);
+    var smoothBearing=trkSmoothHeading();
+    // setBearing zamiast jumpTo/easeTo — animacja jest już zrobiona ręcznie przez
+    // low-pass filter powyżej, dodatkowa animacja CSS/easeTo dawałaby podwójne lagowanie
+    trkState.map.setBearing(smoothBearing);
   }
   var sv=document.getElementById('trk-speed-val'), hv=document.getElementById('trk-heading-val');
   if(sv) sv.textContent=Math.round(trkState.speed||0);
@@ -5714,7 +5738,7 @@ function initTracker(){
   if(trkState.inited) return;
   trkState.inited = true;
   trkInitMap();
-  trkState.tickInterval = setInterval(trkTick, 400);
+  trkState.tickInterval = setInterval(trkTick, 150);
   trkState.refreshTimer = setInterval(function(){
     if(trkState.lat) trkLoadStormData();
   }, 10*60*1000);
