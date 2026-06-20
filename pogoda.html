@@ -5364,8 +5364,9 @@ var trkState = {
   followMode: true,     // true = mapa śledzi GPS, false = użytkownik przesunął mapę ręcznie
   fullscreenActive: false,
   mapStyleMode: 'dark', // 'dark' | 'light'
-  rotationMode: 'car',  // 'car' = obrót wg kierunku jazdy (GPS heading), 'hand' = obrót wg orientacji telefonu (kompas)
-  compassPermissionGranted: false
+  rotationMode: 'car',  // 'car' = kierunek z wektora ruchu GPS, 'hand' = obrót wg kompasu telefonu
+  compassPermissionGranted: false,
+  rawCompassHeading: null
 };
 
 // ── Inicjalizacja mapy wektorowej MapLibre ──────────────────────────
@@ -5419,6 +5420,7 @@ function trkToggleMapStyle(){
 // ── Przełącznik trybu obrotu: w ręku (kompas telefonu) / samochód (kierunek GPS) ──
 function trkSetRotationMode(mode){
   trkState.rotationMode = mode;
+  trkState.rawCompassHeading = null; // reset wygładzania przy zmianie trybu — unika skoku ze starej wartości
   var bHand=document.getElementById('trk-mode-hand-btn');
   var bCar=document.getElementById('trk-mode-car-btn');
   if(bHand){
@@ -5429,8 +5431,7 @@ function trkSetRotationMode(mode){
     bCar.style.background = mode==='car' ? 'rgba(78,201,255,.18)' : 'rgba(255,255,255,.05)';
     bCar.style.color = mode==='car' ? '#4ec9ff' : '#cfe0ec';
   }
-  // W trybie "w ręku" kompas ma pełną kontrolę niezależnie od prędkości —
-  // włączamy go natychmiast jeśli zgoda już była udzielona wcześniej
+  // W trybie "w ręku" kompas steruje — włączamy go natychmiast jeśli zgoda już była udzielona
   if(mode==='hand' && trkState.orientationActive===false && trkState.compassPermissionGranted){
     trkEnableCompass();
   }
@@ -5480,15 +5481,27 @@ function trkRequestGPS(){
   }
   trkState.watchId = navigator.geolocation.watchPosition(
     function(pos){
-      trkState.lat = pos.coords.latitude;
-      trkState.lng = pos.coords.longitude;
+      var newLat = pos.coords.latitude;
+      var newLng = pos.coords.longitude;
+
+      // ── Tryb samochodowy: kierunek liczony z wektora ruchu (jak Google Maps) ──
+      // coords.heading bywa null lub niewiarygodny na wielu telefonach (zwłaszcza Android).
+      // Dokładniejsze podejście: porównujemy poprzednią i aktualną pozycję GPS i liczymy
+      // azymut między nimi. Filtrowane minimalnym przemieszczeniem (>3m), żeby szum GPS
+      // przy postoju nie generował losowych, migających kierunków.
+      if(trkState.rotationMode==='car' && trkState.lat!=null && trkState.lng!=null){
+        var movedM = trkDistKm(trkState.lat, trkState.lng, newLat, newLng) * 1000;
+        if(movedM > 3){
+          var moveBearing = trkBearing(trkState.lat, trkState.lng, newLat, newLng);
+          trkState.heading = moveBearing;
+        }
+        // Jeśli przemieszczenie <3m (szum GPS w bezruchu) — zachowujemy ostatni znany kierunek
+      }
+
+      trkState.lat = newLat;
+      trkState.lng = newLng;
       if(pos.coords.speed!=null && pos.coords.speed>=0){
         trkState.speed = pos.coords.speed*3.6;
-      }
-      // Tryb samochodowy: kierunek jazdy z GPS ma priorytet (dokładniejszy w ruchu).
-      // Poniżej 3km/h GPS heading jest niewiarygodny — kompas (jeśli dostępny) przejmuje.
-      if(trkState.rotationMode==='car' && pos.coords.heading!=null && !isNaN(pos.coords.heading) && trkState.speed>3){
-        trkState.heading = pos.coords.heading;
       }
       var st=document.getElementById('trk-gps-status');
       if(st) st.style.display='none';
@@ -5521,11 +5534,23 @@ function trkEnableCompass(){
   window.addEventListener('deviceorientation', trkOrientHandler, true);
 }
 function trkOrientHandler(ev){
-  // Tryb "w ręku": kompas steruje zawsze, niezależnie od prędkości — swobodny obrót telefonem.
-  // Tryb "samochód": kompas tylko jako fallback przy niskiej prędkości (GPS heading przejmuje >3km/h).
-  if(trkState.rotationMode==='car' && trkState.speed>3) return;
+  // Kompas steruje WYŁĄCZNIE w trybie "w ręku". W trybie "samochód" kierunek
+  // pochodzi z wektora ruchu GPS (liczony w trkRequestGPS) — kompas jest ignorowany.
+  if(trkState.rotationMode!=='hand') return;
   var h = ev.webkitCompassHeading!=null ? ev.webkitCompassHeading : (ev.alpha!=null ? (360-ev.alpha) : null);
-  if(h!=null && !isNaN(h)) trkState.heading = h;
+  if(h==null || isNaN(h)) return;
+  // Kompas magnetyczny jest znacznie bardziej zaszumiony niż wektor ruchu GPS
+  // (drgania ręki, zakłócenia magnetyczne) — dodatkowy, dedykowany low-pass filter
+  // NA WEJŚCIU, zanim wartość trafi do trkState.heading. To jest osobny, mocniejszy
+  // filtr niż ten w trkSmoothHeading() — dwupoziomowe wygładzanie dla najbardziej
+  // szumiącego źródła danych.
+  if(trkState.rawCompassHeading==null){
+    trkState.rawCompassHeading = h;
+  } else {
+    var diff = trkAngleDiff(h, trkState.rawCompassHeading);
+    trkState.rawCompassHeading = (trkState.rawCompassHeading + diff*0.12 + 360) % 360;
+  }
+  trkState.heading = trkState.rawCompassHeading;
 }
 
 // ── Wygładzanie kierunku mapy ─────────────────────────────────────
