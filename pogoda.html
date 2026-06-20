@@ -1658,6 +1658,12 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
     <div style="position:absolute;right:10px;bottom:84px;z-index:6;display:flex;flex-direction:column;gap:8px">
       <button id="trk-recenter-btn" onclick="trkRecenter()" title="Wyśrodkuj na mojej pozycji" style="width:40px;height:40px;background:rgba(78,201,255,.18);border:1px solid rgba(78,201,255,.4);color:#4ec9ff;border-radius:10px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center">◎</button>
       <button id="trk-fullscreen-btn" onclick="trkToggleFullscreen()" title="Pełny ekran" style="width:40px;height:40px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#cfe0ec;border-radius:10px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center">⤢</button>
+      <button id="trk-style-btn" onclick="trkToggleMapStyle()" title="Jasna/ciemna mapa" style="width:40px;height:40px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#cfe0ec;border-radius:10px;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center">☾</button>
+    </div>
+
+    <div style="position:absolute;left:10px;bottom:84px;z-index:6;display:flex;flex-direction:column;background:rgba(10,22,34,.9);border:1px solid rgba(255,255,255,.12);border-radius:10px;overflow:hidden">
+      <button id="trk-mode-hand-btn" onclick="trkSetRotationMode('hand')" title="Tryb w ręku — obrót telefonem" style="padding:8px 11px;background:rgba(255,255,255,.05);border:none;border-bottom:1px solid rgba(255,255,255,.1);color:#cfe0ec;font-size:11px;cursor:pointer;text-align:left;white-space:nowrap">📱 W ręku</button>
+      <button id="trk-mode-car-btn" onclick="trkSetRotationMode('car')" title="Tryb samochodowy — obrót wg kierunku jazdy" style="padding:8px 11px;background:rgba(78,201,255,.18);border:none;color:#4ec9ff;font-size:11px;cursor:pointer;text-align:left;white-space:nowrap">🚗 Samochód</button>
     </div>
 
     <div style="position:absolute;left:50%;bottom:84px;transform:translateX(-50%);pointer-events:none;z-index:5">
@@ -5356,7 +5362,10 @@ var trkState = {
   orientationActive: false,
   tickInterval: null,
   followMode: true,     // true = mapa śledzi GPS, false = użytkownik przesunął mapę ręcznie
-  fullscreenActive: false
+  fullscreenActive: false,
+  mapStyleMode: 'dark', // 'dark' | 'light'
+  rotationMode: 'car',  // 'car' = obrót wg kierunku jazdy (GPS heading), 'hand' = obrót wg orientacji telefonu (kompas)
+  compassPermissionGranted: false
 };
 
 // ── Inicjalizacja mapy wektorowej MapLibre ──────────────────────────
@@ -5387,6 +5396,44 @@ function trkInitMap(containerId){
   trkState.map.on('zoomstart', function(e){
     if(e.originalEvent) trkSetFollowMode(false);
   });
+}
+
+// ── Przełącznik mapy jasna/ciemna ────────────────────────────────────
+function trkToggleMapStyle(){
+  trkState.mapStyleMode = trkState.mapStyleMode==='dark' ? 'light' : 'dark';
+  var url = trkState.mapStyleMode==='dark'
+    ? 'https://tiles.openfreemap.org/styles/dark'
+    : 'https://tiles.openfreemap.org/styles/positron';
+  if(trkState.map){
+    trkState.map.setStyle(url);
+    // setStyle czyści część konfiguracji kamery — odtwarzamy po wczytaniu nowego stylu
+    trkState.map.once('styledata', function(){
+      trkState.map.setPitch(60);
+      trkState.map.setPadding({top:0,bottom:170,left:0,right:0});
+    });
+  }
+  var btn=document.getElementById('trk-style-btn');
+  if(btn) btn.textContent = trkState.mapStyleMode==='dark' ? '☾' : '☀';
+}
+
+// ── Przełącznik trybu obrotu: w ręku (kompas telefonu) / samochód (kierunek GPS) ──
+function trkSetRotationMode(mode){
+  trkState.rotationMode = mode;
+  var bHand=document.getElementById('trk-mode-hand-btn');
+  var bCar=document.getElementById('trk-mode-car-btn');
+  if(bHand){
+    bHand.style.background = mode==='hand' ? 'rgba(78,201,255,.18)' : 'rgba(255,255,255,.05)';
+    bHand.style.color = mode==='hand' ? '#4ec9ff' : '#cfe0ec';
+  }
+  if(bCar){
+    bCar.style.background = mode==='car' ? 'rgba(78,201,255,.18)' : 'rgba(255,255,255,.05)';
+    bCar.style.color = mode==='car' ? '#4ec9ff' : '#cfe0ec';
+  }
+  // W trybie "w ręku" kompas ma pełną kontrolę niezależnie od prędkości —
+  // włączamy go natychmiast jeśli zgoda już była udzielona wcześniej
+  if(mode==='hand' && trkState.orientationActive===false && trkState.compassPermissionGranted){
+    trkEnableCompass();
+  }
 }
 
 function trkSetFollowMode(on){
@@ -5422,9 +5469,13 @@ function trkRequestGPS(){
   document.getElementById('trk-gps-status').style.display='block';
   if(typeof DeviceOrientationEvent!=='undefined' && typeof DeviceOrientationEvent.requestPermission==='function'){
     DeviceOrientationEvent.requestPermission().then(function(state){
-      if(state==='granted') trkEnableCompass();
+      if(state==='granted'){
+        trkState.compassPermissionGranted=true;
+        trkEnableCompass();
+      }
     }).catch(function(){});
   } else {
+    trkState.compassPermissionGranted=true;
     trkEnableCompass();
   }
   trkState.watchId = navigator.geolocation.watchPosition(
@@ -5434,7 +5485,9 @@ function trkRequestGPS(){
       if(pos.coords.speed!=null && pos.coords.speed>=0){
         trkState.speed = pos.coords.speed*3.6;
       }
-      if(pos.coords.heading!=null && !isNaN(pos.coords.heading) && trkState.speed>3){
+      // Tryb samochodowy: kierunek jazdy z GPS ma priorytet (dokładniejszy w ruchu).
+      // Poniżej 3km/h GPS heading jest niewiarygodny — kompas (jeśli dostępny) przejmuje.
+      if(trkState.rotationMode==='car' && pos.coords.heading!=null && !isNaN(pos.coords.heading) && trkState.speed>3){
         trkState.heading = pos.coords.heading;
       }
       var st=document.getElementById('trk-gps-status');
@@ -5468,7 +5521,9 @@ function trkEnableCompass(){
   window.addEventListener('deviceorientation', trkOrientHandler, true);
 }
 function trkOrientHandler(ev){
-  if(trkState.speed>3) return;
+  // Tryb "w ręku": kompas steruje zawsze, niezależnie od prędkości — swobodny obrót telefonem.
+  // Tryb "samochód": kompas tylko jako fallback przy niskiej prędkości (GPS heading przejmuje >3km/h).
+  if(trkState.rotationMode==='car' && trkState.speed>3) return;
   var h = ev.webkitCompassHeading!=null ? ev.webkitCompassHeading : (ev.alpha!=null ? (360-ev.alpha) : null);
   if(h!=null && !isNaN(h)) trkState.heading = h;
 }
