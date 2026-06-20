@@ -5370,6 +5370,8 @@ var trkState = {
   inited: false,
   map: null,            // instancja MapLibre GL
   gpsMarker: null,      // maplibregl.Marker — kropka na pozycji GPS
+  mapLoaded: false,     // ustawiane wyłącznie przez prawdziwy event 'load' mapy
+  pendingRvTileUrl: null, // URL warstwy RainViewer czekający na gotowość mapy
   watchId: null,
   lat: null,
   lng: null,
@@ -5411,8 +5413,16 @@ function trkInitMap(containerId){
     padding: TRK_MAP_PADDING
   });
   trkState.map.on('load', function(){
+    trkState.mapLoaded = true;
     var st=document.getElementById('trk-gps-status');
     if(st) st.textContent='📍 Mapa gotowa — kliknij aby włączyć GPS';
+    // Jeśli RainViewer był już wybrany jako źródło przed pełnym wczytaniem mapy
+    // (np. zdążyło się kliknąć przycisk zanim styl OpenFreeMap się załadował),
+    // dociągamy warstwę teraz, dopiero gdy mapa jest faktycznie gotowa.
+    if(trkState.dataSource==='rainviewer' && trkState.pendingRvTileUrl){
+      trkAddRainViewerLayer(trkState.pendingRvTileUrl);
+      trkState.pendingRvTileUrl = null;
+    }
   });
   // ── Marker GPS — niebieska kropka z pulsującą otoczką, dokładnie na Twojej pozycji ──
   var el = document.createElement('div');
@@ -5435,11 +5445,17 @@ function trkToggleMapStyle(){
     ? 'https://tiles.openfreemap.org/styles/dark'
     : 'https://tiles.openfreemap.org/styles/positron';
   if(trkState.map){
+    // setStyle() całkowicie wymienia model stylu — usuwa WSZYSTKIE własnoręcznie
+    // dodane źródła/warstwy (w tym RainViewer), trzeba je odtworzyć po wczytaniu.
+    var hadRainViewer = trkState.dataSource==='rainviewer';
+    var lastRvUrl = hadRainViewer ? trkGetCurrentRvTileUrl() : null;
     trkState.map.setStyle(url);
-    // setStyle czyści część konfiguracji kamery — odtwarzamy po wczytaniu nowego stylu
     trkState.map.once('styledata', function(){
       trkState.map.setPitch(60);
       trkState.map.setPadding(TRK_MAP_PADDING);
+      if(hadRainViewer && lastRvUrl){
+        trkAddRainViewerLayer(lastRvUrl);
+      }
     });
   }
   var btn=document.getElementById('trk-style-btn');
@@ -5658,6 +5674,15 @@ function trkRemoveOpenMeteoOverlay(){
 var TRK_RV_SOURCE_ID = 'trk-rainviewer-src';
 var TRK_RV_LAYER_ID = 'trk-rainviewer-layer';
 
+function trkGetCurrentRvTileUrl(){
+  if(!trkState.map) return null;
+  try{
+    var src = trkState.map.getSource(TRK_RV_SOURCE_ID);
+    if(src && src.tiles && src.tiles.length) return src.tiles[0];
+  }catch(e){}
+  return null;
+}
+
 function trkLoadRainViewer(){
   var st=document.getElementById('trk-gps-status');
   if(st){ st.style.display='block'; st.style.color='#ffb648'; st.textContent='📡 Pobieranie radaru RainViewer...'; }
@@ -5671,7 +5696,9 @@ function trkLoadRainViewer(){
       var past = (data.radar && data.radar.past) || [];
       if(!past.length) throw new Error('Brak klatek radaru');
       var latest = past[past.length-1]; // najnowsza dostępna klatka (do 10 min wstecz)
-      var tileUrl = host + latest.path + '/256/{z}/{x}/{y}/6/1_1.png';
+      // Schemat kolorów "2" = Universal Blue — zgodny z dokumentacją darmowego API
+      // (personal/educational use ogranicza się do tego schematu kolorów)
+      var tileUrl = host + latest.path + '/256/{z}/{x}/{y}/2/1_1.png';
       trkAddRainViewerLayer(tileUrl);
       trkState.rvLoaded = true;
       var st2=document.getElementById('trk-gps-status');
@@ -5692,23 +5719,34 @@ function trkLoadRainViewer(){
 
 function trkAddRainViewerLayer(tileUrl){
   if(!trkState.map) return;
-  var apply = function(){
-    trkRemoveRainViewerLayer(); // usuń poprzednią warstwę przed dodaniem nowej klatki
-    trkState.map.addSource(TRK_RV_SOURCE_ID, {
-      type: 'raster',
-      tiles: [tileUrl],
-      tileSize: 256,
-      attribution: 'Weather data by RainViewer'
-    });
-    trkState.map.addLayer({
-      id: TRK_RV_LAYER_ID,
-      type: 'raster',
-      source: TRK_RV_SOURCE_ID,
-      paint: { 'raster-opacity': 0.65 }
-    });
-  };
-  if(trkState.map.isStyleLoaded()) apply();
-  else trkState.map.once('idle', apply);
+  if(!trkState.mapLoaded){
+    // Mapa jeszcze nie wystrzeliła zdarzenia 'load' — isStyleLoaded() jest
+    // notorycznie niewiarygodne (może zwrócić true zbyt wcześnie, przed
+    // faktycznym zakończeniem ładowania stylu), więc czekamy na prawdziwy
+    // event 'load' zamiast na niego polegać. Zapamiętujemy URL do dociągnięcia.
+    trkState.pendingRvTileUrl = tileUrl;
+    return;
+  }
+  trkRemoveRainViewerLayer(); // usuń poprzednią warstwę przed dodaniem nowej klatki
+  trkState.map.addSource(TRK_RV_SOURCE_ID, {
+    type: 'raster',
+    tiles: [tileUrl],
+    tileSize: 256,
+    // KRYTYCZNE: darmowe API RainViewer (personal/edu use) udostępnia kafelki
+    // tylo do zoom 7 — bez tego ograniczenia MapLibre żąda kafelków na zoomie
+    // startowym Trackera (13), których serwer fizycznie nie ma, więc warstwa
+    // jest niewidoczna (puste/404 odpowiedzi) bez żadnego widocznego błędu.
+    // maxzoom:7 włącza automatyczne nadpróbkowanie (overzoom) z najwyższego
+    // dostępnego poziomu — dokładnie zachowanie potrzebne przy dużym pitch/zoom.
+    maxzoom: 7,
+    attribution: 'Weather data by RainViewer'
+  });
+  trkState.map.addLayer({
+    id: TRK_RV_LAYER_ID,
+    type: 'raster',
+    source: TRK_RV_SOURCE_ID,
+    paint: { 'raster-opacity': 0.65 }
+  });
 }
 
 function trkRemoveRainViewerLayer(){
