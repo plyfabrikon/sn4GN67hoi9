@@ -1642,6 +1642,11 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
         <span style="font-size:10px;color:#cfe0ec;font-weight:600;min-width:38px;text-align:right;flex-shrink:0" id="trk-range-val">30 km</span>
       </div>
       <div style="display:flex;align-items:center;gap:6px;margin-top:5px">
+        <span style="font-size:9px;color:#6b8499;white-space:nowrap;flex-shrink:0">Kąt</span>
+        <input type="range" min="0" max="85" step="5" value="60" id="trk-pitch-slider" style="flex:1;accent-color:#4ec9ff;min-width:0" oninput="trkSetPitch(this.value)">
+        <span style="font-size:10px;color:#cfe0ec;font-weight:600;min-width:38px;text-align:right;flex-shrink:0" id="trk-pitch-val">60°</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;margin-top:5px">
         <span style="font-size:9px;color:#6b8499;white-space:nowrap;flex-shrink:0">Źródło</span>
         <div style="display:flex;gap:4px;flex:1;min-width:0">
           <button id="trk-src-meteo-btn" onclick="trkSetDataSource('openmeteo')" style="flex:1;min-width:0;padding:4px 4px;background:rgba(78,201,255,.18);border:1px solid rgba(78,201,255,.4);color:#4ec9ff;border-radius:6px;font-size:9.5px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Open-Meteo</button>
@@ -5387,6 +5392,7 @@ var trkState = {
   fullscreenActive: false,
   mapStyleMode: 'dark', // 'dark' | 'light'
   rotationMode: 'car',  // 'car' = kierunek z wektora ruchu GPS, 'hand' = obrót wg kompasu telefonu
+  currentPitch: 60,     // kąt nachylenia kamery — pamiętany, by odtworzyć po zmianie stylu mapy
   dataSource: 'openmeteo', // 'openmeteo' (model, prawdopodobieństwo burzy, limit 10k/dzień) | 'rainviewer' (prawdziwy radar opadów, live, co 10 min)
   rvLoaded: false,
   compassPermissionGranted: false,
@@ -5401,7 +5407,8 @@ function trkInitMap(containerId){
     style: 'https://tiles.openfreemap.org/styles/dark',
     center: [19.4560, 51.7592], // Łódź — punkt startowy zanim GPS odpowie
     zoom: 13,
-    pitch: 60,          // natywne przechylenie kamery 3D (wektorowe, bez rozmycia)
+    pitch: trkState.currentPitch, // natywne przechylenie kamery 3D (wektorowe, bez rozmycia) — ustawiane suwakiem "Kąt"
+    maxPitch: 85, // domyślny limit MapLibre to 60 — zwiększony, by suwak kąta mógł sięgać dalej (więcej widoku horyzontu)
     bearing: 0,
     attributionControl: false,
     dragRotate: false,  // obrót steruje tylko kompas/GPS, nie gest
@@ -5451,7 +5458,7 @@ function trkToggleMapStyle(){
     var lastRvUrl = hadRainViewer ? trkGetCurrentRvTileUrl() : null;
     trkState.map.setStyle(url);
     trkState.map.once('styledata', function(){
-      trkState.map.setPitch(60);
+      trkState.map.setPitch(trkState.currentPitch);
       trkState.map.setPadding(TRK_MAP_PADDING);
       if(hadRainViewer && lastRvUrl){
         trkAddRainViewerLayer(lastRvUrl);
@@ -5550,9 +5557,11 @@ function trkRequestGPS(){
       }
       var st=document.getElementById('trk-gps-status');
       if(st) st.style.display='none';
-      if(trkState.dataSource==='rainviewer'){
-        if(!trkState.rvLoaded) trkLoadRainViewer();
-      } else if(!trkState.stormLoaded){
+      if(trkState.dataSource==='rainviewer' && !trkState.rvLoaded){
+        trkLoadRainViewer();
+      }
+      if(!trkState.stormLoaded){
+        // Open-Meteo zasila pasek intensywności niezależnie od wybranej wizualizacji
         trkLoadStormData();
       }
       // Marker GPS aktualizuje pozycję zawsze, niezależnie od followMode — nawet
@@ -5640,8 +5649,13 @@ function trkSetDataSource(src){
     bRv.style.color = src==='rainviewer' ? '#4ec9ff' : '#cfe0ec';
   }
   if(src==='rainviewer'){
-    trkRemoveOpenMeteoOverlay();
+    // RainViewer to czysto wizualna warstwa kafelkowa bez punktowych wartości,
+    // więc nie da się z niej policzyć paska intensywności. Zamiast pozostawiać
+    // pasek pustym, dane Open-Meteo są dociągane W TLE — pasek pokazuje
+    // przybliżoną intensywność z modelu, a mapa wizualnie pokazuje radar live.
+    trkClearStormCanvas(); // wizualizacja na mapie to teraz RainViewer, nie własny canvas
     trkLoadRainViewer();
+    if(!trkState.stormLoaded && trkState.lat) trkLoadStormDataOpenMeteo();
   } else {
     trkRemoveRainViewerLayer();
     trkState.stormLoaded = false;
@@ -5649,15 +5663,13 @@ function trkSetDataSource(src){
   }
 }
 
-// ── Dane burzowe — dispatcher wybierający źródło ─────────────────────
+// ── Dane burzowe — dispatcher wybierający źródło wizualizacji na mapie ──
 function trkLoadStormData(){
   if(!trkState.lat) return;
-  if(trkState.dataSource==='rainviewer') return; // RainViewer to warstwa kafelkowa, nie punkty
-  trkLoadStormDataOpenMeteo();
+  trkLoadStormDataOpenMeteo(); // dane do paska intensywności pobierane zawsze
 }
 
-function trkRemoveOpenMeteoOverlay(){
-  trkState.stormPoints = [];
+function trkClearStormCanvas(){
   var canvas=document.getElementById('trk-storm-canvas');
   if(canvas){
     var ctx=canvas.getContext('2d');
@@ -5853,6 +5865,16 @@ function trkDistKm(lat1,lng1,lat2,lng2){
 function trkDrawStorm(){
   var canvas=document.getElementById('trk-storm-canvas');
   if(!canvas||!trkState.lat||!trkState.map) return;
+  if(trkState.dataSource==='rainviewer'){
+    // RainViewer już wizualizuje opad jako warstwa kafelkowa na samej mapie —
+    // własny canvas pozostaje czysty, by nie nakładać dwóch wizualizacji na raz.
+    var rect0=canvas.getBoundingClientRect();
+    if(canvas.width!==rect0.width||canvas.height!==rect0.height){
+      canvas.width=rect0.width; canvas.height=rect0.height;
+    }
+    canvas.getContext('2d').clearRect(0,0,canvas.width,canvas.height);
+    return;
+  }
   var rect=canvas.getBoundingClientRect();
   if(canvas.width!==rect.width||canvas.height!==rect.height){
     canvas.width=rect.width; canvas.height=rect.height;
@@ -5885,13 +5907,6 @@ function trkUpdateIntensityBar(){
   bar.innerHTML='';
   if(!trkState.lat){
     document.getElementById('trk-dist-val').textContent='-- km';
-    return;
-  }
-  if(trkState.dataSource==='rainviewer'){
-    // RainViewer to czysto wizualna warstwa kafelkowa (PNG) — nie mamy punktowych
-    // wartości liczbowych do narysowania kierunkowego paska intensywności jak w
-    // Open-Meteo. Pasek pozostaje pusty, info tekstowe mówi że radar widoczny na mapie.
-    document.getElementById('trk-dist-val').textContent='widoczny na mapie';
     return;
   }
   var steps=21;
@@ -5927,6 +5942,8 @@ function trkUpdateIntensityBar(){
   var dv=document.getElementById('trk-dist-val');
   if(bestDist!==null){
     dv.textContent=Math.round(bestDist)+' km ('+bestDirLabel+')';
+  } else if(!trkState.stormLoaded){
+    dv.textContent='ładowanie...';
   } else {
     dv.textContent='brak w zasięgu '+trkState.rangeKm+' km';
   }
@@ -5951,22 +5968,17 @@ function trkUpdateStormInfo(){
     text.textContent='Włącz GPS aby zacząć';
     return;
   }
-  if(trkState.dataSource==='rainviewer'){
-    text.textContent='Radar opadów RainViewer widoczny na mapie';
-    sub.textContent='Aktualizacja co ~10 min — kolory na mapie = intensywność opadu';
-    arrow.style.transform='rotate(0deg)';
-    return;
-  }
+  var rvNote = trkState.dataSource==='rainviewer' ? ' · radar RainViewer na mapie' : '';
   if(!trkState.stormLoaded || !trkState.stormPoints.length){
     text.textContent='Brak wykrytych burz w zasięgu '+trkState.rangeKm+'km';
-    sub.textContent='Dane: Open-Meteo (prognoza godzinowa)';
+    sub.textContent='Dane: Open-Meteo (prognoza godzinowa)'+rvNote;
     arrow.style.transform='rotate(0deg)';
     return;
   }
   var s=trkFindNearestStorm();
   if(!s){
     text.textContent='Brak wykrytych burz w zasięgu '+trkState.rangeKm+'km';
-    sub.textContent='Dane: Open-Meteo (prognoza godzinowa)';
+    sub.textContent='Dane: Open-Meteo (prognoza godzinowa)'+rvNote;
     arrow.style.transform='rotate(0deg)';
     return;
   }
@@ -5976,7 +5988,7 @@ function trkUpdateStormInfo(){
   var dirIdx=Math.round(s.bearing/45)%8;
   var level=s.prob>=70?'silna':s.prob>=50?'umiarkowana':'słaba';
   text.textContent='Burza '+Math.round(s.dist)+' km, kierunek '+dirNames[dirIdx]+' ('+level+', '+s.prob+'%)';
-  sub.textContent='Dane: Open-Meteo (prognoza godzinowa)';
+  sub.textContent='Dane: Open-Meteo (prognoza godzinowa)'+rvNote;
 }
 
 function trkTick(){
@@ -6010,6 +6022,13 @@ function trkSetRange(v){
     trkState.map.setZoom(zoom);
   }
   if(trkState.stormLoaded) trkLoadStormData();
+}
+
+// ── Kąt nachylenia kamery — większy kąt = widać dalej na horyzoncie ──
+function trkSetPitch(v){
+  trkState.currentPitch = parseInt(v);
+  document.getElementById('trk-pitch-val').textContent = trkState.currentPitch+'°';
+  if(trkState.map) trkState.map.setPitch(trkState.currentPitch);
 }
 
 // ── Pełny ekran — przenosimy CAŁY panel trackera (jedna instancja mapy) ──
@@ -6048,8 +6067,10 @@ function initTracker(){
   trkState.tickInterval = setInterval(trkTick, 150);
   trkState.refreshTimer = setInterval(function(){
     if(!trkState.lat) return;
+    // Open-Meteo zasila pasek intensywności niezależnie od wybranej wizualizacji
+    // na mapie, więc odświeża się zawsze. RainViewer dodatkowo, tylko gdy aktywny.
+    trkLoadStormData();
     if(trkState.dataSource==='rainviewer') trkLoadRainViewer();
-    else trkLoadStormData();
   }, 10*60*1000);
   setTimeout(function(){
     if(trkState.map) trkState.map.resize();
