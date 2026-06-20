@@ -1617,6 +1617,13 @@ body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Arial,sans-se
       #trk-panel.trk-fullscreen-active{height:100vh!important;min-height:100vh!important;border-radius:0!important}
       #trk-panel.trk-fullscreen-active #trk-map,
       #trk-panel.trk-fullscreen-active #trk-storm-canvas{top:128px}
+      .trk-gps-marker{position:relative;width:22px;height:22px}
+      .trk-gps-dot{position:absolute;top:50%;left:50%;width:14px;height:14px;margin:-7px 0 0 -7px;background:#4ec9ff;border:2.5px solid #ffffff;border-radius:50%;box-shadow:0 0 6px rgba(0,0,0,.5);z-index:2}
+      .trk-gps-pulse{position:absolute;top:50%;left:50%;width:22px;height:22px;margin:-11px 0 0 -11px;background:rgba(78,201,255,.35);border-radius:50%;z-index:1;animation:trk-pulse 2s ease-out infinite}
+      @keyframes trk-pulse{
+        0%{transform:scale(0.4);opacity:.8}
+        100%{transform:scale(2.2);opacity:0}
+      }
     </style>
 
     <div style="position:absolute;top:0;left:0;right:0;z-index:10;padding:10px 12px;background:rgba(10,22,34,.94);border-radius:10px 10px 0 0">
@@ -5355,6 +5362,7 @@ var TRK_MAP_PADDING = {top:0, bottom:116, left:0, right:0};
 var trkState = {
   inited: false,
   map: null,            // instancja MapLibre GL
+  gpsMarker: null,      // maplibregl.Marker — kropka na pozycji GPS
   watchId: null,
   lat: null,
   lng: null,
@@ -5397,6 +5405,13 @@ function trkInitMap(containerId){
     var st=document.getElementById('trk-gps-status');
     if(st) st.textContent='📍 Mapa gotowa — kliknij aby włączyć GPS';
   });
+  // ── Marker GPS — niebieska kropka z pulsującą otoczką, dokładnie na Twojej pozycji ──
+  var el = document.createElement('div');
+  el.className = 'trk-gps-marker';
+  el.innerHTML = '<div class="trk-gps-pulse"></div><div class="trk-gps-dot"></div>';
+  trkState.gpsMarker = new maplibregl.Marker({element: el, anchor: 'center'})
+    .setLngLat([19.4560, 51.7592])
+    .addTo(trkState.map);
   // Gdy użytkownik sam przesunie mapę (drag/scroll/pinch) — wyłącz tryb śledzenia
   trkState.map.on('dragstart', function(){ trkSetFollowMode(false); });
   trkState.map.on('zoomstart', function(e){
@@ -5511,6 +5526,9 @@ function trkRequestGPS(){
       var st=document.getElementById('trk-gps-status');
       if(st) st.style.display='none';
       if(!trkState.stormLoaded) trkLoadStormData();
+      // Marker GPS aktualizuje pozycję zawsze, niezależnie od followMode — nawet
+      // gdy użytkownik przesunął mapę ręcznie, kropka musi pokazywać prawdziwe miejsce.
+      if(trkState.gpsMarker) trkState.gpsMarker.setLngLat([trkState.lng, trkState.lat]);
       if(trkState.map && trkState.followMode){
         trkState.map.jumpTo({center:[trkState.lng,trkState.lat], padding:TRK_MAP_PADDING});
       }
@@ -5687,39 +5705,40 @@ function trkUpdateIntensityBar(){
   }
   var steps=21;
   var fovDeg=80;
-  var nearestDist=null;
+  var bestDist=null, bestDirLabel=null, bestVal=0;
   for(var i=0;i<steps;i++){
     var relAngle=(i/(steps-1)-0.5)*fovDeg;
     var absAngle=(trkState.heading+relAngle+360)%360;
     var rad=absAngle*Math.PI/180;
     var maxV=0;
-    for(var t=0.1;t<=1;t+=0.08){
+    var firstHitDist=null;
+    for(var t=0.1;t<=1;t+=0.05){
       var dd=t*trkState.rangeKm;
       var llat=trkState.lat+(dd/111)*Math.cos(rad);
       var llng=trkState.lng+(dd/111/Math.cos(trkState.lat*Math.PI/180))*Math.sin(rad);
       var vv=trkStormColorAt(llat,llng);
       if(vv>maxV) maxV=vv;
+      if(vv>=15 && firstHitDist===null) firstHitDist=dd;
     }
     var c=trkColorForVal(maxV);
     var div=document.createElement('div');
     div.style.flex='1';
     div.style.background=c?('rgba('+c[0]+','+c[1]+','+c[2]+',0.9)'):'transparent';
     bar.appendChild(div);
-    if(i===Math.floor(steps/2) && maxV>=15 && nearestDist===null){
-      nearestDist=trkFindDistAlongHeading();
+    // Spośród wszystkich segmentów paska wybierz burzę najbliższą Tobie
+    // (nie tylko tę dokładnie na wprost) — odległość ma być zawsze zgodna z kolorem na pasku.
+    if(firstHitDist!==null && (bestDist===null || firstHitDist<bestDist)){
+      bestDist=firstHitDist;
+      bestVal=maxV;
+      bestDirLabel = relAngle<-8 ? 'w lewo' : relAngle>8 ? 'w prawo' : 'wprost';
     }
   }
-  document.getElementById('trk-dist-val').textContent=nearestDist!==null?(Math.round(nearestDist)+' km wprost'):('zasięg '+trkState.rangeKm+' km');
-}
-
-function trkFindDistAlongHeading(){
-  var rad=trkState.heading*Math.PI/180;
-  for(var d=1;d<=trkState.rangeKm;d+=2){
-    var lat=trkState.lat+(d/111)*Math.cos(rad);
-    var lng=trkState.lng+(d/111/Math.cos(trkState.lat*Math.PI/180))*Math.sin(rad);
-    if(trkStormColorAt(lat,lng)>=15) return d;
+  var dv=document.getElementById('trk-dist-val');
+  if(bestDist!==null){
+    dv.textContent=Math.round(bestDist)+' km ('+bestDirLabel+')';
+  } else {
+    dv.textContent='brak w zasięgu '+trkState.rangeKm+' km';
   }
-  return null;
 }
 
 function trkFindNearestStorm(){
