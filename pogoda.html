@@ -5347,6 +5347,11 @@ function initMapStyleSwitcher(){
 // Renderer: MapLibre GL JS — natywny obrot (bearing) i przechylenie 3D (pitch)
 // Dane burzowe: niezależny fetch z Open-Meteo, NIE używa burzeData z zakładki Burze
 // ═══════════════════════════════════════════════════════════════════
+// Padding mapy — przesuwa logiczny "środek" tak, by pozycja GPS renderowała się
+// dokładnie pod strzałką pojazdu (stała na bottom:84px + wysokość 32px = 116px od dołu).
+// Jedna stała używana wszędzie, żeby nie rozjeżdżało się przy kolejnych edycjach.
+var TRK_MAP_PADDING = {top:0, bottom:116, left:0, right:0};
+
 var trkState = {
   inited: false,
   map: null,            // instancja MapLibre GL
@@ -5386,7 +5391,7 @@ function trkInitMap(containerId){
     // Strzałka samochodu stoi na bottom:84px od dołu kontenera mapy — nie w geometrycznym
     // środku. Padding przesuwa logiczny "center" MapLibre dokładnie pod strzałkę,
     // żeby pozycja GPS renderowała się tam gdzie faktycznie jest ikona pojazdu.
-    padding: {top:0, bottom:116, left:0, right:0}
+    padding: TRK_MAP_PADDING
   });
   trkState.map.on('load', function(){
     var st=document.getElementById('trk-gps-status');
@@ -5410,7 +5415,7 @@ function trkToggleMapStyle(){
     // setStyle czyści część konfiguracji kamery — odtwarzamy po wczytaniu nowego stylu
     trkState.map.once('styledata', function(){
       trkState.map.setPitch(60);
-      trkState.map.setPadding({top:0,bottom:116,left:0,right:0});
+      trkState.map.setPadding(TRK_MAP_PADDING);
     });
   }
   var btn=document.getElementById('trk-style-btn');
@@ -5450,7 +5455,7 @@ function trkSetFollowMode(on){
 function trkRecenter(){
   trkSetFollowMode(true);
   if(trkState.map && trkState.lat){
-    trkState.map.jumpTo({center:[trkState.lng,trkState.lat], padding:{top:0,bottom:116,left:0,right:0}});
+    trkState.map.jumpTo({center:[trkState.lng,trkState.lat], padding:TRK_MAP_PADDING});
   }
 }
 
@@ -5507,7 +5512,7 @@ function trkRequestGPS(){
       if(st) st.style.display='none';
       if(!trkState.stormLoaded) trkLoadStormData();
       if(trkState.map && trkState.followMode){
-        trkState.map.jumpTo({center:[trkState.lng,trkState.lat], padding:{top:0,bottom:116,left:0,right:0}});
+        trkState.map.jumpTo({center:[trkState.lng,trkState.lat], padding:TRK_MAP_PADDING});
       }
     },
     function(err){
@@ -5766,7 +5771,12 @@ function trkTick(){
     // easeTo z krótką animacją (dopasowaną do interwału ticku) — daje płynny,
     // ciągły obrót renderowany przez GPU między klatkami, zamiast dyskretnych
     // skoków które setBearing() wykonuje natychmiastowo bez interpolacji.
-    trkState.map.easeTo({bearing:smoothBearing, duration:160, easing:function(t){return t;}});
+    trkState.map.easeTo({
+      bearing: smoothBearing,
+      padding: TRK_MAP_PADDING,
+      duration: 160,
+      easing: function(t){return t;}
+    });
   }
   var sv=document.getElementById('trk-speed-val'), hv=document.getElementById('trk-heading-val');
   if(sv) sv.textContent=Math.round(trkState.speed||0);
