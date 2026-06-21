@@ -5784,7 +5784,7 @@ function trkLoadStormDataOpenMeteo(){
   var latsStr = pts.map(function(p){return p[0].toFixed(2);}).join(',');
   var lngsStr = pts.map(function(p){return p[1].toFixed(2);}).join(',');
   var url = 'https://api.open-meteo.com/v1/forecast?latitude='+latsStr+'&longitude='+lngsStr
-    +'&hourly=cape,lifted_index,precipitation,weather_code,convective_inhibition'
+    +'&hourly=cape,lifted_index,precipitation,weather_code,convective_inhibition,wind_direction_10m,wind_speed_10m'
     +'&forecast_days=1&timezone=auto';
   fetch(url).then(function(r){
     if(!r.ok){
@@ -5807,9 +5807,15 @@ function trkLoadStormDataOpenMeteo(){
       var prc = d.hourly.precipitation ? d.hourly.precipitation[nowIdx] : 0;
       var wmo = d.hourly.weather_code ? d.hourly.weather_code[nowIdx] : 0;
       var cin = d.hourly.convective_inhibition ? d.hourly.convective_inhibition[nowIdx] : 0;
+      // Kierunek wiatru na 10m — przybliżenie kierunku ruchu komórki burzowej.
+      // Konwencja meteorologiczna: wartość to kierunek SKĄD wieje wiatr, więc
+      // ruch burzy jest w kierunku PRZECIWNYM (+180°) — burza leci z wiatrem, nie pod wiatr.
+      var windDir = d.hourly.wind_direction_10m ? d.hourly.wind_direction_10m[nowIdx] : null;
+      var windSpd = d.hourly.wind_speed_10m ? d.hourly.wind_speed_10m[nowIdx] : 0;
+      var moveDir = windDir!=null ? (windDir+180)%360 : null;
       var prob = calcStormProb(cape||0, li||0, cin||0, prc||0, wmo||0, 0, 0, 60, 0, 10, 0, 0);
       if(prob>=15 || prc>=2){
-        trkState.stormPoints.push({lat:pts[i][0], lng:pts[i][1], prob:prob, prc:prc});
+        trkState.stormPoints.push({lat:pts[i][0], lng:pts[i][1], prob:prob, prc:prc, moveDir:moveDir, windSpd:windSpd||0});
       }
     });
     var st=document.getElementById('trk-gps-status');
@@ -5865,40 +5871,75 @@ function trkDistKm(lat1,lng1,lat2,lng2){
 function trkDrawStorm(){
   var canvas=document.getElementById('trk-storm-canvas');
   if(!canvas||!trkState.lat||!trkState.map) return;
-  if(trkState.dataSource==='rainviewer'){
-    // RainViewer już wizualizuje opad jako warstwa kafelkowa na samej mapie —
-    // własny canvas pozostaje czysty, by nie nakładać dwóch wizualizacji na raz.
-    var rect0=canvas.getBoundingClientRect();
-    if(canvas.width!==rect0.width||canvas.height!==rect0.height){
-      canvas.width=rect0.width; canvas.height=rect0.height;
-    }
-    canvas.getContext('2d').clearRect(0,0,canvas.width,canvas.height);
-    return;
-  }
   var rect=canvas.getBoundingClientRect();
   if(canvas.width!==rect.width||canvas.height!==rect.height){
     canvas.width=rect.width; canvas.height=rect.height;
   }
   var ctx=canvas.getContext('2d');
   ctx.clearRect(0,0,canvas.width,canvas.height);
-  if(!trkState.stormPoints.length) return;
 
-  // Projekcja lat/lng → ekran przez wbudowaną funkcję MapLibre (uwzględnia bearing+pitch automatycznie)
-  var ps=10;
-  var step=0.01; // ~1.1km w stopniach — gęstość próbkowania siatki
-  var R=0.95;
-  for(var dy=-R; dy<=R; dy+=step*3){
-    for(var dx=-R; dx<=R; dx+=step*3){
-      var lat=trkState.lat+dy, lng=trkState.lng+dx/Math.cos(trkState.lat*Math.PI/180);
-      var v=trkStormColorAt(lat,lng);
-      var c=trkColorForVal(v);
-      if(!c) continue;
-      var pt=trkState.map.project([lng,lat]);
-      if(pt.x<-20||pt.x>canvas.width+20||pt.y<-20||pt.y>canvas.height+20) continue;
-      ctx.fillStyle='rgba('+c[0]+','+c[1]+','+c[2]+','+(c[3]/255*0.55)+')';
-      ctx.fillRect(pt.x-ps/2,pt.y-ps/2,ps,ps);
+  if(trkState.dataSource!=='rainviewer'){
+    // RainViewer już wizualizuje opad jako warstwa kafelkowa na samej mapie —
+    // siatka kolorowych kwadratów rysuje się tylko gdy to Open-Meteo jest wizualizacją.
+    if(trkState.stormPoints.length){
+      // Projekcja lat/lng → ekran przez wbudowaną funkcję MapLibre (uwzględnia bearing+pitch automatycznie)
+      var ps=10;
+      var step=0.01; // ~1.1km w stopniach — gęstość próbkowania siatki
+      var R=0.95;
+      for(var dy=-R; dy<=R; dy+=step*3){
+        for(var dx=-R; dx<=R; dx+=step*3){
+          var lat=trkState.lat+dy, lng=trkState.lng+dx/Math.cos(trkState.lat*Math.PI/180);
+          var v=trkStormColorAt(lat,lng);
+          var c=trkColorForVal(v);
+          if(!c) continue;
+          var pt=trkState.map.project([lng,lat]);
+          if(pt.x<-20||pt.x>canvas.width+20||pt.y<-20||pt.y>canvas.height+20) continue;
+          ctx.fillStyle='rgba('+c[0]+','+c[1]+','+c[2]+','+(c[3]/255*0.55)+')';
+          ctx.fillRect(pt.x-ps/2,pt.y-ps/2,ps,ps);
+        }
+      }
     }
   }
+
+  // Strzałki kierunku ruchu burzy — rysowane NIEZALEŻNIE od wybranej wizualizacji
+  // (Open-Meteo lub RainViewer), bo dane wiatru pochodzą zawsze z Open-Meteo,
+  // które jest pobierane w tle bez względu na wybór wizualny na mapie.
+  trkDrawStormArrows(ctx);
+}
+
+function trkDrawStormArrows(ctx){
+  if(!trkState.stormPoints.length) return;
+  trkState.stormPoints.forEach(function(p){
+    if(p.moveDir==null || p.prob<25) return; // tylko dla wyraźniejszych burz, by nie zaśmiecać mapy
+    var pt=trkState.map.project([p.lng,p.lat]);
+    if(pt.x<-20||pt.x>ctx.canvas.width+20||pt.y<-20||pt.y>ctx.canvas.height+20) return;
+    // Długość strzałki proporcjonalna do prędkości wiatru (10-50 km/h → 14-34px)
+    var len = Math.min(34, 14 + (p.windSpd||0)*0.5);
+    var rad = p.moveDir*Math.PI/180;
+    // Kąt 0° = północ (góra ekranu), zgodnie z konwencją kompasu, nie matematyczną
+    var dx = Math.sin(rad)*len, dy = -Math.cos(rad)*len;
+    var c=trkColorForVal(p.prob);
+    var col = c ? 'rgb('+c[0]+','+c[1]+','+c[2]+')' : '#ffffff';
+    ctx.save();
+    ctx.strokeStyle = col;
+    ctx.fillStyle = col;
+    ctx.lineWidth = 2.5;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(pt.x, pt.y);
+    ctx.lineTo(pt.x+dx, pt.y+dy);
+    ctx.stroke();
+    // Grot strzałki
+    var headLen = 7;
+    var angle = Math.atan2(dy,dx);
+    ctx.beginPath();
+    ctx.moveTo(pt.x+dx, pt.y+dy);
+    ctx.lineTo(pt.x+dx-headLen*Math.cos(angle-Math.PI/6), pt.y+dy-headLen*Math.sin(angle-Math.PI/6));
+    ctx.lineTo(pt.x+dx-headLen*Math.cos(angle+Math.PI/6), pt.y+dy-headLen*Math.sin(angle+Math.PI/6));
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  });
 }
 
 function trkUpdateIntensityBar(){
