@@ -1,0 +1,1814 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biuletyn konwekcyjny — Polska</title>
+<meta name="description" content="Codzienna analiza warunków burzowych dla Polski liczona z modelu ICON-EU.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@500;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+:root{
+  --ink:#0C1120;
+  --panel:#151C33;
+  --panel-2:#1C2440;
+  --line:#2A3355;
+  --paper:#E9E8F4;
+  --muted:#8790B4;
+  --cool:#2F4A87;
+  --mid:#C9A227;
+  --hot:#DE6A28;
+  --max:#B71F45;
+  --accent:#7FD1E8;
+  --r:3px;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--ink); color:var(--paper);
+  font-family:"IBM Plex Sans",system-ui,sans-serif;
+  font-size:16px; line-height:1.6;
+  background-image:
+    radial-gradient(900px 500px at 15% -5%, rgba(47,74,135,.35), transparent 60%),
+    radial-gradient(700px 400px at 95% 8%, rgba(183,31,69,.14), transparent 60%);
+  background-attachment:fixed;
+}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px 80px}
+
+/* ---------- typography ---------- */
+h1,h2,h3{font-family:"Big Shoulders Display",Impact,sans-serif;font-weight:800;
+  line-height:.92;letter-spacing:.01em;margin:0}
+.eyebrow{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--muted)}
+.mono{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums}
+
+/* ---------- masthead ---------- */
+header{padding:36px 0 22px;border-bottom:1px solid var(--line)}
+.masthead{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+h1{font-size:clamp(46px,10vw,104px);text-transform:uppercase}
+h1 .thin{font-weight:500;color:var(--muted)}
+.runbox{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--muted);
+  text-align:right;line-height:1.7}
+.runbox b{color:var(--accent);font-weight:500}
+
+/* ---------- verdict ---------- */
+.verdict{padding:30px 0 26px;border-bottom:1px solid var(--line)}
+.verdict h2{font-size:clamp(26px,4.6vw,44px);max-width:22ch;text-transform:uppercase}
+.verdict p{margin:16px 0 0;max-width:62ch;color:#C6C9DE}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:1px;background:var(--line);border:1px solid var(--line);margin-top:26px}
+.stat{background:var(--ink);padding:14px 16px}
+.stat .k{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--muted)}
+.stat .v{font-family:"Big Shoulders Display",sans-serif;font-weight:700;
+  font-size:38px;line-height:1;margin-top:6px;font-variant-numeric:tabular-nums}
+.stat .u{font-size:14px;color:var(--muted);font-family:"IBM Plex Mono",monospace}
+
+/* ---------- sections ---------- */
+section{padding:44px 0;border-bottom:1px solid var(--line)}
+section > h3{font-size:clamp(22px,3.4vw,34px);text-transform:uppercase;margin-bottom:6px}
+.lede{color:var(--muted);font-size:14px;max-width:64ch;margin:0 0 26px}
+
+/* ---------- signature: hour grid ---------- */
+.gridscroll{overflow-x:auto;padding-bottom:8px;-webkit-overflow-scrolling:touch}
+table.hgrid{border-collapse:separate;border-spacing:2px;min-width:720px}
+table.hgrid th{font-family:"IBM Plex Mono",monospace;font-size:10px;font-weight:400;
+  color:var(--muted);padding:0 0 6px}
+table.hgrid th.woj{text-align:right;padding-right:12px;font-family:"IBM Plex Sans",sans-serif;
+  font-size:12px;color:var(--paper);white-space:nowrap;font-weight:500;width:1%}
+table.hgrid td{width:26px;height:22px;border-radius:2px;position:relative}
+table.hgrid tr.hl th.woj{color:var(--accent);font-weight:600}
+table.hgrid tr.hl td{outline:1px solid rgba(127,209,232,.32);outline-offset:-1px}
+.cell{width:100%;height:100%;display:block;border-radius:2px}
+.legend{display:flex;align-items:center;gap:10px;margin-top:18px;flex-wrap:wrap;
+  font-family:"IBM Plex Mono",monospace;font-size:10px;color:var(--muted);letter-spacing:.1em}
+.ramp{display:flex;height:9px;width:200px;border-radius:2px;overflow:hidden}
+.ramp i{flex:1}
+
+/* ---------- prose ---------- */
+.prose p{max-width:68ch;margin:0 0 15px}
+.prose p.first::first-letter{font-family:"Big Shoulders Display",sans-serif;font-weight:800;
+  font-size:56px;float:left;line-height:.78;padding:4px 10px 0 0;color:var(--accent)}
+
+/* ---------- voivodeship cards ---------- */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1px;
+  background:var(--line);border:1px solid var(--line)}
+.card{background:var(--panel);padding:14px 16px 16px}
+.card .top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.card h4{margin:0;font-family:"IBM Plex Sans",sans-serif;font-size:14px;font-weight:600}
+.card .pct{font-family:"Big Shoulders Display",sans-serif;font-weight:800;font-size:30px;
+  line-height:1;font-variant-numeric:tabular-nums}
+.card .win{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--muted);margin-top:4px}
+.card .par{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--muted);
+  margin-top:10px;padding-top:9px;border-top:1px solid var(--line);line-height:1.8}
+.bar{height:3px;background:var(--panel-2);margin-top:10px;border-radius:2px;overflow:hidden}
+.bar i{display:block;height:100%}
+
+/* ---------- voivodeship choropleth map ---------- */
+.wojmapwrap{max-width:480px;margin:18px auto 0}
+svg.wojmap{width:100%;height:auto;display:block}
+svg.wojmap .woj-path{cursor:pointer;transition:filter .15s}
+svg.wojmap .woj-path:hover{filter:brightness(1.18)}
+svg.wojmap .woj-path.selected{stroke:var(--accent);stroke-width:2.4}
+svg.wojmap .woj-label{font-family:"IBM Plex Mono",monospace;font-size:15px;font-weight:700}
+.wojdetail{background:var(--panel);border:1px solid var(--line);padding:16px 18px;margin-top:16px}
+.wojdetail .wd-empty{font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:var(--muted)}
+.wojdetail .wd-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.wojdetail .wd-head h4{margin:0;font-family:"Big Shoulders Display",sans-serif;
+  font-size:22px;text-transform:uppercase;font-weight:700}
+.wojdetail .pct{font-family:"Big Shoulders Display",sans-serif;font-weight:800;font-size:30px;
+  line-height:1;font-variant-numeric:tabular-nums}
+.wojdetail .win{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--muted);margin-top:4px}
+.wojdetail .par{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--muted);
+  margin-top:10px;padding-top:9px;border-top:1px solid var(--line);line-height:1.8}
+
+/* ---------- focus region ---------- */
+.focus{background:var(--panel);border:1px solid var(--line);padding:26px 24px}
+.focus h3{color:var(--accent)}
+.chartwrap{margin-top:22px;overflow-x:auto}
+.focusgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
+  gap:1px;background:var(--line);border:1px solid var(--line);margin-top:16px}
+.focusgrid .fi{background:var(--panel-2);padding:14px 16px}
+.focusgrid .fi .n{font-family:"IBM Plex Mono",monospace;font-size:10px;color:var(--accent);
+  letter-spacing:.08em}
+.focusgrid .fi .k{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);margin-top:5px}
+.focusgrid .fi .t{font-size:13.5px;margin-top:6px;line-height:1.5}
+
+.infodot{position:relative;display:inline-flex;align-items:center;justify-content:center;
+  width:15px;height:15px;border-radius:50%;background:var(--panel-2);border:1px solid var(--muted);
+  color:var(--accent);font-family:"IBM Plex Mono",monospace;font-size:10px;cursor:pointer;
+  margin-left:5px;vertical-align:middle;flex:0 0 auto}
+.infodot:hover, .infodot.open{border-color:var(--accent)}
+.popover{display:none;position:absolute;z-index:50;left:50%;top:22px;transform:translateX(-50%);
+  width:250px;max-width:calc(100vw - 48px);
+  background:var(--ink);border:1px solid var(--accent);border-radius:var(--r);
+  padding:12px 13px;box-shadow:0 8px 24px rgba(0,0,0,.5);cursor:default;white-space:normal}
+.infodot.open .popover{display:block}
+.popover h5{margin:0 0 8px;font-family:"IBM Plex Mono",monospace;font-size:10px;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.pbar{display:flex;height:16px;border-radius:2px;overflow:hidden;margin-bottom:8px}
+.pbar i{display:block;flex:1}
+.pscale{display:flex;justify-content:space-between;font-family:"IBM Plex Mono",monospace;
+  font-size:9px;color:var(--muted);margin-bottom:9px}
+.plegend{display:flex;flex-direction:column;gap:4px}
+.plegend div{display:flex;gap:7px;align-items:flex-start;font-size:11px;line-height:1.4;color:#C6C9DE}
+.plegend span.sw{width:9px;height:9px;border-radius:2px;flex:0 0 auto;margin-top:2px}
+
+.chartlegend{display:flex;gap:18px;align-items:center;margin:14px 0 4px;flex-wrap:wrap;
+  font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--muted)}
+.chartlegend .sw{display:inline-block;width:12px;height:12px;border-radius:2px;
+  background:var(--mid);margin-right:6px;vertical-align:middle}
+.chartlegend .ln{display:inline-block;width:16px;height:0;border-top:2px dashed var(--accent);
+  margin-right:6px;vertical-align:middle}
+.geonote{display:flex;align-items:center;gap:8px;font-family:"IBM Plex Mono",monospace;
+  font-size:11px;color:var(--muted);margin-top:14px}
+.geonote .dot{width:8px;height:8px;border-radius:50%;flex:0 0 auto}
+.geonote .dot.ok{background:var(--accent)}
+.geonote .dot.off{background:var(--muted)}
+
+.gpsbar{background:var(--panel);border:1px solid var(--line);padding:20px 22px;
+  display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}
+.gpsbar .txt h4{margin:0;font-family:"Big Shoulders Display",sans-serif;font-size:22px;
+  text-transform:uppercase;font-weight:700}
+.gpsbar .txt p{margin:6px 0 0;color:var(--muted);font-size:13px;max-width:52ch}
+.gpsbtn{font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.1em;
+  text-transform:uppercase;background:var(--accent);color:var(--ink);border:1px solid var(--accent);
+  padding:13px 24px;border-radius:var(--r);cursor:pointer;white-space:nowrap;font-weight:600}
+.gpsbtn:hover{background:#9FDEEF}
+.gpsbtn:disabled{opacity:.5;cursor:default}
+.gpsbtn.ghost{background:transparent;color:var(--accent)}
+.gpsbar.ok{border-color:var(--accent)}
+.gpsbar.err{border-color:var(--hot)}
+.gpsbar .errmsg{font-size:12.5px;color:var(--hot);font-family:"IBM Plex Mono",monospace;max-width:52ch}
+
+/* ---------- radar-kompas test modal ---------- */
+.cmodal{position:fixed;inset:0;z-index:200;background:var(--ink);display:flex;flex-direction:column}
+.cmodal[hidden]{display:none}
+.cmodal-bar{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;
+  border-bottom:1px solid var(--line);flex:0 0 auto}
+.cmodal-title{font-family:"Big Shoulders Display",sans-serif;font-size:20px;text-transform:uppercase;font-weight:700}
+.cmodal-badge{font-family:"IBM Plex Mono",monospace;font-size:10px;color:var(--hot);
+  border:1px solid var(--hot);padding:2px 7px;border-radius:2px;margin-left:8px;vertical-align:middle}
+.cmodal-x{background:transparent;border:1px solid var(--line);color:var(--paper);width:34px;height:34px;
+  border-radius:var(--r);cursor:pointer;font-size:16px}
+.cmap-outer{position:relative;flex:1 1 auto;min-height:0;background:#050810;overflow:hidden}
+#rvTestMap{width:100%;height:100%;transition:transform .25s linear}
+.cmap-crosshair{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  pointer-events:none;z-index:10}
+.ch-dot{width:12px;height:12px;border-radius:50%;background:#7FD1E8;
+  box-shadow:0 0 0 4px rgba(127,209,232,.28),0 0 12px rgba(127,209,232,.8);
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}
+.ch-ring{width:46px;height:46px;border:1.5px solid rgba(127,209,232,.5);border-radius:50%;
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}
+.cmap-heading{position:absolute;top:14px;left:50%;transform:translateX(-50%);
+  font-size:22px;color:var(--accent);pointer-events:none;z-index:11;
+  text-shadow:0 0 8px rgba(0,0,0,.8)}
+.cmap-n{position:absolute;top:44px;left:50%;transform:translateX(-50%);
+  font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--paper);
+  background:rgba(12,17,32,.75);padding:2px 8px;border-radius:2px;pointer-events:none;z-index:11}
+.cframectl{display:flex;align-items:center;gap:10px;padding:10px 18px;
+  border-top:1px solid var(--line);flex:0 0 auto;font-family:"IBM Plex Mono",monospace;font-size:11px}
+.cframectl button{background:var(--panel-2);border:1px solid var(--line);color:var(--accent);
+  border-radius:var(--r);cursor:pointer;font-size:13px;line-height:1}
+.cframectl input[type=range]{flex:1;accent-color:var(--accent)}
+.cframectl .mono{min-width:64px;text-align:right;color:var(--paper)}
+.cmodal-status{padding:10px 18px;font-family:"IBM Plex Mono",monospace;font-size:11.5px;
+  color:var(--muted);border-top:1px solid var(--line);flex:0 0 auto}
+.cmodal-ctl{display:flex;gap:10px;padding:0 18px 12px;flex:0 0 auto;flex-wrap:wrap}
+.cmodal-ctl .gpsbtn{padding:11px 16px;font-size:11px}
+.cmodal-note{padding:0 18px 16px;font-family:"IBM Plex Mono",monospace;font-size:10.5px;
+  color:var(--muted);flex:0 0 auto;line-height:1.6}
+
+.citybar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:14px 0 22px;
+  border-bottom:1px solid var(--line)}
+.citybar-label{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--muted);white-space:nowrap}
+#citySearch{flex:1;min-width:180px;background:var(--panel-2);border:1px solid var(--line);
+  color:var(--paper);font-family:"IBM Plex Sans",sans-serif;font-size:14px;
+  padding:11px 14px;border-radius:var(--r)}
+#citySearch:focus{outline:none;border-color:var(--accent)}
+#citySearch::placeholder{color:var(--muted)}
+.citybar-msg{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--muted);white-space:nowrap}
+.citybar-msg.err{color:var(--hot)}
+.citybar-msg.ok{color:var(--accent)}
+.citybar-clear{background:transparent;border:1px solid var(--line);color:var(--muted);
+  font-family:"IBM Plex Mono",monospace;font-size:11px;padding:10px 14px;border-radius:var(--r);
+  cursor:pointer}
+.citybar-clear:hover{border-color:var(--hot);color:var(--hot)}
+svg.chart{display:block;min-width:640px}
+svg.chart text{font-family:"IBM Plex Mono",monospace;font-size:9px;fill:var(--muted)}
+
+/* ---------- factors ---------- */
+.factors{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);
+  border:1px solid var(--line)}
+.fcol{background:var(--panel);padding:20px}
+.fcol h4{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.18em;
+  text-transform:uppercase;margin:0 0 14px;font-weight:500}
+.fcol.pro h4{color:var(--hot)} .fcol.con h4{color:var(--accent)}
+.fcol ul{margin:0;padding:0;list-style:none}
+.fcol li{padding:9px 0;border-top:1px solid var(--line);font-size:13.5px;line-height:1.55}
+.fcol li:first-child{border-top:0}
+.fcol li b{font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600;color:var(--paper)}
+
+/* ---------- run schedule table ---------- */
+table.hgrid + table, section table{font-family:"IBM Plex Mono",monospace}
+section table td{padding:9px 0;border-top:1px solid var(--line);color:var(--paper)}
+section table tr:first-child td{border-top:0}
+section table tr.hl td{color:var(--accent)}
+section table tr.hl td:first-child{font-weight:600}
+
+/* ---------- live radar ---------- */
+.livegrid{display:grid;grid-template-columns:1.1fr .9fr;gap:1px;background:var(--line);
+  border:1px solid var(--line)}
+.livepanel{background:var(--panel)}
+.livepanel .lhead{display:flex;justify-content:space-between;align-items:center;
+  padding:12px 16px;border-bottom:1px solid var(--line)}
+.livepanel .lhead h4{font-family:"IBM Plex Mono",monospace;font-size:11px;
+  letter-spacing:.14em;text-transform:uppercase;font-weight:500;margin:0;color:var(--paper)}
+.livedot{display:inline-flex;align-items:center;gap:6px;font-family:"IBM Plex Mono",monospace;
+  font-size:10px;color:var(--muted);letter-spacing:.1em}
+.livedot i{width:7px;height:7px;border-radius:50%;background:var(--hot);display:inline-block;
+  animation:pulse 1.4s ease-in-out infinite}
+#radarmap{height:420px;width:100%;background:#0A0E1C}
+.citylabel{background:transparent!important;border:0!important;box-shadow:none!important;
+  color:#B8C0E0!important;font-family:"IBM Plex Mono",monospace!important;font-size:10px!important;
+  padding:0 0 0 3px!important}
+.citylabel::before{display:none!important}
+.leaflet-container{background:#0A0E1C!important}
+.radarctl{display:flex;align-items:center;gap:12px;padding:10px 16px;
+  border-top:1px solid var(--line);font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--muted)}
+.radarctl button{background:var(--panel-2);border:1px solid var(--line);color:var(--accent);
+  width:30px;height:30px;border-radius:var(--r);cursor:pointer;font-size:13px;line-height:1}
+.radarctl button:hover{border-color:var(--accent)}
+.radarctl input[type=range]{flex:1;accent-color:var(--accent)}
+.radarctl .time{min-width:74px;text-align:right;color:var(--paper)}
+.boframe{width:100%;height:420px;border:0;display:block;background:#050810}
+.livepanel .note{padding:12px 16px;font-size:11.5px;color:var(--muted);
+  border-top:1px solid var(--line);line-height:1.7}
+.livepanel .note a{color:var(--accent)}
+@media(max-width:820px){
+  .livegrid{grid-template-columns:1fr}
+  #radarmap,.boframe{height:320px}
+}
+
+/* ---------- states ---------- */
+.state{padding:80px 0;text-align:center}
+.state .eyebrow{margin-bottom:14px}
+.state h3{font-size:30px;text-transform:uppercase}
+.state p{color:var(--muted);max-width:44ch;margin:12px auto 22px;font-size:14px}
+button.retry{font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.12em;
+  text-transform:uppercase;background:transparent;color:var(--accent);
+  border:1px solid var(--accent);padding:11px 22px;border-radius:var(--r);cursor:pointer}
+button.retry:hover{background:var(--accent);color:var(--ink)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.pulse{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--accent);
+  animation:pulse 1.1s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.25;transform:scale(.7)}50%{opacity:1;transform:scale(1)}}
+.reveal{opacity:0;transform:translateY(12px);animation:rise .6s cubic-bezier(.2,.7,.3,1) forwards}
+@keyframes rise{to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){
+  .reveal{animation:none;opacity:1;transform:none}
+  .pulse{animation:none;opacity:.8}
+}
+footer{padding:34px 0;color:var(--muted);font-size:12px;line-height:1.9}
+footer a{color:var(--accent)}
+.disclaim{margin-top:26px;padding:16px 18px;border-left:2px solid var(--hot);
+  background:rgba(222,106,40,.07);font-size:13.5px;max-width:70ch}
+@media(max-width:640px){
+  .factors{grid-template-columns:1fr}
+  .runbox{text-align:left}
+  section{padding:34px 0}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="masthead">
+    <h1>Biuletyn<br><span class="thin">konwekcyjny</span></h1>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0">
+      <div class="runbox" id="runbox">
+        <span class="pulse"></span> pobieram dane modelu
+      </div>
+      <button class="gpsbtn ghost" id="refreshBtn" style="margin-top:10px;padding:9px 16px;font-size:11px">⟳ Odśwież dane teraz</button>
+      <button class="gpsbtn ghost" id="rvMapOpenBtn" style="margin-top:8px;padding:9px 16px;font-size:11px">🧭 Radar kompas (test)</button>
+    </div>
+  </div>
+</header>
+
+<div id="rvMapModal" class="cmodal" hidden>
+  <div class="cmodal-bar">
+    <span class="cmodal-title">🧭 Radar kompas <span class="cmodal-badge">TEST</span></span>
+    <button id="rvMapCloseBtn" class="cmodal-x" aria-label="Zamknij">✕</button>
+  </div>
+  <div class="cmap-outer">
+    <div id="rvTestMap"></div>
+    <div class="cmap-crosshair">
+      <div class="ch-dot"></div>
+      <div class="ch-ring"></div>
+    </div>
+    <div class="cmap-heading" id="rvHeadingArrow">▲</div>
+    <div class="cmap-n" id="rvNorthLabel">N</div>
+  </div>
+  <div class="cframectl">
+    <button id="rvTestPlay" class="gpsbtn ghost" aria-label="Odtwórz animację" style="padding:9px 14px">▶</button>
+    <input id="rvTestSlider" type="range" min="0" max="0" value="0">
+    <span class="mono" id="rvTestTime">—</span>
+  </div>
+  <div class="cmodal-status" id="rvTestStatus">Uruchamiam GPS, kompas i radar…</div>
+  <div class="cmodal-ctl">
+    <button id="rvTestGpsRetry" class="gpsbtn">📍 Włącz GPS</button>
+    <button id="rvTestRotateBtn" class="gpsbtn ghost">🧭 Obrót: śledzi kierunek</button>
+    <button id="rvTestResetBtn" class="gpsbtn ghost">Północ u góry</button>
+  </div>
+  <div class="cmodal-note">Test: GPS na żywo + obrót mapy zgodnie z kierunkiem telefonu (kompas, wymaga https) + granice województw + radar opadów RainViewer — ten sam, sprawdzony sposób co w głównym radarze na stronie wyżej. Jeśli GPS nic nie pokazuje, sprawdź czy lokalizacja jest włączona w ustawieniach telefonu, potem dotknij „Włącz GPS" ponownie.</div>
+</div>
+
+<div class="citybar">
+  <span class="citybar-label">📍 Twoja okolica:</span>
+  <input type="text" id="citySearch" list="cityList" placeholder="wpisz miasto, np. Piotrków Trybunalski…" autocomplete="off">
+  <datalist id="cityList"></datalist>
+  <button class="gpsbtn" id="citySearchBtn" style="padding:10px 18px;font-size:11px">Ustaw</button>
+  <span class="citybar-msg" id="cityMsg"></span>
+</div>
+
+<main id="app">
+  <div class="state">
+    <div class="eyebrow">ICON-EU · Open-Meteo</div>
+    <h3>Liczę prognozę</h3>
+    <p>Pobieram profile termodynamiczne dla 16 punktów w Polsce i przeliczam je na prawdopodobieństwo burz.</p>
+  </div>
+</main>
+
+<footer>
+  Dane: model <b>ICON-EU</b> (Deutscher Wetterdienst) przez API Open-Meteo · radar opadów: <b>RainViewer</b> · wyładowania: <b>Blitzortung.org</b> i kontrybutorzy · przeliczenie i tekst powstają w Twojej przeglądarce.<br>
+  To narzędzie orientacyjne, nie zastępuje ostrzeżeń IMGW-PIB. W horyzoncie krótszym niż 3 godziny wiarygodniejszy jest radar niż jakikolwiek model.
+</footer>
+
+</div>
+
+<script>
+/* ============================================================
+   1. PUNKTY — po jednym reprezentatywnym na województwo,
+      posortowane z zachodu na wschód, żeby przejście frontu
+      układało się w siatce w widoczną ukośną falę.
+   ============================================================ */
+const WOJ_BORDERS = [{"n":"\u015bl\u0105skie","p":[[[[19.47,50.915],[19.486,50.88],[19.57,50.908],[19.67,50.849],[19.747,50.866],[19.819,50.839],[19.82,50.808],[19.776,50.8],[19.795,50.784],[19.706,50.762],[19.713,50.729],[19.811,50.725],[19.808,50.706],[19.872,50.693],[19.835,50.651],[19.922,50.639],[19.789,50.554],[19.902,50.539],[19.964,50.489],[19.854,50.435],[19.702,50.448],[19.637,50.409],[19.518,50.417],[19.488,50.397],[19.492,50.366],[19.46,50.373],[19.484,50.324],[19.415,50.332],[19.382,50.273],[19.324,50.259],[19.442,50.227],[19.337,50.19],[19.354,50.154],[19.249,50.131],[19.222,50.065],[19.169,50.06],[19.119,50.009],[19.106,49.943],[19.185,49.95],[19.195,49.886],[19.157,49.865],[19.271,49.861],[19.317,49.778],[19.42,49.772],[19.445,49.735],[19.374,49.693],[19.478,49.661],[19.481,49.624],[19.371,49.567],[19.362,49.536],[19.234,49.511],[19.219,49.449],[19.186,49.435],[19.197,49.415],[18.971,49.402],[18.972,49.504],[18.837,49.524],[18.859,49.551],[18.805,49.679],[18.625,49.722],[18.569,49.834],[18.604,49.857],[18.566,49.883],[18.575,49.915],[18.508,49.903],[18.356,49.944],[18.322,49.916],[18.206,49.998],[18.117,49.994],[18.089,50.044],[18.035,50.066],[18.072,50.11],[18.05,50.138],[18.078,50.174],[18.249,50.193],[18.251,50.223],[18.362,50.257],[18.426,50.249],[18.393,50.305],[18.409,50.317],[18.358,50.357],[18.394,50.392],[18.366,50.425],[18.387,50.432],[18.38,50.479],[18.481,50.458],[18.436,50.545],[18.559,50.54],[18.616,50.569],[18.587,50.614],[18.517,50.626],[18.484,50.708],[18.581,50.752],[18.52,50.796],[18.616,50.854],[18.654,50.915],[18.612,50.955],[18.695,51.016],[18.673,51.057],[18.884,51.059],[18.919,51.098],[19.206,50.986],[19.256,51.006],[19.245,51.038],[19.323,51.046],[19.319,51.02],[19.402,50.994],[19.47,50.915]]]]},{"n":"opolskie","p":[[[[17.812,51.135],[17.939,51.109],[18.164,51.172],[18.499,51.1],[18.521,51.14],[18.554,51.139],[18.578,51.082],[18.673,51.057],[18.695,51.016],[18.612,50.955],[18.654,50.915],[18.616,50.854],[18.522,50.802],[18.581,50.752],[18.484,50.708],[18.517,50.626],[18.587,50.614],[18.616,50.569],[18.559,50.54],[18.436,50.545],[18.481,50.458],[18.38,50.479],[18.387,50.432],[18.366,50.425],[18.394,50.392],[18.358,50.357],[18.409,50.317],[18.393,50.305],[18.426,50.249],[18.362,50.257],[18.251,50.223],[18.249,50.193],[18.078,50.174],[18.05,50.138],[18.072,50.11],[18.005,50.053],[18.046,50.016],[17.869,49.972],[17.778,50.02],[17.731,50.097],[17.65,50.111],[17.593,50.16],[17.759,50.207],[17.765,50.236],[17.725,50.257],[17.752,50.3],[17.713,50.323],[17.617,50.267],[17.496,50.275],[17.438,50.252],[17.389,50.283],[17.35,50.264],[17.34,50.323],[17.248,50.332],[17.204,50.386],[17.143,50.38],[16.908,50.449],[16.959,50.488],[17.049,50.464],[17.061,50.537],[17.124,50.608],[17.245,50.62],[17.235,50.681],[17.259,50.691],[17.221,50.714],[17.298,50.753],[17.273,50.788],[17.355,50.795],[17.328,50.851],[17.395,50.876],[17.352,50.901],[17.382,50.925],[17.433,50.916],[17.431,50.967],[17.541,50.992],[17.514,51.012],[17.527,51.067],[17.582,51.082],[17.545,51.154],[17.607,51.189],[17.669,51.161],[17.828,51.193],[17.851,51.172],[17.812,51.135]]]]},{"n":"wielkopolskie","p":[[[[16.849,53.629],[16.892,53.656],[16.949,53.55],[17.001,53.55],[17.012,53.52],[17.266,53.537],[17.391,53.491],[17.248,53.38],[17.438,53.268],[17.417,53.231],[17.329,53.214],[17.337,53.155],[17.39,53.144],[17.353,53.131],[17.357,53.087],[17.324,53.078],[17.332,53.019],[17.302,52.995],[17.519,52.928],[17.508,52.794],[17.408,52.772],[17.488,52.729],[17.467,52.68],[17.628,52.708],[17.63,52.655],[17.678,52.649],[17.676,52.605],[17.784,52.651],[17.877,52.629],[17.901,52.586],[17.99,52.571],[17.987,52.543],[18.095,52.553],[18.09,52.52],[18.22,52.483],[18.26,52.481],[18.352,52.543],[18.386,52.532],[18.384,52.477],[18.463,52.477],[18.492,52.503],[18.65,52.45],[18.756,52.333],[18.941,52.392],[19.047,52.333],[19.035,52.271],[19.1,52.266],[19.078,52.2],[19.02,52.215],[18.918,52.186],[18.911,52.133],[18.95,52.119],[18.925,52.079],[18.724,52.065],[18.715,51.97],[18.768,51.928],[18.697,51.866],[18.689,51.822],[18.472,51.851],[18.444,51.798],[18.409,51.792],[18.432,51.765],[18.412,51.701],[18.364,51.682],[18.355,51.66],[18.381,51.652],[18.353,51.633],[18.383,51.477],[18.326,51.42],[18.188,51.441],[18.211,51.423],[18.19,51.386],[18.075,51.35],[18.113,51.311],[18.11,51.26],[18.17,51.271],[18.164,51.172],[17.939,51.109],[17.823,51.118],[17.851,51.172],[17.756,51.217],[17.765,51.316],[17.704,51.367],[17.755,51.407],[17.541,51.421],[17.514,51.502],[17.575,51.549],[17.519,51.604],[17.33,51.648],[17.216,51.63],[17.215,51.574],[17.059,51.552],[16.819,51.578],[16.772,51.614],[16.783,51.641],[16.639,51.666],[16.682,51.708],[16.648,51.744],[16.389,51.791],[16.401,51.838],[16.335,51.871],[16.352,51.881],[16.252,51.901],[16.215,51.87],[16.106,51.896],[16.138,51.925],[16.121,51.992],[16.01,51.981],[15.965,52.018],[16.006,52.054],[15.988,52.067],[15.833,52.111],[15.884,52.156],[15.858,52.169],[15.852,52.262],[15.892,52.31],[15.901,52.383],[15.804,52.443],[15.896,52.447],[15.835,52.529],[15.858,52.544],[15.776,52.638],[15.814,52.668],[15.795,52.709],[15.945,52.729],[15.935,52.801],[15.893,52.813],[15.974,52.859],[15.955,53.04],[16.117,53.012],[16.271,53.049],[16.317,53.037],[16.399,53.164],[16.5,53.163],[16.559,53.229],[16.635,53.22],[16.65,53.277],[16.714,53.299],[16.475,53.388],[16.436,53.461],[16.454,53.488],[16.642,53.484],[16.721,53.526],[16.758,53.624],[16.849,53.629]]]]},{"n":"zachodniopomorskie","p":[[[[16.372,54.441],[16.53,54.541],[16.689,54.57],[16.764,54.486],[16.828,54.465],[16.824,54.416],[16.859,54.383],[16.808,54.37],[16.814,54.319],[16.854,54.308],[16.865,54.261],[16.713,54.213],[16.805,54.116],[16.812,54.062],[16.785,54.02],[16.804,53.994],[16.842,53.998],[16.875,53.945],[16.982,53.905],[16.977,53.88],[16.865,53.852],[16.91,53.802],[16.945,53.801],[16.858,53.747],[16.892,53.656],[16.758,53.624],[16.721,53.526],[16.642,53.484],[16.454,53.488],[16.436,53.461],[16.475,53.388],[16.714,53.299],[16.65,53.277],[16.635,53.22],[16.559,53.229],[16.5,53.163],[16.399,53.164],[16.317,53.037],[16.084,53.014],[15.963,53.041],[15.994,53.073],[15.979,53.11],[15.875,53.121],[15.812,53.084],[15.807,53.045],[15.743,52.991],[15.588,52.981],[15.547,53.014],[15.369,52.947],[15.288,52.958],[15.333,52.899],[15.072,52.831],[14.918,52.889],[14.89,52.861],[14.92,52.847],[14.866,52.847],[14.864,52.791],[14.789,52.752],[14.792,52.697],[14.721,52.631],[14.638,52.659],[14.564,52.625],[14.505,52.643],[14.352,52.751],[14.217,52.817],[14.13,52.828],[14.162,52.888],[14.144,52.961],[14.352,53.059],[14.387,53.142],[14.377,53.202],[14.45,53.26],[14.407,53.309],[14.371,53.456],[14.306,53.544],[14.317,53.618],[14.284,53.634],[14.267,53.699],[14.284,53.772],[14.214,53.865],[14.208,53.916],[14.28,53.938],[14.409,53.92],[14.728,54.023],[15.286,54.147],[16.102,54.274],[16.262,54.349],[16.372,54.441]]]]},{"n":"\u015bwi\u0119tokrzyskie","p":[[[[19.747,50.866],[19.849,50.936],[19.83,50.968],[19.875,51.047],[20.036,50.973],[20.056,51.058],[19.982,51.073],[19.988,51.139],[20.026,51.165],[19.994,51.184],[20.232,51.201],[20.262,51.22],[20.243,51.246],[20.261,51.259],[20.371,51.237],[20.39,51.272],[20.364,51.31],[20.433,51.339],[20.507,51.331],[20.493,51.307],[20.546,51.23],[20.61,51.242],[20.7,51.196],[20.697,51.149],[20.718,51.173],[20.813,51.146],[20.822,51.178],[20.88,51.154],[20.921,51.195],[20.998,51.145],[21.057,51.157],[21.07,51.211],[21.12,51.189],[21.091,51.155],[21.154,51.126],[21.153,51.08],[21.355,51.085],[21.382,51.041],[21.464,51.013],[21.529,51.059],[21.676,51.078],[21.752,51.037],[21.803,51.072],[21.826,51.047],[21.803,51.022],[21.813,50.934],[21.869,50.814],[21.78,50.645],[21.723,50.645],[21.604,50.521],[21.454,50.494],[21.444,50.456],[21.281,50.408],[21.177,50.33],[21.145,50.354],[21.062,50.317],[20.893,50.306],[20.828,50.275],[20.79,50.29],[20.681,50.206],[20.572,50.187],[20.416,50.191],[20.375,50.216],[20.398,50.242],[20.333,50.267],[20.357,50.289],[20.293,50.328],[20.337,50.362],[20.266,50.427],[20.273,50.464],[20.221,50.489],[19.977,50.519],[19.939,50.503],[19.902,50.539],[19.789,50.554],[19.922,50.639],[19.835,50.651],[19.872,50.693],[19.808,50.706],[19.811,50.725],[19.713,50.729],[19.706,50.762],[19.742,50.755],[19.795,50.784],[19.784,50.818],[19.809,50.804],[19.826,50.825],[19.747,50.866]]]]},{"n":"kujawsko-pomorskie","p":[[[[18.677,53.691],[18.789,53.702],[18.739,53.645],[18.761,53.605],[19.182,53.579],[19.214,53.539],[19.189,53.512],[19.226,53.489],[19.259,53.397],[19.381,53.411],[19.433,53.364],[19.52,53.37],[19.52,53.33],[19.642,53.345],[19.718,53.302],[19.689,53.236],[19.744,53.228],[19.762,53.152],[19.639,53.107],[19.682,52.965],[19.568,52.986],[19.582,52.957],[19.529,52.936],[19.445,52.939],[19.509,52.868],[19.423,52.833],[19.495,52.778],[19.526,52.704],[19.441,52.723],[19.43,52.672],[19.368,52.628],[19.426,52.611],[19.322,52.529],[19.389,52.51],[19.319,52.449],[19.259,52.443],[19.297,52.424],[19.289,52.393],[19.16,52.341],[19.029,52.332],[18.921,52.399],[18.913,52.366],[18.756,52.333],[18.65,52.45],[18.527,52.499],[18.384,52.477],[18.386,52.532],[18.352,52.543],[18.26,52.481],[18.22,52.483],[18.09,52.52],[18.095,52.553],[17.987,52.543],[17.99,52.571],[17.901,52.586],[17.877,52.629],[17.784,52.651],[17.676,52.605],[17.678,52.649],[17.63,52.655],[17.628,52.708],[17.467,52.68],[17.488,52.729],[17.408,52.772],[17.508,52.794],[17.519,52.928],[17.302,52.995],[17.332,53.019],[17.324,53.078],[17.357,53.087],[17.353,53.131],[17.39,53.144],[17.337,53.155],[17.329,53.214],[17.417,53.231],[17.438,53.268],[17.248,53.38],[17.383,53.469],[17.428,53.589],[17.51,53.613],[17.543,53.581],[17.604,53.597],[17.675,53.572],[17.668,53.601],[17.73,53.593],[17.712,53.636],[17.772,53.7],[17.808,53.679],[17.897,53.71],[17.869,53.76],[18.034,53.726],[18.072,53.781],[18.256,53.746],[18.264,53.701],[18.515,53.704],[18.551,53.656],[18.677,53.691]]]]},{"n":"podlaskie","p":[[[[21.926,53.078],[21.873,53.059],[21.81,53.114],[21.736,53.109],[21.695,53.138],[21.707,53.166],[21.627,53.266],[21.658,53.262],[21.666,53.311],[21.735,53.313],[21.654,53.349],[21.684,53.368],[21.627,53.407],[21.606,53.476],[21.687,53.493],[21.858,53.459],[21.936,53.511],[21.99,53.522],[22.031,53.497],[22.423,53.681],[22.468,53.667],[22.465,53.69],[22.697,53.762],[22.727,53.833],[22.779,53.866],[22.783,53.916],[22.694,53.977],[22.671,54.029],[22.601,54.052],[22.636,54.108],[22.547,54.138],[22.484,54.2],[22.532,54.249],[22.645,54.288],[22.79,54.3],[22.792,54.363],[22.836,54.407],[22.888,54.409],[23.01,54.383],[22.994,54.362],[23.063,54.341],[23.042,54.316],[23.14,54.316],[23.234,54.261],[23.337,54.252],[23.486,54.153],[23.529,54.066],[23.481,53.999],[23.515,53.957],[23.524,53.863],[23.548,53.856],[23.549,53.768],[23.582,53.744],[23.66,53.521],[23.799,53.274],[23.917,53.157],[23.872,53.082],[23.946,52.959],[23.916,52.939],[23.939,52.713],[23.756,52.614],[23.641,52.608],[23.467,52.549],[23.178,52.283],[23.051,52.285],[23.045,52.325],[22.957,52.368],[22.734,52.369],[22.568,52.403],[22.542,52.424],[22.554,52.463],[22.512,52.481],[22.527,52.521],[22.409,52.61],[22.468,52.649],[22.435,52.698],[22.454,52.788],[22.39,52.795],[22.304,52.748],[22.251,52.826],[22.305,52.839],[22.269,52.885],[22.207,52.883],[22.21,52.855],[22.038,52.851],[21.992,52.92],[22.028,52.934],[22.002,52.972],[21.884,53.007],[21.898,53.046],[21.941,53.038],[21.926,53.078]]]]},{"n":"dolno\u015bl\u0105skie","p":[[[[16.416,51.785],[16.648,51.744],[16.682,51.708],[16.642,51.684],[16.65,51.658],[16.783,51.641],[16.772,51.614],[16.819,51.578],[16.887,51.581],[16.962,51.545],[17.215,51.574],[17.216,51.63],[17.262,51.643],[17.471,51.626],[17.572,51.567],[17.573,51.53],[17.514,51.502],[17.554,51.41],[17.755,51.407],[17.704,51.367],[17.765,51.316],[17.744,51.243],[17.795,51.194],[17.669,51.161],[17.607,51.189],[17.545,51.154],[17.582,51.082],[17.527,51.067],[17.514,51.012],[17.541,50.992],[17.431,50.967],[17.433,50.916],[17.382,50.925],[17.352,50.901],[17.395,50.876],[17.328,50.851],[17.355,50.795],[17.273,50.788],[17.298,50.753],[17.221,50.714],[17.259,50.691],[17.235,50.681],[17.245,50.62],[17.124,50.608],[17.061,50.537],[17.049,50.464],[16.959,50.488],[16.86,50.411],[16.908,50.391],[16.941,50.32],[17.003,50.302],[17.015,50.219],[16.976,50.245],[16.81,50.189],[16.704,50.096],[16.641,50.112],[16.561,50.164],[16.538,50.239],[16.432,50.324],[16.383,50.329],[16.361,50.38],[16.287,50.368],[16.198,50.429],[16.312,50.506],[16.36,50.501],[16.402,50.53],[16.403,50.566],[16.445,50.58],[16.343,50.661],[16.234,50.671],[16.188,50.627],[16.104,50.663],[16.058,50.613],[16.006,50.606],[15.989,50.685],[15.861,50.674],[15.814,50.755],[15.706,50.737],[15.439,50.809],[15.375,50.778],[15.368,50.838],[15.277,50.891],[15.274,50.98],[15.189,50.98],[15.172,51.02],[15.136,50.992],[15.058,51.023],[14.985,51.011],[14.968,50.99],[15.017,50.967],[14.989,50.922],[15.002,50.869],[14.823,50.871],[14.897,50.941],[14.998,51.123],[15.037,51.258],[14.974,51.364],[15.009,51.364],[15.018,51.394],[15.187,51.464],[15.325,51.419],[15.397,51.53],[15.488,51.528],[15.601,51.448],[15.714,51.517],[15.706,51.556],[15.824,51.574],[15.816,51.603],[15.856,51.657],[15.834,51.672],[15.893,51.73],[15.977,51.748],[15.966,51.791],[15.995,51.805],[16.178,51.764],[16.16,51.712],[16.218,51.713],[16.263,51.675],[16.348,51.709],[16.416,51.785]]]]},{"n":"podkarpackie","p":[[[[22.544,50.356],[22.688,50.356],[22.608,50.311],[22.708,50.291],[23.017,50.287],[23.184,50.396],[23.252,50.365],[23.358,50.41],[23.388,50.405],[23.379,50.368],[23.436,50.345],[23.407,50.306],[23.5,50.3],[23.509,50.261],[23.548,50.252],[23.279,50.1],[22.641,49.53],[22.697,49.495],[22.747,49.36],[22.74,49.247],[22.715,49.227],[22.747,49.217],[22.707,49.175],[22.752,49.181],[22.738,49.16],[22.893,49.095],[22.866,49.06],[22.892,49.008],[22.847,49.002],[22.765,49.053],[22.683,49.039],[22.582,49.097],[22.428,49.099],[22.37,49.145],[22.225,49.153],[22.231,49.181],[22.051,49.216],[22.034,49.279],[21.961,49.349],[21.84,49.392],[21.778,49.356],[21.631,49.447],[21.434,49.412],[21.399,49.434],[21.391,49.489],[21.416,49.492],[21.36,49.543],[21.374,49.571],[21.327,49.594],[21.363,49.634],[21.347,49.69],[21.31,49.749],[21.242,49.776],[21.349,49.815],[21.234,49.85],[21.225,49.884],[21.28,49.892],[21.285,49.924],[21.179,49.929],[21.151,49.976],[21.193,50.029],[21.146,50.054],[21.18,50.079],[21.16,50.09],[21.199,50.095],[21.148,50.126],[21.176,50.143],[21.152,50.148],[21.171,50.207],[21.142,50.238],[21.182,50.239],[21.148,50.255],[21.223,50.311],[21.209,50.355],[21.232,50.374],[21.444,50.456],[21.454,50.494],[21.604,50.521],[21.723,50.645],[21.78,50.645],[21.864,50.803],[21.95,50.772],[22.052,50.821],[22.163,50.797],[22.152,50.772],[22.198,50.761],[22.147,50.673],[22.223,50.66],[22.25,50.621],[22.536,50.572],[22.512,50.539],[22.577,50.504],[22.512,50.482],[22.586,50.477],[22.53,50.447],[22.445,50.462],[22.459,50.434],[22.405,50.398],[22.482,50.355],[22.544,50.356]]]]},{"n":"ma\u0142opolskie","p":[[[[20.563,50.2],[20.681,50.206],[20.79,50.29],[20.828,50.275],[20.893,50.306],[21.062,50.317],[21.145,50.354],[21.219,50.336],[21.223,50.311],[21.148,50.255],[21.182,50.239],[21.142,50.238],[21.171,50.207],[21.152,50.148],[21.176,50.143],[21.148,50.126],[21.199,50.095],[21.16,50.09],[21.18,50.079],[21.146,50.054],[21.193,50.029],[21.151,49.976],[21.179,49.929],[21.285,49.924],[21.28,49.892],[21.225,49.884],[21.234,49.85],[21.349,49.815],[21.242,49.776],[21.331,49.72],[21.363,49.634],[21.327,49.594],[21.374,49.571],[21.36,49.543],[21.408,49.51],[21.391,49.489],[21.411,49.468],[21.399,49.434],[21.277,49.461],[21.192,49.401],[21.124,49.437],[21.056,49.422],[21.104,49.376],[21.027,49.357],[20.987,49.307],[20.924,49.299],[20.86,49.348],[20.826,49.334],[20.723,49.42],[20.611,49.413],[20.576,49.376],[20.43,49.416],[20.405,49.392],[20.325,49.403],[20.314,49.343],[20.222,49.352],[20.146,49.318],[20.076,49.179],[19.982,49.232],[19.919,49.236],[19.841,49.194],[19.763,49.208],[19.823,49.277],[19.793,49.303],[19.791,49.411],[19.73,49.392],[19.639,49.409],[19.641,49.458],[19.582,49.458],[19.529,49.573],[19.468,49.596],[19.478,49.661],[19.374,49.693],[19.445,49.735],[19.436,49.757],[19.317,49.778],[19.271,49.861],[19.171,49.853],[19.157,49.865],[19.195,49.886],[19.185,49.95],[19.098,49.952],[19.146,50.046],[19.222,50.065],[19.249,50.131],[19.354,50.154],[19.337,50.19],[19.442,50.227],[19.324,50.259],[19.382,50.273],[19.415,50.332],[19.484,50.324],[19.459,50.363],[19.492,50.366],[19.488,50.397],[19.536,50.42],[19.672,50.416],[19.702,50.448],[19.854,50.435],[19.901,50.474],[19.961,50.477],[19.95,50.505],[19.977,50.519],[20.118,50.485],[20.204,50.496],[20.273,50.464],[20.266,50.427],[20.337,50.362],[20.293,50.328],[20.357,50.289],[20.333,50.267],[20.398,50.242],[20.375,50.216],[20.416,50.191],[20.563,50.2]]]]},{"n":"pomorskie","p":[[[[19.649,54.453],[19.636,54.392],[19.258,54.282],[19.325,54.21],[19.247,54.167],[19.223,54.12],[19.256,54.086],[19.221,54.069],[19.266,54.051],[19.279,54.013],[19.32,54.027],[19.411,53.999],[19.378,53.985],[19.374,53.935],[19.553,53.948],[19.581,53.927],[19.556,53.926],[19.472,53.785],[19.323,53.814],[19.301,53.752],[19.213,53.691],[19.206,53.638],[19.129,53.588],[18.915,53.58],[18.761,53.605],[18.739,53.645],[18.789,53.702],[18.551,53.656],[18.515,53.704],[18.264,53.701],[18.256,53.746],[18.072,53.781],[18.034,53.726],[17.869,53.76],[17.897,53.71],[17.808,53.679],[17.772,53.7],[17.712,53.636],[17.73,53.593],[17.668,53.601],[17.675,53.572],[17.604,53.597],[17.543,53.581],[17.51,53.613],[17.451,53.602],[17.391,53.491],[17.266,53.537],[17.012,53.52],[17.001,53.55],[16.949,53.55],[16.896,53.621],[16.858,53.747],[16.945,53.801],[16.91,53.802],[16.865,53.852],[16.977,53.88],[16.982,53.905],[16.875,53.945],[16.875,53.977],[16.785,54.02],[16.812,54.062],[16.805,54.116],[16.713,54.213],[16.865,54.261],[16.854,54.308],[16.814,54.319],[16.808,54.37],[16.859,54.383],[16.824,54.416],[16.828,54.465],[16.764,54.486],[16.699,54.569],[16.89,54.592],[17.051,54.67],[17.355,54.75],[17.968,54.832],[18.329,54.835],[18.826,54.623],[18.814,54.593],[18.686,54.695],[18.451,54.78],[18.422,54.788],[18.396,54.746],[18.473,54.695],[18.468,54.638],[18.512,54.634],[18.542,54.585],[18.58,54.438],[18.731,54.403],[18.708,54.39],[18.735,54.374],[18.917,54.346],[19.256,54.357],[19.649,54.453]]]]},{"n":"warmi\u0144sko-mazurskie","p":[[[[22.792,54.363],[22.79,54.3],[22.645,54.288],[22.532,54.249],[22.484,54.2],[22.547,54.138],[22.636,54.108],[22.601,54.052],[22.671,54.029],[22.694,53.977],[22.783,53.916],[22.779,53.866],[22.727,53.833],[22.697,53.762],[22.465,53.69],[22.468,53.667],[22.423,53.681],[22.031,53.497],[21.99,53.522],[21.924,53.508],[21.881,53.461],[21.687,53.493],[21.435,53.463],[21.446,53.446],[21.411,53.428],[21.25,53.42],[21.052,53.334],[20.947,53.355],[20.849,53.292],[20.692,53.303],[20.657,53.252],[20.562,53.227],[20.458,53.247],[20.326,53.161],[20.354,53.147],[20.151,53.142],[20.104,53.168],[19.978,53.144],[19.907,53.177],[19.913,53.212],[19.825,53.173],[19.839,53.141],[19.762,53.152],[19.744,53.228],[19.689,53.236],[19.719,53.279],[19.69,53.336],[19.52,53.33],[19.52,53.37],[19.433,53.364],[19.381,53.411],[19.259,53.397],[19.226,53.489],[19.189,53.512],[19.214,53.539],[19.189,53.548],[19.2,53.57],[19.129,53.588],[19.206,53.638],[19.213,53.691],[19.301,53.752],[19.323,53.814],[19.472,53.785],[19.556,53.926],[19.581,53.927],[19.553,53.948],[19.374,53.935],[19.378,53.985],[19.411,53.999],[19.32,54.027],[19.279,54.013],[19.266,54.051],[19.221,54.069],[19.256,54.086],[19.223,54.12],[19.247,54.167],[19.325,54.21],[19.258,54.282],[19.636,54.392],[19.649,54.453],[21.446,54.318],[22.792,54.363]]]]},{"n":"\u0142\u00f3dzkie","p":[[[[19.993,51.134],[19.982,51.073],[20.056,51.058],[20.036,50.973],[19.875,51.047],[19.83,50.968],[19.832,50.916],[19.728,50.843],[19.683,50.845],[19.587,50.905],[19.471,50.886],[19.432,50.965],[19.319,51.02],[19.323,51.046],[19.245,51.038],[19.256,51.006],[19.206,50.986],[18.919,51.098],[18.884,51.059],[18.661,51.055],[18.578,51.082],[18.554,51.139],[18.481,51.1],[18.187,51.157],[18.164,51.172],[18.17,51.271],[18.11,51.26],[18.113,51.311],[18.075,51.35],[18.19,51.386],[18.211,51.423],[18.188,51.441],[18.326,51.42],[18.383,51.477],[18.36,51.541],[18.377,51.6],[18.352,51.601],[18.381,51.652],[18.355,51.66],[18.412,51.701],[18.432,51.765],[18.409,51.792],[18.444,51.798],[18.439,51.825],[18.507,51.854],[18.689,51.822],[18.697,51.866],[18.768,51.928],[18.715,51.97],[18.724,52.065],[18.925,52.079],[18.95,52.119],[18.911,52.133],[18.931,52.199],[19.09,52.207],[19.1,52.266],[19.035,52.271],[19.047,52.333],[19.302,52.392],[19.322,52.348],[19.455,52.35],[19.648,52.254],[19.699,52.279],[19.736,52.259],[19.848,52.272],[19.886,52.31],[20.042,52.258],[20.081,52.233],[20.062,52.188],[20.091,52.153],[20.161,52.151],[20.269,52.101],[20.253,52.055],[20.199,52.026],[20.294,51.967],[20.243,51.934],[20.354,51.92],[20.439,51.944],[20.498,51.889],[20.569,51.888],[20.618,51.827],[20.558,51.819],[20.582,51.811],[20.583,51.748],[20.658,51.724],[20.653,51.677],[20.523,51.666],[20.467,51.693],[20.39,51.66],[20.468,51.561],[20.45,51.508],[20.52,51.51],[20.534,51.463],[20.447,51.41],[20.414,51.321],[20.364,51.31],[20.38,51.246],[20.261,51.259],[20.243,51.246],[20.262,51.22],[20.232,51.201],[20.026,51.2],[19.994,51.184],[20.026,51.165],[19.993,51.134]]]]},{"n":"mazowieckie","p":[[[[22.008,52.904],[22.038,52.851],[22.084,52.846],[22.284,52.879],[22.305,52.839],[22.251,52.826],[22.304,52.748],[22.39,52.795],[22.454,52.788],[22.435,52.698],[22.468,52.649],[22.409,52.61],[22.527,52.521],[22.512,52.481],[22.554,52.463],[22.542,52.424],[22.568,52.403],[22.734,52.369],[22.957,52.368],[23.045,52.325],[23.051,52.285],[23.128,52.288],[23.033,52.219],[23.029,52.174],[22.933,52.136],[22.968,52.115],[22.903,52.11],[22.902,52.063],[22.787,52.068],[22.699,52.117],[22.651,52.094],[22.664,52.047],[22.623,52.019],[22.483,52.067],[22.456,52.03],[22.345,51.997],[22.297,52.037],[22.254,52.005],[22.03,52.022],[21.88,51.971],[21.866,51.943],[21.912,51.886],[21.845,51.841],[21.917,51.84],[21.953,51.796],[21.836,51.744],[21.895,51.697],[21.831,51.648],[21.76,51.64],[21.749,51.612],[21.652,51.658],[21.616,51.618],[21.696,51.57],[21.824,51.562],[21.874,51.472],[21.84,51.42],[21.761,51.401],[21.848,51.365],[21.823,51.303],[21.783,51.294],[21.851,51.279],[21.808,51.254],[21.783,51.179],[21.803,51.072],[21.752,51.037],[21.64,51.076],[21.513,51.056],[21.464,51.013],[21.382,51.041],[21.355,51.085],[21.153,51.08],[21.154,51.126],[21.091,51.155],[21.12,51.189],[21.07,51.211],[21.057,51.157],[20.998,51.145],[20.921,51.195],[20.88,51.154],[20.822,51.178],[20.813,51.146],[20.782,51.145],[20.718,51.173],[20.697,51.149],[20.7,51.196],[20.61,51.242],[20.546,51.23],[20.493,51.307],[20.507,51.331],[20.433,51.339],[20.422,51.363],[20.447,51.41],[20.534,51.463],[20.52,51.51],[20.45,51.508],[20.468,51.561],[20.385,51.642],[20.4,51.673],[20.467,51.693],[20.523,51.666],[20.653,51.677],[20.658,51.724],[20.583,51.748],[20.582,51.811],[20.558,51.819],[20.619,51.82],[20.569,51.888],[20.498,51.889],[20.439,51.944],[20.354,51.92],[20.243,51.934],[20.294,51.967],[20.199,52.026],[20.253,52.055],[20.269,52.101],[20.161,52.151],[20.091,52.153],[20.062,52.188],[20.081,52.233],[20.042,52.258],[19.886,52.31],[19.848,52.272],[19.634,52.256],[19.616,52.288],[19.52,52.304],[19.455,52.35],[19.322,52.348],[19.297,52.424],[19.259,52.443],[19.319,52.449],[19.389,52.51],[19.322,52.529],[19.352,52.535],[19.341,52.567],[19.419,52.599],[19.368,52.628],[19.43,52.672],[19.441,52.723],[19.526,52.704],[19.495,52.778],[19.423,52.833],[19.509,52.868],[19.445,52.939],[19.529,52.936],[19.582,52.957],[19.568,52.986],[19.672,52.956],[19.683,53.019],[19.652,53.038],[19.639,53.107],[19.778,53.155],[19.839,53.141],[19.825,53.173],[19.883,53.209],[19.913,53.212],[19.907,53.177],[19.978,53.144],[20.104,53.168],[20.151,53.142],[20.354,53.147],[20.326,53.161],[20.458,53.247],[20.562,53.227],[20.657,53.252],[20.714,53.309],[20.849,53.292],[20.917,53.322],[20.914,53.348],[20.992,53.361],[21.052,53.334],[21.25,53.42],[21.411,53.428],[21.446,53.446],[21.435,53.463],[21.613,53.481],[21.607,53.436],[21.684,53.368],[21.654,53.349],[21.735,53.313],[21.666,53.311],[21.658,53.262],[21.627,53.266],[21.707,53.166],[21.695,53.138],[21.736,53.109],[21.81,53.114],[21.873,53.059],[21.941,53.072],[21.923,53.046],[21.941,53.038],[21.898,53.046],[21.877,53.022],[22.002,52.972],[22.028,52.934],[21.992,52.92],[22.008,52.904]]]]},{"n":"lubelskie","p":[[[[21.89,51.928],[21.866,51.943],[21.88,51.971],[22.03,52.022],[22.254,52.005],[22.323,52.037],[22.345,51.997],[22.516,52.068],[22.623,52.019],[22.664,52.047],[22.651,52.094],[22.699,52.117],[22.787,52.068],[22.902,52.063],[22.903,52.11],[22.968,52.115],[22.933,52.136],[23.029,52.174],[23.033,52.219],[23.128,52.288],[23.201,52.278],[23.2,52.23],[23.366,52.208],[23.423,52.173],[23.486,52.181],[23.543,52.12],[23.599,52.117],[23.689,51.992],[23.612,51.917],[23.637,51.892],[23.602,51.833],[23.64,51.805],[23.631,51.782],[23.527,51.73],[23.558,51.702],[23.54,51.655],[23.565,51.534],[23.67,51.483],[23.651,51.446],[23.701,51.41],[23.636,51.329],[23.646,51.292],[23.704,51.282],[23.739,51.215],[23.858,51.158],[23.857,51.099],[23.911,51.074],[23.97,50.951],[24.145,50.87],[24.097,50.837],[23.99,50.837],[23.957,50.794],[24.024,50.766],[24.018,50.725],[24.072,50.721],[24.063,50.684],[24.087,50.669],[24.091,50.562],[24.035,50.445],[23.997,50.412],[23.727,50.388],[23.686,50.332],[23.548,50.252],[23.509,50.261],[23.5,50.3],[23.407,50.306],[23.436,50.345],[23.379,50.368],[23.388,50.405],[23.358,50.41],[23.252,50.365],[23.184,50.396],[23.017,50.287],[22.639,50.303],[22.607,50.325],[22.688,50.356],[22.515,50.346],[22.405,50.398],[22.459,50.434],[22.445,50.462],[22.53,50.447],[22.586,50.477],[22.512,50.482],[22.577,50.504],[22.512,50.539],[22.536,50.572],[22.25,50.621],[22.223,50.66],[22.147,50.673],[22.201,50.752],[22.152,50.772],[22.163,50.797],[22.052,50.821],[21.95,50.772],[21.875,50.78],[21.842,50.844],[21.803,51.022],[21.826,51.047],[21.783,51.179],[21.808,51.254],[21.851,51.279],[21.783,51.294],[21.823,51.303],[21.848,51.365],[21.761,51.401],[21.84,51.42],[21.874,51.472],[21.824,51.562],[21.696,51.57],[21.616,51.618],[21.652,51.658],[21.749,51.612],[21.76,51.64],[21.878,51.677],[21.901,51.707],[21.844,51.758],[21.953,51.796],[21.917,51.84],[21.845,51.841],[21.912,51.886],[21.89,51.928]]]]},{"n":"lubuskie","p":[[[[14.974,51.364],[14.974,51.442],[14.947,51.472],[14.729,51.531],[14.711,51.563],[14.765,51.608],[14.758,51.66],[14.668,51.726],[14.646,51.794],[14.591,51.82],[14.694,51.901],[14.714,52.004],[14.758,52.067],[14.682,52.117],[14.715,52.237],[14.576,52.289],[14.535,52.394],[14.548,52.432],[14.633,52.49],[14.605,52.528],[14.64,52.57],[14.564,52.625],[14.638,52.659],[14.69,52.633],[14.748,52.647],[14.792,52.697],[14.789,52.752],[14.864,52.791],[14.866,52.847],[14.92,52.847],[14.89,52.861],[14.918,52.889],[15.072,52.831],[15.333,52.899],[15.288,52.958],[15.369,52.947],[15.547,53.014],[15.588,52.981],[15.743,52.991],[15.807,53.045],[15.812,53.084],[15.86,53.094],[15.848,53.115],[15.979,53.11],[15.994,53.073],[15.954,53.002],[15.974,52.859],[15.893,52.813],[15.935,52.801],[15.945,52.729],[15.795,52.709],[15.814,52.668],[15.776,52.638],[15.858,52.544],[15.835,52.529],[15.896,52.447],[15.804,52.443],[15.901,52.383],[15.892,52.31],[15.852,52.262],[15.858,52.169],[15.884,52.156],[15.833,52.111],[15.988,52.067],[16.006,52.054],[15.965,52.018],[16.01,51.981],[16.121,51.992],[16.138,51.925],[16.106,51.896],[16.215,51.87],[16.252,51.901],[16.352,51.881],[16.335,51.871],[16.401,51.838],[16.389,51.791],[16.416,51.785],[16.348,51.709],[16.263,51.675],[16.218,51.713],[16.16,51.712],[16.178,51.764],[15.995,51.805],[15.966,51.791],[15.977,51.748],[15.893,51.73],[15.834,51.672],[15.856,51.657],[15.816,51.603],[15.824,51.574],[15.706,51.556],[15.714,51.517],[15.601,51.448],[15.488,51.528],[15.397,51.53],[15.325,51.419],[15.187,51.464],[14.974,51.364]]]]}];
+
+const PL_CITIES = [{"n":"Aleksandrów Kujawski","lat":52.88,"lon":18.7},{"n":"Aleksandrów Łódzki","lat":51.82,"lon":19.29},{"n":"Andrychów","lat":49.86,"lon":19.33},{"n":"Augustów","lat":53.83,"lon":23.0},{"n":"Barlinek","lat":52.99,"lon":15.19},{"n":"Bartoszyce","lat":54.24,"lon":20.8},{"n":"Będzin","lat":50.34,"lon":19.12},{"n":"Bełchatów","lat":51.36,"lon":19.36},{"n":"Biała Podlaska","lat":52.03,"lon":23.11},{"n":"Białogard","lat":54.0,"lon":15.97},{"n":"Białystok","lat":53.13,"lon":23.15},{"n":"Bielawa","lat":50.68,"lon":16.61},{"n":"Bielsk Podlaski","lat":52.78,"lon":23.29},{"n":"Bielsko-Biała","lat":49.81,"lon":19.04},{"n":"Bieruń","lat":50.1,"lon":19.1},{"n":"Biłgoraj","lat":50.53,"lon":22.72},{"n":"Biskupiec","lat":53.87,"lon":20.95},{"n":"Blachownia","lat":50.79,"lon":18.95},{"n":"Błonie","lat":52.19,"lon":20.62},{"n":"Bochnia","lat":49.97,"lon":20.42},{"n":"Bogatynia","lat":50.91,"lon":14.96},{"n":"Boguszów-Gorce","lat":50.76,"lon":16.18},{"n":"Bolesławiec","lat":51.25,"lon":15.56},{"n":"Braniewo","lat":54.39,"lon":19.81},{"n":"Brodnica","lat":53.25,"lon":19.39},{"n":"Brwinów","lat":52.17,"lon":20.79},{"n":"Brzeg","lat":50.84,"lon":17.47},{"n":"Brzeg Dolny","lat":51.27,"lon":16.73},{"n":"Brzesko","lat":49.96,"lon":20.6},{"n":"Brzeszcze","lat":49.99,"lon":19.14},{"n":"Brzeziny","lat":51.8,"lon":19.74},{"n":"Bukowno","lat":50.29,"lon":19.44},{"n":"Busko-Zdrój","lat":50.47,"lon":20.71},{"n":"Bydgoszcz","lat":53.12,"lon":18.01},{"n":"Bystrzyca Kłodzka","lat":50.29,"lon":16.63},{"n":"Bytom","lat":50.34,"lon":18.9},{"n":"Bytów","lat":54.17,"lon":17.47},{"n":"Chełm","lat":51.13,"lon":23.49},{"n":"Chełmek","lat":50.11,"lon":19.24},{"n":"Chełmno","lat":53.35,"lon":18.42},{"n":"Chełmża","lat":53.18,"lon":18.6},{"n":"Chodzież","lat":52.98,"lon":16.91},{"n":"Chojnice","lat":53.7,"lon":17.56},{"n":"Chojnów","lat":51.28,"lon":15.93},{"n":"Chorzów","lat":50.29,"lon":19.03},{"n":"Choszczno","lat":53.18,"lon":15.4},{"n":"Chrzanów","lat":50.13,"lon":19.39},{"n":"Ciechanów","lat":52.88,"lon":20.62},{"n":"Ciechocinek","lat":52.88,"lon":18.79},{"n":"Cieszyn","lat":49.75,"lon":18.62},{"n":"Czarna Białostocka","lat":53.58,"lon":22.57},{"n":"Czarnków","lat":52.91,"lon":16.54},{"n":"Czechowice-Dziedzice","lat":49.91,"lon":19.02},{"n":"Czeladź","lat":50.32,"lon":19.12},{"n":"Czersk","lat":53.8,"lon":17.97},{"n":"Czerwionka-Leszczyny","lat":50.17,"lon":18.68},{"n":"Częstochowa","lat":50.81,"lon":19.12},{"n":"Człuchów","lat":53.67,"lon":17.35},{"n":"Dąbrowa Górnicza","lat":50.33,"lon":19.18},{"n":"Dąbrowa Tarnowska","lat":50.17,"lon":21.0},{"n":"Darłowo","lat":54.41,"lon":16.41},{"n":"Dębica","lat":50.06,"lon":21.42},{"n":"Dęblin","lat":51.56,"lon":21.83},{"n":"Dębno","lat":52.74,"lon":14.69},{"n":"Dobre Miasto","lat":53.99,"lon":20.39},{"n":"Drawsko Pomorskie","lat":53.52,"lon":15.8},{"n":"Drezdenko","lat":52.82,"lon":15.82},{"n":"Działdowo","lat":53.22,"lon":20.18},{"n":"Dzierżoniów","lat":50.72,"lon":16.65},{"n":"Elbląg","lat":54.17,"lon":19.39},{"n":"Ełk","lat":53.83,"lon":22.35},{"n":"Garwolin","lat":51.9,"lon":21.62},{"n":"Gdańsk","lat":54.36,"lon":18.63},{"n":"Gdynia","lat":54.52,"lon":18.53},{"n":"Giżycko","lat":54.04,"lon":21.75},{"n":"Gliwice","lat":50.31,"lon":18.66},{"n":"Głogów","lat":51.66,"lon":16.08},{"n":"Głowno","lat":51.97,"lon":19.7},{"n":"Glubczyce","lat":50.18,"lon":17.83},{"n":"Głuchołazy","lat":50.32,"lon":17.37},{"n":"Gniezno","lat":52.53,"lon":17.61},{"n":"Gołdap","lat":54.31,"lon":22.3},{"n":"Goleniów","lat":53.57,"lon":14.81},{"n":"Golub-Dobrzyń","lat":53.11,"lon":19.04},{"n":"Góra","lat":51.66,"lon":16.52},{"n":"Góra Kalwaria","lat":51.99,"lon":21.2},{"n":"Gorlice","lat":49.67,"lon":21.15},{"n":"Gorzów Wielkopolski","lat":52.74,"lon":15.23},{"n":"Gostyń","lat":51.87,"lon":17.0},{"n":"Gostynin","lat":53.43,"lon":19.43},{"n":"Grajewo","lat":53.65,"lon":22.44},{"n":"Grodków","lat":50.7,"lon":17.37},{"n":"Grodzisk Mazowiecki","lat":52.1,"lon":20.62},{"n":"Grodzisk Wielkopolski","lat":52.23,"lon":16.36},{"n":"Grójec","lat":51.87,"lon":20.85},{"n":"Grudziądz","lat":53.49,"lon":18.74},{"n":"Gryfice","lat":53.91,"lon":15.19},{"n":"Gryfino","lat":53.22,"lon":14.47},{"n":"Gubin","lat":51.95,"lon":14.71},{"n":"Hajnówka","lat":52.72,"lon":23.57},{"n":"Hrubieszów","lat":50.81,"lon":23.88},{"n":"Iława","lat":53.58,"lon":19.56},{"n":"Inowrocław","lat":52.78,"lon":18.24},{"n":"Janikowo","lat":52.42,"lon":17.03},{"n":"Janów Lubelski","lat":50.71,"lon":22.41},{"n":"Jarocin","lat":51.97,"lon":17.49},{"n":"Jarosław","lat":50.02,"lon":22.67},{"n":"Jasło","lat":49.73,"lon":21.46},{"n":"Jastrzębie-Zdroj","lat":49.99,"lon":18.59},{"n":"Jawor","lat":51.06,"lon":16.2},{"n":"Jaworzno","lat":50.2,"lon":19.27},{"n":"Jędrzejow","lat":50.65,"lon":20.29},{"n":"Jelcz-Laskowice","lat":51.02,"lon":17.29},{"n":"Jelenia Góra","lat":50.9,"lon":15.72},{"n":"Józefów","lat":52.15,"lon":21.26},{"n":"Kalety","lat":50.57,"lon":18.89},{"n":"Kalisz","lat":51.77,"lon":18.1},{"n":"Kamień Pomorski","lat":53.97,"lon":14.77},{"n":"Kamienna Góra","lat":50.79,"lon":16.03},{"n":"Karczew","lat":52.08,"lon":21.24},{"n":"Kartuzy","lat":54.32,"lon":18.2},{"n":"Katowice","lat":50.25,"lon":19.02},{"n":"Kędzierzyn-Koźle","lat":50.34,"lon":18.2},{"n":"Kępno","lat":51.28,"lon":18.0},{"n":"Kętrzyn","lat":54.07,"lon":21.37},{"n":"Kęty","lat":49.87,"lon":19.21},{"n":"Kielce","lat":50.88,"lon":20.64},{"n":"Kłobuck","lat":50.9,"lon":18.94},{"n":"Kłodzko","lat":50.43,"lon":16.65},{"n":"Kluczbork","lat":50.98,"lon":18.2},{"n":"Knurów","lat":50.22,"lon":18.66},{"n":"Kobyłka","lat":52.33,"lon":21.2},{"n":"Kolno","lat":53.41,"lon":21.92},{"n":"Koło","lat":52.19,"lon":18.63},{"n":"Kołobrzeg","lat":54.18,"lon":15.56},{"n":"Koluszki","lat":51.75,"lon":19.81},{"n":"Konin","lat":52.2,"lon":18.24},{"n":"Końskie","lat":51.2,"lon":20.39},{"n":"Konstancin-Jeziorna","lat":52.09,"lon":21.11},{"n":"Konstantynów Łódzki","lat":51.75,"lon":19.31},{"n":"Koronowo","lat":53.31,"lon":17.92},{"n":"Kościan","lat":52.09,"lon":16.63},{"n":"Koscierzyna","lat":54.13,"lon":17.97},{"n":"Kostrzyn","lat":52.58,"lon":14.64},{"n":"Koszalin","lat":54.18,"lon":16.18},{"n":"Kowary","lat":50.79,"lon":15.82},{"n":"Kozienice","lat":51.59,"lon":21.55},{"n":"Kożuchów","lat":51.75,"lon":15.6},{"n":"Kraków","lat":50.06,"lon":19.95},{"n":"Krapkowice","lat":50.47,"lon":17.96},{"n":"Krasnik","lat":50.92,"lon":22.21},{"n":"Krasnystaw","lat":50.99,"lon":23.17},{"n":"Krosno","lat":49.7,"lon":21.75},{"n":"Krosno Odrzańskie","lat":52.06,"lon":15.1},{"n":"Krotoszyn","lat":51.7,"lon":17.43},{"n":"Kruszwica","lat":52.68,"lon":18.29},{"n":"Krynica","lat":49.41,"lon":20.95},{"n":"Krzeszowice","lat":50.13,"lon":19.63},{"n":"Kudowa-Zdrój","lat":50.42,"lon":16.22},{"n":"Kutno","lat":52.24,"lon":19.36},{"n":"Kwidzyn","lat":53.74,"lon":18.93},{"n":"Lębork","lat":54.54,"lon":17.75},{"n":"Ledziny","lat":50.13,"lon":19.05},{"n":"Legionowo","lat":52.4,"lon":20.92},{"n":"Legnica","lat":51.2,"lon":16.15},{"n":"Leszno","lat":51.84,"lon":16.57},{"n":"Leżajsk","lat":50.25,"lon":22.42},{"n":"Libiąż","lat":50.1,"lon":19.29},{"n":"Lidzbark Warmiński","lat":54.13,"lon":20.59},{"n":"Limanowa","lat":49.7,"lon":20.41},{"n":"Lipno","lat":52.83,"lon":19.16},{"n":"Lobez","lat":53.64,"lon":15.62},{"n":"Lubaczów","lat":50.16,"lon":23.11},{"n":"Lubań","lat":51.11,"lon":15.28},{"n":"Lubartów","lat":51.45,"lon":22.61},{"n":"Lubawa","lat":53.5,"lon":19.74},{"n":"Lubin","lat":51.39,"lon":16.2},{"n":"Lublin","lat":51.24,"lon":22.57},{"n":"Lubliniec","lat":50.66,"lon":18.68},{"n":"Luboń","lat":52.33,"lon":16.87},{"n":"Lubsko","lat":51.79,"lon":14.96},{"n":"Lwowek Slaski","lat":51.11,"lon":15.6},{"n":"Łańcut","lat":50.06,"lon":22.22},{"n":"Łapy","lat":52.98,"lon":22.89},{"n":"Łask","lat":51.6,"lon":19.14},{"n":"Łaziska Gorne","lat":50.17,"lon":18.77},{"n":"Łęczna","lat":51.31,"lon":22.87},{"n":"Łęczyca","lat":52.06,"lon":19.19},{"n":"Łódź","lat":51.77,"lon":19.45},{"n":"Łomianki","lat":52.34,"lon":20.88},{"n":"Łomża","lat":53.18,"lon":22.07},{"n":"Łuków","lat":51.94,"lon":22.39},{"n":"Maków Mazowiecki","lat":52.86,"lon":21.1},{"n":"Malbork","lat":54.04,"lon":19.04},{"n":"Marki","lat":52.32,"lon":21.11},{"n":"Miastko","lat":54.0,"lon":16.96},{"n":"Miechów","lat":50.36,"lon":20.01},{"n":"Miedzychod","lat":52.61,"lon":15.89},{"n":"Miedzyrzec Podlaski","lat":51.99,"lon":22.78},{"n":"Miedzyrzecz","lat":52.45,"lon":15.56},{"n":"Mielec","lat":50.29,"lon":21.43},{"n":"Mikolów","lat":50.23,"lon":18.96},{"n":"Milanówek","lat":52.13,"lon":20.65},{"n":"Milicz","lat":51.53,"lon":17.27},{"n":"Mińsk Mazowiecki","lat":52.17,"lon":21.55},{"n":"Mława","lat":53.12,"lon":20.36},{"n":"Mogilno","lat":52.65,"lon":17.96},{"n":"Mońki","lat":53.4,"lon":22.78},{"n":"Morąg","lat":53.91,"lon":19.93},{"n":"Mosina","lat":52.25,"lon":16.84},{"n":"Mrągowo","lat":53.88,"lon":21.3},{"n":"Murowana Goślina","lat":52.58,"lon":17.01},{"n":"Myślenice","lat":49.83,"lon":19.93},{"n":"Myśliborz","lat":52.92,"lon":14.86},{"n":"Mysłowice","lat":50.24,"lon":19.14},{"n":"Myszków","lat":50.58,"lon":19.31},{"n":"Nakło nad Notecia","lat":53.13,"lon":17.59},{"n":"Namysłów","lat":51.07,"lon":17.71},{"n":"Nidzica","lat":53.36,"lon":20.42},{"n":"Nisko","lat":50.52,"lon":22.13},{"n":"Nowa Dęba","lat":50.43,"lon":21.75},{"n":"Nowa Ruda","lat":50.59,"lon":16.5},{"n":"Nowa Sól","lat":51.8,"lon":15.7},{"n":"Nowe Miasto Lubawskie","lat":53.43,"lon":19.59},{"n":"Nowogard","lat":53.66,"lon":15.1},{"n":"Nowy Dwór Gdański","lat":54.22,"lon":19.12},{"n":"Nowy Dwór Mazowiecki","lat":52.42,"lon":20.7},{"n":"Nowy Sącz","lat":49.63,"lon":20.69},{"n":"Nowy Targ","lat":49.48,"lon":20.03},{"n":"Nowy Tomyśl","lat":52.31,"lon":16.12},{"n":"Nysa","lat":50.47,"lon":17.33},{"n":"Oborniki","lat":52.65,"lon":16.8},{"n":"Oława","lat":50.94,"lon":17.29},{"n":"Olecko","lat":54.04,"lon":22.5},{"n":"Oleśnica","lat":51.2,"lon":17.37},{"n":"Olesno","lat":50.88,"lon":18.4},{"n":"Olkusz","lat":50.27,"lon":19.54},{"n":"Olsztyn","lat":53.77,"lon":20.48},{"n":"Opalenica","lat":52.31,"lon":16.39},{"n":"Opoczno","lat":51.37,"lon":20.28},{"n":"Opole","lat":50.67,"lon":17.94},{"n":"Opole Lubelskie","lat":51.14,"lon":21.96},{"n":"Orneta","lat":54.11,"lon":20.12},{"n":"Orzesze","lat":50.16,"lon":18.77},{"n":"Ostróda","lat":53.71,"lon":19.95},{"n":"Ostrołęka","lat":53.09,"lon":21.56},{"n":"Ostrów Mazowiecki","lat":52.79,"lon":21.9},{"n":"Ostrów Wielkopolski","lat":51.66,"lon":17.79},{"n":"Ostrowiec Świętokrzyski","lat":50.95,"lon":21.38},{"n":"Ostrzeszów","lat":51.41,"lon":17.95},{"n":"Oświecim","lat":50.03,"lon":19.25},{"n":"Otwock","lat":52.1,"lon":21.28},{"n":"Ozimek","lat":50.68,"lon":18.21},{"n":"Ozorków","lat":51.96,"lon":19.29},{"n":"Pabianice","lat":51.66,"lon":19.35},{"n":"Parczew","lat":51.63,"lon":22.9},{"n":"Pasłęk","lat":54.06,"lon":19.65},{"n":"Piaseczno","lat":52.06,"lon":21.02},{"n":"Piastów","lat":52.2,"lon":20.92},{"n":"Piekary Śląskie","lat":50.4,"lon":18.95},{"n":"Pieszyce","lat":50.72,"lon":16.59},{"n":"Piła","lat":53.14,"lon":16.73},{"n":"Pińczów","lat":50.53,"lon":20.52},{"n":"Pionki","lat":51.49,"lon":21.45},{"n":"Piotrków Trybunalski","lat":51.4,"lon":19.7},{"n":"Pisz","lat":53.63,"lon":21.79},{"n":"Pleszew","lat":51.9,"lon":17.77},{"n":"Płock","lat":52.55,"lon":19.7},{"n":"Płonsk","lat":52.62,"lon":20.37},{"n":"Polaniec","lat":50.42,"lon":21.28},{"n":"Polczyn-Zdrój","lat":53.77,"lon":16.1},{"n":"Police","lat":53.54,"lon":14.55},{"n":"Polkowice","lat":51.5,"lon":16.04},{"n":"Poniatowa","lat":51.18,"lon":22.12},{"n":"Poręba","lat":50.48,"lon":19.33},{"n":"Poznań","lat":52.39,"lon":16.9},{"n":"Prudnik","lat":50.33,"lon":17.56},{"n":"Pruszcz Gdański","lat":54.25,"lon":18.64},{"n":"Pruszków","lat":52.22,"lon":20.81},{"n":"Przasnysz","lat":53.01,"lon":20.87},{"n":"Przemyśl","lat":49.79,"lon":22.78},{"n":"Przeworsk","lat":50.06,"lon":22.5},{"n":"Pszczyna","lat":49.97,"lon":18.95},{"n":"Pszów","lat":50.03,"lon":18.4},{"n":"Puck","lat":54.7,"lon":18.4},{"n":"Puławy","lat":51.43,"lon":21.98},{"n":"Pułtusk","lat":52.71,"lon":21.08},{"n":"Pyrzyce","lat":53.13,"lon":14.87},{"n":"Pyskowice","lat":50.41,"lon":18.62},{"n":"Rabka","lat":49.61,"lon":19.93},{"n":"Raciborz","lat":50.09,"lon":18.21},{"n":"Radlin","lat":50.03,"lon":18.45},{"n":"Radom","lat":51.39,"lon":21.15},{"n":"Radomsko","lat":51.06,"lon":19.44},{"n":"Radzionków","lat":50.39,"lon":18.88},{"n":"Radzyn Podlaski","lat":51.79,"lon":22.62},{"n":"Rawa Mazowiecka","lat":51.77,"lon":20.26},{"n":"Rawicz","lat":51.6,"lon":16.86},{"n":"Reda","lat":54.62,"lon":18.34},{"n":"Rogożno","lat":52.75,"lon":16.97},{"n":"Ropczyce","lat":50.06,"lon":21.74},{"n":"Ruda Śląska","lat":50.29,"lon":18.88},{"n":"Rumia","lat":54.59,"lon":18.37},{"n":"Rybnik","lat":50.1,"lon":18.54},{"n":"Rydultowy","lat":50.06,"lon":18.42},{"n":"Ryki","lat":51.63,"lon":21.92},{"n":"Rypin","lat":53.06,"lon":19.41},{"n":"Rzeszów","lat":50.04,"lon":21.99},{"n":"Sandomierz","lat":50.68,"lon":21.74},{"n":"Sanok","lat":49.57,"lon":22.2},{"n":"Sępólno Krajeńskie","lat":53.44,"lon":17.53},{"n":"Siedlce","lat":52.16,"lon":22.28},{"n":"Siemianowice Śląskie","lat":50.33,"lon":19.04},{"n":"Siemiatycze","lat":52.41,"lon":22.87},{"n":"Sieradz","lat":51.6,"lon":18.74},{"n":"Sierpc","lat":52.86,"lon":19.65},{"n":"Skarzysko-Kamienna","lat":51.11,"lon":20.87},{"n":"Skawina","lat":49.97,"lon":19.83},{"n":"Skierniewice","lat":51.95,"lon":20.13},{"n":"Skoczów","lat":49.8,"lon":18.79},{"n":"Skwierzyna","lat":52.58,"lon":15.48},{"n":"Sławno","lat":54.34,"lon":16.67},{"n":"Słubice","lat":52.35,"lon":14.56},{"n":"Słupca","lat":52.29,"lon":17.87},{"n":"Słupsk","lat":54.47,"lon":17.01},{"n":"Sochaczew","lat":52.23,"lon":20.22},{"n":"Sokółka","lat":53.4,"lon":23.5},{"n":"Sokołow Podlaski","lat":52.4,"lon":22.23},{"n":"Solec Kujawski","lat":53.06,"lon":18.23},{"n":"Sopot","lat":54.43,"lon":18.55},{"n":"Sosnowiec","lat":50.27,"lon":19.12},{"n":"Stalowa Wola","lat":50.57,"lon":22.04},{"n":"Starachowice","lat":51.06,"lon":21.07},{"n":"Stargard Szczeciński","lat":53.34,"lon":15.02},{"n":"Starogard Gdański","lat":53.97,"lon":18.52},{"n":"Stary Sącz","lat":49.57,"lon":20.64},{"n":"Staszów","lat":50.56,"lon":21.18},{"n":"Strzegom","lat":50.95,"lon":16.35},{"n":"Strzelce Krajenskie","lat":52.86,"lon":15.52},{"n":"Strzelce Opolskie","lat":50.52,"lon":18.29},{"n":"Strzelin","lat":50.78,"lon":17.06},{"n":"Sucha Beskidzka","lat":49.75,"lon":19.59},{"n":"Suchedniów","lat":51.06,"lon":20.83},{"n":"Sulechów","lat":52.09,"lon":15.62},{"n":"Sulecin","lat":52.45,"lon":15.1},{"n":"Sulejówek","lat":52.25,"lon":21.27},{"n":"Suwałki","lat":54.1,"lon":22.94},{"n":"Swarzędz","lat":52.4,"lon":17.06},{"n":"Syców","lat":51.3,"lon":17.7},{"n":"Szamotuły","lat":52.61,"lon":16.58},{"n":"Szczecin","lat":53.43,"lon":14.52},{"n":"Szczecinek","lat":53.71,"lon":16.68},{"n":"Szczytno","lat":53.55,"lon":20.99},{"n":"Szprotawa","lat":51.56,"lon":15.52},{"n":"Sztum","lat":53.84,"lon":18.95},{"n":"Szubin","lat":53.01,"lon":17.71},{"n":"Szydłowiec","lat":51.22,"lon":20.85},{"n":"Śrem","lat":52.09,"lon":17.01},{"n":"Środa Wielkopolska","lat":52.22,"lon":17.27},{"n":"Świdnica","lat":50.84,"lon":16.48},{"n":"Świdnik","lat":51.21,"lon":22.79},{"n":"Świdwin","lat":53.77,"lon":15.77},{"n":"Świebodzice","lat":50.86,"lon":16.32},{"n":"Świebodzin","lat":52.25,"lon":15.52},{"n":"Świecie","lat":53.4,"lon":18.44},{"n":"Świętochłowice","lat":50.29,"lon":18.94},{"n":"Świnoujście","lat":53.9,"lon":14.24},{"n":"Tarnobrzeg","lat":50.59,"lon":21.68},{"n":"Tarnów","lat":50.0,"lon":20.99},{"n":"Tarnowskie Góry","lat":50.45,"lon":18.86},{"n":"Tczew","lat":54.09,"lon":18.77},{"n":"Tomaszów Lubelski","lat":50.45,"lon":23.41},{"n":"Tomaszów Mazowiecki","lat":51.54,"lon":20.03},{"n":"Toruń","lat":53.02,"lon":18.6},{"n":"Trzcianka","lat":53.04,"lon":16.45},{"n":"Trzebiatów","lat":54.06,"lon":15.26},{"n":"Trzebinia","lat":50.16,"lon":19.45},{"n":"Trzebnica","lat":51.31,"lon":17.06},{"n":"Tuchola","lat":53.58,"lon":17.85},{"n":"Turek","lat":52.02,"lon":18.47},{"n":"Tychy","lat":50.16,"lon":19.0},{"n":"Ustka","lat":54.58,"lon":16.85},{"n":"Ustroń","lat":49.71,"lon":18.79},{"n":"Ustrzyki Dolne","lat":49.43,"lon":22.61},{"n":"Wabrzezno","lat":53.28,"lon":18.94},{"n":"Wadowice","lat":49.87,"lon":19.48},{"n":"Wągrowiec","lat":52.81,"lon":17.2},{"n":"Wałbrzych","lat":50.78,"lon":16.28},{"n":"Wałcz","lat":53.27,"lon":16.47},{"n":"Warka","lat":51.79,"lon":21.19},{"n":"Warszawa","lat":52.25,"lon":21.02},{"n":"Węgorzewo","lat":54.22,"lon":21.74},{"n":"Węgrów","lat":52.39,"lon":22.01},{"n":"Wejherowo","lat":54.59,"lon":18.23},{"n":"Wesoła","lat":52.25,"lon":21.2},{"n":"Wieliczka","lat":49.99,"lon":20.09},{"n":"Wieluń","lat":51.21,"lon":18.56},{"n":"Wisła","lat":49.65,"lon":18.87},{"n":"Władysławowo","lat":54.78,"lon":18.4},{"n":"Włocławek","lat":52.65,"lon":19.05},{"n":"Włodawa","lat":51.54,"lon":23.55},{"n":"Włoszczowa","lat":50.86,"lon":19.96},{"n":"Wodzisław Śląski","lat":50.03,"lon":18.4},{"n":"Wojkowice","lat":50.36,"lon":19.01},{"n":"Wolbrom","lat":50.39,"lon":19.77},{"n":"Wolomin","lat":52.33,"lon":21.22},{"n":"Wołów","lat":51.32,"lon":16.62},{"n":"Wolsztyn","lat":52.1,"lon":16.1},{"n":"Wrocław","lat":51.11,"lon":17.03},{"n":"Wronki","lat":52.7,"lon":16.36},{"n":"Września","lat":52.32,"lon":17.57},{"n":"Wschowa","lat":51.79,"lon":16.31},{"n":"Wysokie Mazowieckie","lat":52.91,"lon":22.5},{"n":"Wyszków","lat":52.59,"lon":21.44},{"n":"Ząbkowice Śląskie","lat":50.59,"lon":16.81},{"n":"Zabrze","lat":50.29,"lon":18.77},{"n":"Zakopane","lat":49.28,"lon":19.95},{"n":"Zambrów","lat":52.98,"lon":22.23},{"n":"Zamość","lat":50.72,"lon":23.26},{"n":"Zawadzkie","lat":50.61,"lon":18.45},{"n":"Zawiercie","lat":50.48,"lon":19.42},{"n":"Zduńska Wola","lat":51.6,"lon":18.94},{"n":"Zdzieszowice","lat":50.41,"lon":18.12},{"n":"Zgierz","lat":51.86,"lon":19.41},{"n":"Zgorzelec","lat":51.14,"lon":15.0},{"n":"Ziębice","lat":50.59,"lon":17.05},{"n":"Zielona Gora","lat":51.94,"lon":15.48},{"n":"Zielonka","lat":52.29,"lon":21.16},{"n":"Złocieniec","lat":53.52,"lon":16.0},{"n":"Złotoryja","lat":51.11,"lon":15.9},{"n":"Złotów","lat":53.35,"lon":17.03},{"n":"Żabki","lat":52.29,"lon":21.11},{"n":"Żagań","lat":51.61,"lon":15.29},{"n":"Żary","lat":51.64,"lon":15.13},{"n":"Żnin","lat":52.85,"lon":17.7},{"n":"Żory","lat":50.06,"lon":18.68},{"n":"Żychlin","lat":52.25,"lon":19.62},{"n":"Żyrardów","lat":52.06,"lon":20.45},{"n":"Żywiec","lat":49.87,"lon":19.18}];
+
+/* ============================================================
+   1b. PROJEKCJA MAPY (dla choropleth województw)
+       Prosta projekcja równoodległościowa z korektą proporcji
+       pod szerokość geograficzną Polski — w tej skali różnica
+       względem prawdziwych projekcji kartograficznych jest
+       niezauważalna, a kod zostaje prosty i bez zależności.
+   ============================================================ */
+const MAP_BBOX = {lonMin:14.0, lonMax:24.25, latMin:48.9, latMax:55.05};
+const MAP_W = 560;
+const MAP_ASPECT = Math.cos((MAP_BBOX.latMin+MAP_BBOX.latMax)/2 * Math.PI/180);
+const MAP_H = Math.round(MAP_W * (MAP_BBOX.latMax-MAP_BBOX.latMin) / ((MAP_BBOX.lonMax-MAP_BBOX.lonMin)*MAP_ASPECT));
+
+function mapProject(lon, lat){
+  const x = (lon-MAP_BBOX.lonMin) / (MAP_BBOX.lonMax-MAP_BBOX.lonMin) * MAP_W;
+  const y = (MAP_BBOX.latMax-lat) / (MAP_BBOX.latMax-MAP_BBOX.latMin) * MAP_H;
+  return [x, y];
+}
+
+// Centroid (środek ciężkości) największego pierścienia każdego województwa —
+// liczony raz, bo geometria granic jest statyczna. Używany do umieszczenia
+// etykiety z procentem na mapie.
+function ringCentroid(ring){
+  let a=0, cx=0, cy=0;
+  for(let i=0;i<ring.length-1;i++){
+    const [x0,y0]=ring[i], [x1,y1]=ring[i+1];
+    const cross = x0*y1 - x1*y0;
+    a += cross; cx += (x0+x1)*cross; cy += (y0+y1)*cross;
+  }
+  a *= 0.5;
+  if(Math.abs(a) < 1e-9) return ring[0];
+  return [cx/(6*a), cy/(6*a)];
+}
+
+const WOJ_CENTROIDS = {};
+WOJ_BORDERS.forEach(o=>{
+  const biggest = o.p.map(poly=>poly[0]).reduce((a,b)=> b.length>a.length?b:a);
+  const [clon, clat] = ringCentroid(biggest);
+  WOJ_CENTROIDS[o.n] = mapProject(clon, clat);
+});
+
+const WOJ = [
+  {n:"zachodniopomorskie", s:"Szczecin",   lat:53.43, lon:14.55},
+  {n:"lubuskie",           s:"Zielona G.", lat:51.94, lon:15.51},
+  {n:"wielkopolskie",      s:"Poznań",     lat:52.41, lon:16.93},
+  {n:"dolnośląskie",       s:"Wrocław",    lat:51.11, lon:17.03},
+  {n:"opolskie",           s:"Opole",      lat:50.67, lon:17.92},
+  {n:"kujawsko-pomorskie", s:"Bydgoszcz",  lat:53.12, lon:18.01},
+  {n:"pomorskie",          s:"Gdańsk",     lat:54.35, lon:18.65},
+  {n:"śląskie",            s:"Katowice",   lat:50.26, lon:19.02},
+  {n:"łódzkie",            s:"Łódź",       lat:51.77, lon:19.46, focus:true},
+  {n:"małopolskie",        s:"Kraków",     lat:50.06, lon:19.94},
+  {n:"warmińsko-mazurskie",s:"Olsztyn",    lat:53.78, lon:20.49},
+  {n:"świętokrzyskie",     s:"Kielce",     lat:50.87, lon:20.63},
+  {n:"mazowieckie",        s:"Warszawa",   lat:52.23, lon:21.01},
+  {n:"podkarpackie",       s:"Rzeszów",    lat:50.04, lon:22.00},
+  {n:"lubelskie",          s:"Lublin",     lat:51.25, lon:22.57},
+  {n:"podlaskie",          s:"Białystok",  lat:53.13, lon:23.16}
+];
+
+const VARS = ["cape","convective_inhibition","lifted_index","temperature_2m",
+  "dew_point_2m","precipitation","precipitation_probability",
+  "wind_speed_10m","wind_speed_500hPa","cloud_cover"];
+
+/* ============================================================
+   2. SILNIK PRAWDOPODOBIEŃSTWA
+      P = 55% termodynamika własna + 45% wymuszenie z modelu.
+      Wszystkie progi opisane w sekcji "Metodyka" na stronie.
+   ============================================================ */
+const clamp = (v,a,b)=>Math.min(b,Math.max(a,v));
+
+function hourProb(h){
+  const cape = h.cape ?? 0;
+  const cin  = Math.abs(h.cin ?? 0);
+  const li   = h.li ?? 0;
+  const td   = h.td ?? 0;
+  const pp   = h.pp ?? 0;
+
+  // energia: pełny wynik dopiero przy ~1500 J/kg
+  const eCape = clamp(cape/1500, 0, 1);
+  // chwiejność z indeksu Lifted: LI -4 i niżej = maksimum
+  const eLi   = clamp((-li)/4, 0, 1);
+  // wilgoć: punkt rosy poniżej 12 stopni realnie zabija burzę nizinną
+  const eTd   = clamp((td-11)/7, 0, 1);
+  // zapora: CIN powyżej ~25 J/kg zaczyna dławić, 220 J/kg blokuje całkiem
+  const fCin  = clamp(1-(cin-25)/195, 0.04, 1);
+
+  const thermo  = (0.45*eCape + 0.30*eLi + 0.25*eTd) * fCin;
+  const forcing = clamp(pp/100, 0, 1);
+
+  let p = 100*(0.55*thermo + 0.45*forcing*Math.sqrt(clamp(eCape+0.15,0,1)));
+  if (cape < 150) p = Math.min(p, 6);      // bez energii nie ma wyładowań
+  if (cape < 400 && li > -1) p = Math.min(p, 18);
+  return clamp(Math.round(p), 0, 95);
+}
+
+function severity(h){
+  // proxy siły: DCAPE-podobny człon (deficyt wilgoci) + ścinanie 10m-500hPa
+  const spread = (h.t ?? 0) - (h.td ?? 0);
+  const shear  = Math.abs((h.w500 ?? 0) - (h.w10 ?? 0));
+  const gust   = 45 + clamp(spread-6,0,14)*2.6 + clamp(shear-20,0,45)*0.75
+                    + clamp((h.cape??0)-800,0,2200)/95;
+  return {
+    gust: Math.round(clamp(gust,40,120)/5)*5,
+    hail: (h.cape??0) > 1200 && shear > 30,
+    shear: Math.round(shear)
+  };
+}
+
+/* ============================================================
+   3. POBRANIE DANYCH
+   ============================================================ */
+/* ============================================================
+   2b. LOKALIZACJA UŻYTKOWNIKA
+       Wyznacza, który z 16 punktów WOJ leży najbliżej GPS,
+       i ustawia go jako obserwowany region. Bez geolokalizacji
+       (brak zgody / http bez TLS) zostaje domyślnie łódzkie.
+   ============================================================ */
+function getUserLocation(){
+  return new Promise(resolve=>{
+    if(!("geolocation" in navigator)){
+      resolve({ok:false, reason:"unsupported"}); return;
+    }
+    if(location.protocol !== "https:" && location.hostname !== "localhost" && location.protocol !== "file:"){
+      // większość przeglądarek i tak zablokuje to poniżej, ale dajemy wcześniejszy, jaśniejszy komunikat
+    }
+    const timer = setTimeout(()=>resolve({ok:false, reason:"timeout"}), 9000);
+    navigator.geolocation.getCurrentPosition(
+      pos=>{
+        clearTimeout(timer);
+        resolve({ok:true, lat:pos.coords.latitude, lon:pos.coords.longitude, acc:pos.coords.accuracy});
+      },
+      err=>{
+        clearTimeout(timer);
+        const reason = err.code===1 ? "denied" : err.code===2 ? "unavailable" : "timeout";
+        resolve({ok:false, reason});
+      },
+      {enableHighAccuracy:false, timeout:8500, maximumAge:600000}
+    );
+  });
+}
+
+function haversineKm(lat1,lon1,lat2,lon2){
+  const R=6371, toRad=d=>d*Math.PI/180;
+  const dLat=toRad(lat2-lat1), dLon=toRad(lon2-lon1);
+  const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)**2;
+  return 2*R*Math.asin(Math.sqrt(a));
+}
+
+function nearestRegion(regions, loc){
+  if(!loc) return null;
+  let best=regions[0], bestD=Infinity;
+  regions.forEach(r=>{
+    const d = haversineKm(loc.lat, loc.lon, r.lat, r.lon);
+    if(d<bestD){ bestD=d; best=r; }
+  });
+  return {region: best, distKm: Math.round(bestD)};
+}
+
+async function load(){
+  const lats = WOJ.map(w=>w.lat).join(",");
+  const lons = WOJ.map(w=>w.lon).join(",");
+  const url = "https://api.open-meteo.com/v1/forecast"
+    + "?latitude=" + lats + "&longitude=" + lons
+    + "&hourly=" + VARS.join(",")
+    + "&models=icon_eu&timezone=Europe%2FWarsaw&forecast_days=2"
+    + "&_=" + Date.now(); // cache-buster: wymusza świeże zapytanie zamiast cache przeglądarki
+
+  const res = await fetch(url, {cache:"no-store"});
+  if(!res.ok) throw new Error("HTTP " + res.status);
+  const fetchedAt = new Date(); // dowód świeżości: realny czas odebrania odpowiedzi z sieci
+  let json = await res.json();
+  if(!Array.isArray(json)) json = [json];
+
+  const today = new Date();
+
+  // Modele bywają dziurawe (np. brak lifted_index dla konkretnej godziny/punktu).
+  // Każde pole liczbowe dostaje bezpieczną wartość domyślną, żeby dalsze .toFixed()/Math
+  // nigdy nie dostały null/undefined.
+  const n = (v, d) => (typeof v === "number" && !Number.isNaN(v)) ? v : d;
+
+  const out = WOJ.map((w,i)=>{
+    const H = json[i].hourly;
+    const hours = [];
+    H.time.forEach((t,j)=>{
+      // t jest lokalnym czasem bez strefy (np. "2026-08-07T01:00") — parsowany jako
+      // czas lokalny przeglądarki, spójnie z parametrem timezone=Europe/Warsaw w zapytaniu.
+      const dt = new Date(t);
+      const h = {
+        dt: dt,
+        hour: +t.slice(11,13),
+        cape: n(H.cape?.[j], 0),
+        cin:  n(H.convective_inhibition?.[j], 0),
+        li:   n(H.lifted_index?.[j], 2),      // 2 = profil stabilny, bezpieczna wartość domyślna
+        t:    n(H.temperature_2m?.[j], 15),
+        td:   n(H.dew_point_2m?.[j], 10),
+        pp:   n(H.precipitation_probability?.[j], 0),
+        pr:   n(H.precipitation?.[j], 0),
+        w10:  n(H.wind_speed_10m?.[j], 0),
+        w500: n(H.wind_speed_500hPa?.[j], 0),
+        cc:   n(H.cloud_cover?.[j], 0)
+      };
+      h.p = hourProb(h);
+      hours.push(h);
+    });
+    return Object.assign({}, w, {hours: hours, elev: json[i].elevation});
+  });
+  return {regions: out, date: today, fetchedAt: fetchedAt};
+}
+
+/* ============================================================
+   3b. KROCZĄCE OKNO 24H
+       Zamiast ciąć dane do kalendarzowego "dziś" (00:00–23:59),
+       liczymy realne najbliższe 24 godziny od teraz — poprawnie
+       przechodzi przez północ, np. 23:00 dziś → 22:00 jutro.
+   ============================================================ */
+function windowStarts(now){
+  const h0 = new Date(now); h0.setMinutes(0,0,0);
+  return Array.from({length:24}, (_,i)=> new Date(h0.getTime() + i*3600000));
+}
+
+function windowRangeLabel(starts){
+  const a = starts[0], b = new Date(starts[starts.length-1].getTime() + 3600000);
+  const fmt = d => d.getDate() + " " + PL_M[d.getMonth()] + ", " + hh(d.getHours());
+  return fmt(a) + " → " + fmt(b);
+}
+
+/* ============================================================
+   4. AGREGATY I OKNA CZASOWE
+   ============================================================ */
+function summarize(r){
+  if(!r.hours.length){
+    const safe = {hour:0,cape:0,cin:0,li:2,t:15,td:10,pp:0,pr:0,w10:0,w500:0,cc:0,p:0};
+    return {peak:safe, dayP:0, win:null, maxCape:0, maxT:15, minCin:999, capHrs:0,
+      sev:severity(safe), pool:[safe]};
+  }
+  const now = new Date();
+  const in24h = new Date(now.getTime() + 24*3600000);
+  const rest = r.hours.filter(h=>h.dt >= now && h.dt < in24h).sort((a,b)=>a.dt-b.dt);
+  const pool = rest.length > 3 ? rest : r.hours;
+
+  const peak = pool.reduce((a,b)=> b.p > a.p ? b : a, pool[0]);
+  const dayP = Math.max.apply(null, pool.map(h=>h.p));
+
+  // okno = ciągły blok godzin o p >= 60% szczytu (i min. 20%)
+  const thr = Math.max(20, peak.p*0.6);
+  const idx = pool.map((h,i)=>h.p>=thr?i:-1).filter(i=>i>=0);
+  const win = idx.length
+    ? {from: pool[idx[0]].hour, to: (pool[idx[idx.length-1]].hour+1)%24}
+    : null;
+
+  const maxCape = Math.max.apply(null, pool.map(h=>h.cape||0));
+  const maxT    = Math.max.apply(null, pool.map(h=>h.t||-99));
+  const minCin  = Math.min.apply(null, pool.filter(h=>h.p>15).map(h=>Math.abs(h.cin||0)).concat([999]));
+  const capHrs  = pool.filter(h=>(h.cape||0)>600 && Math.abs(h.cin||0)>120).length;
+  const sev = severity(peak);
+
+  return {peak, dayP, win, maxCape, maxT, minCin, capHrs, sev, pool};
+}
+
+/* ============================================================
+   5. GENERATOR TEKSTU — reguły językowe, nie szablon
+   ============================================================ */
+const PL_D = ["niedziela","poniedziałek","wtorek","środa","czwartek","piątek","sobota"];
+const PL_M = ["stycznia","lutego","marca","kwietnia","maja","czerwca","lipca",
+  "sierpnia","września","października","listopada","grudnia"];
+const hh = n => String(n).padStart(2,"0") + ":00";
+
+function headline(all){
+  const top = all.reduce((a,b)=> b.sum.dayP > a.sum.dayP ? b : a);
+  const active = all.filter(r=>r.sum.dayP>=40);
+  if(top.sum.dayP < 20) return "Dzień bez konwekcji — atmosfera zamknięta";
+  if(top.sum.dayP < 40) return "Konwekcja punktowa, ryzyko marginalne";
+  if(active.length <= 4) return "Burze lokalnie, głównie " + strefa(active);
+  if(active.length <= 9) return "Burze w " + active.length + " województwach, oś " + strefa(active);
+  return "Dzień burzowy w skali kraju";
+}
+
+function strefa(list){
+  if(!list.length) return "brak";
+  const avgLon = list.reduce((s,r)=>s+r.lon,0)/list.length;
+  const avgLat = list.reduce((s,r)=>s+r.lat,0)/list.length;
+  const we = avgLon < 17.5 ? "zachodnia" : avgLon > 20.5 ? "wschodnia" : "centralna";
+  const ns = avgLat > 52.6 ? "północ" : avgLat < 50.8 ? "południe" : "pas środkowy";
+  return we + " część kraju / " + ns;
+}
+
+function narrative(all, date){
+  const top = all.reduce((a,b)=> b.sum.dayP > a.sum.dayP ? b : a);
+  const active = all.filter(r=>r.sum.dayP>=40).sort((a,b)=>b.sum.dayP-a.sum.dayP);
+  const quiet  = all.filter(r=>r.sum.dayP<20);
+  const capped = all.filter(r=>r.sum.capHrs>=3);
+  const hotest = all.reduce((a,b)=> b.sum.maxT > a.sum.maxT ? b : a);
+  const p = [];
+
+  // akapit 1 — werdykt i rozkład
+  if(!active.length){
+    p.push("Modele nie widzą dziś nad Polską warunków do rozwoju burz. Maksymalna energia "
+      + "chwiejności w kraju sięga " + Math.round(top.sum.maxCape) + " J/kg, co przy obecnym "
+      + "profilu wilgotności nie wystarcza nawet na płytką konwekcję z pojedynczym wyładowaniem. "
+      + "Najcieplej będzie w województwie " + hotest.n + " — do " + Math.round(hotest.sum.maxT) + "°C.");
+  } else {
+    p.push("Oś dzisiejszej konwekcji przebiega przez " + strefa(active) + ". Najwyższe "
+      + "prawdopodobieństwo, " + top.sum.dayP + "%, wypada w województwie " + top.n
+      + (top.sum.win ? ", z głównym oknem między " + hh(top.sum.win.from) + " a " + hh(top.sum.win.to) : "")
+      + ". Model stawia tam maksimum CAPE na " + Math.round(top.sum.maxCape) + " J/kg przy "
+      + "punkcie rosy " + Math.round(top.sum.peak.td) + "°C — to poziom, który przy odpowiednim "
+      + "wymuszeniu daje komórki wielokomórkowe, a nie tylko przelotny opad.");
+  }
+
+  // akapit 2 — parametry sprzyjające
+  if(active.length){
+    const s = top.sum.sev;
+    p.push("Za siłę zjawisk odpowiadają dwa parametry. Pierwszy to deficyt wilgotności przy ziemi: "
+      + "różnica temperatury i punktu rosy rzędu " + Math.round(top.sum.peak.t - top.sum.peak.td)
+      + " K oznacza wysoką podstawę chmury, a więc energię idącą w prądy zstępujące — stąd "
+      + "szacunek porywów do " + s.gust + " km/h. Drugi to ścinanie wiatru między warstwą przyziemną "
+      + "a 500 hPa, dziś ok. " + s.shear + " km/h; "
+      + (s.shear > 45
+          ? "przy takiej wartości komórki organizują się w struktury liniowe i mogą przetrwać kilka godzin."
+          : s.shear > 25
+          ? "to wartość graniczna — komórki będą się organizować tylko miejscami, częściej pojedyncze."
+          : "to za mało na organizację, spodziewaj się krótkotrwałych komórek pulsacyjnych.")
+      + (s.hail ? " Kombinacja energii i ścinania otwiera drogę do gradu o średnicy powyżej 2 cm." : ""));
+  }
+
+  // akapit 3 — hamulce
+  if(capped.length){
+    const list = capped.slice(0,4).map(r=>r.n).join(", ");
+    p.push("Głównym hamulcem jest warstwa zaporowa. W województwach " + list
+      + (capped.length>4 ? " i kilku sąsiednich" : "")
+      + " CIN utrzymuje się powyżej 120 J/kg przez większość dnia mimo dostępnej energii — "
+      + "to klasyczna sytuacja, w której nic nie wystartuje samoistnie i wszystko zależy od "
+      + "przyjścia wymuszenia z zewnątrz: frontu, linii zbieżności albo nocnego prądu niskiego poziomu. "
+      + "Jeśli wymuszenie się spóźni lub rozmyje, dzień skończy się bez jednego grzmotu.");
+  } else if(active.length){
+    p.push("Warstwa zaporowa jest dziś słaba — CIN w rejonach zagrożonych spada poniżej "
+      + Math.round(top.sum.minCin) + " J/kg. Konwekcja ruszy swobodnie, bez czekania na front, "
+      + "co oznacza wcześniejszy start, ale też mniej uporządkowane, rozproszone komórki.");
+  }
+
+  // akapit 4 — gdzie spokojnie
+  if(quiet.length >= 3 && active.length){
+    p.push("Bez zjawisk powinno pozostać w województwach: "
+      + quiet.map(r=>r.n).join(", ") + ". Tam prawdopodobieństwo nie przekracza 20%.");
+  }
+  return p;
+}
+
+function focusText(r){
+  const s = r.sum;
+  const trend = s.pool.length>2
+    ? (s.pool[s.pool.length-1].p - s.pool[0].p)
+    : 0;
+  const items = [
+    ["Werdykt", s.dayP<20
+      ? "Konwekcja w tym regionie jest dziś mało prawdopodobna."
+      : s.dayP<45
+      ? "Konwekcja lokalna, punktowa — nie każdy odczuje."
+      : s.dayP<70
+      ? "Realne ryzyko burzy w ciągu dnia."
+      : "Wysokie ryzyko — burza bardziej prawdopodobna niż jej brak."],
+    ["Prawdopodobieństwo", s.dayP + "% w pozostałej części doby"
+      + (s.win ? ", szczyt w oknie " + hh(s.win.from) + "–" + hh(s.win.to) : ", bez wyraźnego okna szczytowego")],
+    ["Energia (CAPE)", Math.round(s.maxCape) + " J/kg maksimum, osiągane o " + hh(s.peak.hour)
+      + (s.maxCape>1500 ? " — poziom wysoki, wystarczający na silne prądy wstępujące"
+        : s.maxCape>600 ? " — poziom umiarkowany" : " — poziom niski, energii może zabraknąć")],
+    ["Zapora (CIN)", (s.minCin===999?"brak aktywnych godzin":Math.round(s.minCin)+" J/kg w szczytowej godzinie")
+      + (s.capHrs>=3
+        ? ". Przez " + s.capHrs + " godz. przekracza 120 J/kg mimo dostępnej energii — bez wymuszenia z zewnątrz konwekcja się nie przebije."
+        : ". Zapora słaba, komórki mogą wystartować bez czekania na front.")],
+    ["Wilgoć i chwiejność", "punkt rosy " + Math.round(s.peak.td) + "°C, indeks Lifted " + s.peak.li.toFixed(1)
+      + (s.peak.li<-4 ? " — profil silnie chwiejny." : s.peak.li<-1 ? " — profil umiarkowanie chwiejny." : " — profil bliski stabilnemu.")],
+    ["Temperatura", s.dayP<20
+      ? "maksimum " + Math.round(s.maxT) + "°C, o godzinie " + hh(s.peak.hour) + " (najwyższa modelowana aktywność, ale mało prawdopodobna) " + Math.round(s.peak.t) + "°C przy zachmurzeniu " + Math.round(s.peak.cc||0) + "%"
+      : "maksimum " + Math.round(s.maxT) + "°C, w szczycie konwekcji " + Math.round(s.peak.t) + "°C"
+        + " przy zachmurzeniu " + Math.round(s.peak.cc||0) + "%"],
+    ["Siła zjawisk", s.dayP<20
+      ? "Przy tak niskim prawdopodobieństwie to wartość czysto teoretyczna — gdyby mimo wszystko coś wystartowało, model wskazuje porywy rzędu " + s.sev.gust + " km/h, ale najbardziej prawdopodobny scenariusz to brak zjawisk w ogóle."
+      : s.dayP<45
+      ? "Warunkowo (o ile komórki się rozwiną, co nie jest pewne): porywy do " + s.sev.gust + " km/h, ścinanie wiatru " + s.sev.shear + " km/h"
+        + (s.sev.hail ? ", niewykluczony grad." : ", grad mało prawdopodobny.")
+      : "szacowane porywy do " + s.sev.gust + " km/h, ścinanie wiatru " + s.sev.shear + " km/h"
+        + (s.sev.hail ? ", możliwy grad powyżej 2 cm." : ", grad mało prawdopodobny lub drobny.")],
+    ["Tendencja", Math.abs(trend)<8
+      ? "prawdopodobieństwo w ciągu dnia zmienia się nieznacznie."
+      : trend>0
+      ? "prawdopodobieństwo rośnie w kolejnych godzinach — sytuacja się zaostrza."
+      : "prawdopodobieństwo maleje w kolejnych godzinach — szczyt zagrożenia już za nami lub go nie będzie."]
+  ];
+  return items;
+}
+
+/* ============================================================
+   6b. HARMONOGRAM RUNÓW MODELU
+       ICON-EU liczy 4x dziennie. Czas dostępności w API to
+       run + ok. 2,5–3,5 h na obliczenia i dystrybucję.
+       Godziny podane w czasie lokalnym (zakładają UTC+2, latem;
+       zimą przesuwają się o godzinę wcześniej — stąd "~").
+   ============================================================ */
+const RUN_DEFS = [
+  {utc:"00 UTC", hh:7,  mm:0, dayOffset:0},
+  {utc:"06 UTC", hh:13, mm:0, dayOffset:0},
+  {utc:"12 UTC", hh:19, mm:0, dayOffset:0},
+  {utc:"18 UTC", hh:1,  mm:0, dayOffset:1}
+];
+
+function runSchedule(now){
+  const events = [];
+  [-1,0,1].forEach(off=>{
+    const base = new Date(now);
+    base.setDate(base.getDate()+off);
+    RUN_DEFS.forEach(def=>{
+      const ready = new Date(base);
+      ready.setDate(ready.getDate()+def.dayOffset);
+      ready.setHours(def.hh, def.mm, 0, 0);
+      events.push({utc:def.utc, runDay:base, ready});
+    });
+  });
+  events.sort((a,b)=>a.ready-b.ready);
+  return events;
+}
+
+function currentRun(now){
+  const events = runSchedule(now);
+  let cur = events[0], next = events[events.length-1];
+  for(let i=0;i<events.length;i++){
+    if(events[i].ready <= now) cur = events[i];
+    if(events[i].ready > now){ next = events[i]; break; }
+  }
+  return {cur, next};
+}
+
+function fmtRun(ev){
+  return "run " + ev.utc + " z " + ev.runDay.getDate() + " " + PL_M[ev.runDay.getMonth()];
+}
+function fmtHM(d){ return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"); }
+
+const GPS_REASONS = {
+  denied: "Odmówiono dostępu do lokalizacji. To zdarza się też, gdy strona jest otwarta lokalnie z pliku zamiast przez https — spróbuj ponownie albo wystaw stronę np. na GitHub Pages.",
+  unavailable: "Nie udało się ustalić pozycji. Sprawdź, czy telefon ma włączoną lokalizację, i spróbuj ponownie.",
+  timeout: "Przekroczono czas oczekiwania na GPS. Spróbuj ponownie.",
+  unsupported: "Ta przeglądarka nie obsługuje geolokalizacji."
+};
+
+function gpsBannerHTML(gps){
+  if(gps.status === "ok" || gps.status === "manual") return "";
+  if(gps.status === "loading"){
+    return '<div class="gpsbar"><div class="txt"><h4><span class="pulse" style="margin-right:8px"></span>Łączę z GPS</h4>'
+      + '<p>Przeglądarka może teraz poprosić Cię o zgodę na lokalizację — potwierdź, żeby zobaczyć opis swojej okolicy.</p></div>'
+      + '<button class="gpsbtn" disabled>Czekam…</button></div>';
+  }
+  if(gps.status === "error"){
+    return '<div class="gpsbar err"><div class="txt"><h4>Nie udało się pobrać lokalizacji</h4>'
+      + '<p class="errmsg">'+esc(GPS_REASONS[gps.reason] || "Nieznany błąd.")+'</p></div>'
+      + '<button class="gpsbtn" id="gpsAskBtn">Spróbuj ponownie</button></div>';
+  }
+  return '<div class="gpsbar"><div class="txt"><h4>Zobacz pogodę u siebie</h4>'
+    + '<p>Włącz lokalizację, żeby zamienić opis regionu domyślnego na Twoją okolicę i zaznaczyć '
+    + 'pozycję na mapach poniżej.</p></div>'
+    + '<button class="gpsbtn" id="gpsAskBtn">Włącz GPS</button></div>';
+}
+
+/* ============================================================
+   6c. RENDER
+   ============================================================ */
+function color(p){
+  const stops = [[0,"#1A2039"],[18,"#2F4A87"],[35,"#3E7FA8"],[52,"#C9A227"],
+                 [70,"#DE6A28"],[88,"#B71F45"]];
+  for(let i=0;i<stops.length-1;i++){
+    const [a,ca]=stops[i], [b,cb]=stops[i+1];
+    if(p<=b){
+      const t=(p-a)/(b-a||1);
+      const m=h=>[1,3,5].map(k=>parseInt(h.slice(k,k+2),16));
+      const A=m(ca), B=m(cb);
+      return "rgb("+A.map((v,k)=>Math.round(v+(B[k]-v)*t)).join(",")+")";
+    }
+  }
+  return stops[stops.length-1][1];
+}
+
+function esc(s){return String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));}
+
+/* ============================================================
+   6b2. MAPA CHOROPLETH WOJEWÓDZTW
+        Statyczny SVG (bez Leaflet, bez sieci) — kolor wypełnienia
+        = prawdopodobieństwo, dotknięcie pokazuje szczegóły w panelu
+        pod mapą. WOJ_STATS jest przeliczany przy każdym renderze,
+        żeby dotknięcie zawsze pokazywało świeże dane.
+   ============================================================ */
+let WOJ_STATS = {};
+
+function wojMapSVG(all, focusName){
+  WOJ_STATS = {};
+  all.forEach(r=>{
+    const s = r.sum;
+    WOJ_STATS[r.n] = {
+      dayP: s.dayP,
+      win: s.win ? hh(s.win.from)+"–"+hh(s.win.to) : "brak wyraźnego okna",
+      cape: Math.round(s.maxCape), cin: s.minCin===999?"—":Math.round(s.minCin),
+      li: s.peak.li.toFixed(1), tmax: Math.round(s.maxT), gust: s.sev.gust
+    };
+  });
+
+  // Zaznaczony region musi być rysowany JAKO OSTATNI w dokumencie SVG — inaczej
+  // sąsiednie kształty (rysowane po nim w kolejności tablicy) częściowo zamalują
+  // jego pogrubioną ramkę swoimi zwykłymi, cienkimi obramowaniami.
+  const ordered = WOJ_BORDERS.slice().sort((a,b)=>
+    (a.n===focusName?1:0) - (b.n===focusName?1:0));
+
+  const paths = ordered.map(o=>{
+    const st = WOJ_STATS[o.n] || {dayP:0};
+    const d = o.p.map(poly=>poly.map(ring=>
+      "M" + ring.map(([lon,lat])=>mapProject(lon,lat).map(v=>v.toFixed(1)).join(",")).join("L") + "Z"
+    ).join(" ")).join(" ");
+    return '<path class="woj-path'+(o.n===focusName?' selected':'')+'" data-n="'+esc(o.n)+'" d="'+d+'" fill="'+color(st.dayP)+'" '
+      + 'stroke="#0C1120" stroke-width="1.1"><title>'+esc(o.n)+' — '+st.dayP+'%</title></path>';
+  }).join("");
+
+  const labels = WOJ_BORDERS.map(o=>{
+    const st = WOJ_STATS[o.n] || {dayP:0};
+    const [cx,cy] = WOJ_CENTROIDS[o.n];
+    const txtColor = st.dayP>=52 ? "#0C1120" : "#E9E8F4";
+    return '<text class="woj-label" x="'+cx.toFixed(1)+'" y="'+cy.toFixed(1)+'" '
+      + 'text-anchor="middle" dominant-baseline="middle" fill="'+txtColor+'" '
+      + 'pointer-events="none">'+st.dayP+'%</text>';
+  }).join("");
+
+  return '<svg class="wojmap" viewBox="0 0 '+MAP_W+' '+MAP_H+'" role="img" '
+    + 'aria-label="Mapa prawdopodobieństwa burz według województw">'
+    + paths + labels + '</svg>';
+}
+
+function wojDetailHTML(name){
+  const st = WOJ_STATS[name];
+  if(!st) return '<div class="wd-empty">Dotknij województwo na mapie, aby zobaczyć szczegóły.</div>';
+  return '<div class="wd-head"><h4>'+esc(name.charAt(0).toUpperCase()+name.slice(1))+'</h4>'
+    + '<span class="pct" style="color:'+color(st.dayP)+'">'+st.dayP+'%</span></div>'
+    + '<div class="win">'+esc(st.win)+'</div>'
+    + '<div class="par">CAPE '+st.cape+' J/kg · CIN '+st.cin+' J/kg<br>'
+    + 'LI '+st.li+' · Tmax '+st.tmax+'°C · pory. '+st.gust+' km/h</div>';
+}
+
+/* ============================================================
+   6d. DYMKI Z PROGAMI (ⓘ)
+       Wyjaśniają — na mini-wykresie słupkowym — jakie wartości
+       każdego parametru odpowiadają małemu/średniemu/dużemu/
+       ekstremalnemu prawdopodobieństwu burzy. Progi odpowiadają
+       dokładnie wzorowi z hourProb() (sekcja 2).
+   ============================================================ */
+function popoverBar(id, title, segs, scaleLabels, note){
+  const bar = segs.map(s=>'<i style="flex:'+s.w+';background:'+s.c+'"></i>').join('');
+  const scale = scaleLabels ? '<div class="pscale">'+scaleLabels.map(x=>'<span>'+esc(x)+'</span>').join('')+'</div>' : '';
+  const legend = segs.map(s=>'<div><span class="sw" style="background:'+s.c+'"></span><div><b>'+esc(s.label)+'</b> — '+esc(s.range)+'</div></div>').join('');
+  return '<span class="infodot" data-id="'+id+'" tabindex="0">ⓘ<div class="popover" onclick="event.stopPropagation()">'
+    + '<h5>'+esc(title)+'</h5>'
+    + '<div class="pbar">'+bar+'</div>'
+    + scale
+    + '<div class="plegend">'+legend+'</div>'
+    + (note ? '<div style="margin-top:8px;padding-top:7px;border-top:1px solid var(--line);font-size:10.5px;color:var(--muted)">'+esc(note)+'</div>' : '')
+    + '</div></span>';
+}
+
+function popoverCape(){
+  return popoverBar("cape", "CAPE — energia chwiejności", [
+    {w:10, c:color(4),  label:"Brak",        range:"0–150 J/kg"},
+    {w:17, c:color(15), label:"Znikome",     range:"150–400 J/kg"},
+    {w:27, c:color(38), label:"Niskie",      range:"400–800 J/kg"},
+    {w:30, c:color(62), label:"Umiarkowane–wysokie", range:"800–1500 J/kg"},
+    {w:16, c:color(88), label:"Ekstremalne", range:"powyżej 1500 J/kg"}
+  ], ["0","400","800","1500+"],
+  "Poniżej 150 J/kg wynik jest twardo ograniczany do 6% — bez energii nie ma wyładowań, niezależnie od reszty parametrów.");
+}
+
+function popoverCin(){
+  return popoverBar("cin", "CIN — zapora konwekcyjna", [
+    {w:13, c:color(85), label:"Brak zapory",  range:"0–25 J/kg"},
+    {w:38, c:color(55), label:"Słaba",        range:"25–100 J/kg"},
+    {w:38, c:color(22), label:"Silna",        range:"100–220 J/kg"},
+    {w:11, c:color(4),  label:"Blokada",      range:"powyżej 220 J/kg"}
+  ], ["0","100","220+"],
+  "Uwaga — to odwrotna logika: im wyższe CIN, tym mniejsza szansa na burzę. Silna zapora tłumi nawet bardzo wysokie CAPE.");
+}
+
+function popoverMoisture(){
+  const li = '<div style="margin-bottom:4px;font-size:10px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase">Indeks Lifted</div>'
+    + '<div class="pbar">'
+    + '<i style="flex:15;background:'+color(4)+'"></i>'
+    + '<i style="flex:25;background:'+color(30)+'"></i>'
+    + '<i style="flex:30;background:'+color(60)+'"></i>'
+    + '<i style="flex:30;background:'+color(90)+'"></i>'
+    + '</div><div class="pscale"><span>&gt;0</span><span>0</span><span>−2</span><span>−4 i niżej</span></div>';
+  const td = '<div style="margin:10px 0 4px;font-size:10px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase">Punkt rosy</div>'
+    + '<div class="pbar">'
+    + '<i style="flex:20;background:'+color(4)+'"></i>'
+    + '<i style="flex:20;background:'+color(30)+'"></i>'
+    + '<i style="flex:30;background:'+color(60)+'"></i>'
+    + '<i style="flex:30;background:'+color(90)+'"></i>'
+    + '</div><div class="pscale"><span>&lt;11°C</span><span>11°</span><span>14°</span><span>18°C+</span></div>';
+  return '<span class="infodot" data-id="moisture" tabindex="0">ⓘ<div class="popover" style="width:270px" onclick="event.stopPropagation()">'
+    + '<h5>Wilgoć i chwiejność</h5>' + li + td
+    + '<div style="margin-top:9px;padding-top:7px;border-top:1px solid var(--line);font-size:10.5px;color:var(--muted)">'
+    + 'Im niższy (bardziej ujemny) Lifted Index i wyższy punkt rosy, tym większy wkład do prawdopodobieństwa.</div>'
+    + '</div></span>';
+}
+
+function popoverShear(){
+  return popoverBar("shear", "Ścinanie wiatru — siła i organizacja", [
+    {w:35, c:color(20), label:"Brak organizacji", range:"poniżej 25 km/h"},
+    {w:35, c:color(50), label:"Częściowa organizacja", range:"25–45 km/h"},
+    {w:30, c:color(85), label:"Układy liniowe", range:"powyżej 45 km/h"}
+  ], ["0","25","45+"],
+  "Grad powyżej 2 cm wymaga jednocześnie CAPE > 1200 J/kg i ścinania > 30 km/h — same wysokie ścinanie bez energii go nie da.");
+}
+
+function render(data, userLoc, gps){
+  gps = gps || (userLoc ? {status:"ok"} : {status:"idle"});
+  const hasLoc = gps.status === "ok" || gps.status === "manual";
+  const all = data.regions.map(r=>Object.assign({}, r, {sum: summarize(r)}));
+  const d = data.date;
+  const dateStr = PL_D[d.getDay()] + ", " + d.getDate() + " " + PL_M[d.getMonth()] + " " + d.getFullYear();
+  const top = all.reduce((a,b)=> b.sum.dayP > a.sum.dayP ? b : a);
+  const hotest = all.reduce((a,b)=> b.sum.maxT > a.sum.maxT ? b : a);
+  const near = nearestRegion(all, userLoc);
+  const focus = near ? near.region : all.find(r=>r.focus);
+  const {cur, next} = currentRun(d);
+
+  document.getElementById("runbox").innerHTML =
+    "model <b>ICON-EU 7 km</b><br>" + esc(dateStr)
+    + '<br><span style="color:var(--accent)">dane pobrane o '+fmtHM(data.fetchedAt)+':'+String(data.fetchedAt.getSeconds()).padStart(2,"0")+'</span> · świeże, nie z cache'
+    + '<br>opis z '+esc(fmtRun(cur))+' · orientacyjnie od ~'+fmtHM(cur.ready)
+    + '<br>kolejny run: ~'+fmtHM(next.ready)+' ('+esc(fmtRun(next).replace("run ",""))+') · pobierze się sam';
+
+  /* --- siatka godzinowa (kroczące okno 24h od teraz) --- */
+  const winStarts = windowStarts(new Date());
+  const nextRunTime = next.ready.getTime();
+  let grid = '<table class="hgrid"><thead><tr><th class="woj"></th>';
+  winStarts.forEach((ws,i)=>{
+    const isNext = nextRunTime >= ws.getTime() && nextRunTime < ws.getTime()+3600000;
+    const dayBoundary = ws.getHours()===0; // północ w oknie — pomocniczy znacznik dnia
+    grid += '<th'+(isNext?' style="color:var(--accent)"':dayBoundary?' style="color:var(--paper)"':'')+'>'
+      + (isNext ? '↻' : dayBoundary ? '│'+String(ws.getDate()) : (i%3===0?String(ws.getHours()).padStart(2,"0"):""))
+      + '</th>';
+  });
+  grid += '</tr></thead><tbody>';
+  all.forEach(r=>{
+    grid += '<tr'+(r.focus?' class="hl"':'')+'><th class="woj">'+esc(r.n)+'</th>';
+    winStarts.forEach(ws=>{
+      const h = r.hours.find(x=>x.dt.getTime()===ws.getTime());
+      const p = h?h.p:0;
+      const isNext = nextRunTime >= ws.getTime() && nextRunTime < ws.getTime()+3600000;
+      const label = ws.getDate()+" "+PL_M[ws.getMonth()]+", "+hh(ws.getHours());
+      grid += '<td'+(isNext?' style="outline:1px solid var(--accent);outline-offset:-1px"':'')+'>'
+        + '<span class="cell" style="background:'+color(p)+'" title="'
+        + esc(r.n)+" "+label+" — "+p+'%'+(isNext?' · tu wypada kolejna aktualizacja modelu':'')+'"></span></td>';
+    });
+    grid += '</tr>';
+  });
+  grid += '</tbody></table>';
+  const gridRangeLabel = windowRangeLabel(winStarts);
+
+  /* --- wykres regionu obserwowanego (kroczące okno 24h) --- */
+  const F = focus.sum.pool;
+  const W=680,H=180,PAD=28;
+  const maxC = Math.max(1200, Math.max.apply(null,F.map(h=>h.cape||0)));
+  const bw = (W-PAD*2)/F.length;
+  let bars="", line="", ticks="";
+  F.forEach((h,i)=>{
+    const x = PAD+i*bw;
+    const hc = ((h.cape||0)/maxC)*(H-PAD*2);
+    bars += '<rect x="'+(x+1).toFixed(1)+'" y="'+(H-PAD-hc).toFixed(1)+'" width="'+(bw-2).toFixed(1)
+      + '" height="'+hc.toFixed(1)+'" fill="'+color(h.p)+'" opacity=".85"/>';
+    const yc = H-PAD-(clamp(Math.abs(h.cin||0),0,300)/300)*(H-PAD*2);
+    line += (i?"L":"M")+(x+bw/2).toFixed(1)+","+yc.toFixed(1);
+    if(h.hour%3===0) ticks += '<text x="'+(x+bw/2).toFixed(1)+'" y="'+(H-10)+'" text-anchor="middle">'+String(h.hour).padStart(2,"0")+'</text>';
+  });
+  const chart = '<svg class="chart" viewBox="0 0 '+W+' '+H+'" role="img" '
+    + 'aria-label="Godzinowy przebieg CAPE i CIN dla województwa '+esc(focus.n)+'">'
+    + '<line x1="'+PAD+'" y1="'+(H-PAD)+'" x2="'+(W-PAD)+'" y2="'+(H-PAD)+'" stroke="#2A3355"/>'
+    + bars
+    + '<path d="'+line+'" fill="none" stroke="#7FD1E8" stroke-width="1.6" stroke-dasharray="4 3"/>'
+    + ticks
+    + '<text x="'+PAD+'" y="16">SŁUPKI: CAPE (max '+Math.round(maxC)+' J/kg) · LINIA: CIN (skala 0–300 J/kg)</text>'
+    + '</svg>';
+
+
+  document.getElementById("app").innerHTML =
+    '<div class="verdict reveal">'
+      + '<div class="eyebrow" style="margin-bottom:14px">'+esc(dateStr)+' · prognoza dobowa</div>'
+      + '<h2>'+esc(headline(all))+'</h2>'
+      + '<div class="stats">'
+        + stat("Maks. prawdop.", top.sum.dayP, "%", color(top.sum.dayP))
+        + stat("Szczyt CAPE", Math.round(top.sum.maxCape), "J/kg")
+        + stat("Godzina szczytu", hh(top.sum.peak.hour).slice(0,2), "")
+        + stat("Najwyższa temp.", Math.round(hotest.sum.maxT), "°C")
+      + '</div>'
+    + '</div>'
+
+    + '<section class="reveal" style="animation-delay:.06s"><h3>Doba godzina po godzinie</h3>'
+      + '<p class="lede">Najbliższe 24 godziny od teraz: <b class="mono" style="color:var(--paper)">'+esc(gridRangeLabel)+'</b>. '
+      + 'Każdy wiersz to jedno województwo, uporządkowane z zachodu na wschód. '
+      + 'Ukośna fala w prawo oznacza przemieszczanie się strefy zagrożenia przez kraj. '
+      + 'Kolumna oznaczona <b style="color:var(--accent)">↻</b> to godzina, o której model wyda nowy run — '
+      + 'strona pobierze go automatycznie, gdy tylko będzie dostępny. Znacznik „│D" pokazuje przejście przez północ.</p>'
+      + '<div class="gridscroll">'+grid+'</div>'
+      + '<div class="legend">0%<div class="ramp">'
+      + [0,10,20,30,40,50,60,70,80,90].map(v=>'<i style="background:'+color(v)+'"></i>').join("")
+      + '</div>90% · prawdopodobieństwo wyładowań</div>'
+    + '</section>'
+
+    + '<section class="reveal" style="animation-delay:.09s"><h3>Radar i wyładowania</h3>'
+      + '<p class="lede">Obraz na żywo, niezależny od modelu — sprawdza, co dzieje się teraz, '
+      + 'nie co przewiduje ICON-EU. W horyzoncie poniżej 3 godzin ufaj temu bardziej niż tabeli powyżej.</p>'
+      + '<div class="livegrid">'
+        + '<div class="livepanel">'
+          + '<div class="lhead"><h4>Radar opadów — RainViewer</h4><span class="livedot"><i></i>live</span></div>'
+          + '<div id="radarmap"></div>'
+          + '<div class="radarctl">'
+            + '<button id="rvPlay" aria-label="Odtwórz animację">▶</button>'
+            + '<input id="rvSlider" type="range" min="0" max="0" value="0">'
+            + '<span class="time mono" id="rvTime">—</span>'
+          + '</div>'
+          + '<div class="note">Dane opadowe: <a href="https://www.rainviewer.com/" target="_blank" rel="noopener">RainViewer</a>, aktualizacja co ok. 10 minut, animacja obejmuje ostatnie 2 godziny.'
+          + (gps.status==="ok" ? ' Świecąca kropka na mapie to Twoja pozycja z GPS.' : gps.status==="manual" ? ' Świecąca kropka na mapie to '+esc(gps.name)+'.' : '') + '</div>'
+        + '</div>'
+        + '<div class="livepanel">'
+          + '<div class="lhead"><h4>Wyładowania — Blitzortung</h4><span class="livedot"><i></i>live</span></div>'
+          + '<iframe class="boframe" loading="lazy" title="Mapa wyładowań na żywo Blitzortung.org"'
+          + ' src="https://map.blitzortung.org/index.php?interactive=1&NavigationControl=1&FullScreenControl=1&Cookies=0&InfoDiv=0&MenuButtonDiv=1&ScaleControl=0&LinksCheckboxChecked=0&MapStyle=0&Advertisment=0#'
+          + (hasLoc ? "8/"+userLoc.lat.toFixed(3)+"/"+userLoc.lon.toFixed(3) : "6/52.0/19.3") + '"></iframe>'
+          + '<div class="note">Dane wyładowań: <a href="https://www.blitzortung.org/" target="_blank" rel="noopener">Blitzortung.org</a> i kontrybutorzy — społecznościowa sieć detekcji, wyłącznie do celów poglądowych, nie do ochrony osób ani mienia.'
+          + (hasLoc ? ' Mapa wyśrodkowana na Twojej pozycji — to zewnętrzna usługa, więc nie możemy dorysować na niej własnego znacznika, tylko wyśrodkować widok.' : '') + '</div>'
+        + '</div>'
+      + '</div>'
+    + '</section>'
+
+    + '<section class="reveal" style="animation-delay:.12s"><h3>Analiza</h3>'
+      + '<div class="prose">'
+      + narrative(all, d).map((t,i)=>'<p'+(i===0?' class="first"':'')+'>'+esc(t)+'</p>').join("")
+      + '</div>'
+      + '<div class="disclaim">Burza jest zjawiskiem punktowym. Nawet przy 80% dla całego '
+      + 'województwa u Ciebie konkretnie może przejść bokiem albo nie dotrzeć wcale — '
+      + 'sąsiednia gmina dostanie 40 mm i grad, a Ty samo zachmurzenie. Podane przedziały to '
+      + 'okna czasowe dla obszaru, nie moment wyładowania w danym punkcie.</div>'
+    + '</section>'
+
+    + '<section class="reveal" style="animation-delay:.18s"><h3>Województwa</h3>'
+      + '<p class="lede">Kolor wypełnienia = prawdopodobieństwo burzy. Dotknij województwo, '
+      + 'żeby zobaczyć szczegóły — mapa aktualizuje się razem z resztą strony przy każdym '
+      + 'nowym runie modelu.</p>'
+      + '<div class="wojmapwrap">'+wojMapSVG(all, focus.n)+'</div>'
+      + '<div class="legend">0%<div class="ramp">'
+      + [0,10,20,30,40,50,60,70,80,90].map(v=>'<i style="background:'+color(v)+'"></i>').join("")
+      + '</div>90%</div>'
+      + '<div class="wojdetail" id="wojDetail">'+wojDetailHTML(focus.n)+'</div>'
+    + '</section>'
+
+    + (hasLoc ? '' : '<section class="reveal" style="animation-delay:.21s">'+gpsBannerHTML(gps)+'</section>')
+
+    + '<section class="reveal" style="animation-delay:.24s"><div class="focus">'
+      + '<div class="eyebrow" style="margin-bottom:10px">Region obserwowany'
+      + (near ? '' : ' · domyślny') + '</div>'
+      + '<h3>'+esc(focus.n.charAt(0).toUpperCase()+focus.n.slice(1))+'</h3>'
+      + '<div class="geonote">'
+        + (gps.status==="manual"
+          ? '<span class="dot ok"></span>wpisana lokalizacja: '+esc(gps.name)+' · '+near.distKm+' km od '+esc(focus.s)
+          : near
+          ? '<span class="dot ok"></span>lokalizacja z GPS · '+near.distKm+' km od '+esc(focus.s)
+          : '<span class="dot off"></span>brak lokalizacji — pokazuję domyślnie łódzkie')
+        + (hasLoc ? ' <button class="citybar-clear" id="locClearBtn" style="margin-left:8px;padding:3px 10px;font-size:10px">✕ wyczyść</button>' : '')
+      + '</div>'
+      + '<div class="focusgrid">'
+      + focusText(focus).map((it,i)=>{
+          const dot = i===2?popoverCape():i===3?popoverCin():i===4?popoverMoisture():i===6?popoverShear():"";
+          return '<div class="fi"><div class="n">'+String(i+1).padStart(2,"0")+'</div>'
+            + '<div class="k">'+esc(it[0])+dot+'</div><div class="t">'+esc(it[1])+'</div></div>';
+        }).join("")
+      + '</div>'
+      + '<div class="chartlegend">'
+        + '<span><span class="sw"></span>Słupki = CAPE (energia — im wyższe, tym większa szansa na burzę)</span>'
+        + '<span><span class="ln"></span>Linia = CIN (zapora — im wyższa, tym mniejsza szansa)</span>'
+      + '</div>'
+      + '<div class="chartwrap">'+chart+'</div>'
+    + '</div></section>'
+
+    + '<section class="reveal" style="animation-delay:.36s"><h3>Metodyka</h3>'
+      + '<div class="prose"><p>Prawdopodobieństwo liczone jest lokalnie w przeglądarce jako '
+      + 'złożenie dwóch członów: 55% stanowi własna ocena termodynamiczna (CAPE ważona do 1500 J/kg, '
+      + 'indeks Lifted do −4, punkt rosy od 11°C, całość mnożona przez współczynnik zapory z CIN), '
+      + '45% to wymuszenie odczytane z pola opadu modelu. Przy CAPE poniżej 150 J/kg wynik jest '
+      + 'twardo ograniczany do 6%. Porywy szacowane są z deficytu wilgoci przy ziemi i ścinania '
+      + 'między 10 m a 500 hPa. To metoda uproszczona — nie zastępuje sondażu ani modelu '
+      + 'konwekcyjnego o rozdzielczości 2 km.</p></div>'
+    + '</section>'
+
+    + '<section class="reveal" style="animation-delay:.42s"><h3>Aktualizacje modelu</h3>'
+      + '<p class="lede">ICON-EU liczy nową prognozę cztery razy dziennie. Dane trafiają do API '
+      + 'ok. 2,5–3,5 h po godzinie runu — tyle trwa obliczenie i dystrybucja. Ten opis zawsze '
+      + 'odpowiada najświeższemu runowi dostępnemu w momencie wejścia na stronę.</p>'
+      + runTable(d)
+      + '<div class="disclaim" style="border-color:var(--accent);background:rgba(127,209,232,.07)">'
+      + '<b style="color:var(--paper)">Dane pobrane: '+fmtHM(data.fetchedAt)+':'+String(data.fetchedAt.getSeconds()).padStart(2,"0")+'</b> — '
+      + 'to realny czas z zegara Twojej przeglądarki, dowód że zapytanie poszło do sieci teraz, '
+      + 'a nie z cache. Porównaj z zegarem telefonu.<br><br>'
+      + 'Godziny rund w tabeli powyżej to <b>szacunek</b> na podstawie typowego harmonogramu DWD — '
+      + 'Open-Meteo nie udostępnia w odpowiedzi API dokładnego czasu inicjalizacji rundy, więc nie da '
+      + 'się tego zweryfikować programowo z tego źródła. Same dane pogodowe (CAPE, temperatura, opady) '
+      + 'są zawsze świeże, bo strona wymusza ominięcie cache przy każdym wejściu — nieaktualna może być '
+      + 'wyłącznie etykieta "który to run", nigdy same liczby.</div>'
+    + '</section>';
+}
+
+function runTable(now){
+  const {cur} = currentRun(now);
+  const rows = RUN_DEFS.map(def=>{
+    const active = def.utc === cur.utc;
+    return '<tr'+(active?' class="hl"':'')+'>'
+      + '<td style="text-align:left;padding-right:18px">'+def.utc+'</td>'
+      + '<td class="mono">dostępny od ~'+String(def.hh).padStart(2,"0")+':'+String(def.mm).padStart(2,"0")+'</td>'
+      + '<td>'+(active?'<span style="color:var(--accent);font-family:\'IBM Plex Mono\',monospace;font-size:11px">← ten opis</span>':'')+'</td>'
+      + '</tr>';
+  }).join("");
+  return '<table style="border-collapse:collapse;width:100%;max-width:520px;font-size:13.5px">'
+    + '<tbody>'+rows+'</tbody></table>';
+}
+
+function stat(k,v,u,c){
+  return '<div class="stat"><div class="k">'+esc(k)+'</div><div class="v"'
+    + (c?' style="color:'+c+'"':'')+'>'+esc(v)+'<span class="u">'+esc(u)+'</span></div></div>';
+}
+
+function fail(msg){
+  document.getElementById("runbox").innerHTML = "brak połączenia z modelem";
+  document.getElementById("app").innerHTML =
+    '<div class="state"><div class="eyebrow">Błąd pobierania</div>'
+    + '<h3>Nie udało się pobrać danych modelu</h3>'
+    + '<p>' + esc(msg) + ' Sprawdź połączenie i spróbuj ponownie — dane pochodzą z api.open-meteo.com.</p>'
+    + '<button class="retry" onclick="boot()">Pobierz ponownie</button></div>';
+}
+
+/* ============================================================
+   7. RADAR NA ŻYWO — RainViewer, bez klucza API
+   ============================================================ */
+let rvMap, rvLayer, rvFrames = [], rvIdx = 0, rvTimer = null;
+
+async function initRadar(userLoc){
+  const el = document.getElementById("radarmap");
+  if(!el || typeof L === "undefined") return;
+
+  rvMap = L.map("radarmap", {
+    zoomControl:true, attributionControl:true,
+    minZoom:5, maxZoom:12,
+    maxBounds:[[48.5,13.5],[55.3,25]], maxBoundsViscosity:0.6
+  }).setView(userLoc ? [userLoc.lat, userLoc.lon] : [52.05, 19.3], userLoc ? 8 : 6);
+
+  // Granice województw rysowane lokalnie jako wektor (SVG przez Leaflet), bez
+  // ŻADNEGO zapytania o kafelki tła do zewnętrznego serwera. To całkowicie
+  // eliminuje problem "Zoom Level Not Supported" — nie ma czego zablokować,
+  // bo nic nie jest pobierane z sieci dla samej mapy pod spodem.
+  const geo = {
+    type:"FeatureCollection",
+    features: WOJ_BORDERS.map(o=>({
+      type:"Feature", properties:{n:o.n},
+      geometry:{type:"MultiPolygon", coordinates:o.p}
+    }))
+  };
+  L.geoJSON(geo, {
+    style:{ color:"#3A4570", weight:1, fillOpacity:0 }
+  }).addTo(rvMap);
+
+  // Kropki i etykiety miast referencyjnych — dają kontekst geograficzny bez map z sieci.
+  WOJ.forEach(w=>{
+    L.circleMarker([w.lat, w.lon], {
+      radius:2.5, color:"#5A6690", fillColor:"#8790B4", fillOpacity:1, weight:1
+    }).addTo(rvMap).bindTooltip(w.s, {
+      permanent:true, direction:"right", offset:[4,0], className:"citylabel"
+    });
+  });
+
+  rvMap.attributionControl.setPrefix(false);
+  rvMap.attributionControl.addAttribution('Granice woj.: ppatrzyk/polska-geojson (CC0) · Opady: RainViewer');
+
+  if(userLoc){
+    const gpsIcon = L.divIcon({
+      className: "",
+      html: '<div style="width:14px;height:14px;border-radius:50%;background:#7FD1E8;'
+        + 'box-shadow:0 0 0 4px rgba(127,209,232,.28),0 0 10px rgba(127,209,232,.7);'
+        + 'border:2px solid #0C1120"></div>',
+      iconSize:[14,14], iconAnchor:[7,7]
+    });
+    L.marker([userLoc.lat, userLoc.lon], {icon:gpsIcon, zIndexOffset:1000})
+      .addTo(rvMap).bindPopup("Twoja lokalizacja");
+    if(userLoc.acc){
+      L.circle([userLoc.lat, userLoc.lon], {
+        radius:userLoc.acc, color:"#7FD1E8", weight:1, opacity:.5, fillOpacity:.06
+      }).addTo(rvMap);
+    }
+  }
+
+  // Zabezpieczenie przed błędnym pomiarem kontenera tuż po zamontowaniu
+  // (np. gdy sekcja jeszcze dokańcza animację wejścia) — Leaflet inaczej
+  // potrafi załadować kafelki tylko dla części widocznego obszaru.
+  setTimeout(()=>{ if(rvMap) rvMap.invalidateSize(); }, 300);
+
+  const slider = document.getElementById("rvSlider");
+  const timeEl = document.getElementById("rvTime");
+  const playBtn = document.getElementById("rvPlay");
+
+  try{
+    const res = await fetch("https://api.rainviewer.com/public/weather-maps.json?_="+Date.now(), {cache:"no-store"});
+    const meta = await res.json();
+    const past = meta.radar?.past || [];
+    const nowcast = meta.radar?.nowcast || [];
+    rvFrames = past.concat(nowcast).map(f => ({
+      time: f.time,
+      url: meta.host + f.path + "/256/{z}/{x}/{y}/2/1_1.png"
+    }));
+    if(!rvFrames.length) throw new Error("brak ramek");
+
+    slider.max = rvFrames.length - 1;
+    rvIdx = past.length ? past.length - 1 : 0; // start na najnowszym realnym pomiarze
+    slider.value = rvIdx;
+    showFrame(rvIdx);
+  }catch(e){
+    timeEl.textContent = "błąd";
+    return;
+  }
+
+  function showFrame(i){
+    const f = rvFrames[i];
+    if(!f) return;
+    if(rvLayer) rvMap.removeLayer(rvLayer);
+    rvLayer = L.tileLayer(f.url, {opacity:.65, zIndex:5, maxNativeZoom:12, maxZoom:16}).addTo(rvMap);
+    const d = new Date(f.time*1000);
+    const isFuture = f.time*1000 > Date.now();
+    timeEl.textContent = (isFuture?"+":"") + String(d.getHours()).padStart(2,"0")
+      + ":" + String(d.getMinutes()).padStart(2,"0");
+    timeEl.style.color = isFuture ? "#7FD1E8" : "#E9E8F4";
+  }
+
+  slider.addEventListener("input", ()=>{ rvIdx = +slider.value; showFrame(rvIdx); });
+
+  playBtn.addEventListener("click", ()=>{
+    if(rvTimer){
+      clearInterval(rvTimer); rvTimer = null; playBtn.textContent = "▶";
+      return;
+    }
+    playBtn.textContent = "⏸";
+    rvTimer = setInterval(()=>{
+      rvIdx = (rvIdx + 1) % rvFrames.length;
+      slider.value = rvIdx;
+      showFrame(rvIdx);
+    }, 700);
+  });
+}
+
+/* ============================================================
+   8. STEROWANIE PROŚBĄ O GPS
+      Lokalizacja NIE jest pobierana automatycznie przy wejściu —
+      dopiero kliknięcie przycisku w banerze wywołuje natywne okno
+      zgody przeglądarki. To jest bardziej niezawodne na telefonach
+      niż ciche żądanie w tle i jasno pokazuje, co się dzieje.
+   ============================================================ */
+function wireGpsButton(data){
+  const ask = document.getElementById("gpsAskBtn");
+  if(ask) ask.addEventListener("click", ()=>requestGps(data));
+  const clear = document.getElementById("locClearBtn");
+  if(clear) clear.addEventListener("click", ()=>{
+    const input = document.getElementById("citySearch");
+    if(input) input.value = "";
+    updateView(data, null, {status:"idle"});
+  });
+}
+
+async function requestGps(data){
+  updateView(data, null, {status:"loading"});
+  const res = await getUserLocation();
+  const gps = res.ok
+    ? {status:"ok", lat:res.lat, lon:res.lon, acc:res.acc}
+    : {status:"error", reason:res.reason};
+  updateView(data, gps.status==="ok" ? gps : null, gps);
+}
+
+/* ============================================================
+   9. RĘCZNY WYBÓR MIASTA
+      Lokalna baza 439 polskich miast (bez zewnętrznego geokodera —
+      po serii problemów z darmowymi API map wolę nie dokładać
+      kolejnej zależności sieciowej). Dopasowanie ignoruje wielkość
+      liter i polskie znaki diakrytyczne.
+   ============================================================ */
+function stripDiacritics(s){
+  return s.toLowerCase()
+    .replace(/[ąĄ]/g,"a").replace(/[ćĆ]/g,"c").replace(/[ęĘ]/g,"e")
+    .replace(/[łŁ]/g,"l").replace(/[ńŃ]/g,"n").replace(/[óÓ]/g,"o")
+    .replace(/[śŚ]/g,"s").replace(/[źŹżŻ]/g,"z").trim();
+}
+
+function findCity(query){
+  const q = stripDiacritics(query);
+  if(!q) return null;
+  let exact = PL_CITIES.find(c=>stripDiacritics(c.n)===q);
+  if(exact) return exact;
+  const starts = PL_CITIES.filter(c=>stripDiacritics(c.n).startsWith(q));
+  if(starts.length) return starts.sort((a,b)=>a.n.length-b.n.length)[0];
+  const contains = PL_CITIES.filter(c=>stripDiacritics(c.n).includes(q));
+  if(contains.length) return contains.sort((a,b)=>a.n.length-b.n.length)[0];
+  return null;
+}
+
+function populateCityList(){
+  const dl = document.getElementById("cityList");
+  if(!dl || dl.childElementCount) return;
+  const frag = document.createDocumentFragment();
+  PL_CITIES.forEach(c=>{
+    const opt = document.createElement("option");
+    opt.value = c.n;
+    frag.appendChild(opt);
+  });
+  dl.appendChild(frag);
+}
+
+function setManualLocation(data){
+  const input = document.getElementById("citySearch");
+  const msg = document.getElementById("cityMsg");
+  if(!input) return;
+  const city = findCity(input.value);
+  if(!city){
+    if(msg){ msg.textContent = "Nie znaleziono takiego miasta w bazie 439 miast."; msg.className = "citybar-msg err"; }
+    return;
+  }
+  input.value = city.n;
+  if(msg){ msg.textContent = ""; msg.className = "citybar-msg"; }
+  updateView(data, {lat:city.lat, lon:city.lon}, {status:"manual", name:city.n});
+}
+
+function wireCitySearch(data){
+  populateCityList();
+  const btn = document.getElementById("citySearchBtn");
+  const input = document.getElementById("citySearch");
+  if(btn) btn.onclick = ()=>setManualLocation(data);
+  if(input) input.onkeydown = (e)=>{ if(e.key==="Enter") setManualLocation(data); };
+}
+
+let LAST_GPS = {status:"idle"};
+let LAST_LOC = null;
+let LAST_DATA = null;
+
+function updateView(data, loc, gps){
+  LAST_GPS = gps; LAST_LOC = loc; LAST_DATA = data;
+  if(rvMap){ rvMap.remove(); rvMap = null; }
+  render(data, loc, gps);
+  initRadar(loc);
+  wireGpsButton(data);
+}
+
+// Samo okno "najbliższe 24h" ma pełznąć naprzód z upływem czasu, nie tylko przy
+// nowym runie modelu — co 5 minut przeliczamy widok z JUŻ POBRANYCH danych,
+// bez żadnego zapytania do sieci.
+setInterval(()=>{
+  if(!LAST_DATA) return;
+  render(LAST_DATA, LAST_LOC, LAST_GPS);
+  initRadar(LAST_LOC);
+  wireGpsButton(LAST_DATA);
+}, 5*60*1000);
+
+async function refreshData(){
+  const btn = document.getElementById("refreshBtn");
+  if(btn){ btn.disabled = true; btn.textContent = "⟳ Pobieram…"; }
+  try{
+    const data = await load();
+    // odświeżenie zachowuje Twoją już wybraną lokalizację (GPS lub wpisane miasto)
+    const keep = (LAST_GPS.status==="ok" || LAST_GPS.status==="manual");
+    updateView(data, keep ? LAST_LOC : null, keep ? LAST_GPS : {status:"idle"});
+  }catch(e){ fail(e.message || "Nieznany błąd."); }
+  finally{
+    const btn2 = document.getElementById("refreshBtn");
+    if(btn2){ btn2.disabled = false; btn2.textContent = "⟳ Odśwież dane teraz"; }
+  }
+}
+
+/* ============================================================
+   10. AUTOMATYCZNE ODŚWIEŻENIE PRZY NOWYM RUNIE
+       Zamiast czekać na kliknięcie, strona sama liczy, kiedy
+       wypada kolejny run modelu (harmonogram z sekcji 6b),
+       dokłada bufor na dotarcie danych do Open-Meteo i wtedy
+       pobiera świeże dane — po czym planuje kolejne odświeżenie.
+   ============================================================ */
+let autoRefreshTimer = null;
+
+function scheduleAutoRefresh(){
+  if(autoRefreshTimer) clearTimeout(autoRefreshTimer);
+  const {next} = currentRun(new Date());
+  const bufferMs = 90 * 1000; // bufor na dotarcie nowego runu do Open-Meteo
+  const delay = Math.max(next.ready.getTime() - Date.now() + bufferMs, 60000);
+  autoRefreshTimer = setTimeout(async ()=>{
+    await refreshData();
+    scheduleAutoRefresh();
+  }, delay);
+}
+
+// Dymki z progami — jeden globalny handler, przetrwa każdy re-render #app,
+// bo jest podpięty na document, a nie na konkretny element.
+document.addEventListener("click", (e)=>{
+  const dot = e.target.closest(".infodot");
+  document.querySelectorAll(".infodot.open").forEach(d=>{ if(d!==dot) d.classList.remove("open"); });
+  if(dot) dot.classList.toggle("open");
+});
+
+// Dotknięcie województwa na mapie choropleth — aktualizuje panel szczegółów
+// i podświetla wybrany kształt. Też globalny, żeby przetrwać re-render.
+document.addEventListener("click", (e)=>{
+  const path = e.target.closest(".woj-path");
+  if(!path) return;
+  const svg = path.closest("svg.wojmap");
+  if(svg){
+    svg.querySelectorAll(".woj-path.selected").forEach(p=>p.classList.remove("selected"));
+    const firstLabel = svg.querySelector("text");
+    if(firstLabel) svg.insertBefore(path, firstLabel); else svg.appendChild(path);
+  }
+  path.classList.add("selected");
+  const panel = document.getElementById("wojDetail");
+  if(panel) panel.innerHTML = wojDetailHTML(path.getAttribute("data-n"));
+});
+
+/* ============================================================
+   11. RADAR KOMPAS (TEST) — z RainViewer
+        Ta sama, sprawdzona metoda co w głównym radarze na stronie
+        (kafelki RainViewer + wektorowe granice województw + miasta
+        z lokalnej bazy) — tylko w osobnym oknie, z dołożonym GPS
+        na żywo i obrotem mapy zgodnym z kompasem telefonu.
+   ============================================================ */
+let rvTestMap = null, rvTestLayer = null, rvTestFrames = [], rvTestIdx = 0, rvTestTimer = null;
+let rvWatchId = null, rvOrientHandler = null, rvHeadingReceived = false;
+let rvRotateMode = true, rvLastHeading = 0;
+
+function rvSetStatus(msg){
+  const el = document.getElementById("rvTestStatus");
+  if(el) el.textContent = msg;
+}
+
+function rvTestCreateMap(){
+  if(rvTestMap) return true;
+  if(typeof L === "undefined"){
+    rvSetStatus("Biblioteka mapy (Leaflet) nie wczytała się — sprawdź połączenie i odśwież stronę.");
+    return false;
+  }
+  try{
+    rvTestMap = L.map("rvTestMap", {
+      zoomControl:true, attributionControl:true,
+      minZoom:5, maxZoom:12, maxBounds:[[48.5,13.5],[55.3,25]], maxBoundsViscosity:.6
+    }).setView([52.05,19.3], 7);
+    L.control.attribution({prefix:false}).addTo(rvTestMap)
+      .addAttribution("Opady: RainViewer · granice: ppatrzyk/polska-geojson · miasta: baza lokalna");
+
+    // Granice województw — wektor, zero kafelków, sprawdzone na mapie choropleth.
+    const geo = {
+      type:"FeatureCollection",
+      features: WOJ_BORDERS.map(o=>({
+        type:"Feature", properties:{n:o.n},
+        geometry:{type:"MultiPolygon", coordinates:o.p}
+      }))
+    };
+    L.geoJSON(geo, {style:{color:"#3A4570", weight:1.1, fillOpacity:0}}).addTo(rvTestMap);
+
+    PL_CITIES.forEach(c=>{
+      L.circleMarker([c.lat,c.lon], {radius:2, color:"#5A6690", fillColor:"#8790B4", fillOpacity:1, weight:1})
+        .addTo(rvTestMap).bindTooltip(c.n, {direction:"top", offset:[0,-3], className:"citylabel"});
+    });
+    return true;
+  }catch(e){
+    rvSetStatus("Błąd inicjalizacji mapy: " + e.message);
+    return false;
+  }
+}
+
+async function rvTestLoadFrames(){
+  try{
+    const res = await fetch("https://api.rainviewer.com/public/weather-maps.json");
+    const meta = await res.json();
+    const past = meta.radar?.past || [];
+    const nowcast = meta.radar?.nowcast || [];
+    rvTestFrames = past.concat(nowcast).map(f=>({
+      time: f.time,
+      url: meta.host + f.path + "/256/{z}/{x}/{y}/2/1_1.png"
+    }));
+    if(!rvTestFrames.length) throw new Error("brak ramek z RainViewer");
+    const slider = document.getElementById("rvTestSlider");
+    if(slider) slider.max = rvTestFrames.length-1;
+    rvTestIdx = past.length ? past.length-1 : 0;
+    rvTestShowFrame(rvTestIdx);
+  }catch(e){
+    rvSetStatus("Nie udało się pobrać radaru RainViewer: " + e.message + " — spróbuj ponownie za chwilę.");
+  }
+}
+
+function rvTestShowFrame(idx){
+  if(!rvTestFrames.length) return;
+  rvTestIdx = ((idx % rvTestFrames.length) + rvTestFrames.length) % rvTestFrames.length;
+  const f = rvTestFrames[rvTestIdx];
+  if(rvTestLayer) rvTestMap.removeLayer(rvTestLayer);
+  rvTestLayer = L.tileLayer(f.url, {opacity:.7, maxNativeZoom:10, maxZoom:12}).addTo(rvTestMap);
+  const slider = document.getElementById("rvTestSlider");
+  const timeEl = document.getElementById("rvTestTime");
+  if(slider) slider.value = rvTestIdx;
+  if(timeEl){
+    const d = new Date(f.time*1000);
+    const isFuture = f.time*1000 > Date.now();
+    timeEl.textContent = (isFuture?"+":"") + hh(d.getHours());
+    timeEl.style.color = isFuture ? "var(--accent)" : "var(--paper)";
+  }
+  rvSetStatus((rvWatchId!=null?"GPS aktywny · ":"") + "RainViewer, klatka "+(rvTestIdx+1)+"/"+rvTestFrames.length);
+}
+
+function rvRotateMap(headingDeg){
+  const el = document.getElementById("rvTestMap");
+  const arrow = document.getElementById("rvHeadingArrow");
+  const nlabel = document.getElementById("rvNorthLabel");
+  if(!el) return;
+  const angle = rvRotateMode ? -headingDeg : 0;
+  el.style.transform = "rotate("+angle.toFixed(1)+"deg)";
+  if(arrow) arrow.style.transform = "translateX(-50%) rotate("+(rvRotateMode?0:headingDeg).toFixed(1)+"deg)";
+  if(nlabel) nlabel.textContent = "N · " + Math.round(headingDeg) + "°" + (rvRotateMode?"":" (mapa nieruchoma)");
+}
+
+function rvStartOrientation(){
+  rvHeadingReceived = false;
+  const handler = (e)=>{
+    let heading = null;
+    if(typeof e.webkitCompassHeading === "number") heading = e.webkitCompassHeading;
+    else if(typeof e.alpha === "number") heading = 360 - e.alpha;
+    if(heading==null || Number.isNaN(heading)) return;
+    rvHeadingReceived = true;
+    heading = (heading+360)%360;
+    rvLastHeading = heading;
+    rvRotateMap(heading);
+  };
+  rvOrientHandler = handler;
+  window.addEventListener("deviceorientationabsolute", handler);
+  window.addEventListener("deviceorientation", handler);
+  setTimeout(()=>{
+    if(!rvHeadingReceived){
+      const nlabel = document.getElementById("rvNorthLabel");
+      if(nlabel) nlabel.textContent = "kompas: brak sygnału (wymaga https, może też brakować czujnika)";
+    }
+  }, 3000);
+}
+
+function rvStopOrientation(){
+  if(!rvOrientHandler) return;
+  window.removeEventListener("deviceorientationabsolute", rvOrientHandler);
+  window.removeEventListener("deviceorientation", rvOrientHandler);
+  rvOrientHandler = null;
+}
+
+async function rvStartGPS(){
+  if(!("geolocation" in navigator)){
+    rvSetStatus("Ta przeglądarka nie obsługuje geolokalizacji.");
+    return;
+  }
+  // Diagnostyka PRZED próbą — sprawdzamy stan uprawnienia, jeśli przeglądarka
+  // to udostępnia, żeby rozróżnić "jeszcze nie pytano" / "zablokowane na stałe"
+  // od problemu z samym sygnałem (np. wyłączona lokalizacja w telefonie).
+  if(navigator.permissions && navigator.permissions.query){
+    try{
+      const st = await navigator.permissions.query({name:"geolocation"});
+      if(st.state === "denied"){
+        rvSetStatus("Lokalizacja zablokowana dla tej strony na poziomie przeglądarki. Dotknij ikonki kłódki/informacji obok adresu → Uprawnienia → Lokalizacja → Zezwól, potem spróbuj ponownie.");
+        return;
+      }
+    }catch(e){ /* Permissions API czasem nie zna "geolocation" — ignorujemy, jedziemy dalej */ }
+  }
+  rvGpsRunning();
+}
+
+function rvGpsRunning(){
+  if(!("geolocation" in navigator)){
+    rvSetStatus("Ta przeglądarka nie obsługuje geolokalizacji.");
+    return;
+  }
+  let marker = null, circle = null;
+  rvSetStatus("Proszę o zgodę na GPS…");
+  rvWatchId = navigator.geolocation.watchPosition(
+    (pos)=>{
+      const {latitude:lat, longitude:lon, accuracy:acc} = pos.coords;
+      try{
+        if(rvTestMap){
+          if(!marker){
+            const icon = L.divIcon({className:"", html:'<div style="width:14px;height:14px;border-radius:50%;background:#7FD1E8;box-shadow:0 0 0 4px rgba(127,209,232,.28),0 0 10px rgba(127,209,232,.7);border:2px solid #0C1120"></div>', iconSize:[14,14], iconAnchor:[7,7]});
+            marker = L.marker([lat,lon], {icon, zIndexOffset:1000}).addTo(rvTestMap);
+            circle = L.circle([lat,lon], {radius:acc, color:"#7FD1E8", weight:1, opacity:.5, fillOpacity:.06}).addTo(rvTestMap);
+            rvTestMap.setView([lat,lon], 10);
+          } else {
+            marker.setLatLng([lat,lon]);
+            circle.setLatLng([lat,lon]).setRadius(acc);
+          }
+        }
+        rvSetStatus("GPS aktywny · ±"+Math.round(acc)+" m · "+lat.toFixed(4)+", "+lon.toFixed(4)
+          + (rvOrientHandler ? " · kompas: "+Math.round(rvLastHeading)+"°" : ""));
+      }catch(e){
+        console.error("rvStartGPS marker error:", e);
+        rvSetStatus("GPS działa (±"+Math.round(acc)+" m) ale nie udało się narysować znacznika: " + e.message);
+      }
+    },
+    (err)=>{
+      const msg = err.code===1 ? "Odmówiono dostępu do GPS." : err.code===2 ? "Sygnał GPS niedostępny." : "Przekroczono czas oczekiwania na GPS.";
+      console.error("rvStartGPS geolocation error:", err.code, err.message);
+      rvSetStatus(msg + " (kod " + err.code + ") Sprawdź uprawnienia lokalizacji dla przeglądarki.");
+    },
+    {enableHighAccuracy:true, maximumAge:4000, timeout:15000}
+  );
+}
+
+function rvStopGPS(){
+  if(rvWatchId!=null){ navigator.geolocation.clearWatch(rvWatchId); rvWatchId=null; }
+}
+
+async function rvTestOpen(){
+  const modal = document.getElementById("rvMapModal");
+  modal.hidden = false;
+  document.body.style.overflow = "hidden";
+
+  const mapOk = rvTestCreateMap(); // szybkie, synchroniczne — bez sieci
+  requestAnimationFrame(()=>{ if(rvTestMap) rvTestMap.invalidateSize(); });
+  setTimeout(()=>{ if(rvTestMap) rvTestMap.invalidateSize(); }, 300);
+
+  // GPS i kompas proszone NATYCHMIAST, jak najbliżej oryginalnego dotknięcia
+  // przycisku — nie czekamy na sieć (RainViewer), bo dłuższe opóźnienie może
+  // sprawić, że przeglądarka przestanie traktować to jako świeżą reakcję
+  // użytkownika i po cichu odmówi dostępu do czujników.
+  if(typeof DeviceOrientationEvent !== "undefined" && typeof DeviceOrientationEvent.requestPermission === "function"){
+    try{
+      const perm = await DeviceOrientationEvent.requestPermission();
+      if(perm === "granted") rvStartOrientation();
+      else rvSetStatus("Brak zgody na kompas — mapa zostanie z północą u góry.");
+    }catch(e){ rvSetStatus("Nie udało się poprosić o dostęp do kompasu."); }
+  } else {
+    rvStartOrientation();
+  }
+  rvStartGPS();
+
+  // Radar RainViewer ładuje się równolegle, nie blokując GPS/kompasu.
+  if(mapOk) rvTestLoadFrames();
+}
+
+function rvTestClose(){
+  const modal = document.getElementById("rvMapModal");
+  modal.hidden = true;
+  document.body.style.overflow = "";
+  rvStopGPS();
+  rvStopOrientation();
+  if(rvTestTimer){ clearInterval(rvTestTimer); rvTestTimer=null; }
+  const playBtn = document.getElementById("rvTestPlay");
+  if(playBtn) playBtn.textContent = "▶";
+  // Niszczę mapę przy zamknięciu — inaczej kolejne otwarcie dokładałoby drugi
+  // znacznik GPS na tej samej, wciąż żywej instancji Leaflet.
+  if(rvTestMap){ rvTestMap.remove(); rvTestMap = null; }
+  rvTestLayer = null; rvTestFrames = []; rvTestIdx = 0;
+}
+
+function wireRvTest(){
+  const openBtn = document.getElementById("rvMapOpenBtn");
+  const closeBtn = document.getElementById("rvMapCloseBtn");
+  const gpsBtn = document.getElementById("rvTestGpsRetry");
+  const rotateBtn = document.getElementById("rvTestRotateBtn");
+  const resetBtn = document.getElementById("rvTestResetBtn");
+  const playBtn = document.getElementById("rvTestPlay");
+  const slider = document.getElementById("rvTestSlider");
+  if(openBtn) openBtn.addEventListener("click", rvTestOpen);
+  if(closeBtn) closeBtn.addEventListener("click", rvTestClose);
+  if(gpsBtn) gpsBtn.addEventListener("click", ()=>{
+    // Bezpośrednie kliknięcie = świeży gest użytkownika, najpewniejszy moment
+    // na ponowienie prośby o GPS, np. po włączeniu lokalizacji w telefonie.
+    rvStopGPS();
+    rvStartGPS();
+  });
+  if(rotateBtn) rotateBtn.addEventListener("click", ()=>{
+    rvRotateMode = !rvRotateMode;
+    rotateBtn.textContent = rvRotateMode ? "🧭 Obrót: śledzi kierunek" : "🧭 Obrót: wyłączony";
+    rvRotateMap(rvLastHeading);
+  });
+  if(resetBtn) resetBtn.addEventListener("click", ()=>{
+    rvRotateMode = false;
+    if(rotateBtn) rotateBtn.textContent = "🧭 Obrót: wyłączony";
+    rvRotateMap(0);
+  });
+  if(slider) slider.addEventListener("input", ()=>{
+    if(rvTestTimer){ clearInterval(rvTestTimer); rvTestTimer=null; if(playBtn) playBtn.textContent="▶"; }
+    rvTestShowFrame(+slider.value);
+  });
+  if(playBtn) playBtn.addEventListener("click", ()=>{
+    if(rvTestTimer){ clearInterval(rvTestTimer); rvTestTimer=null; playBtn.textContent="▶"; return; }
+    playBtn.textContent="⏸";
+    rvTestTimer = setInterval(()=>{ rvTestShowFrame(rvTestIdx+1); }, 700);
+  });
+}
+
+async function boot(){
+  try{
+    const data = await load();
+    updateView(data, null, {status:"idle"});
+    const btn = document.getElementById("refreshBtn");
+    if(btn) btn.addEventListener("click", refreshData);
+    wireCitySearch(data);
+    wireRvTest();
+    scheduleAutoRefresh();
+  }
+  catch(e){ fail(e.message || "Nieznany błąd."); }
+}
+boot();
+</script>
+</body>
+</html>
