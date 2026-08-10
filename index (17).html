@@ -1033,7 +1033,7 @@ pl:{
 'txt_title':'WYCENA GRAWEROWANIA LASEROWEGO – LASERPROFIT.EU 2026','txt_date':'Data','txt_gross':'Cena dla klienta (BRUTTO)','txt_profit':'Twój zysk netto',
 'txt_details':'SZCZEGÓŁY / RAPORT OPERACYJNY','txt_generated':'Wygenerowano przez','txt_sheet':'Arkusz','txt_proj':'Projekt',
 'txt_usage':'Zużycie arkusza','txt_fits':'Zmieści się','txt_mat':'Koszt materiału','txt_mach':'Eksploatacja maszyny',
-'txt_labor':'Robocizna','txt_ship':'Wysyłka','txt_netto':'Cena Netto','txt_vat':'VAT','txt_brutto':'CENA BRUTTO','txt_zysk':'TWÓJ ZYSK NETTO','txt_rpt':'📋 RAPORT OPERACYJNY','txt_item':'Przedmiot / materiał'
+'txt_labor':'Robocizna','txt_ship':'Wysyłka','txt_netto':'Cena Netto','txt_vat':'VAT','txt_brutto':'CENA BRUTTO','txt_zysk':'TWÓJ ZYSK NETTO','txt_rpt':'📋 RAPORT OPERACYJNY','txt_item':'Przedmiot / materiał','txt_matclient':'Materiał klienta'
 },
 fr:{
 'nav_calc':'🧮 CALCULATEUR','nav_files':'📂 FICHIERS GRATUITS','nav_bhp':'⚠️ SÉCURITÉ','theme_light':'☀️ Mode clair','theme_dark':'🌙 Mode sombre','more_langs':'plus',
@@ -1515,13 +1515,18 @@ function calculate(){
         h+=`<div class="rpt-row"><span class="rl">${T.txt_item||'Przedmiot'}</span><span class="rv">${escHtml(itemDesc)}</span></div>`;
         h+=sep;
     }
-    if(vd){
+    if(vd&&!clientMat){
         h+=`<div class="rpt-row"><span class="rl">${T.txt_sheet||'Arkusz'}</span><span class="rv">${sW}×${sH} mm</span></div>`;
         h+=`<div class="rpt-row"><span class="rl">${T.txt_proj||'Projekt'} (${qty})</span><span class="rv">${cW}×${cH} mm</span></div>`;
         h+=`<div class="rpt-row"><span class="rl">${T.txt_usage||'Zużycie'}</span><span class="rv">${uPct}% · max ${maxPcs} ${T.pcs||'szt.'}</span></div>`;
         h+=sep;
     }
-    h+=rrow(T.txt_mat,matCost);h+=rrow(T.txt_mach,macCost);h+=rrow(T.txt_labor,design+work/mult);
+    if(clientMat){
+        h+=`<div class="rpt-row"><span class="rl">${T.txt_mat||'Koszt materiału'}</span><span class="rv">${T.txt_matclient||'Materiał klienta'}</span></div>`;
+    } else {
+        h+=rrow(T.txt_mat,matCost);
+    }
+    h+=rrow(T.txt_mach,macCost);h+=rrow(T.txt_labor,design+work/mult);
     if(ship>0)h+=rrow(T.txt_ship,ship);
     h+=sep;h+=rrow(T.txt_netto,netto);if(vatPct>0){
         const vatPreset=document.getElementById('vatPreset');
@@ -1544,7 +1549,7 @@ function calculate(){
     document.getElementById('expertResult').style.display='block';
     document.getElementById('expertResult').scrollIntoView({behavior:'smooth'});
 
-    window._last={brutto,profit,matCost,macCost,design,work,mult,netto,ship,sW,sH,cW,cH,qty,uPct,maxPcs,vd,sym,vatPct,itemDesc};
+    window._last={brutto,profit,matCost,macCost,design,work,mult,netto,ship,sW,sH,cW,cH,qty,uPct,maxPcs,vd,sym,vatPct,itemDesc,clientMat};
 }
 
 // ============================================================
@@ -1744,8 +1749,9 @@ function saveTXT(){
     txt+=T.txt_profit+': '+c.profit.toFixed(2)+' '+sym+'\n';
     txt+='\n'+s2+'\n'+T.txt_details+'\n'+s2+'\n';
     if(c.itemDesc){txt+=(T.txt_item||'Przedmiot')+': '+c.itemDesc+'\n'+s2+'\n';}
-    if(c.vd){txt+=T.txt_sheet+': '+c.sW+'×'+c.sH+' mm\n';txt+=T.txt_proj+' ('+c.qty+'): '+c.cW+'×'+c.cH+' mm\n';txt+=T.txt_usage+': '+c.uPct+'% | '+T.txt_fits+': '+c.maxPcs+'\n';txt+=s2+'\n';}
-    txt+=line(T.txt_mat,c.matCost);txt+=line(T.txt_mach,c.macCost);txt+=line(T.txt_labor,c.design+c.work/c.mult);
+    if(c.vd&&!c.clientMat){txt+=T.txt_sheet+': '+c.sW+'×'+c.sH+' mm\n';txt+=T.txt_proj+' ('+c.qty+'): '+c.cW+'×'+c.cH+' mm\n';txt+=T.txt_usage+': '+c.uPct+'% | '+T.txt_fits+': '+c.maxPcs+'\n';txt+=s2+'\n';}
+    if(c.clientMat){txt+=(T.txt_mat||'Koszt materiału')+': '+(T.txt_matclient||'Materiał klienta')+'\n';}else{txt+=line(T.txt_mat,c.matCost);}
+    txt+=line(T.txt_mach,c.macCost);txt+=line(T.txt_labor,c.design+c.work/c.mult);
     if(c.ship>0)txt+=line(T.txt_ship,c.ship);
     txt+=s2+'\n';txt+=line(T.txt_netto,c.netto);
     if(c.vatPct>0){
