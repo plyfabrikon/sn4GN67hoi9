@@ -5,7 +5,7 @@
 <script src="/assets/consent.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Polityka prywatności i cookies | LaserProfit</title>
-<meta name="description" content="Polityka prywatności LaserProfit.eu: jakie dane przetwarzamy, pliki cookie Google Analytics i Google Ads (tylko po zgodzie), czat społeczności, licznik odwiedzin i Twoje prawa.">
+<meta name="description" content="Polityka prywatności LaserProfit.eu: jakie dane przetwarzamy, pliki cookie Google Analytics i Google Ads (tylko po zgodzie), licznik odwiedzin i Twoje prawa.">
 <meta name="robots" content="index,follow">
 <link rel="canonical" href="https://laserprofit.eu/privacy/">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
@@ -53,7 +53,7 @@ footer a{color:inherit}
 <p class="muted">Obowiązuje od 17 listopada 2026 r.</p>
 
 <div class="box">
-  <p><b>W skrócie:</b> kalkulator działa w Twojej przeglądarce i nie wysyła wpisanych danych wyceny na żaden serwer. Pliki cookie Google Analytics i Google Ads włączamy <b>tylko po kliknięciu „Akceptuję”</b>. Jeśli korzystasz z czatu społeczności, zapisujemy podane imię, e-mail i treść wiadomości w bazie Firebase w Unii Europejskiej.</p>
+  <p><b>W skrócie:</b> kalkulator działa w Twojej przeglądarce i nie wysyła wpisanych danych wyceny na żaden serwer. Pliki cookie Google Analytics i Google Ads włączamy <b>tylko po kliknięciu „Akceptuję”</b>.</p>
   <p><button type="button" class="btn" data-cookie-settings>Zmień ustawienia cookies</button></p>
 </div>
 
@@ -79,26 +79,22 @@ footer a{color:inherit}
 <tr><td><code>lp_consent_v1</code></td><td>localStorage</td><td>zapamiętanie Twojego wyboru dotyczącego cookies</td><td>do usunięcia w przeglądarce</td><td>niezbędne</td></tr>
 <tr><td><code>lp_redirect</code></td><td>cookie</td><td>jednorazowe przekierowanie na wersję językową (PL/EN/DE) zgodną z językiem przeglądarki</td><td>1 godzina</td><td>niezbędne</td></tr>
 <tr><td><code>theme</code>, <code>lp_logo</code>, <code>lp_company</code></td><td>localStorage</td><td>tryb jasny/ciemny oraz logo i nazwa firmy do wydruku wyceny – zostają tylko na Twoim urządzeniu</td><td>do usunięcia w przeglądarce</td><td>niezbędne (funkcja, o którą prosisz)</td></tr>
-<tr><td><code>lp_chat_user</code></td><td>localStorage</td><td>zapamiętanie imienia i e-maila podanych przy logowaniu do czatu</td><td>do usunięcia w przeglądarce</td><td>niezbędne (funkcja, o którą prosisz)</td></tr>
 <tr><td><code>googtrans</code></td><td>cookie</td><td>tylko w porównywarce laserów: język automatycznego tłumaczenia strony przez widżet Google Translate (wybrany z listy; w wersji angielskiej i niemieckiej ustawiany automatycznie)</td><td>sesja</td><td>niezbędne do wyświetlenia strony w wybranym języku</td></tr>
 <tr><td><code>_ga</code>, <code>_ga_XGHFMYDPM7</code></td><td>cookie (Google Analytics)</td><td>statystyki odwiedzin</td><td>do 2 lat</td><td><b>tylko po zgodzie</b></td></tr>
 <tr><td><code>_gcl_au</code></td><td>cookie (Google Ads)</td><td>mierzenie skuteczności reklam</td><td>do 90 dni</td><td><b>tylko po zgodzie</b></td></tr>
 </table></div>
 <p>Wpisane w kalkulatorze parametry (moc, czas, materiały, ceny) są przeliczane w Twojej przeglądarce i nie są nigdzie wysyłane.</p>
 
-<h2>5. Czat społeczności</h2>
-<p>Korzystanie z czatu jest dobrowolne. Aby pisać, podajesz <b>imię (nick)</b> i <b>adres e-mail</b>. Razem z każdą wiadomością zapisujemy imię, e-mail, treść i czas wysłania.</p>
+<h2 id="czat">5. Czat społeczności (wyłączony)</h2>
+<p>Czat społeczności został wyłączony 17 listopada 2026 r. i nie zbieramy już przez niego żadnych danych.</p>
 <ul>
-  <li>Dane są przechowywane w usłudze <b>Firebase Realtime Database</b> (Google Ireland Limited) w projekcie <code>czatlaser</code>, w regionie <b>europe-west1 (Belgia)</b>.</li>
-  <li>Imię i treść wiadomości widzą wszyscy odwiedzający czat. Adres e-mail nie jest wyświetlany w oknie czatu; służy do rozpoznania Twoich wiadomości i ewentualnego kontaktu w sprawie moderacji.</li>
-  <li>Aby ograniczyć spam (maks. 2 wiadomości na dobę), przy wysyłaniu wiadomości Twój adres IP jest odczytywany przez usługę <b>ipify</b> (<code>api.ipify.org</code>) i zapisywany w bazie Firebase razem z godzinami wysłania wiadomości.</li>
-  <li>Jeśli wybierzesz inny język wyświetlania czatu, treść wiadomości innych osób jest wysyłana do tłumaczenia do usługi <b>MyMemory</b> (<code>api.mymemory.translated.net</code>, Translated srl, Włochy).</li>
-  <li>Podstawa prawna: art. 6 ust. 1 lit. b RODO (świadczenie usługi czatu, z której chcesz skorzystać) oraz art. 6 ust. 1 lit. f RODO (moderacja i ochrona przed spamem).</li>
-  <li>Wiadomości przechowujemy do czasu ich usunięcia przez moderatora lub na Twoją prośbę. Na żądanie usuniemy Twoje wiadomości i dane.</li>
+  <li>Wiadomości wysłane wcześniej (nick, treść, czas wysłania i podany adres e-mail) oraz adresy IP zapisane w celu limitu wiadomości są przechowywane w <b>Firebase Realtime Database</b> (Google Ireland Limited, projekt <code>czatlaser</code>, region europe-west1 – Belgia) do czasu ich usunięcia.</li>
+  <li>Jeśli pisałeś na czacie i chcesz usunięcia swoich wiadomości lub danych, napisz przez formularz zgłoszeń – usuniemy je.</li>
+  <li>Twoja przeglądarka mogła zapamiętać nick i e-mail podane w czacie (localStorage, klucz <code>lp_chat_user</code>). Możesz je usunąć, czyszcząc dane tej strony w przeglądarce.</li>
 </ul>
 
 <h2>6. Licznik odwiedzin</h2>
-<p>Licznik odwiedzin zwiększa o jeden wspólną liczbę w tej samej bazie Firebase (<code>czatlaser</code>, europe-west1). Licznik nie zapisuje żadnych danych o Tobie – jedynie przy połączeniu z bazą serwery Google technicznie otrzymują Twój adres IP. Podstawa: art. 6 ust. 1 lit. f RODO (statystyka bez identyfikacji użytkowników).</p>
+<p>Licznik odwiedzin zwiększa o jeden wspólną liczbę w bazie Firebase Realtime Database (Google Ireland Limited) (<code>czatlaser</code>, europe-west1). Licznik nie zapisuje żadnych danych o Tobie – jedynie przy połączeniu z bazą serwery Google technicznie otrzymują Twój adres IP. Podstawa: art. 6 ust. 1 lit. f RODO (statystyka bez identyfikacji użytkowników).</p>
 
 <h2>7. Formularz zgłoszeń</h2>
 <p>Formularz „Zgłoś problem / Zaproponuj ulepszenie” wysyła rodzaj zgłoszenia, treść, wybrany język i walutę oraz – jeśli go podasz – adres e-mail za pośrednictwem usługi <b>Formspree</b> (Formspree, Inc., USA). Dane służą wyłącznie do odpowiedzi i ulepszania strony. Podstawa: art. 6 ust. 1 lit. f RODO. Przechowujemy je do czasu załatwienia sprawy, nie dłużej niż 12 miesięcy.</p>
@@ -128,7 +124,7 @@ footer a{color:inherit}
 <ul>
   <li>The site is hosted on GitHub Pages (GitHub, Inc., USA), which processes technical access data such as your IP address.</li>
   <li><b>Google Analytics 4</b> and (on English pages) <b>Google Ads</b> are loaded <b>only after you click “Accept”</b> (Google Consent Mode v2, all consent types denied by default). Before that no Google script is loaded and no <code>_ga</code>/<code>_gcl_au</code> cookies are set. Legal basis: your consent (Art. 6(1)(a) GDPR). You can withdraw it at any time via “Cookie settings” in the footer.</li>
-  <li><b>Community chat</b> (optional): your name, e-mail, message text and time are stored in Firebase Realtime Database (project <code>czatlaser</code>, region europe-west1, Belgium). Names and messages are visible to all chat visitors; the e-mail is not shown in the chat. Your IP address (via api.ipify.org) is stored to limit spam to 2 messages per day. Message translation uses MyMemory (translated.net).</li>
+  <li>The <b>community chat</b> was switched off on 17 November 2026 and no longer collects data. Earlier messages (nickname, text, time, e-mail) and IP addresses stored for rate limiting remain in Firebase (project <code>czatlaser</code>, europe-west1) until deleted; use the feedback form to request deletion.</li>
   <li>The <b>visitor counter</b> only increments a number in the same Firebase database.</li>
   <li>The <b>feedback form</b> is sent via Formspree (USA). Currency pre-selection uses ipapi.co (country from your IP, not stored).</li>
   <li>Your calculator inputs stay in your browser. Fonts are self-hosted (no Google Fonts).</li>
@@ -143,7 +139,7 @@ footer a{color:inherit}
 <ul>
   <li>Hosting: GitHub Pages (GitHub, Inc., USA); dabei werden technische Zugriffsdaten wie die IP-Adresse verarbeitet.</li>
   <li><b>Google Analytics 4</b> wird <b>erst nach Klick auf „Akzeptieren“</b> geladen (Google Consent Mode v2, standardmäßig alles abgelehnt). Vorher wird kein Google-Skript geladen und keine <code>_ga</code>-Cookies gesetzt. Rechtsgrundlage: Einwilligung (Art. 6 Abs. 1 lit. a DSGVO), jederzeit widerrufbar über „Cookie-Einstellungen“ in der Fußzeile.</li>
-  <li><b>Community-Chat</b> (freiwillig): Name, E-Mail, Nachricht und Zeitpunkt werden in der Firebase Realtime Database gespeichert (Projekt <code>czatlaser</code>, Region europe-west1, Belgien). Name und Nachricht sind für alle Chat-Besucher sichtbar, die E-Mail wird im Chat nicht angezeigt. Zum Spamschutz (max. 2 Nachrichten pro Tag) wird Ihre IP-Adresse (über api.ipify.org) gespeichert. Übersetzungen über MyMemory (translated.net).</li>
+  <li>Der <b>Community-Chat</b> wurde am 17. November 2026 abgeschaltet und erhebt keine Daten mehr. Frühere Nachrichten (Spitzname, Text, Zeitpunkt, E-Mail) und zur Begrenzung gespeicherte IP-Adressen bleiben bis zur Löschung in Firebase (Projekt <code>czatlaser</code>, europe-west1); Löschung über das Feedback-Formular anfordern.</li>
   <li>Der <b>Besucherzähler</b> erhöht nur eine Zahl in derselben Firebase-Datenbank.</li>
   <li>Das <b>Feedback-Formular</b> wird über Formspree (USA) versendet. Die Währungsvorauswahl nutzt ipapi.co (Land anhand der IP, keine Speicherung).</li>
   <li>Ihre Eingaben im Rechner bleiben in Ihrem Browser. Schriftarten werden lokal ausgeliefert (kein Google Fonts).</li>

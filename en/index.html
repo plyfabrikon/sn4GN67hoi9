@@ -209,7 +209,7 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
 .fb-nav-btn{display:flex;align-items:center;gap:4px;background:#1877F2;color:#fff;text-decoration:none;padding:4px 8px;border-radius:20px;font-size:.62rem;font-weight:700;font-family:var(--font);white-space:nowrap;transition:.25s}
 .fb-nav-btn:hover{background:#1464d8;transform:translateY(-1px)}
 /* ── Calc + chat layout ── */
-.calc-chat-wrap{display:grid;grid-template-columns:2fr 1fr;gap:18px;align-items:start;margin-top:50px}
+.calc-chat-wrap{display:grid;grid-template-columns:1fr;gap:18px;align-items:start;margin-top:50px}
 @media(max-width:860px){.calc-chat-wrap{grid-template-columns:1fr}}
 .calc-chat-wrap .calc-section{margin-top:0}
 /* ── Chat panel ── */
@@ -656,43 +656,6 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
 </div>
 </section>
 
-<!-- ── CHAT PANEL ── -->
-<div class="chat-panel" id="chatPanel">
-    <div class="chat-login" id="chatLogin">
-        <h3>💬 Community Chat</h3>
-        <p>Enter your name and email to join.<br>Details are saved – no need to re-enter.</p>
-        <input type="text" id="loginName" placeholder="Your name (e.g. LaserMaker)" maxlength="30">
-        <input type="email" id="loginEmail" placeholder="Email (visible to moderator only)">
-        <div class="chat-login-err" id="loginErr">Please fill in all fields correctly.</div>
-        <button class="chat-login-btn" onclick="chatDoLogin()">Join Chat →</button>
-        <p style="font-size:.6rem;color:var(--muted);margin-top:4px;">Data stored locally in your browser only.</p>
-    </div>
-    <div id="chatMain" style="display:none;flex-direction:column;flex:1;overflow:hidden;">
-        <div class="chat-header">
-            <div class="chat-header-top">
-                <span class="chat-title">💬 LaserProfit Community</span>
-                <span class="online-badge" id="onlineBadge">● online</span>
-            </div>
-            <div class="chat-sub">Share feedback – what to add or change?</div>
-            <div class="chat-trans-btns">
-                <span style="font-size:.62rem;color:var(--muted);align-self:center;">Translate:</span>
-                <button class="chat-trans-btn active" onclick="chatSetLang('en',this)">🇬🇧 EN</button>
-                <button class="chat-trans-btn" onclick="chatSetLang('pl',this)">🇵🇱 PL</button>
-                <button class="chat-trans-btn" onclick="chatSetLang('de',this)">🇩🇪 DE</button>
-                <span style="font-size:.58rem;color:var(--muted);margin-left:auto;align-self:center;" id="chatUserInfo"></span>
-                <button id="clearHistoryBtn" onclick="clearChatHistory()" style="display:none;font-size:.58rem;color:#f87171;background:none;border:none;cursor:pointer;font-family:var(--font);">🗑 clear all</button>
-                <button onclick="chatLogout()" style="font-size:.58rem;color:var(--muted);background:none;border:none;cursor:pointer;font-family:var(--font);">logout</button>
-            </div>
-        </div>
-        <div class="chat-messages" id="chatMessages"></div>
-        <div class="chat-footer">
-            <div class="chat-input-row">
-                <input class="chat-input" id="chatInput" placeholder="Write in English..." maxlength="300" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();chatSend();}">
-                <button class="chat-send" onclick="chatSend()">Send</button>
-            </div>
-        </div>
-    </div>
-</div>
 </div><!-- end calc-chat-wrap -->
 
 <section style="margin-top:40px;line-height:1.85;padding:30px;border-radius:16px;background:rgba(255,255,255,.02);border:1px solid var(--border);font-size:.82rem;">
@@ -1416,20 +1379,12 @@ document.addEventListener('DOMContentLoaded',async()=>{
     buildChips();
     refreshSyms();
     calcMat();
-    initChat();
+    initVisitorCounter();
 });
 
 // ============================================================
-// CZAT – Firebase
+// CZAT – wyłączony 17.11.2026. Firebase służy już tylko do licznika odwiedzin.
 // ============================================================
-var MODERATOR_EMAIL='plyfabrikon@gmail.com';
-var CHAT_USER_KEY='lp_chat_user';
-var chatUser=null;
-var chatDisplayLang='en';
-var chatDb=null;
-var chatRef=null;
-var userIP=null;
-
 var FB_CONFIG={
     apiKey:"AIzaSyCz1SFsl4OeHIsCf-BCzOToklmiWWI35CU",
     authDomain:"czatlaser.firebaseapp.com",
@@ -1440,181 +1395,15 @@ var FB_CONFIG={
     appId:"1:458317857687:web:0955c9be26e6a686d1bad2"
 };
 
-function initChat(){
+function initVisitorCounter(){
     try{
         if(!firebase.apps.length) firebase.initializeApp(FB_CONFIG);
-        chatDb=firebase.database();
         startVisitorCounter();
-        chatRef=chatDb.ref('chat/messages');
-    }catch(e){console.error('Firebase error:',e);}
-    var saved=localStorage.getItem(CHAT_USER_KEY);
-    if(saved){try{chatUser=JSON.parse(saved);}catch{}}
-    if(chatUser&&chatUser.name&&chatUser.email){showChatMain();}
-    else{
-        document.getElementById('chatLogin').style.display='flex';
-        document.getElementById('chatMain').style.display='none';
+    }catch(e){
+        console.error('Firebase error:',e);
     }
 }
 
-function showChatMain(){
-    document.getElementById('chatLogin').style.display='none';
-    document.getElementById('chatMain').style.display='flex';
-    var info=document.getElementById('chatUserInfo');
-    if(info) info.textContent=chatUser.name+(chatUser.email===MODERATOR_EMAIL?' 👑':'');
-    var clearBtn=document.getElementById('clearHistoryBtn');
-    if(clearBtn&&chatUser.email===MODERATOR_EMAIL) clearBtn.style.display='inline';
-    var badge=document.getElementById('onlineBadge');
-    if(badge) badge.textContent='● '+(Math.floor(Math.random()*8)+3)+' online';
-    startListening();
-}
-
-function startListening(){
-    if(!chatRef) return;
-    chatRef.limitToLast(100).on('value',function(snap){
-        var msgs=[];
-        snap.forEach(function(child){
-            var v=child.val();
-            if(v&&v.text) msgs.push(v);
-        });
-        renderChat(msgs);
-    });
-}
-
-function renderChat(msgs){
-    window._lastMsgs=msgs;
-    var wrap=document.getElementById('chatMessages');
-    if(!wrap) return;
-    var html='';
-    for(var i=0;i<msgs.length;i++){
-        var msg=msgs[i];
-        var mine=(chatUser&&msg.email===chatUser.email);
-        var initials=(msg.user||'??').slice(0,2).toUpperCase();
-        var t=new Date(msg.time||Date.now()).toLocaleTimeString('en',{hour:'2-digit',minute:'2-digit'});
-        var isMod=(chatUser&&chatUser.email===MODERATOR_EMAIL&&!mine);
-        var modBtn=isMod?'<button class="cmod-btn" onclick="chatDelete(\''+msg.id+'\')" title="Delete">🗑</button>':'';
-        html+='<div class="cmsg'+(mine?' mine':'')+'" id="msg_'+msg.id+'">';
-        html+='<div class="cavatar">'+initials+'</div>';
-        html+='<div><div class="cbubble">';
-        html+='<div class="cname">'+escH(msg.user||'')+' '+modBtn+'</div>';
-        html+='<div class="ctext" id="txt_'+msg.id+'">'+escH(msg.text||'')+'</div>';
-        if(!mine) html+='<div id="tr_'+msg.id+'" style="display:none;font-size:.65rem;color:var(--muted);font-style:italic;margin-top:4px;padding-top:4px;border-top:1px solid var(--border);"></div>';
-        html+='</div><div class="ctime">'+t+'</div></div></div>';
-    }
-    wrap.innerHTML=html;
-    wrap.scrollTop=wrap.scrollHeight;
-    if(chatDisplayLang!=='en') translateAll(msgs);
-}
-
-function translateAll(msgs){
-    for(var i=0;i<msgs.length;i++){
-        (function(msg){
-            if(chatUser&&msg.email===chatUser.email) return;
-            var el=document.getElementById('tr_'+msg.id);
-            if(!el) return;
-            if(chatDisplayLang==='en'){el.style.display='none';return;}
-            if(el.dataset.lang===chatDisplayLang){el.style.display='block';return;}
-            fetch('https://api.mymemory.translated.net/get?q='+encodeURIComponent(msg.text)+'&langpair=en|'+chatDisplayLang)
-            .then(function(r){return r.json();})
-            .then(function(d){
-                if(el&&d.responseData&&d.responseData.translatedText){
-                    el.textContent=d.responseData.translatedText;
-                    el.dataset.lang=chatDisplayLang;
-                    el.style.display='block';
-                }
-            }).catch(function(){});
-        })(msgs[i]);
-    }
-}
-
-function escH(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-
-function getUserIP(callback){
-    if(userIP){callback(userIP);return;}
-    fetch('https://api.ipify.org?format=json')
-    .then(function(r){return r.json();})
-    .then(function(d){userIP=d.ip||'unknown';callback(userIP);})
-    .catch(function(){userIP='unk_'+Math.random().toString(36).slice(2);callback(userIP);});
-}
-
-function canSendMsg(callback){
-    getUserIP(function(ip){
-        var ipKey=ip.replace(/\./g,'_').replace(/:/g,'_');
-        var limitRef=chatDb.ref('chat/limits/'+ipKey);
-        limitRef.once('value',function(snap){
-            var data=snap.val()||{};
-            var now=Date.now();
-            var times=[];
-            if(data.times){
-                if(Array.isArray(data.times)){times=data.times;}
-                else{Object.keys(data.times).forEach(function(k){times.push(data.times[k]);});}
-            }
-            times=times.filter(function(t){return now-t<86400000;});
-            if(times.length>=2){callback(false);return;}
-            times.push(now);
-            var timesObj={};
-            for(var i=0;i<times.length;i++) timesObj[i]=times[i];
-            limitRef.set({times:timesObj});
-            callback(true);
-        });
-    });
-}
-
-function chatSend(){
-    var inp=document.getElementById('chatInput');
-    var text=(inp.value||'').trim();
-    if(!text||!chatUser||!chatRef) return;
-    if(chatUser.email===MODERATOR_EMAIL){
-        var msg={id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),user:chatUser.name,email:chatUser.email,text:text,time:Date.now()};
-        inp.value='';chatRef.push(msg);return;
-    }
-    var btn=document.querySelector('.chat-send');
-    if(btn){btn.disabled=true;btn.textContent='...';}
-    canSendMsg(function(allowed){
-        if(btn){btn.disabled=false;btn.textContent='Send';}
-        if(!allowed){alert('Max 2 messages per 24 hours per IP.\nThis chat is for suggestions only.');return;}
-        var msg={id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),user:chatUser.name,email:chatUser.email,text:text,time:Date.now()};
-        inp.value='';chatRef.push(msg);
-    });
-}
-
-function chatDelete(id){
-    if(!chatUser||chatUser.email!==MODERATOR_EMAIL||!chatRef) return;
-    if(confirm('Delete this message?')){
-        chatRef.orderByChild('id').equalTo(id).once('value',function(snap){snap.forEach(function(c){c.ref.remove();});});
-    }
-}
-
-function clearChatHistory(){
-    if(!chatUser||chatUser.email!==MODERATOR_EMAIL) return;
-    if(confirm('Delete ALL messages? This cannot be undone.')){chatRef.remove();}
-}
-
-function chatDoLogin(){
-    var name=(document.getElementById('loginName').value||'').trim();
-    var email=(document.getElementById('loginEmail').value||'').trim();
-    var err=document.getElementById('loginErr');
-    if(!name||!email||email.indexOf('@')===-1){err.style.display='block';return;}
-    err.style.display='none';
-    chatUser={name:name,email:email};
-    localStorage.setItem(CHAT_USER_KEY,JSON.stringify(chatUser));
-    showChatMain();
-}
-
-function chatLogout(){
-    chatUser=null;
-    localStorage.removeItem(CHAT_USER_KEY);
-    if(chatRef) chatRef.off();
-    document.getElementById('chatLogin').style.display='flex';
-    document.getElementById('chatMain').style.display='none';
-}
-
-function chatSetLang(lang,btn){
-    chatDisplayLang=lang;
-    document.querySelectorAll('.chat-trans-btn').forEach(function(b){b.classList.remove('active');});
-    btn.classList.add('active');
-    document.querySelectorAll('[id^="tr_"]').forEach(function(el){el.style.display='none';el.dataset.lang='';});
-    if(lang!=='en') translateAll(window._lastMsgs||[]);
-}
 </script>
 </body>
 </html>
