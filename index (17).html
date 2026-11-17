@@ -1,29 +1,8 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-<!-- Google Consent Mode v2 — musi być zdefiniowane PRZED wczytaniem gtag.js -->
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('consent','default',{
-    'ad_storage':'denied',
-    'ad_user_data':'denied',
-    'ad_personalization':'denied',
-    'analytics_storage':'denied',
-    'wait_for_update':500
-  });
-  var _cookieChoice = localStorage.getItem('cookies');
-  if(_cookieChoice==='accepted'){
-    gtag('consent','update',{'ad_storage':'granted','ad_user_data':'granted','ad_personalization':'granted','analytics_storage':'granted'});
-  }
-</script>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-XGHFMYDPM7"></script>
-<script>
-  gtag('js', new Date());
-  gtag('config', 'G-XGHFMYDPM7', {'anonymize_ip': true});
-</script>
 <meta charset="UTF-8">
+<script src="/assets/consent.js" data-ga="G-XGHFMYDPM7"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LaserProfit.eu – Free Laser Engraving Price Calculator 2026</title>
 <meta name="description" content="LaserProfit.eu – Free laser engraving & cutting price calculator. 14 languages, 12 currencies. Kalkulator wyceny grawerowania laserem 2026.">
@@ -53,8 +32,7 @@
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"LaserProfit.eu – Laser Engraving Price Calculator","url":"https://laserprofit.eu/","description":"Darmowy kalkulator wyceny grawerowania i cięcia laserem. Wsparcie dla 12 walut i 14 języków.","image":"https://laserprofit.eu/polski.png","applicationCategory":"BusinessApplication","operatingSystem":"All","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"author":{"@type":"Organization","name":"LaserProfit.eu","url":"https://laserprofit.eu/"},"dateModified":"2026-05-09","inLanguage":["pl","en","de"]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"LaserProfit.eu","url":"https://laserprofit.eu/","logo":"https://laserprofit.eu/polski.png","sameAs":["https://www.facebook.com/profile.php?id=61574308963740","https://www.facebook.com/profile.php?id=61552974866954"]}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Ile powinienem brać za godzinę pracy laserem?","acceptedAnswer":{"@type":"Answer","text":"W Polsce typowa stawka za grawerowanie laserowe wynosi od 50 do 120 zł za godzinę, w zależności od doświadczenia, rodzaju maszyny i regionu. Na start 50–70 zł/h to rozsądny punkt wyjścia. Ważne, żeby stawka naprawdę pokrywała wszystkie koszty — zużycie maszyny, prąd, oprogramowanie i Twój czas."}},{"@type":"Question","name":"Czy powinienem pobierać opłatę za przygotowanie pliku?","acceptedAnswer":{"@type":"Answer","text":"Tak — i to jeden z najczęstszych błędów początkujących. Każde zlecenie wymaga wczytania pliku, ustawienia materiału, testu i sprzątania po robocie. Opłata za przygotowanie w wysokości 15–30 zł za zlecenie jest całkowicie uzasadniona, nawet przy małych zamówieniach. Bez niej łatwo pracować pół godziny za 5 zł zysku."}},{"@type":"Question","name":"Czy laser diodowy przetnie metal?","acceptedAnswer":{"@type":"Answer","text":"Większość laserów diodowych od 20W może grawerować stal nierdzewną, szczególnie ze sprayem do znakowania metalu jak Cermark. Natomiast cięcie przez metal to zupełnie inna sprawa — do tego potrzebny jest laser światłowodowy (fiber). Laser diodowy 40W może zaznaczyć i zarysować metal, ale nie przetnie go czysto."}},{"@type":"Question","name":"Jaki wzór stosuje się do wyceny grawerowania laserowego?","acceptedAnswer":{"@type":"Answer","text":"Wzór używany przez doświadczonych grawerów wygląda tak: (koszt materiału + czas maszyny + robocizna + koszty stałe) × marża zysku = cena końcowa. Jeśli materiał kosztuje 4 zł, czas maszyny 1,20 zł, robocizna 2 zł i koszty stałe 0,50 zł, baza to 7,70 zł. Z marżą 25–30% wychodzi około 9,60–10 zł za sztukę. Nasz kalkulator robi to automatycznie."}},{"@type":"Question","name":"Jaka minimalna kwota za zlecenie?","acceptedAnswer":{"@type":"Answer","text":"Większość doświadczonych grawerów ustawia próg minimalny na 25–50 zł za zamówienie, niezależnie od wielkości. Nawet grawer jednego breloczka wymaga czasu na setup, rozgrzanie maszyny i porządki po robocie. Bez minimum łatwo wpaść w pułapkę 20 minut pracy za 5 zł. Ustal próg wcześnie i trzymaj się go."}},{"@type":"Question","name":"Czy DPI wpływa na cenę grawerowania?","acceptedAnswer":{"@type":"Answer","text":"Zdecydowanie tak. Wyższe DPI oznacza lepsze detale, ale znacznie dłuższy czas pracy maszyny. Grawer przy 1000 DPI może trwać dwa razy dłużej niż przy 500 DPI na tym samym wzorze. Jeśli klient chce jakość fotograficzną na drewnie lub skórze — ten czas musi być odzwierciedlony w cenie. Warto mieć dwa progi cenowe: jakość standardowa i wysoka szczegółowość."}},{"@type":"Question","name":"Jaki program wybrać do lasera?","acceptedAnswer":{"@type":"Answer","text":"LightBurn to standard rynkowy — działa z prawie każdym laserem diodowym i CO2, ma świetną bibliotekę ustawień materiałów i naprawdę warto zapłacić za licencję. Jeśli dopiero zaczynasz, LaserGRBL to solidna darmowa opcja do podstawowych prac. Do tworzenia grafiki polecamy Inkscape (darmowy) lub Adobe Illustrator."}},{"@type":"Question","name":"Jak uwzględnić amortyzację maszyny w wycenie?","acceptedAnswer":{"@type":"Answer","text":"Moduł lasera diodowego wytrzymuje zazwyczaj ok. 10 000 godzin pracy. Jeśli laser kosztował 3000 zł, to amortyzacja wynosi 0,30 zł/h — brzmi mało, ale razem z prądem, wymianą soczewek i serwisem szybko się sumuje. Większość grawerów liczy 5–15 zł za godzinę na zużycie maszyny i koszty stałe łącznie. Nasz kalkulator ma osobne pole na amortyzację."}},{"@type":"Question","name":"Kiedy dawać rabaty przy większych zamówieniach?","acceptedAnswer":{"@type":"Answer","text":"Rabaty mają sens, gdy zmniejszają czas setupu na sztukę — 50 breloczków w jednym przebiegu jest dużo bardziej opłacalne niż pojedyncze zlecenia. Typowe podejście to 5–10% zniżki od 10 sztuk i 15–20% od 50 sztuk. Pamiętaj, żeby rabat liczyć od ceny, która już zawiera Twoje pełne koszty i marżę."}},{"@type":"Question","name":"Czy grawerowanie laserowe to opłacalny biznes w 2026 roku?","acceptedAnswer":{"@type":"Answer","text":"Tak — ale tylko przy prawidłowej wycenie. Największy błąd nowych grawerów to zbyt niskie ceny ze strachu przed utratą klientów. Warsztaty, które dobrze zarabiają, stawiają na stałych klientów, sprawne procesy i konsekwentne ceny. Personalizowane prezenty, branding firmowy i grawery trofeów to w 2026 roku bardzo poszukiwane nisze. Z laserem diodowym poniżej 4000 zł i dobrymi marżami to jeden z bardziej dostępnych małych biznesów do prowadzenia z domu."}},{"@type":"Question","name":"Jak obliczyć cenę grawerowania laserem?","acceptedAnswer":{"@type":"Answer","text":"Zsumuj: koszt materiału + czas lasera × stawka godzinowa + przygotowanie + amortyzacja."}},{"@type":"Question","name":"Ile brać za godzinę grawerowania laserem?","acceptedAnswer":{"@type":"Answer","text":"Stawki 2026: Polska ~60–120 zł/h · Niemcy €25–45/h · UK £20–40/h · USA $25–60/h."}},{"@type":"Question","name":"Który laser diodowy wybrać w 2026?","acceptedAnswer":{"@type":"Answer","text":"xTool D1 Pro 10W – najlepsza precyzja. Creality Falcon 2 22W – najszybszy. Atomstack X40 Pro 40W – najsilniejszy."}},{"@type":"Question","name":"Laser diodowy czy CO2 – który lepszy?","acceptedAnswer":{"@type":"Answer","text":"Lasery diodowe: tańsze, kompaktowe, świetne do drewna i skóry. CO2: tną akryl wszystkich kolorów."}},{"@type":"Question","name":"Czego nie wolno ciąć laserem?","acceptedAnswer":{"@type":"Answer","text":"Nigdy: PCV/winylu (trujący chlor), ABS, poliwęglanu, włókna węglowego. Zawsze używaj Air Assist."}},{"@type":"Question","name":"Dlaczego krawędzie sklejki są czarne/okopcone?","acceptedAnswer":{"@type":"Answer","text":"Brak Air Assist lub zbyt wolny posuw. Czyść soczewkę alkoholem izopropylowym."}},{"@type":"Question","name":"Jaki program do grawerowania laserem?","acceptedAnswer":{"@type":"Answer","text":"LightBurn – standard branżowy. Darmowy: LaserGRBL (Windows). xTool: xTool Creative Space."}}]}</script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/fonts/poppins.css">
 <style>
 :root{--bg:#0d1b2e;--card:#132237;--card2:#1a2f47;--orange:#ff6b2b;--navy:#1e3a5f;--text:#e8f0fe;--muted:#7a91b0;--border:#1e3352;--input-bg:#0a1624;--select-bg:#1a2f47;--result-bg:linear-gradient(145deg,#0d1b2e,#132237);--nav-bg:rgba(13,27,46,.97);--font:'Poppins',sans-serif}
 body.light-mode{--bg:#f4f7fb;--card:#fff;--card2:#e8f0f9;--orange:#e8541a;--navy:#1e3a5f;--text:#0f1e30;--muted:#4a5e75;--border:#c8d8eb;--input-bg:#f8fafc;--select-bg:#edf2f8;--result-bg:linear-gradient(145deg,#e8f0fb,#f0f7ff);--nav-bg:rgba(244,247,251,.97)}
@@ -670,7 +648,7 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
         <div id="logoDropZone" onclick="document.getElementById('logoFileInput').click()"
             style="border:2px dashed #1e3352;border-radius:10px;padding:20px;text-align:center;cursor:pointer;margin-bottom:14px;transition:.2s;">
             <div id="logoPreviewWrap" style="display:none;margin-bottom:10px;">
-                <img id="logoPreviewImg" style="max-height:80px;max-width:100%;border-radius:6px;object-fit:contain;">
+                <img id="logoPreviewImg" alt="Podgląd logo firmy" style="max-height:80px;max-width:100%;border-radius:6px;object-fit:contain;">
             </div>
             <div id="logoDropLabel" style="font-size:.72rem;color:#7a91b0;">
                 📁 Kliknij aby wybrać logo lub wklej <kbd style="background:#1e3352;color:#e8f0fe;padding:1px 5px;border-radius:4px;font-size:.6rem;">Ctrl+V</kbd> zrzut ekranu<br>
@@ -697,7 +675,7 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
 <div id="printWrapper" style="display:none;">
 <div id="printHeader">
     <div style="display:flex;align-items:center;gap:14px;padding-bottom:10px;border-bottom:2px solid #ff6b2b;margin-bottom:14px;">
-        <img id="printLogoImg" style="max-height:55px;max-width:160px;object-fit:contain;display:none;">
+        <img id="printLogoImg" alt="Logo firmy" style="max-height:55px;max-width:160px;object-fit:contain;display:none;">
         <div>
             <div id="printCompanyName" class="ph-company" style="font-size:1rem;font-weight:700;color:#0d1b2e;"></div>
             <div class="ph-sub" style="font-size:.72rem;color:#7a91b0;">Wycena grawerowania laserowego · LaserProfit.eu</div>
@@ -909,11 +887,13 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
     &nbsp;·&nbsp;
     <a href="https://laserprofit.eu/regulamin/" style="color:var(--muted);text-decoration:underline;font-size:.72rem;">Regulamin</a>
     &nbsp;·&nbsp;
-    <button onclick="openCookieSettings()" style="background:none;border:none;color:var(--muted);text-decoration:underline;font-size:.72rem;cursor:pointer;font-family:var(--font);padding:0;">Ustawienia cookies</button>
+    
     <br><br>
     <span style="font-size:.72rem;color:var(--muted);">👁 Łączna liczba odwiedzin: <b id="visitorCounterBadge" style="color:var(--orange);">...</b></span>
     <br><br>
     <button onclick="document.getElementById('fbModal').classList.add('open')" class="btn" style="display:inline-block;width:auto;padding:8px 20px;font-size:.75rem;background:var(--navy);border:1px solid var(--orange);" data-t="btn_feedback">💬 Zgłoś problem / Zaproponuj ulepszenie</button>
+    <br><br>
+    <span style="font-size:.72rem;color:var(--muted);"><a href="/privacy/" style="color:inherit;">Polityka prywatności</a> &middot; <button type="button" class="lpc-settings" data-cookie-settings>Ustawienia cookies</button></span>
 </footer>
 
 <div class="modal-bg" id="fbModal">
@@ -1328,7 +1308,7 @@ function buildNavFlags(){
     LANGUAGES.forEach(l=>{
         const b=document.createElement('button');
         b.className='dd-btn'+(l.code===activeLang?' active':'');
-        b.innerHTML=`<img src="${l.flag}" style="width:18px;height:auto;"> ${l.label}`;
+        b.innerHTML=`<img src="${l.flag}" alt="" style="width:18px;height:auto;"> ${l.label}`;
         b.onmousedown=e=>{e.stopPropagation();switchLang(l.code);};
         dd.appendChild(b);
     });
@@ -1660,7 +1640,7 @@ function printWithLogo(){
 
     var logoHtml='';
     if(_logoDataURL){
-        logoHtml='<img src="'+_logoDataURL+'" style="max-height:55px;max-width:180px;object-fit:contain;vertical-align:middle;">';
+        logoHtml='<img src="'+_logoDataURL+'" alt="Logo firmy" style="max-height:55px;max-width:180px;object-fit:contain;vertical-align:middle;">';
     }
     var companyHtml='';
     if(company){
@@ -2078,33 +2058,6 @@ document.addEventListener('DOMContentLoaded',async function(){
     initChat();
 });
 
-</script>
-<!-- ── COOKIE BANNER ── -->
-<div id="cookieBanner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9998;background:var(--card);border-top:2px solid var(--orange);padding:14px 20px;box-shadow:0 -4px 20px rgba(0,0,0,.3);">
-    <div style="max-width:1060px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:12px;justify-content:space-between;">
-        <p style="font-size:.76rem;color:var(--muted);flex:1;min-width:220px;">
-            🍪 Używamy plików cookie do analizy ruchu (Google Analytics). Możesz zaakceptować je wszystkie albo zostawić tylko te niezbędne do działania strony.
-            <a href="https://laserprofit.eu/polityka-prywatnosci/" style="color:var(--orange);text-decoration:none;font-weight:700;"> Polityka prywatności</a>
-        </p>
-        <div style="display:flex;gap:8px;flex-shrink:0;">
-            <button onclick="acceptCookies()" style="background:var(--orange);color:#fff;border:none;padding:8px 20px;border-radius:7px;font-weight:700;cursor:pointer;font-family:var(--font);font-size:.78rem;">Akceptuję</button>
-            <button onclick="rejectCookies()" style="background:var(--card2);color:var(--muted);border:1px solid var(--border);padding:8px 16px;border-radius:7px;font-weight:700;cursor:pointer;font-family:var(--font);font-size:.78rem;">Tylko niezbędne</button>
-        </div>
-    </div>
-</div>
-<script>
-function acceptCookies(){
-    document.getElementById('cookieBanner').style.display='none';
-    localStorage.setItem('cookies','accepted');
-    gtag('consent','update',{'ad_storage':'granted','ad_user_data':'granted','ad_personalization':'granted','analytics_storage':'granted'});
-}
-function rejectCookies(){
-    document.getElementById('cookieBanner').style.display='none';
-    localStorage.setItem('cookies','rejected');
-    gtag('consent','update',{'ad_storage':'denied','ad_user_data':'denied','ad_personalization':'denied','analytics_storage':'denied'});
-}
-function openCookieSettings(){document.getElementById('cookieBanner').style.display='block';}
-if(!localStorage.getItem('cookies')){document.getElementById('cookieBanner').style.display='block';}
 </script>
 </body>
 </html>

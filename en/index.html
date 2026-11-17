@@ -1,19 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-XGHFMYDPM7"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-XGHFMYDPM7');
-  gtag('config', 'AW-18152672533');
-</script>
-
-
-<meta charset="UTF-8">
+  <meta charset="UTF-8">
+<script src="/assets/consent.js" data-ga="G-XGHFMYDPM7" data-aw="AW-18152672533"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LaserProfit.eu – Free Laser Engraving Price Calculator 2026</title>
 <meta name="description" content="LaserProfit.eu – Free laser engraving & cutting price calculator. 14 languages, 12 currencies. Calculate exact costs for xTool, Creality, Atomstack and more.">
@@ -37,8 +26,7 @@
 <link rel="alternate" hreflang="en" href="https://laserprofit.eu/en/"/>
 <link rel="alternate" hreflang="de" href="https://laserprofit.eu/de/"/>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"LaserProfit.eu – Laser Engraving Price Calculator","url":"https://laserprofit.eu/en/","applicationCategory":"BusinessApplication","operatingSystem":"All","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/fonts/poppins.css">
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 <style>
@@ -632,7 +620,7 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
         <div id="logoDropZone" onclick="document.getElementById('logoFileInput').click()"
             style="border:2px dashed #1e3352;border-radius:10px;padding:20px;text-align:center;cursor:pointer;margin-bottom:14px;transition:.2s;">
             <div id="logoPreviewWrap" style="display:none;margin-bottom:10px;">
-                <img id="logoPreviewImg" style="max-height:80px;max-width:100%;border-radius:6px;object-fit:contain;">
+                <img id="logoPreviewImg" alt="Company logo preview" style="max-height:80px;max-width:100%;border-radius:6px;object-fit:contain;">
             </div>
             <div id="logoDropLabel" style="font-size:.72rem;color:#7a91b0;">
                 📁 Click to select logo or paste <kbd style="background:#1e3352;color:#e8f0fe;padding:1px 5px;border-radius:4px;font-size:.6rem;">Ctrl+V</kbd> screenshot<br>
@@ -657,7 +645,7 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
 <div id="printWrapper" style="display:none;">
 <div id="printHeader">
     <div style="display:flex;align-items:center;gap:14px;padding-bottom:10px;border-bottom:2px solid #ff6b2b;margin-bottom:14px;">
-        <img id="printLogoImg" style="max-height:55px;max-width:160px;object-fit:contain;display:none;">
+        <img id="printLogoImg" alt="Company logo" style="max-height:55px;max-width:160px;object-fit:contain;display:none;">
         <div>
             <div id="printCompanyName" style="font-size:1rem;font-weight:700;color:#0d1b2e;"></div>
             <div style="font-size:.72rem;color:#7a91b0;">Laser engraving quote · LaserProfit.eu</div>
@@ -873,6 +861,8 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
     <span style="font-size:.72rem;color:var(--muted);">👁 Total visits: <b id="visitorCounterBadge" style="color:var(--orange);">...</b></span>
     <br><br>
     <button onclick="document.getElementById('fbModal').classList.add('open')" class="btn" style="display:inline-block;width:auto;padding:8px 20px;font-size:.75rem;background:var(--navy);border:1px solid var(--orange);">💬 Report issue / Suggest improvement</button>
+    <br><br>
+    <span style="font-size:.72rem;color:var(--muted);"><a href="/privacy/#en" style="color:inherit;">Privacy policy</a> &middot; <button type="button" class="lpc-settings" data-cookie-settings>Cookie settings</button></span>
 </footer>
 
 <div class="modal-bg" id="fbModal">
@@ -986,7 +976,7 @@ function buildNavFlags(){
     LANGUAGES.forEach(l=>{
         const b=document.createElement('button');
         b.className='dd-btn'+(l.code===activeLang?' active':'');
-        b.innerHTML=`<img src="${l.flag}" style="width:18px;height:auto;"> ${l.label}`;
+        b.innerHTML=`<img src="${l.flag}" alt="" style="width:18px;height:auto;"> ${l.label}`;
         b.onmousedown=e=>{e.stopPropagation();activeLang=l.code;buildChips();buildNavFlags();document.getElementById('langWrap').classList.remove('open');};
         dd.appendChild(b);
     });
@@ -1254,7 +1244,7 @@ function printWithLogo(){
     var profitLbl=document.getElementById('profitLbl').textContent;
     var bruttoLbl=document.getElementById('bruttoLbl').textContent;
 
-    var logoHtml=_logoDataURL?'<img src="'+_logoDataURL+'" style="max-height:55px;max-width:180px;object-fit:contain;vertical-align:middle;">':'';
+    var logoHtml=_logoDataURL?'<img src="'+_logoDataURL+'" alt="Company logo" style="max-height:55px;max-width:180px;object-fit:contain;vertical-align:middle;">':'';
     var companyHtml=company?'<div style="font-size:13pt;font-weight:700;color:#111;">'+company+'</div>':'';
 
     var html='<!DOCTYPE html><html><head><meta charset="UTF-8">'
@@ -1626,24 +1616,5 @@ function chatSetLang(lang,btn){
     if(lang!=='en') translateAll(window._lastMsgs||[]);
 }
 </script>
-<!-- ── COOKIE BANNER ── -->
-<div id="cookieBanner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9998;background:var(--card);border-top:2px solid var(--orange);padding:14px 20px;box-shadow:0 -4px 20px rgba(0,0,0,.3);">
-    <div style="max-width:1060px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:12px;justify-content:space-between;">
-        <p style="font-size:.76rem;color:var(--muted);flex:1;min-width:220px;">
-            🍪 This site uses cookies to analyze traffic and improve performance. By using this site, you agree to their use.
-            <a href="https://laserprofit.eu/privacy" style="color:var(--orange);text-decoration:none;font-weight:700;"> Privacy Policy</a>
-        </p>
-        <div style="display:flex;gap:8px;flex-shrink:0;">
-            <button onclick="acceptCookies()" style="background:var(--orange);color:#fff;border:none;padding:8px 20px;border-radius:7px;font-weight:700;cursor:pointer;font-family:var(--font);font-size:.78rem;">Accept</button>
-            <button onclick="rejectCookies()" style="background:var(--card2);color:var(--muted);border:1px solid var(--border);padding:8px 16px;border-radius:7px;font-weight:700;cursor:pointer;font-family:var(--font);font-size:.78rem;">Essential only</button>
-        </div>
-    </div>
-</div>
-<script>
-function acceptCookies(){document.getElementById('cookieBanner').style.display='none';localStorage.setItem('cookies','accepted');}
-function rejectCookies(){document.getElementById('cookieBanner').style.display='none';localStorage.setItem('cookies','rejected');}
-if(!localStorage.getItem('cookies')){document.getElementById('cookieBanner').style.display='block';}
-</script>
-
 </body>
 </html>
