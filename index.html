@@ -3,30 +3,30 @@
 <head>
 <meta charset="UTF-8">
 <script src="/assets/calc-extras.js"></script>
+<script src="/assets/lang-suggest.js"></script>
 <script src="/assets/consent.js" data-ga="G-XGHFMYDPM7"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kalkulator grawerowania i cięcia laserem 2026 – darmowa wycena | LaserProfit</title>
-<meta name="description" content="Darmowy kalkulator wyceny grawerowania i cięcia laserem. Policz koszt prądu, materiału i czasu pracy lasera diodowego, CO2 lub fiber i wydrukuj wycenę dla klienta. 14 języków, 12 walut.">
-<meta name="keywords" content="kalkulator grawerowania laserem, wycena grawerowania, kalkulator cięcia laserem, koszt grawerowania, cennik grawerowania laserowego">
+<title>Kalkulator grawerowania i cięcia laserem 2026 | LaserProfit</title>
+<link rel="canonical" href="https://laserprofit.eu/">
+<link rel="alternate" hreflang="pl" href="https://laserprofit.eu/">
+<link rel="alternate" hreflang="en" href="https://laserprofit.eu/en/">
+<link rel="alternate" hreflang="de" href="https://laserprofit.eu/de/">
+<link rel="alternate" hreflang="x-default" href="https://laserprofit.eu/en/">
+<meta name="description" content="Darmowy kalkulator wyceny grawerowania i cięcia laserem. Policz koszt materiału, prądu i czasu pracy, wydrukuj wycenę dla klienta. 14 języków, 12 walut.">
 <meta name="author" content="LaserProfit.eu">
 <meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large">
 <meta name="google-site-verification" content="HGtiv1o5Zh2URMz7O5Dxean6mWRR7Ac9hlp3GZSHdH8"/>
 <meta name="google-site-verification" content="5Nwn999MbIZk3IpYyC0gfXdTVEyr2dbTOLcRiN75S0U" />
-<link rel="canonical" href="https://laserprofit.eu/"/>
-<link rel="alternate" hreflang="x-default" href="https://laserprofit.eu/"/>
-<link rel="alternate" hreflang="pl" href="https://laserprofit.eu/"/>
-<link rel="alternate" hreflang="en" href="https://laserprofit.eu/en"/>
-<link rel="alternate" hreflang="de" href="https://laserprofit.eu/de"/>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
 <meta name="theme-color" content="#ff6b2b">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://laserprofit.eu">
-<meta property="og:title" content="Kalkulator grawerowania i cięcia laserem 2026 – darmowa wycena | LaserProfit">
+<meta property="og:url" content="https://laserprofit.eu/">
+<meta property="og:title" content="Kalkulator grawerowania i cięcia laserem 2026 | LaserProfit">
 <meta property="og:description" content="Dokładne wyceny cięcia i grawerowania laserem. Wsparcie dla 12 walut i 14 języków. xTool, Creality, Atomstack.">
 <meta property="og:site_name" content="LaserProfit.eu">
 <meta property="og:image" content="https://laserprofit.eu/polski.png">
 <meta name="twitter:card" content="summary_large_image">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"LaserProfit.eu – Kalkulator wyceny grawerowania laserem","inLanguage":"pl","url":"https://laserprofit.eu/","applicationCategory":"BusinessApplication","operatingSystem":"All","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"LaserProfit.eu – Kalkulator wyceny grawerowania laserem","inLanguage":"pl","url":"https://laserprofit.eu/","applicationCategory":"BusinessApplication","operatingSystem":"All","offers":{"@type":"Offer","price":"0","priceCurrency":"PLN"}}</script>
 <link rel="stylesheet" href="/assets/fonts/poppins.css">
 <style>
 :root{--bg:#0d1b2e;--card:#132237;--card2:#1a2f47;--orange:#ff6b2b;--navy:#1e3a5f;--text:#e8f0fe;--muted:#7a91b0;--border:#1e3352;--input-bg:#0a1624;--select-bg:#1a2f47;--result-bg:linear-gradient(145deg,#0d1b2e,#132237);--nav-bg:rgba(13,27,46,.97);--font:'Poppins',sans-serif}
@@ -902,21 +902,8 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
 </div>
 
 <script>
-// ============================================================
-// AUTO-REDIRECT wg języka przeglądarki
-// Działa tylko raz przy pierwszej wizycie (cookie 1h)
-// DE → /de/ | EN → /en/ | inne → zostają na PL
-// ============================================================
-(function(){
-    const path=window.location.pathname;
-    const isDE=path.startsWith('/de');
-    const isEN=path.startsWith('/en');
-    if(document.cookie.indexOf('lp_redirect=1')!==-1)return;
-    document.cookie='lp_redirect=1;max-age=3600;path=/';
-    const lang=(navigator.language||navigator.userLanguage||'pl').toLowerCase();
-    if(lang.startsWith('de')&&!isDE){window.location.href='https://laserprofit.eu/de/';}
-    else if(lang.startsWith('en')&&!isEN){window.location.href='https://laserprofit.eu/en/';}
-})();
+// Automatyczne przekierowanie wg języka przeglądarki zostało usunięte (przekierowywało też Googlebota);
+// zamiast niego /assets/lang-suggest.js pokazuje pasek z propozycją wersji językowej.
 
 // ============================================================
 // TŁUMACZENIA UI
