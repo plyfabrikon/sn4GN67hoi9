@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+<script src="/assets/calc-extras.js"></script>
 <script src="/assets/consent.js" data-ga="G-XGHFMYDPM7" data-aw="AW-18152672533"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LaserProfit.eu – Free Laser Engraving Price Calculator 2026</title>
@@ -370,7 +371,7 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
 <div id="changelogBanner" style="margin:20px auto 18px;background:#0d1b2e;border:1.5px solid var(--orange);border-radius:14px;overflow:hidden;max-width:1060px;">
     <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:rgba(255,107,43,.08);cursor:pointer;gap:12px;" onclick="toggleChangelog()">
         <div style="display:flex;align-items:center;gap:10px;">
-            <span style="background:var(--orange);color:#fff;font-size:.58rem;font-weight:700;padding:2px 8px;border-radius:10px;letter-spacing:1px;white-space:nowrap;">v2.7 · Apr 2026</span>
+            <span style="background:var(--orange);color:#fff;font-size:.58rem;font-weight:700;padding:2px 8px;border-radius:10px;letter-spacing:1px;white-space:nowrap;">v2.9 · Nov 2026</span>
             <span style="font-size:.75rem;font-weight:700;color:var(--text);">📋 Release Notes – what's new in the calculator?</span>
         </div>
         <div style="display:flex;align-items:center;gap:12px;flex-shrink:0;">
@@ -379,12 +380,46 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
         </div>
     </div>
     <div id="changelogBody" style="display:none;padding:16px 18px;border-top:1px solid var(--border);">
-        <!-- v2.7 LATEST -->
+        <!-- v2.9 LATEST -->
+        <div style="margin-bottom:16px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+                <span style="background:var(--orange);color:#fff;font-size:.6rem;font-weight:700;padding:2px 9px;border-radius:10px;">v2.9</span>
+                <span style="font-size:.72rem;color:var(--muted);">November 18, 2026</span>
+                <span style="background:rgba(34,197,94,.12);color:#22c55e;font-size:.58rem;padding:1px 7px;border-radius:8px;margin-left:auto;">LATEST</span>
+            </div>
+            <div style="display:grid;gap:7px;">
+                <div style="display:flex;gap:8px;align-items:flex-start;">
+                    <span style="background:rgba(34,197,94,.15);color:#22c55e;font-size:.6rem;font-weight:700;padding:1px 6px;border-radius:6px;white-space:nowrap;margin-top:1px;">NEW</span>
+                    <span style="font-size:.72rem;color:var(--text);line-height:1.5;">📐 <b>Sheet layout preview</b> – a drawing shows how your parts fit on a plywood or acrylic sheet, how much is waste and how many sheets you need. The calculator rotates parts by 90° automatically when more fit that way. <a href="#kalkulator" style="color:var(--orange);">Try it →</a></span>
+                </div>
+                <div style="display:flex;gap:8px;align-items:flex-start;">
+                    <span style="background:rgba(34,197,94,.15);color:#22c55e;font-size:.6rem;font-weight:700;padding:1px 6px;border-radius:6px;white-space:nowrap;margin-top:1px;">NEW</span>
+                    <span style="font-size:.72rem;color:var(--text);line-height:1.5;">🎁 <b>Engraving on the customer’s item</b> – quote jobs where the customer brings their own item (mug, board, case): no material cost, setup time per item, a damage risk surcharge and the price per item.</span>
+                </div>
+                <div style="display:flex;gap:8px;align-items:flex-start;">
+                    <span style="background:rgba(168,85,247,.15);color:#c084fc;font-size:.6rem;font-weight:700;padding:1px 6px;border-radius:6px;white-space:nowrap;margin-top:1px;">PRIVACY</span>
+                    <span style="font-size:.72rem;color:var(--text);line-height:1.5;">🍪 <b>Cookie consent</b> – Google Analytics and Google Ads only start after you click “Accept”. Change your choice any time via “Cookie settings” in the footer.</span>
+                </div>
+                <div style="display:flex;gap:8px;align-items:flex-start;">
+                    <span style="background:rgba(168,85,247,.15);color:#c084fc;font-size:.6rem;font-weight:700;padding:1px 6px;border-radius:6px;white-space:nowrap;margin-top:1px;">PRIVACY</span>
+                    <span style="font-size:.72rem;color:var(--text);line-height:1.5;">🔒 <b>New privacy policy</b> – explains what data the site processes and who receives it. <a href="/privacy/#en" style="color:var(--orange);">Read →</a></span>
+                </div>
+                <div style="display:flex;gap:8px;align-items:flex-start;">
+                    <span style="background:rgba(59,130,246,.15);color:#60a5fa;font-size:.6rem;font-weight:700;padding:1px 6px;border-radius:6px;white-space:nowrap;margin-top:1px;">SPEED</span>
+                    <span style="font-size:.72rem;color:var(--text);line-height:1.5;">⚡ <b>Self-hosted fonts</b> – the site no longer connects to Google Fonts, so it loads faster and does not send your IP address to Google.</span>
+                </div>
+                <div style="display:flex;gap:8px;align-items:flex-start;">
+                    <span style="background:rgba(245,158,11,.15);color:#fbbf24;font-size:.6rem;font-weight:700;padding:1px 6px;border-radius:6px;white-space:nowrap;margin-top:1px;">CHANGE</span>
+                    <span style="font-size:.72rem;color:var(--text);line-height:1.5;">💬 <b>Community chat switched off</b> – send ideas and bug reports with the “Report a problem” button below the calculator.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- v2.7 -->
         <div style="margin-bottom:16px;">
             <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
                 <span style="background:var(--orange);color:#fff;font-size:.6rem;font-weight:700;padding:2px 9px;border-radius:10px;">v2.7</span>
                 <span style="font-size:.72rem;color:var(--muted);">April 26, 2026</span>
-                <span style="background:rgba(34,197,94,.12);color:#22c55e;font-size:.58rem;padding:1px 7px;border-radius:8px;margin-left:auto;">LATEST</span>
             </div>
             <div style="display:grid;gap:7px;">
                 <div style="display:flex;gap:8px;align-items:flex-start;">
@@ -983,6 +1018,7 @@ if(localStorage.getItem('theme')==='light') document.body.classList.add('light-m
 // MATERIAL CALCULATOR
 // ============================================================
 function calcMat(){
+    if(window.LPX)LPX.relabel();
     const sW=parseFloat(document.getElementById('sheetW').value)||0;
     const sH=parseFloat(document.getElementById('sheetH').value)||0;
     const cW=parseFloat(document.getElementById('cutW').value)||0;
@@ -992,10 +1028,11 @@ function calcMat(){
     const el=document.getElementById('matResult');
     const sym=getSym();
     if(!sW||!sH||!cW||!cH){el.innerHTML='<p class="mat-ph">Fill in the dimensions above to see the result.</p>';return;}
-    if(cW>sW||cH>sH){el.innerHTML='<p class="mat-ph" style="color:#f87171;">⚠️ Project dimensions exceed sheet size!</p>';return;}
+    if((cW>sW||cH>sH)&&(cH>sW||cW>sH)){el.innerHTML='<p class="mat-ph" style="color:#f87171;">⚠️ Project dimensions exceed sheet size!</p>';return;}
     const sA=sW*sH,pA=cW*cH*qty,uPct=(pA/sA*100).toFixed(2);
     const mCost=(pA/sA*mf).toFixed(2);
-    const pR=Math.floor(sW/cW),pC=Math.floor(sH/cH),maxPcs=pR*pC;
+    const _lo=window.LPX?LPX.layout(sW,sH,cW,cH):{cols:Math.floor(sW/cW),rows:Math.floor(sH/cH)};
+    const pR=_lo.cols,pC=_lo.rows,maxPcs=pR*pC;
     const cPiece=maxPcs>0?(mf/maxPcs).toFixed(2):'0.00';
     function mr(label,val,cls=''){return`<div class="mat-row${cls?' '+cls:''}"><span class="ml">${label}</span><span class="mr">${val}</span></div>`;}
     el.innerHTML=`<div class="mat-result">
@@ -1008,6 +1045,7 @@ function calcMat(){
         ${mr('Cost per piece','<b>'+cPiece+' '+sym+'</b>')}
         ${mr('Order total','<b>'+mCost+' '+sym+'</b>','tot')}
     </div>`;
+    if(window.LPX)LPX.renderPreview(sW,sH,cW,cH,qty);
 }
 
 // ============================================================
@@ -1054,17 +1092,20 @@ function calculate(){
     const qty=parseInt(document.getElementById('cutQty').value)||1;
     const sym=getSym();
 
-    const vd=sW&&sH&&cW&&cH&&cW<=sW&&cH<=sH;
-    const matCost=vd?(cW*cH*qty)/(sW*sH)*mf:mf;
+    const CI=window.LPX?LPX.client():{on:false};
+    const vd=!CI.on&&sW&&sH&&cW&&cH&&((cW<=sW&&cH<=sH)||(cH<=sW&&cW<=sH));
+    const matCost=CI.on?0:(vd?(cW*cH*qty)/(sW*sH)*mf:mf);
     const uPct=vd?((cW*cH*qty)/(sW*sH)*100).toFixed(2):null;
-    const maxPcs=vd?Math.floor(sW/cW)*Math.floor(sH/cH):null;
+    const maxPcs=vd?(window.LPX?LPX.layout(sW,sH,cW,cH).max:Math.floor(sW/cW)*Math.floor(sH/cH)):null;
 
     let design=(pMin/60)*hourly;
     let work=(lMin/60)*(hourly+mach);
     if(document.getElementById('doubleSide').checked)work*=1.5;
-    let sub=(matCost+design+work)*mult;
+    const setup=CI.on?(CI.setupMin*CI.qty/60)*hourly:0;
+    let sub=(matCost+design+work+setup)*mult;
     if(document.getElementById('painting').checked)sub+=15;
     if(document.getElementById('lacquer').checked)sub+=10;
+    const riskAmt=CI.on?sub*CI.risk/100:0;sub+=riskAmt;
     if(document.getElementById('urgent').checked)sub*=1.30;
 
     const netto=sub,ship=getShipVal();
@@ -1087,6 +1128,7 @@ function calculate(){
         h+=`<div class="rpt-row"><span class="rl">${T.txt_usage}</span><span class="rv">${uPct}% · max ${maxPcs} ${T.pcs}</span></div>`;
         h+=sep;
     }
+    if(window.LPX)h+=LPX.reportRows({ci:CI,setup:setup*mult,riskAmt:riskAmt},sym);
     h+=rrow(T.txt_mat,matCost);h+=rrow(T.txt_mach,macCost);h+=rrow(T.txt_labor,design+work/mult);
     if(ship>0)h+=rrow(T.txt_ship,ship);
     h+=sep;h+=rrow(T.txt_netto,netto);if(vatPct>0){
@@ -1103,14 +1145,14 @@ function calculate(){
         h+=rrow(T.txt_vat+' ('+(vatPct*100).toFixed(0)+'%)'+vatCountryLabel,netto*vatPct);
     }
     if(ship>0)h+=rrow('+ '+T.txt_ship,ship);
-    h+=rrow(T.txt_brutto,brutto,'tot');h+=sep;
+    h+=rrow(T.txt_brutto,brutto,'tot');if(window.LPX)h+=LPX.perItemRow({ci:CI,brutto:brutto,ship:ship},sym);h+=sep;
     h+=`<div class="rpt-row prow"><span class="rl">${T.txt_zysk}</span><span class="rv">${profit.toFixed(2)} ${sym}</span></div>`;
 
     document.getElementById('expertBreakdown').innerHTML=h;
     document.getElementById('expertResult').style.display='block';
     document.getElementById('expertResult').scrollIntoView({behavior:'smooth'});
 
-    window._last={brutto,profit,matCost,macCost,design,work,mult,netto,ship,sW,sH,cW,cH,qty,uPct,maxPcs,vd,sym,vatPct};
+    window._last={brutto,profit,matCost,macCost,design,work,mult,netto,ship,sW,sH,cW,cH,qty,uPct,maxPcs,vd,sym,vatPct,ci:CI,setup:setup*mult,riskAmt};
 }
 
 // ============================================================
@@ -1293,6 +1335,7 @@ function saveTXT(){
     txt+=T.txt_profit+': '+c.profit.toFixed(2)+' '+sym+'\n';
     txt+='\n'+s2+'\n'+T.txt_details+'\n'+s2+'\n';
     if(c.vd){txt+=T.txt_sheet+': '+c.sW+'×'+c.sH+' mm\n';txt+=T.txt_proj+' ('+c.qty+'): '+c.cW+'×'+c.cH+' mm\n';txt+=T.txt_usage+': '+c.uPct+'% | '+T.txt_fits+': '+c.maxPcs+'\n';txt+=s2+'\n';}
+    if(window.LPX)txt+=LPX.txtBlock(c);
     txt+=line(T.txt_mat,c.matCost);txt+=line(T.txt_mach,c.macCost);txt+=line(T.txt_labor,c.design+c.work/c.mult);
     if(c.ship>0)txt+=line(T.txt_ship,c.ship);
     txt+=s2+'\n';txt+=line(T.txt_netto,c.netto);

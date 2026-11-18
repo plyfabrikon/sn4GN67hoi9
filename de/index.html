@@ -2,6 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
+<script src="/assets/calc-extras.js"></script>
 <script src="/assets/consent.js" data-ga="G-XGHFMYDPM7"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LaserProfit.eu – Kostenloser Lasergravur Preisrechner 2026</title>
@@ -363,7 +364,7 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
 <div id="changelogBanner" style="margin:20px auto 18px;background:#0d1b2e;border:1.5px solid var(--orange);border-radius:14px;overflow:hidden;max-width:1060px;">
     <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:rgba(255,107,43,.08);cursor:pointer;gap:12px;" onclick="toggleChangelog()">
         <div style="display:flex;align-items:center;gap:10px;">
-            <span style="background:var(--orange);color:#fff;font-size:.58rem;font-weight:700;padding:2px 8px;border-radius:10px;letter-spacing:1px;white-space:nowrap;">v2.8 · Mai 2026</span>
+            <span style="background:var(--orange);color:#fff;font-size:.58rem;font-weight:700;padding:2px 8px;border-radius:10px;letter-spacing:1px;white-space:nowrap;">v2.9 · Nov 2026</span>
             <span style="font-size:.75rem;font-weight:700;color:var(--text);">📋 Release Notes – Was gibt es Neues im Rechner?</span>
         </div>
         <div style="display:flex;align-items:center;gap:12px;flex-shrink:0;">
@@ -372,12 +373,46 @@ footer{text-align:center;margin-top:65px;padding:32px;color:var(--muted);border-
         </div>
     </div>
     <div id="changelogBody" style="display:none;padding:16px 18px;border-top:1px solid var(--border);">
-        <!-- v2.8 AKTUELL -->
+        <!-- v2.9 AKTUELL -->
+        <div style="margin-bottom:16px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+                <span style="background:var(--orange);color:#fff;font-size:.6rem;font-weight:700;padding:2px 9px;border-radius:10px;">v2.9</span>
+                <span style="font-size:.72rem;color:var(--muted);">18. November 2026</span>
+                <span style="background:rgba(34,197,94,.12);color:#22c55e;font-size:.58rem;padding:1px 7px;border-radius:8px;margin-left:auto;">AKTUELL</span>
+            </div>
+            <div style="display:grid;gap:7px;">
+                <div style="display:flex;gap:8px;align-items:flex-start;">
+                    <span style="background:rgba(34,197,94,.15);color:#22c55e;font-size:.6rem;font-weight:700;padding:1px 6px;border-radius:6px;white-space:nowrap;margin-top:1px;">NEU</span>
+                    <span style="font-size:.72rem;color:var(--text);line-height:1.5;">📐 <b>Vorschau der Anordnung auf der Platte</b> – eine Zeichnung zeigt, wie Ihre Teile auf eine Sperrholz- oder Acrylplatte passen, wie viel Verschnitt bleibt und wie viele Platten Sie brauchen. Der Rechner dreht Teile automatisch um 90°, wenn so mehr passen. <a href="#kalkulator" style="color:var(--orange);">Ausprobieren →</a></span>
+                </div>
+                <div style="display:flex;gap:8px;align-items:flex-start;">
+                    <span style="background:rgba(34,197,94,.15);color:#22c55e;font-size:.6rem;font-weight:700;padding:1px 6px;border-radius:6px;white-space:nowrap;margin-top:1px;">NEU</span>
+                    <span style="font-size:.72rem;color:var(--text);line-height:1.5;">🎁 <b>Gravur auf Kundenartikel</b> – Kalkulation, wenn der Kunde seinen eigenen Artikel bringt (Tasse, Brett, Hülle): ohne Materialkosten, mit Einrichtzeit pro Stück, Aufschlag für Beschädigungsrisiko und Preis pro Stück.</span>
+                </div>
+                <div style="display:flex;gap:8px;align-items:flex-start;">
+                    <span style="background:rgba(168,85,247,.15);color:#c084fc;font-size:.6rem;font-weight:700;padding:1px 6px;border-radius:6px;white-space:nowrap;margin-top:1px;">DATENSCHUTZ</span>
+                    <span style="font-size:.72rem;color:var(--text);line-height:1.5;">🍪 <b>Cookie-Einwilligung</b> – Google Analytics startet erst nach Klick auf „Akzeptieren“. Ihre Wahl ändern Sie jederzeit über „Cookie-Einstellungen“ in der Fußzeile.</span>
+                </div>
+                <div style="display:flex;gap:8px;align-items:flex-start;">
+                    <span style="background:rgba(168,85,247,.15);color:#c084fc;font-size:.6rem;font-weight:700;padding:1px 6px;border-radius:6px;white-space:nowrap;margin-top:1px;">DATENSCHUTZ</span>
+                    <span style="font-size:.72rem;color:var(--text);line-height:1.5;">🔒 <b>Neue Datenschutzerklärung</b> – beschreibt, welche Daten die Seite verarbeitet und an wen sie gehen. <a href="/privacy/#de" style="color:var(--orange);">Lesen →</a></span>
+                </div>
+                <div style="display:flex;gap:8px;align-items:flex-start;">
+                    <span style="background:rgba(59,130,246,.15);color:#60a5fa;font-size:.6rem;font-weight:700;padding:1px 6px;border-radius:6px;white-space:nowrap;margin-top:1px;">TEMPO</span>
+                    <span style="font-size:.72rem;color:var(--text);line-height:1.5;">⚡ <b>Schriftarten vom eigenen Server</b> – die Seite verbindet sich nicht mehr mit Google Fonts, lädt schneller und sendet Ihre IP-Adresse nicht an Google.</span>
+                </div>
+                <div style="display:flex;gap:8px;align-items:flex-start;">
+                    <span style="background:rgba(245,158,11,.15);color:#fbbf24;font-size:.6rem;font-weight:700;padding:1px 6px;border-radius:6px;white-space:nowrap;margin-top:1px;">ÄNDERUNG</span>
+                    <span style="font-size:.72rem;color:var(--text);line-height:1.5;">💬 <b>Community-Chat abgeschaltet</b> – Ideen und Fehler bitte über „Problem melden“ unter dem Rechner senden.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- v2.8 -->
         <div style="margin-bottom:16px;">
             <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
                 <span style="background:var(--orange);color:#fff;font-size:.6rem;font-weight:700;padding:2px 9px;border-radius:10px;">v2.8</span>
                 <span style="font-size:.72rem;color:var(--muted);">9. Mai 2026</span>
-                <span style="background:rgba(34,197,94,.12);color:#22c55e;font-size:.58rem;padding:1px 7px;border-radius:8px;margin-left:auto;">AKTUELL</span>
             </div>
             <div style="display:grid;gap:7px;">
                 <div style="display:flex;gap:8px;align-items:flex-start;">
@@ -1163,6 +1198,7 @@ if(localStorage.getItem('theme')==='light') document.body.classList.add('light-m
 // MATERIALRECHNER
 // ============================================================
 function calcMat(){
+    if(window.LPX)LPX.relabel();
     const sW=parseFloat(document.getElementById('sheetW').value)||0;
     const sH=parseFloat(document.getElementById('sheetH').value)||0;
     const cW=parseFloat(document.getElementById('cutW').value)||0;
@@ -1173,10 +1209,11 @@ function calcMat(){
     const sym=getSym();
     const T=getT();
     if(!sW||!sH||!cW||!cH){el.innerHTML='<p class="mat-ph">'+(T.mat_placeholder||'...')+'</p>';return;}
-    if(cW>sW||cH>sH){el.innerHTML='<p class="mat-ph" style="color:#f87171;">'+(T.mat_exceed||'⚠️')+'</p>';return;}
+    if((cW>sW||cH>sH)&&(cH>sW||cW>sH)){el.innerHTML='<p class="mat-ph" style="color:#f87171;">'+(T.mat_exceed||'⚠️')+'</p>';return;}
     const sA=sW*sH,pA=cW*cH*qty,uPct=(pA/sA*100).toFixed(2);
     const mCost=(pA/sA*mf).toFixed(2);
-    const pR=Math.floor(sW/cW),pC=Math.floor(sH/cH),maxPcs=pR*pC;
+    const _lo=window.LPX?LPX.layout(sW,sH,cW,cH):{cols:Math.floor(sW/cW),rows:Math.floor(sH/cH)};
+    const pR=_lo.cols,pC=_lo.rows,maxPcs=pR*pC;
     const cPiece=maxPcs>0?(mf/maxPcs).toFixed(2):'0.00';
     const pcsL=T.pcs||'Stk.';
     function mr(label,val,cls=''){return`<div class="mat-row${cls?' '+cls:''}"><span class="ml">${label}</span><span class="mr">${val}</span></div>`;}
@@ -1190,6 +1227,7 @@ function calcMat(){
         ${mr(T.mat_perpiece||'Pro Stück','<b>'+cPiece+' '+sym+'</b>')}
         ${mr(T.mat_total||'Bestellsumme','<b>'+mCost+' '+sym+'</b>','tot')}
     </div>`;
+    if(window.LPX)LPX.renderPreview(sW,sH,cW,cH,qty);
 }
 
 // ============================================================
@@ -1236,17 +1274,20 @@ function calculate(){
     const qty=parseInt(document.getElementById('cutQty').value)||1;
     const sym=getSym();const T=getT();
 
-    const vd=sW&&sH&&cW&&cH&&cW<=sW&&cH<=sH;
-    const matCost=vd?(cW*cH*qty)/(sW*sH)*mf:mf;
+    const CI=window.LPX?LPX.client():{on:false};
+    const vd=!CI.on&&sW&&sH&&cW&&cH&&((cW<=sW&&cH<=sH)||(cH<=sW&&cW<=sH));
+    const matCost=CI.on?0:(vd?(cW*cH*qty)/(sW*sH)*mf:mf);
     const uPct=vd?((cW*cH*qty)/(sW*sH)*100).toFixed(2):null;
-    const maxPcs=vd?Math.floor(sW/cW)*Math.floor(sH/cH):null;
+    const maxPcs=vd?(window.LPX?LPX.layout(sW,sH,cW,cH).max:Math.floor(sW/cW)*Math.floor(sH/cH)):null;
 
     let design=(pMin/60)*hourly;
     let work=(lMin/60)*(hourly+mach);
     if(document.getElementById('doubleSide').checked)work*=1.5;
-    let sub=(matCost+design+work)*mult;
+    const setup=CI.on?(CI.setupMin*CI.qty/60)*hourly:0;
+    let sub=(matCost+design+work+setup)*mult;
     if(document.getElementById('painting').checked)sub+=15;
     if(document.getElementById('lacquer').checked)sub+=10;
+    const riskAmt=CI.on?sub*CI.risk/100:0;sub+=riskAmt;
     if(document.getElementById('urgent').checked)sub*=1.30;
 
     const netto=sub,ship=getShipVal();
@@ -1270,6 +1311,7 @@ function calculate(){
         h+=`<div class="rpt-row"><span class="rl">${T.txt_usage||'Nutzung'}</span><span class="rv">${uPct}% · max ${maxPcs} ${T.pcs||'Stk.'}</span></div>`;
         h+=sep;
     }
+    if(window.LPX)h+=LPX.reportRows({ci:CI,setup:setup*mult,riskAmt:riskAmt},sym);
     h+=rrow(T.txt_mat,matCost);h+=rrow(T.txt_mach,macCost);h+=rrow(T.txt_labor,design+work/mult);
     if(ship>0)h+=rrow(T.txt_ship,ship);
     h+=sep;h+=rrow(T.txt_netto,netto);if(vatPct>0){
@@ -1286,14 +1328,14 @@ function calculate(){
         h+=rrow(T.txt_vat+' ('+(vatPct*100).toFixed(0)+'%)'+vatCountryLabel,netto*vatPct);
     }
     if(ship>0)h+=rrow('+ '+T.txt_ship,ship);
-    h+=rrow(T.txt_brutto,brutto,'tot');h+=sep;
+    h+=rrow(T.txt_brutto,brutto,'tot');if(window.LPX)h+=LPX.perItemRow({ci:CI,brutto:brutto,ship:ship},sym);h+=sep;
     h+=`<div class="rpt-row prow"><span class="rl">${T.txt_zysk}</span><span class="rv">${profit.toFixed(2)} ${sym}</span></div>`;
 
     document.getElementById('expertBreakdown').innerHTML=h;
     document.getElementById('expertResult').style.display='block';
     document.getElementById('expertResult').scrollIntoView({behavior:'smooth'});
 
-    window._last={brutto,profit,matCost,macCost,design,work,mult,netto,ship,sW,sH,cW,cH,qty,uPct,maxPcs,vd,sym,vatPct};
+    window._last={brutto,profit,matCost,macCost,design,work,mult,netto,ship,sW,sH,cW,cH,qty,uPct,maxPcs,vd,sym,vatPct,ci:CI,setup:setup*mult,riskAmt};
 }
 
 // ============================================================
@@ -1476,6 +1518,7 @@ function saveTXT(){
     txt+=T.txt_profit+': '+c.profit.toFixed(2)+' '+sym+'\n';
     txt+='\n'+s2+'\n'+T.txt_details+'\n'+s2+'\n';
     if(c.vd){txt+=T.txt_sheet+': '+c.sW+'×'+c.sH+' mm\n';txt+=T.txt_proj+' ('+c.qty+'): '+c.cW+'×'+c.cH+' mm\n';txt+=T.txt_usage+': '+c.uPct+'% | '+T.txt_fits+': '+c.maxPcs+'\n';txt+=s2+'\n';}
+    if(window.LPX)txt+=LPX.txtBlock(c);
     txt+=line(T.txt_mat,c.matCost);txt+=line(T.txt_mach,c.macCost);txt+=line(T.txt_labor,c.design+c.work/c.mult);
     if(c.ship>0)txt+=line(T.txt_ship,c.ship);
     txt+=s2+'\n';txt+=line(T.txt_netto,c.netto);
